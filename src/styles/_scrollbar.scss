@@ -1,0 +1,21 @@
+/**
+ * 自定义滚动条样式
+ */
+
+$--scrollbar-color: rgba(69, 90, 100, .2);
+$--scrollbar-size: 6px;
+
+.scrollbar::-webkit-scrollbar {
+  width: $--scrollbar-size;
+  height: $--scrollbar-size;
+  background-color: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  border-radius: $--scrollbar-size;
+  background: transparent;
+}
+
+.scrollbar:hover::-webkit-scrollbar-thumb {
+  background: $--scrollbar-color;
+}
