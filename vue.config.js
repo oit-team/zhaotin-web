@@ -3,8 +3,8 @@ const rimraf = require('rimraf')
 
 const pkg = require('./package')
 
-// 输出目录，格式：项目名-环境
-const outputDir = `${pkg.name}-${process.env.NODE_ENV}`
+// 输出目录，格式：项目名@环境
+const outputDir = `${pkg.name}@${process.env.NODE_ENV}`
 
 // 清理压缩包
 rimraf(`${outputDir}.{zip,7z}`, () => {})
