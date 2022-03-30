@@ -1,8 +1,8 @@
 <template>
   <div>
     <HeaderNav />
-    <HeaderMsg />
     <div class="main container">
+      <div>订单管理</div>
       <!-- 出口 -->
       <router-view />
     </div>
@@ -10,14 +10,12 @@
 </template>
 
 <script>
-import HeaderNav from './components/HeaderNav'
-import HeaderMsg from './components/HeaderMsg'
+import HeaderNav from '@/views/Layout/components/HeaderNav'
 
 export default {
 
   components: {
     HeaderNav,
-    HeaderMsg,
   },
 }
 </script>
