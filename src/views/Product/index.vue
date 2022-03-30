@@ -1,169 +1,163 @@
 <template>
-  <div class="container">
+  <div>
     <HeaderNav />
-    <table-page v-bind="tablePageOption" ref="page">
-      <template slot="content:stateName" slot-scope="{ row }">
-        <span :class="_stateClass(row.state)">{{ row.stateName }}</span>
-      </template>
-    </table-page>
+    <!-- 搜索 -->
+    <div class="main ">
+      <div class="container border mt-4 p-2">
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+          <el-form-item label="商品款号">
+            <el-input v-model="formInline.user" placeholder="商品款号" />
+          </el-form-item>
+          <el-form-item label="商品名称">
+            <el-input v-model="formInline.user" placeholder="商品名称" />
+          </el-form-item>
+          <el-form-item label="商品状态">
+            <el-input v-model="formInline.user" placeholder="商品状态" />
+          </el-form-item>
+          <el-form-item label="商品颜色">
+            <el-input v-model="formInline.user" placeholder="商品颜色" />
+          </el-form-item>
+          <el-form-item label="商品类别">
+            <el-input v-model="formInline.user" placeholder="商品类别" />
+          </el-form-item>
+          <el-form-item label="波段/系列">
+            <el-select v-model="formInline.region" placeholder="波段/系列">
+              <el-option label="区域一" value="shanghai" />
+              <el-option label="区域二" value="beijing" />
+            </el-select>
+          </el-form-item><br />
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit">查询</el-button>
+            <el-button type="primary" @click="reset">清空</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <!-- 列表 -->
+      <div class="container border mt-2 p-2">
+        <el-table
+          :data="tableData"
+          border
+          style="width: 100%"
+          row-style="text-align:center"
+        >
+          <el-table-column
+            fixed
+            prop="date"
+            label="商品款号"
+            sortable
+            fit
+            width="150"
+          />
+          <el-table-column
+            prop="name"
+            label="商品名称"
+            sortable
+            width="120"
+          />
+          <el-table-column
+            prop="province"
+            label="商品状态"
+            sortable
+            width="120"
+          />
+          <el-table-column
+            prop="city"
+            label="商品图片"
+            sortable
+            width="220"
+          />
+          <el-table-column
+            prop="address"
+            label="商品颜色"
+            sortable
+            width="120"
+          />
+          <el-table-column
+            prop="zip"
+            label="商品类别"
+            sortable
+            width="120"
+          />
+          <el-table-column
+            prop="zip"
+            label="季节/波段"
+            sortable
+            width="120"
+          />
+          <el-table-column
+            prop="zip"
+            label="所属系列"
+            sortable
+            width="120"
+          />
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="100"
+          >
+            <template slot-scope="">
+              <el-button type="text" size="small">查看</el-button>
+              <el-button type="text" size="small">编辑</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
+    <router-view />
   </div>
 </template>
 
 <script>
-import TablePage from '@/components/business/TablePage/index'
-// import * as api from '@/api/liveStream'
-import DATA_TYPES from '@/components/business/Cascader/DATA_TYPES'
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-
-// 房间状态
-const ROOM_STATE = {
-  // 未发布
-  UNPUBLISHED: 0,
-  // 未开始
-  NOT_STARTED: 1,
-  // 进行中
-  UNDERWAY: 2,
-  // 已结束
-  FINISHED: 3,
-}
-
-// 房间状态颜色
-const ROOM_STATE_CLASSES = {
-  [ROOM_STATE.UNPUBLISHED]: 'text-yellow-400',
-  [ROOM_STATE.NOT_STARTED]: 'text-gray-500',
-  [ROOM_STATE.UNDERWAY]: 'text-green-500',
-  [ROOM_STATE.FINISHED]: 'text-gray-200',
-}
+import { reqGetProductList } from '@/api/product'
 
 export default {
-  name: 'RoomList',
 
   components: {
-    TablePage,
     HeaderNav,
   },
 
   data() {
     return {
-      data: {},
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        province: '上海',
+        city: '普陀区',
+        address: '上海市普陀区金沙江路 1518 弄',
+        zip: 200333,
+      }],
+      formInline: {
+        user: '',
+        region: '',
+      },
+      con: {
+        styleNo: '',
+        pageNum: '1',
+        pageSize: '2',
+
+      },
     }
   },
-
-  computed: {
-    tablePageOption() {
-      return {
-        promise: this.getLiveBroadcastRoom,
-        search: {
-          fieldProps: {
-            speaker: {
-              data: DATA_TYPES.AREA_OR_SHOP,
-            },
-          },
-        },
-        table: {
-          data: this.data.resultList,
-          actions: {
-            width: 130,
-            buttons: [
-              {
-                tip: ({ row }) => ['发布', '撤回'][row.state],
-                type: 'warning',
-                icon: ({ row }) => ['el-icon-top-right'][row.state] || 'el-icon-bottom-left',
-                click: this.handlePublish,
-              },
-              {
-                tip: '编辑',
-                type: 'primary',
-                icon: 'el-icon-edit',
-                click: ({ row }) => this.$router.push({
-                  name: 'LiveStreamRoomUpdate',
-                  params: { item: row },
-                }),
-              },
-              {
-                tip: '删除',
-                type: 'danger',
-                icon: 'el-icon-delete',
-                click: this.delLiveBroadcastRoom,
-                option: {
-                  type: 'delete',
-                  fieldTip: '房间',
-                  field: 'roomName',
-                },
-              },
-            ],
-          },
-        },
-        actions: [
-          {
-            name: '创建房间',
-            type: 'primary',
-            to: 'LiveStreamRoomUpdate',
-          },
-        ],
-        pager: {
-          total: this.data.totalCount,
-        },
-      }
-    },
+  created() {
+    const res = reqGetProductList(this.con)
+    console.log(res)
   },
-
-  activated() {
-    this.$refs.page.loadData()
-  },
-
   methods: {
-    async getLiveBroadcastRoom(params) {
-      // 取出主讲人数据
-      const { speaker } = params
-
-      if (speaker) {
-        params.speaker = speaker.id
-        params.speakerType = speaker.isShop
-      }
-
-      // const res = await api.getLiveBroadcastRoom(params)
-      // this.data = res.body
+    // handleClick(row) {
+    //   console.log(row)
+    // },
+    onSubmit() {
     },
-    async delLiveBroadcastRoom({ row: { roomId } }) {
-      // await api.delLiveBroadcastRoom(roomId)
-      this.$refs.page.loadData()
-    },
-    async handlePublish({ row }) {
-      const state = {
-        [ROOM_STATE.UNPUBLISHED]: ROOM_STATE.NOT_STARTED,
-        [ROOM_STATE.NOT_STARTED]: ROOM_STATE.UNPUBLISHED,
-      }[row.state]
+    reset() {
 
-      if (state === undefined) return
-
-      const unpublished = row.state === ROOM_STATE.UNPUBLISHED
-      const notStarted = row.state === ROOM_STATE.NOT_STARTED
-
-      unpublished && await this.$confirm('确定要发布直播吗？', '提示', { type: 'warning' })
-      notStarted && await this.$confirm('确定要取消直播吗？', '提示', { type: 'warning' })
-
-      // await api.publishOrWithdrawRoom({
-      //   roomId: row.roomId,
-      //   roomName: row.roomName,
-      //   speakerName: row.speakerName,
-      //   startTime: row.startTime,
-      //   endTime: row.endTime,
-      //   roomCode: row.roomCode,
-      //   state,
-      // })
-
-      unpublished && this.$message.success('发布成功！')
-      notStarted && this.$message.success('取消成功！')
-
-      this.$refs.page.loadData()
-    },
-    _stateClass(state) {
-      return ROOM_STATE_CLASSES[state]
     },
   },
 }
 </script>
 
-<style scoped>
+<style>
+.main {
+  min-height: 600px;
+}
 </style>

@@ -15,14 +15,14 @@ module.exports = defineConfig({
   transpileDependencies: true,
   productionSourceMap: false,
   devServer: {
-    // proxy: {
-    //   '/api': {
-    //     target: 'url',
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       '^/api': '',
-    //     },
-    //   },
-    // },
+    proxy: {
+      '/api': {
+        target: 'htp://192.168.9.53:9910',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '',
+        },
+      },
+    },
   },
 })
