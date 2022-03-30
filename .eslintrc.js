@@ -4,10 +4,13 @@ module.exports = {
     node: true,
   },
   extends: [
-    '@oit',
+    '@oit/eslint-config',
   ],
   parserOptions: {
     parser: '@babel/eslint-parser',
   },
-  rules: {},
+  rules: {
+    'vuejs-accessibility/click-events-have-key-events': 'off',
+    'vuejs-accessibility/mouse-events-have-key-events': 'off',
+  },
 }
