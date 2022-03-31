@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { getTreeMenuList } from '@/api/product'
 
 export default {
   name: 'HeaderNav',
@@ -55,6 +56,22 @@ export default {
     return {
       list: ['商品中心', '商品管理', '基础配置', '统计报表'],
     }
+  },
+
+  created() {
+    this.getTreeMenuList()
+  },
+
+  methods: {
+    async getTreeMenuList() {
+      const res = await getTreeMenuList({
+        userId: JSON.parse(sessionStorage.getItem('userinfo')).id,
+      })
+      // console.log(res)
+    },
+    // async getTreeMenuList() {
+    //   // console.log(JSON.parse(sessionStorage.getItem('userinfo')).id)
+    // },
   },
 }
 

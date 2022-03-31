@@ -194,7 +194,7 @@ export default {
         }
       })
 
-      console.debug('查询 ==>', JSON.parse(JSON.stringify(queryForm)))
+      // console.debug('查询 ==>', JSON.parse(JSON.stringify(queryForm)))
 
       return queryForm
     },

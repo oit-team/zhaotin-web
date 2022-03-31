@@ -29,7 +29,7 @@
 import Axios from 'axios'
 import { Message } from 'element-ui'
 import API_STATUS from '@/api/API_STATUS'
-// import store from '@/store/index'
+// import store from '@/store'
 // import userstore from '@/store/modules/user'
 
 // axios配置
@@ -46,8 +46,10 @@ const axios = Axios.create(axiosConfig)
  * 请求拦截器
  */
 axios.interceptors.request.use(config => {
-  config.headers.userId = sessionStorage.userId
+  console.dir(config)
+  config.headers.userId = sessionStorage.getItem('userId')
   // 每次发送请求时统一携带token
+  console.log(localStorage.getItem('token'))
   config.headers.token = localStorage.getItem('token')
 
   return config
@@ -85,7 +87,7 @@ export function post(url, params = {}, config = {}) {
   } = { ...defaultConfig, ...config }
 
   const userData = {
-    userId: sessionStorage.userId,
+    userId: JSON.parse(sessionStorage.getItem('userinfo')).userId,
     brandId: sessionStorage.brandId,
   }
 
@@ -95,10 +97,10 @@ export function post(url, params = {}, config = {}) {
       ver: '1.0',
       ln: 'cn',
       cmd,
-      mod: mod || 'app',
+      mod: mod || 'home',
       de: '2019-10-16',
       sync: 1,
-      uuid: userData.brandId,
+      uuid: JSON.parse(sessionStorage.getItem('userinfo')).id,
       chcode: 'ef19843298ae8f2134f',
     },
     con: params,
