@@ -10,6 +10,7 @@
             placement="bottom"
             width="200"
             trigger="hover"
+            v-for="item in list"
             :key="item"
             class="px-5"
             popper-class="cus"
@@ -23,67 +24,7 @@
               </ul>
             </div>
             <template #reference>
-              <div><router-link to="/Product" class="">商品中心</router-link></div>
-            </template>
-          </el-popover>
-          <el-popover
-            placement="bottom"
-            width="200"
-            trigger="hover"
-            :key="item"
-            class="px-5"
-            popper-class="cus"
-          >
-            <div>
-              <ul class="w-44 divide-y text-center px-2 leading-10">
-                <li><a href="">信息预设 1</a></li>
-                <li><a href="">信息预设 2</a></li>
-                <li><a href="">菜单一</a></li>
-                <li><a href="">菜单二</a></li>
-              </ul>
-            </div>
-            <template #reference>
-              <div><router-link to="/Order" class="">我的订单</router-link></div>
-            </template>
-          </el-popover>
-          <el-popover
-            placement="bottom"
-            width="200"
-            trigger="hover"
-            :key="item"
-            class="px-5"
-            popper-class="cus"
-          >
-            <div>
-              <ul class="w-44 divide-y text-center px-2 leading-10">
-                <li><a href="">信息预设 1</a></li>
-                <li><a href="">信息预设 2</a></li>
-                <li><a href="">菜单一</a></li>
-                <li><a href="">菜单二</a></li>
-              </ul>
-            </div>
-            <template #reference>
-              <div><router-link to="/Manage" class="">商品管理</router-link></div>
-            </template>
-          </el-popover>
-          <el-popover
-            placement="bottom"
-            width="200"
-            trigger="hover"
-            :key="item"
-            class="px-5"
-            popper-class="cus"
-          >
-            <div>
-              <ul class="w-44 divide-y text-center px-2 leading-10">
-                <li><a href="">信息预设 1</a></li>
-                <li><a href="">信息预设 2</a></li>
-                <li><a href="">菜单一</a></li>
-                <li><a href="">菜单二</a></li>
-              </ul>
-            </div>
-            <template #reference>
-              <div><router-link to="/Seeting" class="">系统设置</router-link></div>
+              <div><router-link to="/Product" class="text-white-500">{{ item }}</router-link></div>
             </template>
           </el-popover>
         </ul>
@@ -112,7 +53,7 @@ export default {
 
   data() {
     return {
-
+      list: ['商品中心', '商品管理', '基础配置', '统计报表'],
     }
   },
 }
@@ -121,8 +62,5 @@ export default {
 <style>
 .cus {
   transform: translateY(10px);
-}
-.active {
-  color:#eab308;
 }
 </style>

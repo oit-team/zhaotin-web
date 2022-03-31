@@ -16,34 +16,34 @@ const routes = [
     ],
   },
   {
-    path: '/Product',
+    path: '/product',
     component: Product,
   },
   {
-    path: '/Order',
+    path: '/order',
     component: () => import('@/views/order/index'),
   },
   {
-    path: '/Manage',
+    path: '/manage',
     component: () => import('@/views/manage/index'),
   },
   {
-    path: '/Seeting',
+    path: '/seeting',
     component: () => import('@/views/seeting/index'),
   },
   {
-    path: '/HomeView',
+    path: '/home-view',
     name: 'HomeView',
     component: HomeView,
   },
   {
     path: '/login',
-    name: 'login',
+    name: 'Login',
     component: () => import('@/views/Login/index'),
   },
   {
     path: '/about',
-    name: 'about',
+    name: 'About',
     component: () => import('@/views/AboutView'),
   },
 ]

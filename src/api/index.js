@@ -29,6 +29,8 @@
 import Axios from 'axios'
 import { Message } from 'element-ui'
 import API_STATUS from '@/api/API_STATUS'
+// import store from '@/store/index'
+// import userstore from '@/store/modules/user'
 
 // axios配置
 const axiosConfig = {
@@ -45,7 +47,8 @@ const axios = Axios.create(axiosConfig)
  */
 axios.interceptors.request.use(config => {
   config.headers.userId = sessionStorage.userId
-  config.headers.token = sessionStorage.accessToken
+  // 每次发送请求时统一携带token
+  config.headers.token = localStorage.getItem('token')
 
   return config
 }, error => {

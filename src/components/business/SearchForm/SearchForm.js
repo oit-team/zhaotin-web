@@ -84,7 +84,7 @@ export default {
         ref: 'form',
         class: [
           {
-            'el-form--responsive': !this.responsive,
+            'el-form--responsive grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5': !this.responsive,
             'el-form--expand': this.expand,
           },
           this.responsive,
@@ -222,7 +222,7 @@ export default {
     return h('div', {
       class: {
         'search-form': true,
-        'search-form--collapsed': this.collapse,
+        'search-form--collapsed sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4': this.collapse,
       },
     }, [
       this.genForm(),

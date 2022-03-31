@@ -1843,7 +1843,7 @@ packages:
       module-alias: 2.2.2
       portfinder: 1.0.28
       postcss: 8.4.12
-      postcss-loader: 6.2.1_postcss@8.4.12+webpack@5.70.0
+      postcss-loader: 6.2.1_postcss@8.4.12
       progress-webpack-plugin: 1.0.12_webpack@5.70.0
       sass-loader: 12.6.0_sass@1.49.9
       ssri: 8.0.1
