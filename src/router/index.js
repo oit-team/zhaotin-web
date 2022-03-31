@@ -16,21 +16,21 @@ const routes = [
     ],
   },
   {
-    path: '/product',
+    path: '/index',
     component: Product,
   },
   {
-    path: '/order',
+    path: '/task',
     component: () => import('@/views/order/index'),
   },
   {
-    path: '/manage',
+    path: '/statistics',
     component: () => import('@/views/manage/index'),
   },
-  {
-    path: '/seeting',
-    component: () => import('@/views/seeting/index'),
-  },
+  // {
+  //   path: '/seeting',
+  //   component: () => import('@/views/seeting/index'),
+  // },
   {
     path: '/home-view',
     name: 'HomeView',

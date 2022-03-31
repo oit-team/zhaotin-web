@@ -46,10 +46,10 @@ const axios = Axios.create(axiosConfig)
  * 请求拦截器
  */
 axios.interceptors.request.use(config => {
-  console.dir(config)
+  // console.dir(config)
   config.headers.userId = sessionStorage.getItem('userId')
   // 每次发送请求时统一携带token
-  console.log(localStorage.getItem('token'))
+  // console.log(localStorage.getItem('token'))
   config.headers.token = localStorage.getItem('token')
 
   return config

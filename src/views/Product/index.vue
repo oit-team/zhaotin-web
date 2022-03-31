@@ -1,6 +1,7 @@
 <template>
   <div>
     <HeaderNav />
+    <h3>首页</h3>
     <!-- <table-page v-bind="tablePageOption" auto ref="page" /> -->
   </div>
 </template>

@@ -11,7 +11,7 @@
             width="200"
             trigger="hover"
             v-for="item in list"
-            :key="item"
+            :key="item.menuName"
             class="px-5"
             popper-class="cus"
           >
@@ -24,7 +24,7 @@
               </ul>
             </div>
             <template #reference>
-              <div><router-link to="/Product" class="text-white-500">{{ item }}</router-link></div>
+              <div><router-link :to="item.menuUrl" class="text-white-500">{{ item.menuName }}</router-link></div>
             </template>
           </el-popover>
         </ul>
@@ -54,7 +54,7 @@ export default {
 
   data() {
     return {
-      list: ['商品中心', '商品管理', '基础配置', '统计报表'],
+      list: [],
     }
   },
 
@@ -68,10 +68,8 @@ export default {
         userId: JSON.parse(sessionStorage.getItem('userinfo')).id,
       })
       // console.log(res)
+      this.list = res.body.resultList
     },
-    // async getTreeMenuList() {
-    //   // console.log(JSON.parse(sessionStorage.getItem('userinfo')).id)
-    // },
   },
 }
 
