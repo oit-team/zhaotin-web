@@ -66,10 +66,10 @@ export default {
     async getTreeMenuList() {
       const res = await getTreeMenuList({
         userId: JSON.parse(sessionStorage.getItem('userinfo')).logId,
-        // brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
+        brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
       })
       this.list = res.body.resultList
-      // console.log(this.list)
+      // console.log()
     },
     skip(item) {
       sessionStorage.setItem('headTitString', item.fieldDes)

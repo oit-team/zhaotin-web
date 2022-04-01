@@ -86,12 +86,12 @@ export function post(url, params = {}, config = {}) {
     ...__config
   } = { ...defaultConfig, ...config }
 
+  const userInfoStorage = JSON.parse(sessionStorage.getItem('userinfo')) || {}
   const userData = {
-    userId: JSON.parse(sessionStorage.getItem('userinfo')).id,
-    brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
-    lid: JSON.parse(sessionStorage.getItem('userinfo')).logId,
+    userId: userInfoStorage.id,
+    brandId: userInfoStorage.brandId,
+    lid: userInfoStorage.logId,
   }
-
   const formattedParams = {
     head: {
       aid: userData.userId,

@@ -55,6 +55,7 @@ export default {
     async login() {
       const res = await reqLogin(this.formData)
       this.$store.commit('getUserinfo', res.body)
+      this.$router.push('/')
       // // console.log(localStorage.getItem('token'))
       // localStorage.setItem('token', res.body.accessToken)
     },

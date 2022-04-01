@@ -9,6 +9,6 @@ export function getProductList(params, head) {
 export function getTreeMenuList(params) {
   return post('/system/menu/getTreeMenuList', params, {
     cmd: 10008,
-    // lid: JSON.parse(sessionStorage.getItem('userinfo')).uuid,
+    lid: JSON.parse(sessionStorage.getItem('userinfo')).uuid,
   })
 }
