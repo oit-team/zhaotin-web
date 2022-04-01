@@ -1,25 +1,31 @@
 <template>
   <div>
     <HeaderNav />
-    <h3>首页</h3>
-    <!-- <table-page v-bind="tablePageOption" auto ref="page" /> -->
+    <table-page v-bind="tablePageOption" auto ref="page" />
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
 import TablePage from '@/components/business/TablePage'
+import { getProductList } from '@/api/product'
 
 export default {
   components: {
     HeaderNav,
     TablePage,
   },
+  data() {
+    return {
+      data: {},
+    }
+  },
 
   computed: {
     tablePageOption() {
       return {
-        // promise: this.loadData({
+        promise: this.loadData,
+        // ({
         //   // token: JSON.parse(localStorage.getItem('token')),
         //   userId: sessionStorage.getItem('userId'),
         // }),
@@ -31,31 +37,29 @@ export default {
         //   },
         // ],
         table: {
-          // data: this.data.resultList,
+          data: this.data.resultList,
         },
         pager: {
-          // total: this.data.totalCount,
+          total: this.data.totalCount,
         },
       }
     },
   },
   created() {
-    // getProductList({
-    //   styleNo: '',
-    //   pageNum: '1',
-    //   pageSize: '2',
-    //   userId: '1',
-    // })
+    this.loadData()
     // console.log(localStorage.getItem('token'))
     // getUser()
   },
   methods: {
-    // async loadData(con) {
-    //   const res = await getTreeMenuList(con)
-    //   this.data = res.body
-    //   // console.log(this.data.resultList)
-    // },
-
+    async loadData() {
+      const res = await getProductList({
+        styleNo: '',
+        pageNum: '1',
+        pageSize: '2',
+      })
+      // console.log(res)
+      this.data = res.body
+    },
   },
 
 }

@@ -24,7 +24,7 @@
               </ul>
             </div>
             <template #reference>
-              <div><router-link :to="item.menuUrl" class="text-white-500">{{ item.menuName }}</router-link></div>
+              <div @click="skip(item)" class="text-white-500">{{ item.menuName }}</div>
             </template>
           </el-popover>
         </ul>
@@ -65,10 +65,15 @@ export default {
   methods: {
     async getTreeMenuList() {
       const res = await getTreeMenuList({
-        userId: JSON.parse(sessionStorage.getItem('userinfo')).id,
+        userId: JSON.parse(sessionStorage.getItem('userinfo')).logId,
+        // brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
       })
-      // console.log(res)
       this.list = res.body.resultList
+      // console.log(this.list)
+    },
+    skip(item) {
+      sessionStorage.setItem('headTitString', item.fieldDes)
+      this.$router.push(item.menuUrl)
     },
   },
 }

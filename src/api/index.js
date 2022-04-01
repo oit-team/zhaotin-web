@@ -47,7 +47,7 @@ const axios = Axios.create(axiosConfig)
  */
 axios.interceptors.request.use(config => {
   // console.dir(config)
-  config.headers.userId = sessionStorage.getItem('userId')
+  // config.headers.userId = sessionStorage.getItem('userId')
   // 每次发送请求时统一携带token
   // console.log(localStorage.getItem('token'))
   config.headers.token = localStorage.getItem('token')
@@ -87,8 +87,9 @@ export function post(url, params = {}, config = {}) {
   } = { ...defaultConfig, ...config }
 
   const userData = {
-    userId: JSON.parse(sessionStorage.getItem('userinfo')).userId,
-    brandId: sessionStorage.brandId,
+    userId: JSON.parse(sessionStorage.getItem('userinfo')).id,
+    brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
+    lid: JSON.parse(sessionStorage.getItem('userinfo')).logId,
   }
 
   const formattedParams = {
@@ -100,8 +101,9 @@ export function post(url, params = {}, config = {}) {
       mod: mod || 'home',
       de: '2019-10-16',
       sync: 1,
-      uuid: JSON.parse(sessionStorage.getItem('userinfo')).id,
+      uuid: userData.brandId,
       chcode: 'ef19843298ae8f2134f',
+      lid: userData.lid,
     },
     con: params,
   }

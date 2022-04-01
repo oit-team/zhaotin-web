@@ -3,6 +3,9 @@ import VueRouter from 'vue-router'
 import Product from '@/views/Product/index'
 import HomeView from '@/views/HomeView'
 import Layout from '@/views/Layout/index'
+import Task from '@/views/order/index'
+import Statistics from '@/views/manage/index'
+import testList1 from '@/views/seeting/index'
 
 Vue.use(VueRouter)
 
@@ -21,16 +24,16 @@ const routes = [
   },
   {
     path: '/task',
-    component: () => import('@/views/order/index'),
+    component: Task,
   },
   {
     path: '/statistics',
-    component: () => import('@/views/manage/index'),
+    component: Statistics,
   },
-  // {
-  //   path: '/seeting',
-  //   component: () => import('@/views/seeting/index'),
-  // },
+  {
+    path: '/testList1',
+    component: testList1,
+  },
   {
     path: '/home-view',
     name: 'HomeView',
