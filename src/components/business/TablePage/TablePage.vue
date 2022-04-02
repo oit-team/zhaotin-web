@@ -342,7 +342,12 @@ export default {
 
 <style lang="scss">
 .table-page {
-@apply flex-1 flex flex-col overflow-hidden h-full;
+// @apply flex-1 flex flex-col overflow-hidden h-full;
+display: flex;
+flex: 1;
+overflow: hidden;
+height: 100%;
+flex-direction: column;
 
   .el-table-column--selection {
     .cell {

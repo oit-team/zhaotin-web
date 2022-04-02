@@ -1,19 +1,23 @@
 <template>
   <div>
-    <HeaderNav />
-    <table-page v-bind="tablePageOption" auto ref="page" />
+    <HeaderNav class="mb-4" />
+    <div class="main container">
+      <div>商品中心</div>
+      <!-- 出口 -->
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-import TablePage from '@/components/business/TablePage'
-import { getProductList } from '@/api/product'
+// import TablePage from '@/components/business/TablePage'
+// import { getProductList } from '@/api/product'
 
 export default {
   components: {
     HeaderNav,
-    TablePage,
+    // TablePage,
   },
   data() {
     return {
@@ -24,7 +28,7 @@ export default {
   computed: {
     tablePageOption() {
       return {
-        promise: this.loadData,
+        // promise: this.loadData,
         // ({
         //   // token: JSON.parse(localStorage.getItem('token')),
         //   userId: sessionStorage.getItem('userId'),
@@ -46,20 +50,20 @@ export default {
     },
   },
   created() {
-    this.loadData()
+    // this.loadData()
     // console.log(localStorage.getItem('token'))
     // getUser()
   },
   methods: {
-    async loadData() {
-      const res = await getProductList({
-        styleNo: '',
-        pageNum: '1',
-        pageSize: '2',
-      })
-      // console.log(res)
-      this.data = res.body
-    },
+    // async loadData() {
+    //   const res = await getProductList({
+    //     styleNo: '',
+    //     pageNum: '1',
+    //     pageSize: '2',
+    //   })
+    //   // console.log(res)
+    //   this.data = res.body
+    // },
   },
 
 }

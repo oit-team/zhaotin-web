@@ -1,8 +1,8 @@
 <template>
   <div>
-    <HeaderNav />
+    <HeaderNav class="mb-4" />
     <div class="main container">
-      <div>商品管理</div>
+      <div>订单管理</div>
       <!-- 出口 -->
       <router-view />
     </div>

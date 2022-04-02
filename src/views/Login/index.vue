@@ -12,33 +12,6 @@
       </el-form-item>
     </el-form>
   </div>
-  <!-- <div id="login">
-    <div class="login_head">
-      <div class="content">
-        <div class="contentLeft">
-          <img src="../assets/css/login/img/loginLeft.png" alt="" />
-        </div>
-        <div class="contentRight">
-          <div class="right">
-            <div class="right_title">高单易管家</div>
-            <el-form>
-              <el-form-item>
-                <el-input v-model.trim="formData.userName" clearable placeholder="请输入用户名" />
-              </el-form-item>
-              <el-form-item>
-                <el-input type="password" v-model.trim="formData.passWord" clearable placeholder="请输入密码"
-                @keyup.enter.native="login('formData')" />
-              </el-form-item>
-            </el-form>
-
-            <div class="loginBtn">
-              <el-button type="primary" class="btn_submit" @click="login('formData')">登 录</el-button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
 </template>
 
 <script>
@@ -56,13 +29,11 @@ export default {
       const res = await reqLogin(this.formData)
       this.$store.commit('getUserinfo', res.body)
       this.$router.push('/')
-      // // console.log(localStorage.getItem('token'))
-      // localStorage.setItem('token', res.body.accessToken)
     },
   },
 }
 </script>
 
 <style lang="scss" scoped>
-  // @import "../assets/css/login/css/login";
+  // @import "../../assets/css/login";
 </style>

@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Product from '@/views/Product/index'
 import HomeView from '@/views/HomeView'
 import Layout from '@/views/Layout/index'
-import Task from '@/views/order/index'
-import Statistics from '@/views/manage/index'
-import testList1 from '@/views/seeting/index'
+import Order from '@/views/order/index'
+import customer from '@/views/customer/index'
+import System from '@/views/seeting/index'
+import Center from '@/views/Center/index'
+import BaseSeeting from '@/views/BaseSeeting/index'
 
 Vue.use(VueRouter)
 
@@ -19,20 +20,29 @@ const routes = [
     ],
   },
   {
-    path: '/index',
-    component: Product,
+    // 商品中心
+    path: '/styleCenter',
+    component: Center,
   },
   {
-    path: '/task',
-    component: Task,
+    // 订单管理
+    path: '/order',
+    component: Order,
   },
   {
-    path: '/statistics',
-    component: Statistics,
+    // 客户管理
+    path: '/customer',
+    component: customer,
   },
   {
-    path: '/testList1',
-    component: testList1,
+    // 系统设置
+    path: '/system',
+    component: System,
+  },
+  {
+    // 基础配置
+    path: '/basls',
+    component: BaseSeeting,
   },
   {
     path: '/home-view',

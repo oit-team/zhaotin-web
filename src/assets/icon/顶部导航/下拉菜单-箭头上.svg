@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="8.485" height="8.485" viewBox="0 0 8.485 8.485">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #b49e80;
+      }
+    </style>
+  </defs>
+  <path id="下拉菜单-箭头上" class="cls-1" d="M459.916,290.5a.429.429,0,0,1-.429-.429V284.5h5.571a.429.429,0,0,1,0,.857h-4.714v4.714A.429.429,0,0,1,459.916,290.5Z" transform="translate(-119.492 -526.078) rotate(45)"/>
+</svg>

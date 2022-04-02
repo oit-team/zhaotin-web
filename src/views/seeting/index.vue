@@ -1,8 +1,9 @@
 <template>
   <div>
-    <HeaderNav />
+    <HeaderNav class="mb-4" />
     <div class="main container">
-      <table-page v-bind="tablePageOption" auto ref="page" />
+      系统设置
+      <!-- <table-page v-bind="tablePageOption" auto ref="page" /> -->
       <!-- 出口 -->
       <router-view />
     </div>
@@ -11,12 +12,12 @@
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-import TablePage from '@/components/business/TablePage'
+// import TablePage from '@/components/business/TablePage'
 
 export default {
   components: {
     HeaderNav,
-    TablePage,
+    // TablePage,
   },
   data() {
     return {
@@ -24,32 +25,32 @@ export default {
     }
   },
 
-  computed: {
-    tablePageOption() {
-      return {
-        promise: this.loadData,
-        // ({
-        //   // token: JSON.parse(localStorage.getItem('token')),
-        //   userId: sessionStorage.getItem('userId'),
-        // }),
-        // actions: [
-        //   {
-        //     name: '导出数据',
-        //     type: 'primary',
-        //     click: () => this.$refs.export.open(),
-        //   },
-        // ],
-        table: {
-          data: this.data.resultList,
-        },
-        pager: {
-          total: this.data.totalCount,
-        },
-      }
-    },
-  },
+  // computed: {
+  //   tablePageOption() {
+  //     // return {
+  //     //   // promise: this.loadData,
+  //     //   // ({
+  //     //   //   // token: JSON.parse(localStorage.getItem('token')),
+  //     //   //   userId: sessionStorage.getItem('userId'),
+  //     //   // }),
+  //     //   // actions: [
+  //     //   //   {
+  //     //   //     name: '导出数据',
+  //     //   //     type: 'primary',
+  //     //   //     click: () => this.$refs.export.open(),
+  //     //   //   },
+  //     //   // ],
+  //     //   table: {
+  //     //     // data: this.data.resultList,
+  //     //   },
+  //     //   pager: {
+  //     //     // total: this.data.totalCount,
+  //     //   },
+  //     // }
+  //   },
+  // },
   created() {
-    this.loadData()
+    // this.loadData()
     // console.log(localStorage.getItem('token'))
     // getUser()
   },
