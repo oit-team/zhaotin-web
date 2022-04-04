@@ -21,6 +21,7 @@ specifiers:
   eslint-plugin-vue: ^8.0.3
   eslint-plugin-vuejs-accessibility: ^1.1.0
   less: ^4.1.2
+  less-loader: 5.0.0
   lint-staged: ^11.1.2
   lodash: ^4.17.21
   postcss-html: ^1.3.0
@@ -43,6 +44,7 @@ dependencies:
   core-js: 3.21.1
   element-ui: 2.15.6_vue@2.6.14
   less: 4.1.2
+  less-loader: 5.0.0_less@4.1.2
   lodash: 4.17.21
   tailwindcss: 3.0.23_autoprefixer@10.4.4
   vue: 2.6.14
@@ -60,7 +62,7 @@ devDependencies:
   '@vue/cli-plugin-eslint': 5.0.4_6084a5b0c7b00dd6f5be6d9e72604c89
   '@vue/cli-plugin-router': 5.0.4_@vue+cli-service@5.0.4
   '@vue/cli-plugin-vuex': 5.0.4_@vue+cli-service@5.0.4
-  '@vue/cli-service': 5.0.4_e91606e6a72034d7d4551cf0212e80e0
+  '@vue/cli-service': 5.0.4_619a40ba1e97da6065e53794616280db
   '@vue/eslint-config-airbnb': 6.0.0_2d702f7a26ca7873734bc517dfcb2504
   autoprefixer: 10.4.4
   eslint: 7.32.0
@@ -1718,7 +1720,7 @@ packages:
     dependencies:
       '@babel/core': 7.17.8
       '@vue/babel-preset-app': 5.0.4_vue@2.6.14
-      '@vue/cli-service': 5.0.4_e91606e6a72034d7d4551cf0212e80e0
+      '@vue/cli-service': 5.0.4_619a40ba1e97da6065e53794616280db
       '@vue/cli-shared-utils': 5.0.4
       babel-loader: 8.2.4_fa907c5a4f16ccc493e21649ccc59574
       thread-loader: 3.0.4_webpack@5.70.0
@@ -1739,7 +1741,7 @@ packages:
       '@vue/cli-service': ^3.0.0 || ^4.0.0 || ^5.0.0-0
       eslint: '>=7.5.0'
     dependencies:
-      '@vue/cli-service': 5.0.4_e91606e6a72034d7d4551cf0212e80e0
+      '@vue/cli-service': 5.0.4_619a40ba1e97da6065e53794616280db
       '@vue/cli-shared-utils': 5.0.4
       eslint: 7.32.0
       eslint-webpack-plugin: 3.1.1_eslint@7.32.0+webpack@5.70.0
@@ -1759,7 +1761,7 @@ packages:
     peerDependencies:
       '@vue/cli-service': ^3.0.0 || ^4.0.0 || ^5.0.0-0
     dependencies:
-      '@vue/cli-service': 5.0.4_e91606e6a72034d7d4551cf0212e80e0
+      '@vue/cli-service': 5.0.4_619a40ba1e97da6065e53794616280db
       '@vue/cli-shared-utils': 5.0.4
     transitivePeerDependencies:
       - encoding
@@ -1770,10 +1772,10 @@ packages:
     peerDependencies:
       '@vue/cli-service': ^3.0.0 || ^4.0.0 || ^5.0.0-0
     dependencies:
-      '@vue/cli-service': 5.0.4_e91606e6a72034d7d4551cf0212e80e0
+      '@vue/cli-service': 5.0.4_619a40ba1e97da6065e53794616280db
     dev: true
 
-  /@vue/cli-service/5.0.4_e91606e6a72034d7d4551cf0212e80e0:
+  /@vue/cli-service/5.0.4_619a40ba1e97da6065e53794616280db:
     resolution: {integrity: sha512-xRiLNTFYmMCT9edZpyYXHijW5xot3gbZpcWDOXUOhKPHN4qs4XqWALnZlU97JYjZOr3XIr/ZvyciyEfrlUVqSA==}
     engines: {node: ^12.0.0 || >= 14.0.0}
     hasBin: true
@@ -1838,6 +1840,7 @@ packages:
       html-webpack-plugin: 5.5.0_webpack@5.70.0
       is-file-esm: 1.0.0
       launch-editor-middleware: 2.3.0
+      less-loader: 5.0.0_less@4.1.2
       lodash.defaultsdeep: 4.6.1
       lodash.mapvalues: 4.6.0
       mini-css-extract-plugin: 2.6.0_webpack@5.70.0
@@ -1920,7 +1923,7 @@ packages:
       '@vue/cli-service':
         optional: true
     dependencies:
-      '@vue/cli-service': 5.0.4_e91606e6a72034d7d4551cf0212e80e0
+      '@vue/cli-service': 5.0.4_619a40ba1e97da6065e53794616280db
       eslint: 7.32.0
       eslint-config-airbnb-base: 15.0.0_157002f9dff1b62f2b20650d7e8bf1eb
       eslint-import-resolver-node: 0.3.6
@@ -2436,7 +2439,6 @@ packages:
 
   /big.js/5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==}
-    dev: true
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -2735,6 +2737,11 @@ packages:
     resolution: {integrity: sha1-2jCcwmPfFZlMaIypAheco8fNfH4=}
     engines: {node: '>=0.8'}
     dev: true
+
+  /clone/2.1.2:
+    resolution: {integrity: sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=}
+    engines: {node: '>=0.8'}
+    dev: false
 
   /color-convert/1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
@@ -3358,7 +3365,6 @@ packages:
   /emojis-list/3.0.0:
     resolution: {integrity: sha512-/kyM18EfinwXZbno9FyUGeFh87KC8HRQBQGildHZbEuRyWFOmv1U10o9BBp8XVZDVNNuQKyIGIu5ZYAAXJ0V2Q==}
     engines: {node: '>= 4'}
-    dev: true
 
   /encodeurl/1.0.2:
     resolution: {integrity: sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=}
@@ -4760,7 +4766,6 @@ packages:
     hasBin: true
     dependencies:
       minimist: 1.2.6
-    dev: true
 
   /json5/2.2.1:
     resolution: {integrity: sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==}
@@ -4802,6 +4807,19 @@ packages:
       picocolors: 1.0.0
       shell-quote: 1.7.3
     dev: true
+
+  /less-loader/5.0.0_less@4.1.2:
+    resolution: {integrity: sha512-bquCU89mO/yWLaUq0Clk7qCsKhsF/TZpJUzETRvJa9KSVEL9SO3ovCvdEHISBhrC81OwC8QSVX7E0bzElZj9cg==}
+    engines: {node: '>= 4.8.0'}
+    peerDependencies:
+      less: ^2.3.1 || ^3.0.0
+      webpack: ^2.0.0 || ^3.0.0 || ^4.0.0
+    dependencies:
+      clone: 2.1.2
+      less: 4.1.2
+      loader-utils: 1.4.0
+      pify: 4.0.1
+    dev: false
 
   /less/4.1.2:
     resolution: {integrity: sha512-EoQp/Et7OSOVu0aJknJOtlXZsnr8XE8KwuzTHOLeVSEx8pVWUICc8Q0VYRHgzyjX78nMEyC/oztWFbgyhtNfDA==}
@@ -4888,7 +4906,6 @@ packages:
       big.js: 5.2.2
       emojis-list: 3.0.0
       json5: 1.0.1
-    dev: true
 
   /loader-utils/2.0.2:
     resolution: {integrity: sha512-TM57VeHptv569d/GKh6TAYdzKblwDNiumOdkFnejjD0XwTH87K90w3O7AiJRqdQoXygvi1VQTJTLGhJl7WqA7A==}
@@ -5635,7 +5652,6 @@ packages:
     resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
     engines: {node: '>=6'}
     dev: false
-    optional: true
 
   /pkg-dir/4.2.0:
     resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
