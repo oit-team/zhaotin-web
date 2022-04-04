@@ -95,8 +95,8 @@ export default {
           // margin:0 auto;
           .right_title {
             width:100%;
-            border-bottom: 2px solid #1978FE;
-            color:#1978FE;
+            border-bottom: 2px solid  #eab308;
+            color: #eab308;
             text-align: left;
             height: 60px;
             line-height: 60px;
@@ -111,15 +111,15 @@ export default {
             margin:10px 0;
           }
           /deep/ .el-input__inner:focus{
-            border-color: #1978FE;
+            border-color: #eab308;
           }
           /deep/ .loginBtn .btn_submit {
             width: 100%;
             height: 48px;
             cursor: pointer;
-            background-color: #1978FE;
+            background-color:  #eab308;
             // border-radius: 15px;
-            border-color:#1978FE;
+            border-color: #eab308;
             font-size: 20px;
             margin: 40px 0;
           }

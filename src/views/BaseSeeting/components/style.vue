@@ -1,9 +1,8 @@
 <template>
   <div>
-    <HeaderNav class="mb-4" />
     <div class="main container">
       <!-- <div>商品中心</div> -->
-      <TablePage v-bind="tablePageOption" auto />
+      <TablePage :table="tablePageOption" />
       <!-- 出口 -->
       <router-view />
     </div>
@@ -11,13 +10,12 @@
 </template>
 
 <script>
-import HeaderNav from '@/views/Layout/components/HeaderNav'
 import TablePage from '@/components/business/TablePage'
 import { getProductList } from '@/api/product'
 
 export default {
+  name: 'Style',
   components: {
-    HeaderNav,
     TablePage,
   },
   data() {
@@ -41,11 +39,11 @@ export default {
         //     click: () => this.$refs.export.open(),
         //   },
         // ],
-        table: {
-          // data: this.data.resultList,
-        },
+        data: this.data.resultList,
+        // selectionItem: true,
+        // selection: true,
         pager: {
-          // total: this.data.totalCount,
+          total: this.data.totalCount,
         },
       }
     },
@@ -62,7 +60,7 @@ export default {
         pageNum: '1',
         pageSize: '2',
       })
-      // console.log(res)
+      //   console.log(res.body)
       this.data = res.body
     },
   },

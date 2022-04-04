@@ -15,11 +15,10 @@
             :key="item.menuName"
             class="px-5"
             popper-class="cus"
-            content="测试"
           >
             <div v-if="item.childrenMenu">
               <ul v-for="(items,index) in item.childrenMenu" :key="index">
-                <li class="text-center"><a href="">{{ items.menuName }}</a></li>
+                <li class="text-center"><div :class="$route.fullPath === items.menuUrl ? 'box-color': '' " @click="skipSecond(items)">{{ items.menuName }}</div></li>
               </ul>
             </div>
             <template #reference>
@@ -28,10 +27,39 @@
           </el-popover>
         </ul>
         <div class="tracking-wider flex items-center text-gray-50">
-          <div class="leading-10 mr-2">
-            周先生
-            <img class="inline-block leading-10" src="../../../assets/icon/顶部导航/箭头下.svg" alt="" />
-          </div>
+          <el-popover
+            :disabled="!userinfo"
+            placement="bottom"
+            width="50"
+            trigger="hover"
+            class="px-5"
+            content="测试"
+            popper-class="userheader"
+          >
+            <div v-if="userinfo">
+              <ul class="diivide-y-4 divide-dotted">
+                <li class="text-center" @click="quit">退出登录</li>
+                <li class="text-center"><a href="">修改密码</a></li>
+              </ul>
+            </div>
+            <template #reference>
+              <div v-if="userinfo">
+                {{ userinfo.username }}<img
+                  class="inline-block le
+              ading-10 ml-2"
+                  src="../../../assets/icon/顶部导航/箭头下.svg"
+                  alt=""
+                />
+              </div>
+              <div
+                class="inline-block leading-10 ml-2"
+                v-else
+                @click="$router.push('/login')"
+              >
+                请点击登录
+              </div>
+            </template>
+          </el-popover>
           <div class="space-x-4 ml-2">
             <img class="inline-block leading-10" src="../../../assets/icon/顶部导航/消息.svg" alt="" />
             <img class="inline-block leading-10" src="../../../assets/icon/顶部导航/客服.svg" alt="" />
@@ -57,6 +85,7 @@ export default {
     return {
       list: [],
       showTips: true,
+      userinfo: JSON.parse(sessionStorage.getItem('userinfo')),
     }
   },
 
@@ -71,12 +100,26 @@ export default {
         brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
       })
       this.list = res.body.resultList
+      // this.list.forEach(item => {
+      //   if (item.menuName === '系统设置') {
+      //     return item.childrenMenu
+      //   }
+      // })
     },
     skip(item) {
-      if (item.fieldDes) {
-        sessionStorage.setItem('headTitString', item.fieldDes)
-      }
       this.$router.push(item.menuUrl)
+    },
+    skipSecond(items) {
+      sessionStorage.setItem('headTitString', items.fieldDes)
+      if (sessionStorage.getItem('headTitString')) {
+        this.$router.push(items.menuUrl)
+      }
+      // console.log(items)
+    },
+    quit() {
+      localStorage.removeItem('token')
+      sessionStorage.removeItem('userinfo')
+      this.$router.push('/login')
     },
   },
 }
@@ -88,5 +131,12 @@ export default {
 }
 .box-color {
   color: #eab308;
+}
+.userheader {
+  width: auto;
+  transform: translateY(9px);
+}
+.secondColor {
+  color:  #eab308;
 }
 </style>

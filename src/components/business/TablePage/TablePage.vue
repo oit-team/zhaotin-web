@@ -39,6 +39,7 @@
       @current-change="handleCurrentChange"
       @row-click="$emit('row-click', $event)"
     >
+    <!-- <el-table-column label="1"></el-table-column> -->
       <el-table-column
         v-if="table.selectionItem"
         align="center"
