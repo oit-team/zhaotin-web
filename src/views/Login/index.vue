@@ -7,7 +7,7 @@
         </div>
         <div class="contentRight">
           <div class="right">
-            <div class="right_title">高单易管家</div>
+            <div class="right_title">昭廷</div>
             <el-form>
               <el-form-item>
                 <el-input v-model.trim="formData.userName" clearable placeholder="请输入用户名" />
