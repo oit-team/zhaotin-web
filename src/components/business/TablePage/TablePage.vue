@@ -1,5 +1,6 @@
 <template>
   <div class="table-page">
+    <!-- 控制搜索表单 -->
     <search-form
       v-bind="search"
       ref="search"
@@ -8,7 +9,7 @@
       @reset="handleReset"
     />
     <template v-if="(actions && actions.length > 0) || $slots.actions">
-      <div class="flex">
+      <div class="flex mt-4">
         <slot name="actions">
           <template v-for="(item, index) of actions">
             <el-button
@@ -16,7 +17,7 @@
               :key="index"
               :icon="item.icon"
               :type="item.type"
-              size="small"
+              size="middle"
               @click="handleAction(item)"
             >
               {{ item.name }}
@@ -27,7 +28,7 @@
       </div>
       <el-divider />
     </template>
-
+  <!-- 表格 -->
     <el-table
       v-loading="loading"
       ref="table"
@@ -39,7 +40,7 @@
       @current-change="handleCurrentChange"
       @row-click="$emit('row-click', $event)"
     >
-    <!-- <el-table-column label="1"></el-table-column> -->
+    <!-- 控制单选 -->
       <el-table-column
         v-if="table.selectionItem"
         align="center"
@@ -51,6 +52,7 @@
           </el-radio>
         </template>
       </el-table-column>
+      <!-- 控制全选反选 -->
       <el-table-column
         v-if="table.selection"
         :selectable="table.selectable"
@@ -58,10 +60,13 @@
         type="selection"
         width="50"
       />
+      <!-- 表格核心 -->
       <template v-for="item in tableFields">
         <slot v-bind="item" :name="`column:${item.fieldKey}`">
+          <!-- fieldName 表头信息 -->
+          <!-- fieldKey  对应表头信息下面的具体商品信息  -->
           <el-table-column
-            :label="item.fieldName"
+            :label="item.fieldName" 
             :prop="item.fieldKey"
             min-width="140"
             show-overflow-tooltip
@@ -73,6 +78,7 @@
           </el-table-column>
         </slot>
       </template>
+      <!-- 控制操作按钮 -->
       <el-table-column
         v-if="table.actions && table.actions.buttons && table.actions.buttons.length"
         :width="(table.actions && table.actions.width) || 100"
@@ -328,12 +334,9 @@ export default {
      * 设置字段
      * @public
      */
-    setFields(fields) {
-      if (fields) {
-        this.innerFields = fields
-      } else if (this.fields) {
-        this.innerFields = this.fields
-      } else if (sessionStorage.headTitString) {
+    setFields(fields) { if (sessionStorage.headTitString) {
+      // console.log(sessionStorage.headTitString);
+      // console.log(JSON.parse(sessionStorage.headTitString));
         this.innerFields = JSON.parse(sessionStorage.headTitString)
       }
     },

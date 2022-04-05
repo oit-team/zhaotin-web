@@ -2,7 +2,7 @@
   <div>
     <div class="main container">
       <!-- <div>商品中心</div> -->
-      <TablePage :table="tablePageOption" />
+      <div class="h-96"> <TablePage v-bind="tablePageOption" auto /></div>
       <!-- 出口 -->
       <router-view />
     </div>
@@ -32,36 +32,47 @@ export default {
         //   // token: JSON.parse(localStorage.getItem('token')),
         //   userId: sessionStorage.getItem('userId'),
         // }),
-        // actions: [
-        //   {
-        //     name: '导出数据',
-        //     type: 'primary',
-        //     click: () => this.$refs.export.open(),
-        //   },
-        // ],
-        data: this.data.resultList,
-        // selectionItem: true,
-        // selection: true,
+        actions: [
+          {
+            name: '导出数据',
+            type: 'primary',
+            click: () => this.$refs.export.open(),
+          },
+        ],
+        table: {
+          data: this.data.resultList,
+        },
         pager: {
           total: this.data.totalCount,
         },
+        // selectionItem: true,
+        // selection: true,
       }
     },
   },
   created() {
-    this.loadData()
+    // this.loadData()
     // console.log(localStorage.getItem('token'))
     // getUser()
   },
   methods: {
-    async loadData() {
-      const res = await getProductList({
+    // async loadData() {
+    //   const res = await getProductList({
+    //     styleNo: '',
+    //     pageNum: '1',
+    //     pageSize: '2',
+    //   })
+    //   //   console.log(res.body)
+    //   this.data = res.body
+    // },
+    loadData() {
+      return getProductList({
         styleNo: '',
         pageNum: '1',
         pageSize: '2',
+      }).then(res => {
+        this.data = res.body
       })
-      //   console.log(res.body)
-      this.data = res.body
     },
   },
 

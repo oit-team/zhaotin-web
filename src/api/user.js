@@ -8,9 +8,10 @@ export function reqLogin(params) {
     cmd: 10008,
   })
 }
-// export function LoginPage(params) {
-//   return post(`${API_SERVICE.SYSTEM}/user/login`, params, {
-//     cmd: 10008,
-//     mod: 'home',
-//   })
-// }
+// 角色管理
+export function reqRole(params) {
+  return post('/system/role/getRoleList', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}

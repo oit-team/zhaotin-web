@@ -13,6 +13,7 @@ import BrandInteManage from '@/views/seeting/components/brandInteManage'
 import Style from '@/views/BaseSeeting/components/style'
 import StyleType from '@/views/BaseSeeting/components/styleType'
 import OtherCategoryList from '@/views/BaseSeeting/components/otherCategoryList'
+import AddRole from '@/views/seeting/components/addRole'
 
 Vue.use(VueRouter)
 
@@ -56,6 +57,10 @@ const routes = [
       {
         path: '/system/brandInteManage',
         component: BrandInteManage,
+      },
+      {
+        path: '/system/addRole',
+        component: AddRole,
       },
     ],
   },

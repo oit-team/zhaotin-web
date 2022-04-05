@@ -2,7 +2,6 @@
   <div>
     <HeaderNav class="mb-4" />
     <div class="main container">
-      系统设置
       <!-- <table-page v-bind="tablePageOption" auto ref="page" /> -->
       <!-- 出口 -->
       <router-view />

@@ -100,11 +100,6 @@ export default {
         brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
       })
       this.list = res.body.resultList
-      // this.list.forEach(item => {
-      //   if (item.menuName === '系统设置') {
-      //     return item.childrenMenu
-      //   }
-      // })
     },
     skip(item) {
       this.$router.push(item.menuUrl)
@@ -114,7 +109,6 @@ export default {
       if (sessionStorage.getItem('headTitString')) {
         this.$router.push(items.menuUrl)
       }
-      // console.log(items)
     },
     quit() {
       localStorage.removeItem('token')
