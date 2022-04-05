@@ -11,7 +11,6 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getProductList } from '@/api/product'
 import { reqRole } from '@/api/user'
 
 export default {
@@ -44,27 +43,32 @@ export default {
         table: {
           data: this.data.resultList,
           actions: {
-            width: 130,
+            width: 180,
             buttons: [
               {
-                tip: ({ row }) => ['发布', '撤回'][row.state],
-                type: 'warning',
-                icon: ({ row }) => ['el-icon-top-right'][row.state] || 'el-icon-bottom-left',
-                click: this.handlePublish,
-              },
-              {
                 tip: '编辑',
-                type: 'primary',
+                type: 'warning',
                 icon: 'el-icon-edit',
-                click: ({ row }) => this.$router.push({
-                  name: 'LiveStreamRoomUpdate',
-                  params: { item: row },
+                click: (scope) => this.$router.push({
+                  // name: 'addRole',
+                  path: '/system/addRole',
+                  query: { item: scope },
                 }),
               },
               {
                 tip: '删除',
-                type: 'danger',
+                type: 'primary',
                 icon: 'el-icon-delete',
+                click: ({ row }) => this.$router.push({
+                  // name: 'LiveStreamRoomUpdate',
+                  path: '/system/addRole',
+                  params: { item: row },
+                }),
+              },
+              {
+                tip: '授权',
+                type: 'danger',
+                icon: 'el-icon-thumb',
                 click: this.delLiveBroadcastRoom,
                 option: {
                   type: 'delete',

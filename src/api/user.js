@@ -15,3 +15,10 @@ export function reqRole(params) {
     cmd: 10008,
   })
 }
+// 新增角色
+export function addRole(params) {
+  return post('/system/role/insertRole', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
