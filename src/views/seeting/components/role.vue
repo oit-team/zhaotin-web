@@ -2,7 +2,7 @@
   <div>
     <div class="main container">
       <!-- <div>商品中心</div> -->
-      <div class="h-96"> <TablePage v-bind="tablePageOption" /></div>
+      <div class="table_height"> <TablePage v-bind="tablePageOption" auto /></div>
       <!-- 出口 -->
       <router-view />
     </div>
@@ -11,7 +11,7 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { reqRole } from '@/api/user'
+import { reqRole, deleteRole } from '@/api/user'
 
 export default {
   name: 'Role',
@@ -28,10 +28,7 @@ export default {
     tablePageOption() {
       return {
         promise: this.loadData,
-        // ({
-        //   // token: JSON.parse(localStorage.getItem('token')),
-        //   userId: sessionStorage.getItem('userId'),
-        // }),
+        // 搜索表单内的按钮
         actions: [
           {
             name: '新增角色',
@@ -50,7 +47,6 @@ export default {
                 type: 'warning',
                 icon: 'el-icon-edit',
                 click: (scope) => this.$router.push({
-                  // name: 'addRole',
                   path: '/system/addRole',
                   query: { item: scope },
                 }),
@@ -59,49 +55,87 @@ export default {
                 tip: '删除',
                 type: 'primary',
                 icon: 'el-icon-delete',
-                click: ({ row }) => this.$router.push({
-                  // name: 'LiveStreamRoomUpdate',
-                  path: '/system/addRole',
-                  params: { item: row },
-                }),
+                click: this.deleteRole,
               },
               {
                 tip: '授权',
                 type: 'danger',
                 icon: 'el-icon-thumb',
-                click: this.delLiveBroadcastRoom,
-                option: {
-                  type: 'delete',
-                  fieldTip: '房间',
-                  field: 'roomName',
-                },
+                click: ({ row }) => this.$router.push({
+                  // path: '/system/addRole',
+                  params: { item: row },
+                }),
               },
             ],
           },
         },
         pager: {
-          total: this.data.totalCount,
+          total: this.data.count,
         },
       }
     },
   },
   created() {
-    this.loadData()
-    // console.log(localStorage.getItem('token'))
-    // getUser()
+    // this.loadData()
   },
   methods: {
-    async loadData() {
+    async loadData(params) {
       const res = await reqRole({
         brandId: '1',
-        pageNum: '1',
-        pageSize: '15',
+        ...params,
       })
-      //   console.log(res.body)
       this.data = res.body
+      // console.log(this.data)
     },
     addRole() {
       this.$router.push('/system/addRole')
+    },
+    // 删除角色
+    deleteRole(item, index) {
+      this.$confirm('确认删除该角色吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        // const _this = this
+        const con = {
+          roleId: item.row.roleId,
+          userId: sessionStorage.userId,
+        }
+        deleteRole(con).then((res) => {
+          // console.log(res)
+          this.loadData()
+          if (res.head.status === 0) {
+            this.tableData.splice(index, 1)
+            if (this.total > 0) {
+              this.total -= 1
+            }
+            if (this.tableData.length === 0 && this.total > 0) {
+              this.pageNum -= 1
+              this.dynamicParam.forEach(el => {
+                if (el.key === 'pageNum') {
+                  el.value = this.pageNum
+                }
+              })
+              this.$refs.child.parentMsgs(this.dynamicParam)
+            }
+            this.$message({
+              type: 'success',
+              message: '删除成功!',
+            })
+          } else {
+            this.$message({
+              message: res.head.msg,
+              type: 'warning',
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除',
+        })
+      })
     },
   },
 
@@ -109,5 +143,7 @@ export default {
 </script>
 
 <style>
-
+.table_height {
+  height: 500px;
+}
 </style>

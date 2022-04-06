@@ -22,3 +22,17 @@ export function addRole(params) {
     cmd: 10008,
   })
 }
+// 编辑用户
+export function setRole(params) {
+  return post('/system//role/updateRoleById', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 删除用户
+export function deleteRole(params) {
+  return post('/system/role/delRoleById', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}

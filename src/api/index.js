@@ -92,6 +92,7 @@ export function post(url, params = {}, config = {}) {
     brandId: userInfoStorage.brandId,
     lid: userInfoStorage.logId,
   }
+  // console.log(userData.userId)
   const formattedParams = {
     head: {
       aid: userData.userId,

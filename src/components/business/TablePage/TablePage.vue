@@ -29,6 +29,10 @@
       <el-divider />
     </template>
   <!-- 表格 -->
+    <!-- handleCurrentChange表格的当前行发生变化 -->
+    <!-- handleSelectionChange表格的选择项发生变化 -->
+    <!-- 以上两个是配合单选复选框使用 -->
+    <!-- row-click当某一行被点击时 -->
     <el-table
       v-loading="loading"
       ref="table"
@@ -146,8 +150,8 @@ export default {
     table: {
       type: Object,
       default: () => ({
-        data: [],
-        actions: [],
+        data: [], // 数据
+        actions: [], // 按钮
         // 开启多选
         selection: false,
         // 开启单选
@@ -267,6 +271,7 @@ export default {
     },
     handleQuery(e) {
       this.queryData = e
+      console.log(e);
       this.loadData()
     },
     handleReset(e) {
@@ -334,7 +339,8 @@ export default {
      * 设置字段
      * @public
      */
-    setFields(fields) { if (sessionStorage.headTitString) {
+    setFields(fields) { 
+      if (sessionStorage.headTitString) {
       // console.log(sessionStorage.headTitString);
       // console.log(JSON.parse(sessionStorage.headTitString));
         this.innerFields = JSON.parse(sessionStorage.headTitString)

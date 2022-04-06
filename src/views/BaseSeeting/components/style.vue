@@ -2,7 +2,9 @@
   <div>
     <div class="main container">
       <!-- <div>商品中心</div> -->
-      <div class="h-96"> <TablePage v-bind="tablePageOption" auto /></div>
+      <div class="h-96">
+        <TablePage v-bind="tablePageOption" auto />
+      </div>
       <!-- 出口 -->
       <router-view />
     </div>

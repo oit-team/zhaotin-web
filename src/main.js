@@ -5,9 +5,9 @@ import router from './router'
 import store from './store'
 import i18n from '@/locale'
 
-import './plugins'
-
 import 'tailwindcss/tailwind.css'
+
+import './plugins'
 
 Vue.config.productionTip = false
 

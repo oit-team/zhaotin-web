@@ -113,6 +113,9 @@ export default {
     quit() {
       localStorage.removeItem('token')
       sessionStorage.removeItem('userinfo')
+      sessionStorage.removeItem('brandId')
+      sessionStorage.removeItem('userName')
+      sessionStorage.removeItem('userId')
       this.$router.push('/login')
     },
   },
