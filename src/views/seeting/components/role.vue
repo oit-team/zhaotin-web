@@ -101,16 +101,17 @@ export default {
         const con = {
           roleId: item.row.roleId,
           userId: sessionStorage.userId,
+          pageNum: index,
         }
         deleteRole(con).then((res) => {
           // console.log(res)
-          this.loadData()
+          // this.loadData()
           if (res.head.status === 0) {
-            this.tableData.splice(index, 1)
+            this.data.resultList.splice(item.$index, 1)
             if (this.total > 0) {
               this.total -= 1
             }
-            if (this.tableData.length === 0 && this.total > 0) {
+            if (this.data.resultList.length === 0 && this.total > 0) {
               this.pageNum -= 1
               this.dynamicParam.forEach(el => {
                 if (el.key === 'pageNum') {

@@ -3,7 +3,24 @@
     <div class="main container">
       <!-- <div>商品中心</div> -->
       <div class="h-96">
-        <TablePage v-bind="tablePageOption" auto />
+        <TablePage v-bind="tablePageOption" auto>
+          <template slot="content:describe" slot-scope="{ row }">
+            <el-tag
+              v-if="row.defaults === DEFAULT_STATE.YES"
+              class="mr-1"
+              size="small"
+              type="primary"
+            >
+              默认
+            </el-tag>
+            <span>{{ row.describe }}</span>
+          </template>
+          <template slot="content:stateName" slot-scope="{ row }">
+            <span
+              :class="['text-red-400', 'text-green-400'][row.state]"
+            >{{ row.stateName }}</span>
+          </template>
+        </TablePage>
       </div>
       <!-- 出口 -->
       <router-view />

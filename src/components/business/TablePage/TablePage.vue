@@ -271,7 +271,6 @@ export default {
     },
     handleQuery(e) {
       this.queryData = e
-      console.log(e);
       this.loadData()
     },
     handleReset(e) {
