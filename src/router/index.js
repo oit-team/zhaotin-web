@@ -14,6 +14,7 @@ import Style from '@/views/BaseSeeting/components/style'
 import StyleType from '@/views/BaseSeeting/components/styleType'
 import OtherCategoryList from '@/views/BaseSeeting/components/otherCategoryList'
 import AddRole from '@/views/seeting/components/addRole'
+import AddGoods from '@/views/BaseSeeting/components/addGoods'
 
 Vue.use(VueRouter)
 
@@ -80,6 +81,10 @@ const routes = [
       {
         path: '/basls/otherCategoryList',
         component: OtherCategoryList,
+      },
+      {
+        path: '/basls/style/addGoods',
+        component: AddGoods,
       },
     ],
   },

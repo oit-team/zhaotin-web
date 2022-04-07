@@ -19,6 +19,8 @@ module.exports = {
         indentation: 2,
         // 允许空源
         'no-empty-source': null,
+        // 允许最大行数
+        'max-lines': ["error", 2000]
       },
     },
   ],

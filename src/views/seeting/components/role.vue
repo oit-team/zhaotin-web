@@ -107,6 +107,7 @@ export default {
           // console.log(res)
           // this.loadData()
           if (res.head.status === 0) {
+            // 删除列表中点击删除的数据，item是被点击行的信息
             this.data.resultList.splice(item.$index, 1)
             if (this.total > 0) {
               this.total -= 1

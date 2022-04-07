@@ -151,7 +151,7 @@ export default {
       type: Object,
       default: () => ({
         data: [], // 数据
-        actions: [], // 按钮
+        actions: [], // 表格按钮
         // 开启多选
         selection: false,
         // 开启单选
