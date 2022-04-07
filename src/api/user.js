@@ -36,3 +36,10 @@ export function deleteRole(params) {
     cmd: 10008,
   })
 }
+// 获取用户列表
+export function getRoleUserList(params) {
+  return post('/system/role/getRoleUserList', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}

@@ -61,9 +61,9 @@ export default {
                 tip: '授权',
                 type: 'danger',
                 icon: 'el-icon-thumb',
-                click: ({ row }) => this.$router.push({
-                  // path: '/system/addRole',
-                  params: { item: row },
+                click: (scope) => this.$router.push({
+                  path: '/system/authUsersByRoleId',
+                  query: { item: scope },
                 }),
               },
             ],
@@ -87,6 +87,7 @@ export default {
       this.data = res.body
       // console.log(this.data)
     },
+    // 新增角色
     addRole() {
       this.$router.push('/system/addRole')
     },

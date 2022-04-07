@@ -15,6 +15,7 @@ import StyleType from '@/views/BaseSeeting/components/styleType'
 import OtherCategoryList from '@/views/BaseSeeting/components/otherCategoryList'
 import AddRole from '@/views/seeting/components/addRole'
 import AddGoods from '@/views/BaseSeeting/components/addGoods'
+import AuthUsersByRoleId from '@/views/seeting/components/authUsersByRoleId'
 
 Vue.use(VueRouter)
 
@@ -62,6 +63,10 @@ const routes = [
       {
         path: '/system/addRole',
         component: AddRole,
+      },
+      {
+        path: '/system/authUsersByRoleId',
+        component: AuthUsersByRoleId,
       },
     ],
   },
