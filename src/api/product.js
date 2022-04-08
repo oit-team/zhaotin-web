@@ -5,7 +5,7 @@ import { post } from './index'
 export function getProductList(params, head) {
   return post('/goods/style/getStyleList', params, head)
 }
-// 获取菜单数据
+// 获取导航菜单数据
 export function getTreeMenuList(params) {
   return post('/system/menu/getTreeMenuList', params, {
     cmd: 10008,

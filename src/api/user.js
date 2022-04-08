@@ -8,7 +8,7 @@ export function reqLogin(params) {
     cmd: 10008,
   })
 }
-// 角色管理
+// 角色列表
 export function reqRole(params) {
   return post('/system/role/getRoleList', params, {
     mod: 'home',
@@ -43,7 +43,7 @@ export function getRoleUserList(params) {
     cmd: 10008,
   })
 }
-// 获取用户列表
+// 获取用户
 export function getRoleUser(params) {
   return post('/system/user/getUsers', params, {
     mod: 'home',

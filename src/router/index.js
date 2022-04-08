@@ -16,6 +16,7 @@ import OtherCategoryList from '@/views/BaseSeeting/components/otherCategoryList'
 import AddRole from '@/views/seeting/components/addRole'
 import AddGoods from '@/views/BaseSeeting/components/addGoods'
 import AuthUsersByRoleId from '@/views/seeting/components/authUsersByRoleId'
+import AddMenu from '@/views/seeting/components/addMenu'
 
 Vue.use(VueRouter)
 
@@ -55,6 +56,10 @@ const routes = [
       {
         path: '/system/menuList',
         component: MenuList,
+      },
+      {
+        path: '/system/menuList/AddMneu',
+        component: AddMenu,
       },
       {
         path: '/system/brandInteManage',

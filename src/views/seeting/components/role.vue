@@ -76,10 +76,10 @@ export default {
     },
   },
   created() {
-    // this.loadData()
   },
   methods: {
     async loadData(params) {
+      // console.log(params)
       const res = await reqRole({
         brandId: '1',
         ...params,
@@ -120,7 +120,7 @@ export default {
                   el.value = this.pageNum
                 }
               })
-              this.$refs.child.parentMsgs(this.dynamicParam)
+              // this.$refs.child.parentMsgs(this.dynamicParam)
             }
             this.$message({
               type: 'success',
