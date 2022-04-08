@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { getRoleUserList } from '@/api/user'
+import { getRoleUserList, addUserAndRole } from '@/api/user'
 
 export default {
   name: 'AuthUsersByRoleId',
@@ -67,8 +67,6 @@ export default {
         roleId: _this.roleId, // 角色IDquerystring
         brandId: sessionStorage.brandId, // 品牌IDquerystring
       }
-      //   const jsonParam = _this.GLOBAL.g_paramJson(con)
-      // console.log(con)
       getRoleUserList(con).then((res) => {
         // console.log("获取用户列表==========",res.data.body);
         if (res.head.status === 0) {
@@ -81,7 +79,7 @@ export default {
             type: 'warning',
           })
         }
-      }).catch(err => {
+      }).catch(() => {
         // console.log(err)
       })
     },
@@ -117,8 +115,8 @@ export default {
         roleIds: this.roleId, // 角色ID字符串
         operateId, // 0 新增  1 删除
       }
-      const jsonParam = _this.GLOBAL.g_paramJson(con)
-      _this.$axios.post(`${_this.GLOBAL.system_manager_server}/user/addUserAndRole`, jsonParam).then((res) => {
+      //   const jsonParam = _this.GLOBAL.g_paramJson(con)
+      addUserAndRole(con).then((res) => {
         // console.log("批量给用户进行角色授权===",res.data.body);
         if (res.data.head.status === 0) {
           _this.$message({
@@ -131,7 +129,7 @@ export default {
             type: 'warning',
           })
         }
-      }).catch(err => {
+      }).catch(() => {
         // console.log(err)
       })
     },

@@ -43,3 +43,17 @@ export function getRoleUserList(params) {
     cmd: 10008,
   })
 }
+// 获取用户列表
+export function getRoleUser(params) {
+  return post('/system/user/getUsers', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 用户授权
+export function addUserAndRole(params) {
+  return post('/system/user/addUserAndRole', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}

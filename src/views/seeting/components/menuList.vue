@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 菜单管理 -->
     <div class="main container">
       <!-- <div>商品中心</div> -->
       <div class="h-96"> <TablePage v-bind="tablePageOption" /></div>
@@ -11,7 +12,7 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getProductList } from '@/api/product'
+import { getRoleUser } from '@/api/user'
 
 export default {
   name: 'Role',
@@ -49,13 +50,13 @@ export default {
     },
   },
   created() {
-    this.loadData()
+    // this.loadData()
     // console.log(localStorage.getItem('token'))
     // getUser()
   },
   methods: {
     async loadData() {
-      const res = await getProductList({
+      const res = await getRoleUser({
         styleNo: '',
         pageNum: '1',
         pageSize: '2',
