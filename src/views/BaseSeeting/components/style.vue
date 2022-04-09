@@ -81,9 +81,9 @@ export default {
             width: 180,
             buttons: [
               {
-                tip: '编辑',
-                type: 'warning',
-                icon: 'el-icon-edit',
+                tip: '查看商品详情',
+                type: 'primary',
+                icon: 'el-icon-view',
                 click: (scope) => this.$router.push({
                   path: '/system/addRole',
                   query: { item: scope },
@@ -96,9 +96,18 @@ export default {
                 click: this.deleteRole,
               },
               {
-                tip: '授权',
+                tip: '商品上架',
                 type: 'danger',
-                icon: 'el-icon-thumb',
+                icon: 'el-icon-top',
+                click: ({ row }) => this.$router.push({
+                  // path: '/system/addRole',
+                  params: { item: row },
+                }),
+              },
+              {
+                tip: '库存分布',
+                // type: 'danger',
+                icon: 'el-icon-s-data',
                 click: ({ row }) => this.$router.push({
                   // path: '/system/addRole',
                   params: { item: row },

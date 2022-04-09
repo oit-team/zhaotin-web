@@ -1,6 +1,6 @@
 <template>
   <div class="ml-56" id="addRole">
-    <el-page-header @back="goBack" :content="editFlag?'新增角色':'编辑角色'" />
+    <el-page-header @back="$router.back()" :content="editFlag?'新增角色':'编辑角色'" />
     <el-divider />
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
       <el-form-item label="角色名称" prop="roleName">
@@ -93,9 +93,6 @@ export default {
     }
   },
   methods: {
-    goBack() {
-      this.$router.back()
-    },
     // 获取菜单树
     getHomeMenuList() {
       const con = {

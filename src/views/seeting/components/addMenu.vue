@@ -2,7 +2,7 @@
   <div class="ml-56" id="addMenu">
     <el-backtop target="#addMenu" :visibility-height="200" :right="70" :bottom="100" />
 
-    <el-page-header @back="goBack" :content="editFlag?'编辑菜单':'新增菜单'" />
+    <el-page-header @back="$router.back()" :content="editFlag?'编辑菜单':'新增菜单'" />
     <el-divider />
     <el-form
       style="margin-top:20px;"
@@ -171,12 +171,6 @@ export default {
     this.getAllMenuList()
   },
   methods: {
-    goBack() {
-      // // console.log('go back');
-      // this.$router.go(-1)
-      // // console.log('sessionStorage.headTitString',sessionStorage.headTitString)
-      this.$router.back()
-    },
     getAllMenuList() {
       const _this = this
       const con = {
@@ -243,16 +237,12 @@ export default {
               userId: sessionStorage.userId,
               ...this.ruleForm,
             }
-            // const jsonParam =this.GLOBAL.g_paramJson(con)
             updateMenuById(cons).then((res) => {
-              // console.log("addMenu==========",res.data.body);
               if (res.head.status === 0) {
-                // console.log("编辑菜单成功===");
                 this.$message({
                   message: '编辑菜单成功',
                   type: 'success',
                 })
-                // this.$bus.$emit('detailShow',this.ruleForm) // 事件分发
                 this.$router.back()
               } else {
                 this.$message({
@@ -261,20 +251,16 @@ export default {
                 })
               }
             }).catch(err => {
-              // console.log(err)
             })
           } else {
             // 新增菜单
             insertMenu(con).then((res) => {
-              // console.log("addMenu==========",res.data.body);
               if (res.head.status === 0) {
-                // console.log("新增菜单成功===");
                 this.$message({
                   message: '新增菜单成功',
                   type: 'success',
                 })
                 this.$router.back()
-                // this.$parent.getAllMenuList();
               } else {
                 this.$message({
                   message: res.head.msg,
@@ -282,11 +268,9 @@ export default {
                 })
               }
             }).catch(err => {
-              // console.log(err)
             })
           }
         } else {
-          // console.log('error submit!!');
           return false
         }
       })
