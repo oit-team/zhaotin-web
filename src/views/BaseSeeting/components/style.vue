@@ -2,7 +2,7 @@
   <div>
     <div class="main container">
       <!-- <div>商品中心</div> -->
-      <div class="table_height">
+      <div class="table-h">
         <TablePage v-bind="tablePageOption" auto ref="page">
           <!-- <el-drawer :visible.sync="drawerVisible" size="40%"> -->
           <template slot="content:resUrl" slot-scope="{ row }">
@@ -136,6 +136,7 @@ export default {
         brandId: '1',
         ...params,
       })
+      // console.log(res)
       this.data = res.body
     },
   },
@@ -144,7 +145,7 @@ export default {
 </script>
 
 <style>
-.table_height {
-  height: 500px;
+.table-h {
+  height: 600px;
 }
 </style>

@@ -5,3 +5,4 @@ node_modules
 !src/**/*.vue
 src/components/business
 src/views/common
+src/views/BaseSeeting/components/addGoods

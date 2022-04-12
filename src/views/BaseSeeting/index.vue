@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderNav class="mb-4" />
+    <HeaderNav class="w-screen mb-4" />
     <div class="main container">
       <!-- <div>基础配置</div> -->
       <!-- 出口 -->

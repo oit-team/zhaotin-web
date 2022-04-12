@@ -147,7 +147,8 @@ export default {
 
 <style lang="less" scoped>
 #authUsersByRoleId{
-  height: 78vh;
+  height: 80vh;
+  width: 80vw;
   .roleDesc{
     line-height: 32px;
     text-align: left;

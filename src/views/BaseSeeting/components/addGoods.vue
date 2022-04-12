@@ -1,304 +1,412 @@
 <template>
   <div id="addGoods" class="pageCommonStyle">
-    <el-page-header :content="title" @back="goBack" />
-    <el-divider />
+    <div class="flex justify-between items-center">
+      <el-page-header :content="title" @back="goBack" />
+      <div class="">
+        <el-button v-if="operateFlag!=&quot;view&quot;" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm')">保存</el-button>
+        <el-button v-if="operateFlag!=&quot;view&quot;" size="small" icon="el-icon-position" type="success" @click="releaseGood('ruleForm')">发布</el-button>
+      </div>
+    </div>
+
+    <el-divider class="divider" />
 
     <el-form ref="ruleForm" class="demo-ruleForm" :model="ruleForm" :rules="rules" label-width="98px">
       <div class="goodsFormBox">
-        <!-- <div class="baseInfoBox"> -->
-        <!-- accordion  每次只展开一个 -->
-        <!-- <el-collapse v-model="activeName"> -->
         <!-- 菜单栏 -->
-        <el-tabs class="mr-24" v-model="activeNum" type="card" @tab-click="handleClick">
-          <el-tab-pane label="基础信息" name="first">
+        <el-tabs class="" v-model="activeNum">
+          <!-- 基础信息面板 -->
+          <el-tab-pane class="msgTab" label="基础信息" name="message">
             <!-- <el-collapse-item title="" name="1"> -->
-            <el-form-item label="商品名称" prop="styleName">
-              <el-input v-model.trim="ruleForm.styleName" style="width:96%;" maxlength="32" placeholder="请输入商品名称" />
-            </el-form-item>
-            <el-form-item label="商品编号" prop="styleNo">
-              <el-input v-model.trim="ruleForm.styleNo" style="width:96%;" maxlength="32" placeholder="请输入商品编号" />
-            </el-form-item>
-
-            <el-form-item label="商品颜色" prop="styleColor">
-              <el-input v-model.trim="ruleForm.styleColor" style="width:96%;" maxlength="32" placeholder="请输入商品颜色" />
-            </el-form-item>
-            <el-form-item label="商品价格" prop="stylePrice">
-              <el-input v-model.trim="ruleForm.stylePrice" style="width:96%;" maxlength="32" placeholder="请输入商品价格" />
-            </el-form-item>
-            <el-form-item label="商品类别" prop="styleCategory">
-              <el-select v-model="ruleForm.styleCategory" style="width:96%;" placeholder="请选择商品类别" @change="changeCate">
-                <el-option
-                  v-for="item in cateOptions"
-                  :key="item.dicttimeDisplayName"
-                  :label="item.dicttimeDisplayName"
-                  :value="item.dicttimeDisplayName"
-                />
-              </el-select>
-              <!-- <el-input v-model="ruleForm.styleCategory" style="width:96%;"
-                 maxlength="32" placeholder="请输入商品类别"></el-input> -->
-            </el-form-item>
-            <el-form-item label="商品廓形" prop="styleFlowerPattern">
-              <el-input v-model.trim="ruleForm.styleFlowerPattern" style="width:96%;" maxlength="32" placeholder="请输入商品廓形" />
-            </el-form-item>
-            <el-form-item label="商品材质" prop="styleFabric">
-              <el-input v-model.trim="ruleForm.styleFabric" style="width:96%;" maxlength="64" placeholder="请输入商品材质" />
-            </el-form-item>
-            <!-- </el-collapse-item> -->
-          </el-tab-pane>
-          <el-tab-pane label="配置信息" name="second">
-            <!-- <el-collapse-item title="配置信息" name="2"> -->
-            <!-- checkStrictly: true,  filterable -->
-            <el-form-item label="波段/系列" prop="idList">
-              <el-cascader
-                v-model="ruleForm.idList"
-                ref="cascader"
-                style="width:96%;"
-                filterable
-                :options="bandOptions"
-                :props="{ children:'children',value:'id',label:'name'}"
-                @change="handleChange"
-              />
-            </el-form-item>
-
-            <!-- recommendationLevel  '0' 非重点  ‘1’ 重点款 -->
-            <el-form-item label="是否重点款" prop="recommendationLevel">
-              <!-- <el-input
+            <div class="flex">
+              <div class="left left-box">
+                <el-form-item label="商品名称" prop="styleName">
+                  <el-input v-model.trim="ruleForm.styleName" style="width:76%;" maxlength="32" placeholder="请输入商品名称" />
+                </el-form-item>
+                <el-form-item label="商品编号" prop="styleNo">
+                  <el-input v-model.trim="ruleForm.styleNo" style="width:76%;" maxlength="32" placeholder="请输入商品编号" />
+                </el-form-item>
+                <el-form-item label="商品类别" prop="styleCategory">
+                  <el-select v-model="ruleForm.styleCategory" style="width:76%;" placeholder="请选择商品类别" @change="changeCate">
+                    <el-option
+                      v-for="item in cateOptions"
+                      :key="item.styleType"
+                      :label="item.DICTITEM_DISPLAY_NAME"
+                      :value="item.DICTITEM_CODE"
+                    />
+                  </el-select>
+                  <!-- <el-input
+                    v-model="ruleForm.styleCategory"
+                    style="width:76%;"
+                    maxlength="32"
+                    placeholder="请输入商品类别"
+                  /> -->
+                </el-form-item>
+                <el-form-item label="商品廓形" prop="styleFlowerPattern">
+                  <el-input v-model.trim="ruleForm.styleFlowerPattern" style="width:76%;" maxlength="32" placeholder="请输入商品廓形" />
+                </el-form-item>
+                <el-form-item label="商品材质" prop="styleFabric">
+                  <el-input v-model.trim="ruleForm.styleFabric" style="width:76%;" maxlength="64" placeholder="请输入商品材质" />
+                </el-form-item>
+                <!-- 基础配置折叠面板 -->
+                <el-collapse v-model="ruleForm.seasonId">
+                  <el-collapse-item title="基础配置" name="1">
+                    <el-form-item label="所属季节" prop="seasonId">
+                      <el-select v-model="ruleForm.seasonId" style="width:76%;" placeholder="请选择所属季节" @change="changeCate">
+                        <el-option
+                          v-for="item in cateOptions"
+                          :key="item.dicttimeDisplayName"
+                          :label="item.dicttimeDisplayName"
+                          :value="item.dicttimeDisplayName"
+                        />
+                      </el-select>
+                    </el-form-item>
+                    <!-- recommendationLevel  '0' 非重点  ‘1’ 重点款 -->
+                    <el-form-item label="是否重点款" prop="recommendationLevel">
+                      <!-- <el-input
                 v-model="ruleForm.recommendationLevel"
-                style="width:96%;"
+                style="width:76%;"
                 maxlength="10"
                 placeholder="需要确认字段的详细代表含义"
               /> -->
-              <el-select v-model="ruleForm.recommendationLevel" style="width:96%;" placeholder="请选择是否标记为重点款">
-                <el-option label="否" value="0" />
-                <el-option label="是" value="1" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="适用场合" prop="styleInfo">
-              <el-input v-model.trim="ruleForm.styleInfo" style="width:96%;" placeholder="请输入适用场合" />
-            </el-form-item>
-            <el-form-item label="商品标签">
-              <el-input v-model.trim="addLabel" style="width:96%;" maxlength="32" placeholder="请添加商品标签" />
-              <!-- <el-button @click="addGoodLabel(addLabel)">新增</el-button> -->
-            </el-form-item>
-            <div v-if="labelList.length>0" class="labelList">
-              <div v-for="(item,i) in labelList" :key="i" class="labelItem">
-                <span>{{ item }}</span>
-                <i style="font-size:16px;margin-left:10px;" class="el-icon-circle-close" @click="delLabel(i)"></i>
+                      <el-select v-model="ruleForm.recommendationLevel" style="width:76%;" placeholder="请选择是否标记为重点款">
+                        <el-option label="否" value="0" />
+                        <el-option label="是" value="1" />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="适用场合" prop="styleInfo">
+                      <el-input v-model.trim="ruleForm.styleInfo" style="width:76%;" placeholder="请输入适用场合" />
+                    </el-form-item>
+                    <el-form-item label="商品标签">
+                      <el-input v-model.trim="addLabel" style="width:56%;" maxlength="32" placeholder="请添加商品标签" />
+                      <el-button class="addGoods-addBtn" @click="addGoodLabel(addLabel)">新增</el-button>
+                    </el-form-item>
+                    <div v-if="labelList.length>0" class="labelList">
+                      <div v-for="(item,i) in labelList" :key="i" class="labelItem">
+                        <span>{{ item }}</span>
+                        <i style="font-size:16px;margin-left:10px;" class="el-icon-circle-close" @click="delLabel(i)"></i>
+                      </div>
+                    </div>
+                  </el-collapse-item>
+                </el-collapse>
+              </div>
+              <div class="fileInfoBox right ml-8">
+                <!-- 商品视频 -->
+                <!-- https://www.cnblogs.com/1312mn/p/11233395.html  上传视频参考连接，本功能需要再完善 -->
+                <!-- :on-progress="uploadVideoProcess" 自定义上传的时候貌似不生效 -->
+                <!-- <el-form-item label="商品视频">
+                  <el-upload
+                    class="el-upload-video"
+                    action="#"
+                    accept=".mp4,.mov"
+                    :before-upload="beforeUploadVideo"
+                    :http-request="requestUploadVideo"
+                    :show-file-list="false"
+                  >
+                    <video
+                      v-if="videoSrc"
+                      style=""
+                      class="avatar video-avatar"
+                      :src="videoSrc"
+                      controls="controls"
+                    >
+                      <track
+                        default
+                        kind="captions"
+                        srclang="en"
+                        src="/video/php/friday.vtt"
+                      />
+                      抱歉，您的浏览器不支持嵌入视频！
+                    </video>
+                    <el-progress
+                      v-if="!videoSrc&&uploadVideoFlag"
+                      type="circle"
+                      :percentage="perValue"
+                    />
+                    <div v-if="!videoSrc&&!uploadVideoFlag" class="addVideoIcon"><i class="el-icon-plus" style="font-size:28px;color:#888;"></i></div>
+                  </el-upload>
+                  <div v-if="videoSrc"> <el-button @click="delVideo">删除视频</el-button> </div>
+                </el-form-item>
+                <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
+
+                <el-form-item v-if="videoSrc" label="视频贴片">
+                  <el-upload
+                    class="avatar-uploader"
+                    :show-file-list="false"
+                    action="#"
+                    accept=".jpg,.png"
+                    :before-upload="beforeUploadImg"
+                    :http-request="requestUploadPatch"
+                    :on-preview="handlePictureCardPreview"
+                    :on-remove="handleRemove"
+                  >
+                    <img v-if="imageUrl" alt="" class="patchImage" :src="imageUrl" />
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                  </el-upload>
+                  <div v-if="imageUrl"> <el-button @click="delVideoPatch">删除视频贴片</el-button> </div>
+                </el-form-item> -->
+                <div class="mt-12 ml-12">
+                  <el-collapse label="保养及卖点" name="sale">
+                    <el-collapse-item title="保养及卖点" name="sale">
+                      <el-form-item label="洗涤保养">
+                        <quill
+                          style="width:96%;"
+
+                          :value="ruleForm.washMaintenance"
+                          :editor-setting="editorSetting"
+                          :height="&quot;150px&quot;"
+                          @changeVal="changeWashMaintenance"
+                        />
+                      </el-form-item>
+                      <el-form-item label="面料卖点">
+                        <quill
+                          style="width:96%;"
+                          :value="ruleForm.sellingPointFabric"
+                          :editor-setting="editorSetting"
+                          :height="&quot;150px&quot;"
+                          @changeVal="changeSellingPointFabric"
+                        />
+                      </el-form-item>
+                      <el-form-item label="设计卖点">
+                        <quill
+                          style="width:96%;"
+                          :value="ruleForm.designSellingPoint"
+                          :editor-setting="editorSetting"
+                          :height="&quot;150px&quot;"
+                          @changeVal="changeDesignSellingPoint"
+                        />
+                      </el-form-item>
+                      <el-form-item label="穿着卖点">
+                        <quill
+                          style="width:96%;"
+                          :value="ruleForm.wearSellingPoint"
+                          :editor-setting="editorSetting"
+                          :height="&quot;150px&quot;"
+                          @changeVal="changeWearSellingPoint"
+                        />
+                      </el-form-item>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
               </div>
             </div>
-            <!-- </el-collapse-item> -->
+            <el-divider />
+            <!-- 商品尺码 -->
+            <div>
+              <!-- 商品尺码 -->
+              <div v-if="true" class="goodsSizeBox">
+                <div v-if="sizeInfo">
+                  <div style="margin:20px 0px;">
+                    <span style="margin-right:20px;">商品尺码</span>
+                    <el-button v-if="operateFlag!=&quot;view&quot;&&editSizeFlag" size="small" @click="editSizeConfirm"><i class="el-icon-check"></i>确认</el-button>
+                    <el-button v-if="operateFlag!=&quot;view&quot;&&!editSizeFlag" size="small" @click="editSize"><i class="el-icon-edit"></i>编辑</el-button>
+                  </div>
+                  <el-table
+                    style="width: 100%"
+                    border
+                    :data="sizeInfo.resultMap"
+                    @current-change="changeRow"
+                  >
+                    <el-table-column label="尺码\部位">
+                      <template slot-scope="scope">
+                        <span>
+                          {{ scope.row.SIZE_NAME }}
+                        </span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      v-for="(item, index) in sizeInfo.sizeInfoVO.upTitle"
+                      :key="index"
+                      :label="item.value"
+                    >
+                      <!-- <template slot-scope="scope">
+              <input v-if="1" v-model="scope.row[item.key]" type="text" maxlength="8" />
+              <span v-else>{{ scope.row[item.key] }}</span>
+            </template> -->
+                    </el-table-column>
+                  </el-table>
+                  <div style="height:30px;"></div>
+                </div>
+                <div v-else>
+                  <div style="margin-right:20px;">商品尺码</div>
+                  <p class="noSizeInfo">未发现<span style="color:#e60012;">({{ ruleForm.styleSize }})</span>相关尺码配置，请前往信息预设中设置。</p>
+                </div>
+              </div>
+            </div>
           </el-tab-pane>
-          <el-tab-pane label="保养及卖点" name="third">
-            <!-- <el-collapse-item title="" name="3"> -->
-            <el-form-item label="洗涤保养">
-              <el-input
-                type="textarea"
-                :rows="5"
-                v-model.trim="ruleForm.washMaintenance"
-                style="width:96%;"
-                placeholder="请输入内容"
-              />
-              <!-- class='ql-editor' -->
-              <!-- <quill
-                  style="width:96%;"
+          <!-- 商品颜色面板 -->
+          <el-tab-pane label="颜色" name="color">
+            <div>
+              <!-- 商品颜色 -->
+              <div>
+                <!-- <page-container column>
+                  <page-header content="上传文件" /> -->
+                <div class="flex overflow-hidden flex-1 mb-2">
+                  <div class="inline-flex flex-col h-full">
+                    <vc-upload v-bind="uploadOption" ref="upload">
+                      <i class="el-icon-upload"></i>
+                      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                      <div class="el-upload__tip">只能上传图片或视频文件，单次提交最多{{ uploadOption.limit }}个，且不得超过{{ maxMB }}MB</div>
+                    </vc-upload>
+                    <ul class="overflow-y-auto flex-1 mb-2 space-y-1 upload-list">
+                      <li
+                        v-for="(item, index) of uploadList"
+                        :key="item.uid"
+                        class="px-2 py-1 rounded-lg border border-gray-300 border-solid cursor-pointer"
+                        :class="{'bg-blue-50': item === selectedItem}"
+                        @click="preview(item)"
+                      >
+                        <div class="flex items-center">
+                          <span class="mr-2">
+                            <i v-if="/image/.test(item.raw.type)" class="text-xl el-icon-picture-outline"></i>
+                            <i v-if="/video/.test(item.raw.type)" class="text-xl el-icon-video-camera"></i>
+                          </span>
+                          <span class="flex-1 mr-2 truncate">{{ item.name }}</span>
+                          <span v-if="item.percentage > 0 && item.percentage < 100">{{ Math.floor(item.percentage) }}%</span>
+                          <span v-if="item.percentage >= 100" class="text-green-500">完成</span>
+                          <i
+                            class="ml-1 w-4 h-4 text-xl text-red-400 rounded-lg el-icon-close hover:bg-gray-100 flex-center"
+                            @click.stop="removeFile(index, item)"
+                          ></i>
+                        </div>
+                        <el-progress :show-text="false" :stroke-width="2" :percentage="item.percentage" />
+                      </li>
+                    </ul>
+                    <el-button type="primary" plain @click="submit()">提交</el-button>
+                  </div>
+                  <div class="flex overflow-hidden flex-1 ml-2 rounded-lg border flex-center">
+                    <template v-if="selectedItem">
+                      <el-image
+                        v-if="/image/.test(selectedItem.raw.type)"
+                        class="w-full h-full"
+                        :src="selectedItem.url"
+                        fit="scale-down"
+                      />
+                      <video
+                        v-if="/video/.test(selectedItem.raw.type)"
+                        class="w-full h-full bg-white"
+                        :src="selectedItem.url"
+                        controls
+                      >
+                        <track
+                          default
+                          kind="captions"
+                          srclang="en"
+                          src="/video/php/friday.vtt"
+                        />
+                        抱歉，您的浏览器不支持嵌入视频！</video>
+                    </template>
+                    <el-empty v-else description="未选中文件" />
+                  </div>
+                </div>
+                <!-- </page-container> -->
+              </div>
+              <div class="my-4">
+                <el-button @click="drawer = true" type="primary" style="margin-left: 16px;">
+                  点击选择颜色
+                </el-button>
+                <el-drawer
+                  :visible.sync="drawer"
+                  class="text-center"
+                >
+                  <el-form-item label="商品颜色" prop="styleColor">
+                    <el-input v-model.trim="ruleForm.styleColor" style="width:100%;" maxlength="32" placeholder="请输入商品颜色" />
+                  </el-form-item>
+                  <div class="">
+                    <el-button size="small" @click="close('areaForm')">取 消</el-button>
+                    <el-button size="small" type="primary" @click="conAddArea('areaForm')">确 认</el-button>
+                  </div>
+                </el-drawer>
+              </div>
+              <!-- 商品图片 -->
+              <!-- <el-form-item label="商品图片"> -->
+              <!--http-request 覆盖默认的上传行为，实现自定义上传
+                    on-exceed 文件超出限制个数时的钩子
+                    on-preview 点击文件列表中已上传的文件时的钩子
+                    on-remove 文件列表移除文件时的钩子  -->
+              <!-- <el-upload
+                  action="#"
+                  multiple
+                  :limit="6"
+                  :file-list="fileList"
+                  list-type="picture-card"
+                  accept=".jpg,.png"
+                  :before-upload="beforeUploadImg"
+                  :http-request="requestUploadImg"
+                  :on-exceed="handleExceed"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                >
+                  <i class="el-icon-plus"></i>
+                </el-upload>
+              </el-form-item>
+              <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p> -->
 
-                  :value="ruleForm.washMaintenance"
-                  :editor-setting="editorSetting"
-                  :height="&quot;150px&quot;"
-                  @changeVal="changeWashMaintenance"
-                /> -->
+              <!-- <el-form-item label="商品细节">
+                  <el-upload v-bind="uploadOption" ref="uploadImage">
+                    <i class="el-icon-plus"></i>
+                  </el-upload>
+                </el-form-item>
+                <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
+              </el-form-item> -->
+            </div>
+          </el-tab-pane>
+          <!-- 商品价格面板 -->
+          <el-tab-pane class="" label="价格" name="price">
+            <el-form-item label="成本价格" prop="costPrice">
+              <el-input v-model.trim="ruleForm.costPrice" style="width:100%;" maxlength="32" placeholder="请输入成本价格" />
             </el-form-item>
-            <el-form-item label="面料卖点">
-              <el-input
-                type="textarea"
-                :rows="5"
-                v-model.trim="ruleForm.sellingPointFabric"
-                style="width:96%;"
-                placeholder="请输入内容"
-              />
-              <!-- <quill
-                  style="width:96%;"
-                  :value="ruleForm.sellingPointFabric"
-                  :editor-setting="editorSetting"
-                  :height="&quot;150px&quot;"
-                  @changeVal="changeSellingPointFabric"
-                /> -->
+            <el-form-item label="吊牌价格" prop="tagPrice">
+              <el-input v-model.trim="ruleForm.tagPrice" style="width:100%;" maxlength="32" placeholder="请输入品牌价格" />
             </el-form-item>
-            <el-form-item label="设计卖点">
-              <el-input
-                type="textarea"
-                :rows="5"
-                v-model.trim="ruleForm.designSellingPoint"
-                style="width:96%;"
-                placeholder="请输入内容"
-              />
-              <!-- <quill
-                  style="width:96%;"
-                  :value="ruleForm.designSellingPoint"
-                  :editor-setting="editorSetting"
-                  :height="&quot;150px&quot;"
-                  @changeVal="changeDesignSellingPoint"
-                /> -->
+            <el-form-item label="零售价格" prop="retailPrice">
+              <el-input v-model.trim="ruleForm.retailPrice" style="width:100%;" maxlength="32" placeholder="请输入零售价格" />
             </el-form-item>
-            <el-form-item label="穿着卖点">
-              <el-input
-                type="textarea"
-                :rows="5"
-                v-model.trim="ruleForm.wearSellingPoint"
-                style="width:96%;"
-                placeholder="请输入内容"
-              />
-              <!-- <quill
-                  style="width:96%;"
-                  :value="ruleForm.wearSellingPoint"
-                  :editor-setting="editorSetting"
-                  :height="&quot;150px&quot;"
-                  @changeVal="changeWearSellingPoint"
-                /> -->
-            </el-form-item>
-            <!-- </el-collapse-item> -->
+            <!-- 批发价格面板 -->
+            <div class="">
+              <el-collapse label="批发价格" v-model="ruleForm.tradePrice" :accordion="true" name="tradePrice">
+                <!-- <el-collapse-item title="批发价格" name="tradePrice">
+                  <div class="flex">
+                    <el-form-item class="flex" label="" prop="costPrice">
+                      <el-input v-model.trim="ruleForm.costPrice" style="width:60%;" maxlength="32" placeholder="请输入起订数" />
+                      <el-input v-model.trim="ruleForm.costPrice" style="width:60%;" maxlength="32" placeholder="请输入截止数" />
+                    </el-form-item>
+                    <el-form-item label="" prop="costPrice">
+
+                    </el-form-item>
+                  </div>
+                <el-form-item label="" prop="tagPrice">
+                  <el-input v-model.trim="ruleForm.tagPrice" style="width:50%;" maxlength="32" placeholder="请输入品牌价格" />
+                </el-form-item>
+                <el-form-item label="" prop="retailPrice">
+                  <el-input v-model.trim="ruleForm.retailPrice" style="width:50%;" maxlength="32" placeholder="请输入零售价格" />
+                </el-form-item>
+                </el-collapse-item> -->
+                <el-collapse-item title="批发价格">
+                  <div><el-input v-model.trim="ruleForm.tradePrice" style="width:80%;" maxlength="32" placeholder="请输入起订数" /></div>
+                  <!-- <div><input type="text" /></div> -->
+                </el-collapse-item>
+              </el-collapse>
+            </div>
           </el-tab-pane>
         </el-tabs>
-        <!-- </el-collapse> -->
-        <!-- </div> -->
-        <div class="fileInfoBox">
-          <el-form-item label="商品图片">
-            <el-upload
-              action="#"
-              multiple
-              :limit="6"
-              :file-list="fileList"
-              list-type="picture-card"
-              accept=".jpg,.png"
-              :before-upload="beforeUploadImg"
-              :http-request="requestUploadImg"
-              :on-exceed="handleExceed"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
-            >
-              <i class="el-icon-plus"></i>
-            </el-upload>
-          </el-form-item>
-          <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
-
-          <el-form-item label="商品细节">
-            <!-- <vc-upload v-bind="uploadOption" ref="uploadImage">
-              <i class="el-icon-plus"></i>
-            </vc-upload> -->
-          </el-form-item>
-          <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
-
-          <!-- https://www.cnblogs.com/1312mn/p/11233395.html  上传视频参考连接，本功能需要再完善 -->
-          <!-- :on-progress="uploadVideoProcess" 自定义上传的时候貌似不生效 -->
-          <el-form-item label="商品视频">
-            <el-upload
-              class="el-upload-video"
-              action="#"
-              accept=".mp4,.mov"
-              :before-upload="beforeUploadVideo"
-              :http-request="requestUploadVideo"
-              :show-file-list="false"
-            >
-              <!-- <video
-                v-if="videoSrc"
-                style=""
-                class="avatar video-avatar"
-                :src="videoSrc"
-                controls="controls"
-              >
-                您的浏览器不支持视频播放
-              </video> -->
-              <el-progress
-                v-if="!videoSrc&&uploadVideoFlag"
-                type="circle"
-                :percentage="perValue"
-              />
-              <div v-if="!videoSrc&&!uploadVideoFlag" class="addVideoIcon"><i class="el-icon-plus" style="font-size:28px;color:#888;"></i></div>
-            </el-upload>
-            <div v-if="videoSrc"> <el-button @click="delVideo">删除视频</el-button> </div>
-          </el-form-item>
-          <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
-
-          <el-form-item v-if="videoSrc" label="视频贴片">
-            <el-upload
-              class="avatar-uploader"
-              :show-file-list="false"
-              action="#"
-              accept=".jpg,.png"
-              :before-upload="beforeUploadImg"
-              :http-request="requestUploadPatch"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
-            >
-              <!-- <img v-if="imageUrl" class="patchImage" :src="imageUrl" /> -->
-              <!-- <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
-            </el-upload>
-            <div v-if="imageUrl"> <el-button @click="delVideoPatch">删除视频贴片</el-button> </div>
-          </el-form-item>
-        </div>
       </div>
     </el-form>
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt="" />
     </el-dialog>
-    <!-- 以上为商品基础信息 -->
-
-    <el-divider v-if="goodSizeFlag" />
-
-    <div v-if="goodSizeFlag" class="goodsSizeBox">
-      <div v-if="sizeInfo">
-        <div style="margin:20px 0px;">
-          <span style="margin-right:20px;">商品尺码</span>
-          <el-button v-if="operateFlag!=&quot;view&quot;&&editSizeFlag" size="small" @click="editSizeConfirm"><i class="el-icon-check"></i>确认</el-button>
-          <el-button v-if="operateFlag!=&quot;view&quot;&&!editSizeFlag" size="small" @click="editSize"><i class="el-icon-edit"></i>编辑</el-button>
-        </div>
-        <el-table
-          style="width: 100%"
-          border
-          :data="sizeInfo.resultMap"
-          @current-change="changeRow"
-        >
-          <el-table-column label="尺码\部位">
-            <template slot-scope="scope">
-              <span>
-                {{ scope.row.SIZE_NAME }}
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            v-for="(item, index) in sizeInfo.sizeInfoVO.upTitle"
-            :key="index"
-            :label="item.value"
-          >
-            <!-- <template slot-scope="scope">
-              <input v-if="1" v-model="scope.row[item.key]" type="text" maxlength="8" />
-              <span v-else>{{ scope.row[item.key] }}</span>
-            </template> -->
-          </el-table-column>
-        </el-table>
-        <div style="height:30px;"></div>
-      </div>
-      <div v-else>
-        <div style="margin-right:20px;">商品尺码</div>
-        <p class="noSizeInfo">未发现<span style="color:#e60012;">({{ ruleForm.styleCategory }})</span>相关尺码配置，请前往信息预设中设置。</p>
-      </div>
-    </div>
-
-    <div class="saveBtnBox">
-      <el-button v-if="operateFlag!=&quot;view&quot;" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm')">保存</el-button>
-      <el-button v-if="operateFlag!=&quot;view&quot;" size="small" icon="el-icon-position" type="primary" @click="releaseGood('ruleForm')">发布</el-button>
-    </div>
   </div>
 </template>
 
 <script>
-// import quill from '@/views/common/quillEditor'
-// import { addQuillTitle } from '@/assets/js/js/quill-title'
-import { getGoodsSizeInfo, getGoofdstyle } from '@/api/goods'
+import quill from '@/views/common/quillEditor'
+import { addQuillTitle } from '@/assets/js/js/quill-title'
+import { getGoodsSizeInfo, getSeasonId, addAdvertsRes } from '@/api/goods'
+import VcUpload from '@/views/common/Upload'
+import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
 
 export default {
   name: 'AddGoods',
-  // components: { quill },
+  components: { VcUpload, quill },
   data() {
     const pricevalidate = (rule, value, callback) => {
       // // console.log("价格验证value",value)
@@ -312,7 +420,12 @@ export default {
       callback()
     }
     return {
-      activeNum: 'first',
+      uploadList: [],
+      selectedItem: null,
+      maxMB: 50,
+      drawer: false, // 新增商品颜色弹框显示
+      // direction:'rtl', // 弹框打开方向
+      activeNum: 'message',
       title: '新增商品',
       brandId: 0,
       goodsId: '',
@@ -332,22 +445,28 @@ export default {
       ruleForm: {
         recommendationLevel: '0',
         status: 'NOTGROUNDING', // NOTGROUNDING  未上架  GROUNDING 已上架
-        styleCategory: '',
-        styleColor: '',
-        styleFabric: '',
-        styleFlowerPattern: '',
-        styleInfo: '',
+        styleCategory: [], // 商品类别
+        styleColor: '', // 商品颜色
+        styleFabric: '', // 款式材质
+        styleFlowerPattern: '', // 款式廓形
+        styleInfo: '', // 款式风格
         styleLabel: '',
-        styleName: '',
-        styleNo: '',
-        stylePrice: '',
-        styleVideo: '',
-        styleVideoPatch: '',
-        washMaintenance: '',
-        wearSellingPoint: '',
-        sellingPointFabric: '',
-        designSellingPoint: '',
-        styleId: null,
+        seasonId: '', // 所属季节
+        styleName: '', // 商品名称
+        styleNo: '', // 商品编号
+        stylePrice: '', // 商品价格
+        retailPrice: '', // 零售价格
+        tagPrice: '', // 品牌价格
+        costPrice: '', // 成本价格
+        tradePrice: '', // 批发价格
+        styleVideo: '', // 商品视频
+        styleVideoPatch: '', // 款式视频贴片
+        washMaintenance: '', // 洗涤保养
+        wearSellingPoint: '', // 穿着卖点
+        sellingPointFabric: '', // 面料卖点
+        designSellingPoint: '', // 设计卖点
+        styleId: null, // 款式id
+        styleSize: [], // 商品尺码
         idList: [],
       },
       rules: {
@@ -382,6 +501,18 @@ export default {
             min: 1, max: 10, message: '长度在 1 到 10 位数字', trigger: 'blur',
           },
           { validator: pricevalidate, trigger: 'blur' },
+        ],
+        seasonId: [
+          { required: true, message: '请选择所属季节', trigger: 'blur' },
+        ],
+        costPrice: [
+          { required: true, message: '请选择成本价格', trigger: 'blur' },
+        ],
+        tagPrice: [
+          { required: true, message: '请选择吊牌价格', trigger: 'blur' },
+        ],
+        retailPrice: [
+          { required: true, message: '请选择零售价格', trigger: 'blur' },
         ],
         idList: [
           {
@@ -427,26 +558,53 @@ export default {
   computed: {
     uploadOption() {
       return {
-        listType: 'picture-card',
+        drag: true,
+        showFileList: false,
         multiple: true,
-        check: true,
-        limit: 6,
-        accept: 'image/*',
-        maxSize: 1024 * 5, // 5mb
-        fileKeyMap: {
-          uid: 'ID',
-          name: 'ID',
-          url: 'RES_URL',
+        typeOption: {
+          'video/*': {
+            data: {
+              fileType: 1,
+            },
+          },
         },
-        fileList: this.ruleForm.imgDetailUrlList || [],
-        onError: (e, file) => {
-          this.$message.error(`${file.name} 上传失败，请重试！`)
+        maxSize: 1024 * this.maxMB,
+        limit: 6,
+        chunkSize: 1024 * 5,
+        check: true,
+        accept: 'image/*,video/*',
+        onChange: (file, fileList) => {
+          // console.dir(info)
+          this.uploadList = fileList
+          // console.log(this.uploadList)
         },
       }
     },
+    // uploadOption() {
+    //   return {
+    //     listType: 'picture-card',
+    //     multiple: true,
+    //     check: true,
+    //     limit: 6,
+    //     accept: 'image/*',
+    //     maxSize: 1024 * 5, // 5mb
+    //     fileKeyMap: {
+    //       uid: 'ID',
+    //       name: 'ID',
+    //       url: 'RES_URL',
+    //     },
+    //     fileList: this.ruleForm.imgDetailUrlList || [],
+    //     onError: (e, file) => {
+    //       this.$message.error(`${file.name} 上传失败，请重试！`)
+    //     },
+    //   }
+    // },
   },
   created() {
-    this.getGoodsCategory()
+    // this.requestUploadImg()
+    // this.getSeasonId()
+    // this.getGoodsInfo()
+    // this.getGoodstyle()
     // this.getGoodsSizeInfo()
     // this.getGoofdstyle()
     // // console.log(this.$route.query.item)
@@ -481,11 +639,51 @@ export default {
     // }
   },
   mounted() {
-    // addQuillTitle()
+    addQuillTitle()
     // this.getBandAndSeries()
-    // this.getGoodsCategory()
+    this.getGoodsCategory()
   },
   methods: {
+    // 删除文件
+    removeFile(index, item) {
+      this.$refs.upload.abort(item)
+      this.uploadList.splice(index, 1)
+      item.url && URL.revokeObjectURL(item.url)
+      if (item === this.selectedItem) this.selectedItem = null
+    },
+    preview(item) {
+      item.url = item.url || URL.createObjectURL(item.raw)
+      this.selectedItem = item
+    },
+    submit() {
+      if (!this.uploadList.length) return this.$message.warning('请先上传文件')
+      if (!this.$refs.upload.checkUploadDone()) return this.$message.warning('请等待文件全部上传完成后在提交')
+      console.log(this.uploadList)
+      // const params = this.uploadList.map(item => {
+      //   const { type } = item.raw
+      //   if (/video/.test(type)) {
+      //     return {
+      //       resName: item.name,
+      //       resUrl: item.response.data.fileUrl,
+      //       videoImg: item.response.data.thumbUrl,
+      //       resType: FILE_TYPE.VIDEO,
+      //     }
+      //   } if (/image/.test(type)) {
+      //     return {
+      //       resName: item.name,
+      //       resUrl: item.response.data.data.fileUrls[0].fileUrl,
+      //       resType: FILE_TYPE.IMAGE,
+      //     }
+      //   }
+      // })
+
+      // addAdvertsRes({
+      //   resList: params,
+      // }).then(res => {
+      //   this.$message.success('文件提交成功')
+      //   this.$router.back()
+      // })
+    },
     //   点击返回
     goBack() {
       if (this.operateFlag !== 'view') { // 编辑或新增提示一下
@@ -530,68 +728,66 @@ export default {
       return ''
     },
     // 获取商品信息
-    getGoodsInfo() {
-      const _this = this
-      const con = {
-        styleId: _this.styleId,
-      }
-      const jsonParam = _this.GLOBAL.g_paramJson(con, 40005)
-      getGoofdstyle(jsonParam).then((res) => {
-        // console.log('获取到的商品信息-----', res.data.body)
-        if (res.data.head.status === 0) {
-          _this.ruleForm = res.data.body.styleInfo
-          _this.ruleForm.imgUrlList.forEach(el => {
-            const obj = {}
-            obj.url = el.RES_URL
-            _this.fileList.push(obj)
-          })
-          _this.videoSrc = _this.ruleForm.styleVideo
-          _this.ruleForm.stylePrice = String(_this.ruleForm.stylePrice)
-          // // console.log('_this.ruleForm.styleLabel===',_this.ruleForm.styleLabel)
-          // _this.labelList = _this.ruleForm.styleLabel.split(',');
-          if (_this.ruleForm.styleLabel) {
-            _this.labelList = _this.ruleForm.styleLabel.split(',')
-          }
-          if (_this.ruleForm.styleVideoPatch) {
-            _this.imageUrl = _this.ruleForm.styleVideoPatch
-          }
-          // // console.log("_this.imageUrl:",_this.imageUrl)
+    // getGoodsInfo() {
+    //   const _this = this
+    //   const con = {
+    //     styleId: _this.styleId,
+    //   }
+    //   getGoodstyle(con).then((res) => {
+    //     console.log('获取到的商品信息-----', res.data.body)
+    //     if (res.data.head.status === 0) {
+    //       _this.ruleForm = res.data.body.styleInfo
+    //       _this.ruleForm.imgUrlList.forEach(el => {
+    //         const obj = {}
+    //         obj.url = el.RES_URL
+    //         _this.fileList.push(obj)
+    //       })
+    //       _this.videoSrc = _this.ruleForm.styleVideo
+    //       _this.ruleForm.stylePrice = String(_this.ruleForm.stylePrice)
+    //       // // console.log('_this.ruleForm.styleLabel===',_this.ruleForm.styleLabel)
+    //       // _this.labelList = _this.ruleForm.styleLabel.split(',');
+    //       if (_this.ruleForm.styleLabel) {
+    //         _this.labelList = _this.ruleForm.styleLabel.split(',')
+    //       }
+    //       if (_this.ruleForm.styleVideoPatch) {
+    //         _this.imageUrl = _this.ruleForm.styleVideoPatch
+    //       }
+    //       // // console.log("_this.imageUrl:",_this.imageUrl)
 
-          // // console.log("_this.ruleForm====",_this.ruleForm)
-          _this.ruleForm.idList = []
-          if (_this.ruleForm.bandId) {
-            _this.ruleForm.idList.push(String(_this.ruleForm.bandId))
-            if (this.seriesId) {
-              _this.ruleForm.idList.push(String(_this.ruleForm.seriesId))
-            }
-          }
-          _this.getGoodsSizeInfo()
-        } else {
-          _this.$message({
-            message: res.data.head.msg,
-            type: 'warning',
-          })
-        }
-      }).catch(err => {
-        // console.log(err)
-      })
-    },
+    //       // // console.log("_this.ruleForm====",_this.ruleForm)
+    //       _this.ruleForm.idList = []
+    //       if (_this.ruleForm.bandId) {
+    //         _this.ruleForm.idList.push(String(_this.ruleForm.bandId))
+    //         if (this.seriesId) {
+    //           _this.ruleForm.idList.push(String(_this.ruleForm.seriesId))
+    //         }
+    //       }
+    //       _this.getGoodsSizeInfo()
+    //     } else {
+    //       _this.$message({
+    //         message: res.data.head.msg,
+    //         type: 'warning',
+    //       })
+    //     }
+    //   }).catch(err => {
+    //     // console.log(err)
+    //   })
+    // },
     // 获取商品类别
     getGoodsCategory() {
-      const _this = this
       const con = {
         brandId: sessionStorage.brandId,
         type: 'styleCategory',
         userId: sessionStorage.userId,
       }
-      // const jsonParam = _this.GLOBAL.g_paramJson(con, 100009)
+      // 获取商品类别
       getGoodsSizeInfo(con).then((res) => {
-        // // console.log("获取到的商品类别：",res.data.body);
+        // console.log(res)
         if (res.head.status === 0) {
-          _this.cateOptions = res.body.result
+          this.cateOptions = res.body.result
         } else {
-          _this.$message({
-            message: res.data.head.msg,
+          this.$message({
+            message: res.head.msg,
             type: 'warning',
           })
         }
@@ -599,22 +795,23 @@ export default {
         // console.log(err)
       })
     },
-    // 获取品牌相应的波段和系列
-    getBandAndSeries() {
-      const _this = this
+    // 获取所属季节
+    getSeasonId() {
       const con = {
         brandId: sessionStorage.brandId,
+        pageNum: '1',
+        pageSize: '12',
+        seriesName: '',
+        seriesLabel: '',
       }
-      const jsonParam = _this.GLOBAL.g_paramJson(con, 40007)
-      _this.$axios.post(`${_this.GLOBAL.goods_manager_server}/style/styleAllMethod`, jsonParam).then((res) => {
-        // // console.log("获取品牌波段和系列：",res.data.body);
-        if (res.data.head.status === 0) {
-          if (res.data.body) {
-            _this.bandOptions = res.data.body.BandAndSeries
-          }
+      // 获取商品类别
+      getSeasonId(con).then((res) => {
+        console.log(res)
+        if (res.head.status === 0) {
+          this.cateOptions = res.body.result
         } else {
-          _this.$message({
-            message: res.data.head.msg,
+          this.$message({
+            message: res.head.msg,
             type: 'warning',
           })
         }
@@ -628,28 +825,6 @@ export default {
       this.ruleForm.styleCategory = val
       this.goodSizeFlag = true
       this.getGoodsSizeInfo()
-    },
-    // 波段和系列更改后的处理逻辑
-    handleChange(value) {
-      // // console.log("111111",value);
-      // // console.log("2222222",this.$refs.cascader.panel.getNodeByValue(value))
-      this.ruleForm.idList = value
-      // let nodesObj = this.$refs['cascader'].getCheckedNodes();
-      let nodesObj = []
-
-      if (nodesObj.length === 0) {
-        nodesObj = this.$refs.cascader.panel.getNodeByValue(value) // 具有搜索属性时获取相应节点数据
-      } else {
-        nodesObj = this.$refs.cascader.getCheckedNodes() // 正常进行层级选择时获取到的节点数据
-      }
-      // // console.log("级联选择器选中的数组：",nodesObj)
-      if (nodesObj.parent) {
-        this.seriesName = nodesObj.data.name
-        this.bandName = nodesObj.parent.data.name
-      } else {
-        this.bandName = nodesObj.data.name
-      }
-      // // console.log("级联选择器选中波段系列名：",this.bandName,this.seriesName)
     },
     // 新增商品标签
     addGoodLabel(val) {
@@ -670,388 +845,402 @@ export default {
       this.labelList.splice(index, 1)
     },
     // 上传前检测格式
-    beforeUploadImg(file) {
-      // // console.log("上传图片前：",file)
-      const pointIndex = file.name.lastIndexOf('.')
-      const fileType = file.name.substring(pointIndex + 1) // 获取到文件后缀名
-      // // console.log("fileType==",fileType)
-      const isJPG = (fileType === 'jpg' || fileType === 'png')
-      const isLt4M = file.size / 1024 / 1024 < 4
-      // // console.log('isJPG===',isJPG)
-      if (!isJPG) {
-        this.$message.error('上传图片只能是 JPG , PNG格式!')
-        return
-      }
-      if (!isLt4M) {
-        this.$message.error('上传图片大小不能超过 4MB!')
-        return
-      }
-      return isJPG && isLt4M
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
-    },
-    // 自定义上传图片函数
-    requestUploadImg(params) {
-      // // console.log("params=====",params)
-      const reader = new FileReader()
-      const arr = []
-      let fileResult = ''
-      const _this = this
-      reader.readAsDataURL(params.file)
-      // //开始转
-      reader.onload = function (e) {
-        fileResult = e.currentTarget.result // base64文件流
+    // beforeUploadImg(file) {
+    //   // // console.log("上传图片前：",file)
+    //   const pointIndex = file.name.lastIndexOf('.')
+    //   const fileType = file.name.substring(pointIndex + 1) // 获取到文件后缀名
+    //   // // console.log("fileType==",fileType)
+    //   const isJPG = (fileType === 'jpg' || fileType === 'png')
+    //   const isLt4M = file.size / 1024 / 1024 < 4
+    //   // // console.log('isJPG===',isJPG)
+    //   if (!isJPG) {
+    //     this.$message.error('上传图片只能是 JPG , PNG格式!')
+    //     return
+    //   }
+    //   if (!isLt4M) {
+    //     this.$message.error('上传图片大小不能超过 4MB!')
+    //     return
+    //   }
+    //   return isJPG && isLt4M
+    // },
+    // handleExceed(files, fileList) {
+    //   this.$message.warning(`当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    // },
+    // // 自定义上传图片函数
+    // requestUploadImg(params) {
+    //   // console.log(params)
+    //   // // console.log("params=====",params)
+    //   const reader = new FileReader()
+    //   const arr = []
+    //   let fileResult = ''
+    //   const _this = this
+    //   reader.readAsDataURL(params.file)
+    //   // //开始转
+    //   reader.onload = function (e) {
+    //     fileResult = e.currentTarget.result // base64文件流
 
-        const str1 = fileResult.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
-        const strLength1 = str1.length
-        // const fileLength1 = parseInt(strLength1 - (strLength1 / 8) * 2)
-        // 由字节转换为KB
-        const size1 = ''
-        // size1 = (fileLength1 / 1024).toFixed(2)
-        // // console.log("图片压缩前的文件大小==，",size1)
+    //     const str1 = fileResult.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
+    //     const strLength1 = (str1.length / 8) * 2
+    //     // console.log(str1.length)
+    //     const fileLength1 = parseInt(str1.length - strLength1, 2)
+    //     // 由字节转换为KB
+    //     const size1 = ''
+    //     // size1 = (fileLength1 / 1024).toFixed(2)
+    //     console.log('图片压缩前的文件大小==，', size1)
 
-        const Img = new Image()
-        let dataURL = ''
-        Img.src = fileResult
+    //     const Img = new Image()
+    //     let dataURL = ''
+    //     Img.src = fileResult
 
-        Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
-          const canvas = document.createElement('canvas') // 创建canvas元素
-          const { width } = Img // 确保canvas的尺寸和图片一样
-          const { height } = Img
-          // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
-          const ratio = width / height
-          const maxLength = 1000
-          let newHeight = height
-          let newWidth = width
-          // 在长宽超过最大长度时，按图片长宽比例等比缩小
-          if (width > maxLength || height > maxLength) {
-            if (width > height) {
-              newWidth = maxLength
-              newHeight = maxLength / ratio
-            } else {
-              newWidth = maxLength * ratio
-              newHeight = maxLength
-            }
-          }
-          canvas.width = newWidth
-          canvas.height = newHeight
-          canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
+    //     Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
+    //       const canvas = document.createElement('canvas') // 创建canvas元素
+    //       const { width } = Img // 确保canvas的尺寸和图片一样
+    //       const { height } = Img
+    //       // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
+    //       const ratio = width / height
+    //       const maxLength = 1000
+    //       let newHeight = height
+    //       let newWidth = width
+    //       // 在长宽超过最大长度时，按图片长宽比例等比缩小
+    //       if (width > maxLength || height > maxLength) {
+    //         if (width > height) {
+    //           newWidth = maxLength
+    //           newHeight = maxLength / ratio
+    //         } else {
+    //           newWidth = maxLength * ratio
+    //           newHeight = maxLength
+    //         }
+    //       }
+    //       canvas.width = newWidth
+    //       canvas.height = newHeight
+    //       canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
 
-          dataURL = canvas.toDataURL('image/jpeg', 0.6)
-          // canvas的toDataURL()方法是返回一个包含图片展示的 数据URL，同时可以指定输出格式和质量。
-          // 语法：canvas.toDataURL(type, encoderOptions);
-          // 参数：1、type：图片格式，默认为 image/png,可以是其他image/jpeg等
-          //       2、encoderOptions：0到1之间的取值，主要用来选定图片的质量，默认值是0.92，超出范围也会选择默认值
+    //       dataURL = canvas.toDataURL('image/jpeg', 0.6)
+    //       // canvas的toDataURL()方法是返回一个包含图片展示的 数据URL，同时可以指定输出格式和质量。
+    //       // 语法：canvas.toDataURL(type, encoderOptions);
+    //       // 参数：1、type：图片格式，默认为 image/png,可以是其他image/jpeg等
+    //       //       2、encoderOptions：0到1之间的取值，主要用来选定图片的质量，默认值是0.92，超出范围也会选择默认值
 
-          // // console.log("压缩后的dataURL==，",dataURL);
+    //       // // console.log("压缩后的dataURL==，",dataURL);
 
-          const str2 = dataURL.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
+    //       const str2 = dataURL.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
+    //       // console.log(str2)
+    //       const strLength2 = (str2.length / 8) * 2
+    //       const fileLength2 = parseInt(strLength2 - strLength2, 2)
+    //       // 由字节转换为KB
+    //       let size2 = ''
+    //       size2 = (fileLength2 / 1024).toFixed(2)
+    //       // console.log('图片压缩后的文件大小==，', size2)
+    //       console.log(dataURL)
+    //       arr.push(dataURL)
 
-          const strLength2 = str2.length
-          //   const fileLength2 = parseInt(strLength2 - (strLength2 / 8) * 2)
-          // 由字节转换为KB
-          //   let size2 = ''
-          //   size2 = (fileLength2 / 1024).toFixed(2)
-          // // console.log("图片压缩后的文件大小==，",size2)
+    //       // const params = {
+    //       //   files: arr.join('#@#'),
+    //       //   fileType: 0,
+    //       //   userId: sessionStorage.userId,
+    //       // }
+    //       axios.post(
+    //         'http://192.168.1.101:8080/api/system/file/uploadFile',
+    //         {
+    //           files: arr.join('#@#'),
+    //           fileType: 0,
+    //           userId: sessionStorage.userId,
+    //         },
+    //       ).then((res) => {
+    //       // uploadFile(con).then((res) => {
+    //         console.log(res)
+    //         // // console.log("上传图片返回信息-----",res.data);
+    //         if (res.data.code === 200) {
+    //           _this.fullscreenLoading = false
+    //           // // console.log('res.data.data.fileUrls==',res.data.data.fileUrls)
+    //           const obj = {}
+    //           obj.url = res.data.data.fileUrls[0].fileUrl
+    //           _this.fileList.push(obj)
+    //           _this.fileList.push(params.file)
+    //           // // console.log("上传成功后的===_this.fileList",_this.fileList)
+    //         } else {
+    //           _this.$message({
+    //             message: '上传失败',
+    //             type: 'warning',
+    //           })
+    //         }
+    //       }).catch(err => {
+    //         // console.log(err)
+    //       })
+    //     }
+    //   }
+    // },
+    // // 关闭图片选择弹框
+    // close() {
+    //   this.drawer = true
+    // },
+    // // 上传视频贴片，其实可以与上传商品图片走同一个方法，只是没有找到方法去区分上传商品图或者贴片，可以再优化一下
+    // // requestUploadPatch(params) {
+    // //   // // console.log("params=====",params)
+    // //   const reader = new FileReader()
+    // //   const arr = []
+    // //   let fileResult = ''
+    // //   const _this = this
+    // //   reader.readAsDataURL(params.file)
+    // //   // //开始转
+    // //   reader.onload = function (e) {
+    // //     fileResult = e.currentTarget.result // base64文件流
 
-          arr.push(dataURL)
+    // //     const str1 = fileResult.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
+    // //     const strLength1 = str1.length
+    // //     // const fileLength1 = parseInt(strLength1 - (strLength1 / 8) * 2)
+    // //     // 由字节转换为KB
+    // //     const size1 = ''
+    // //     // size1 = (fileLength1 / 1024).toFixed(2)
+    // //     // // console.log("图片压缩前的文件大小==，",size1)
 
-          const con = {
-            files: arr.join('#@#'),
-            fileType: 0,
-            userId: sessionStorage.userId,
-          }
+    // //     const Img = new Image()
+    // //     let dataURL = ''
+    // //     Img.src = fileResult
 
-          _this.$axios.post(`${_this.GLOBAL.system_manager_server}/file/uploadFile`, con).then((res) => {
-            // // console.log("上传图片返回信息-----",res.data);
-            if (res.data.code === 200) {
-              // _this.fullscreenLoading = false;
-              // // console.log('res.data.data.fileUrls==',res.data.data.fileUrls)
-              const obj = {}
-              obj.url = res.data.data.fileUrls[0].fileUrl
-              _this.fileList.push(obj)
-              // _this.fileList.push(params.file);
-              // // console.log("上传成功后的===_this.fileList",_this.fileList)
-            } else {
-              _this.$message({
-                message: '上传失败',
-                type: 'warning',
-              })
-            }
-          }).catch(err => {
-            // console.log(err)
-          })
-        }
-      }
-    },
-    // 上传视频贴片，其实可以与上传商品图片走同一个方法，只是没有找到方法去区分上传商品图或者贴片，可以再优化一下
-    requestUploadPatch(params) {
-      // // console.log("params=====",params)
-      const reader = new FileReader()
-      const arr = []
-      let fileResult = ''
-      const _this = this
-      reader.readAsDataURL(params.file)
-      // //开始转
-      reader.onload = function (e) {
-        fileResult = e.currentTarget.result // base64文件流
+    // //     Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
+    // //       const canvas = document.createElement('canvas') // 创建canvas元素
+    // //       const { width } = Img // 确保canvas的尺寸和图片一样
+    // //       const { height } = Img
+    // //       // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
+    // //       const ratio = width / height
+    // //       const maxLength = 1000
+    // //       let newHeight = height
+    // //       let newWidth = width
+    // //       // 在长宽超过最大长度时，按图片长宽比例等比缩小
+    // //       if (width > maxLength || height > maxLength) {
+    // //         if (width > height) {
+    // //           newWidth = maxLength
+    // //           newHeight = maxLength / ratio
+    // //         } else {
+    // //           newWidth = maxLength * ratio
+    // //           newHeight = maxLength
+    // //         }
+    // //       }
+    // //       canvas.width = newWidth
+    // //       canvas.height = newHeight
+    // //       canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
+    // //       dataURL = canvas.toDataURL('image/jpeg', 0.6)
+    // //       const str2 = dataURL.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
+    // //       const strLength2 = str2.length
+    // //       //   const fileLength2 = parseInt(strLength2 - (strLength2 / 8) * 2)
+    // //       // 由字节转换为KB
+    // //       const size2 = ''
+    // //       //   size2 = (fileLength2 / 1024).toFixed(2)
+    // //       // // console.log("图片压缩后的文件大小==，",size2)
+    // //       arr.push(dataURL)
+    // //       const con = {
+    // //         files: arr.join('#@#'),
+    // //         fileType: 0,
+    // //         userId: sessionStorage.userId,
+    // //       }
+    // //       _this.$axios.post(`${_this.GLOBAL.system_manager_server}/file/uploadFile`, con).then((res) => {
+    // //         if (res.data.code === 200) {
+    // //           _this.imageUrl = res.data.data.fileUrls[0].fileUrl
+    // //         } else {
+    // //           _this.$message({
+    // //             message: '上传失败',
+    // //             type: 'warning',
+    // //           })
+    // //         }
+    // //       }).catch(err => {
+    // //         // console.log(err)
+    // //       })
+    // //     }
+    // //   }
+    // // },
+    // // // 删除视频贴片
+    // // delVideoPatch() {
+    // //   this.imageUrl = ''
+    // // },
+    // // 压缩图片
+    // imageCompress(base64) {
+    //   const _this = this
+    //   const Img = new Image()
+    //   let dataURL = ''
+    //   Img.src = base64
+    //   const p = new Promise((resolve, reject) => {
+    //     Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
+    //       const canvas = document.createElement('canvas') // 创建canvas元素
+    //       const { width } = Img // 确保canvas的尺寸和图片一样
+    //       const { height } = Img
+    //       // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
+    //       const ratio = width / height
+    //       const maxLength = 1000
+    //       let newHeight = height
+    //       let newWidth = width
+    //       // 在长宽超过最大长度时，按图片长宽比例等比缩小
+    //       if (width > maxLength || height > maxLength) {
+    //         if (width > height) {
+    //           newWidth = maxLength
+    //           newHeight = maxLength / ratio
+    //         } else {
+    //           newWidth = maxLength * ratio
+    //           newHeight = maxLength
+    //         }
+    //       }
+    //       canvas.width = newWidth
+    //       canvas.height = newHeight
+    //       canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
 
-        const str1 = fileResult.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
-        const strLength1 = str1.length
-        // const fileLength1 = parseInt(strLength1 - (strLength1 / 8) * 2)
-        // 由字节转换为KB
-        const size1 = ''
-        // size1 = (fileLength1 / 1024).toFixed(2)
-        // // console.log("图片压缩前的文件大小==，",size1)
+    //       dataURL = canvas.toDataURL('image/jpeg', 0.6)
+    //       // canvas的toDataURL()方法是返回一个包含图片展示的 数据URL，同时可以指定输出格式和质量。
+    //       // 语法：canvas.toDataURL(type, encoderOptions);
+    //       // 参数：1、type：图片格式，默认为 image/png,可以是其他image/jpeg等
+    //       //       2、encoderOptions：0到1之间的取值，主要用来选定图片的质量，默认值是0.92，超出范围也会选择默认值
 
-        const Img = new Image()
-        let dataURL = ''
-        Img.src = fileResult
+    //       resolve(dataURL)
+    //     }
+    //   })
+    //   // // console.log("============p",p,)
+    //   // p.then(res=>{
+    //   //   // // console.log(res)
+    //   // })
+    //   return p
+    // },
+    // handleRemove(file, fileList) {
+    //   // // console.log(file, fileList);
+    //   this.fileList = fileList
+    // },
+    // handlePictureCardPreview(file) {
+    //   this.dialogImageUrl = file.url
+    //   this.dialogVisible = true
+    // },
+    // // 上传视频前校验
+    // beforeUploadVideo(file) {
+    //   // // console.log(file)
+    //   // 自己获取后缀名判断文件格式
+    //   const pointIndex = file.name.lastIndexOf('.')
+    //   const fileType = file.name.substring(pointIndex + 1) // 获取到文件后缀名
+    //   if (fileType !== 'mp4' && fileType !== 'mov') {
+    //     this.$message.error('你选择的文件不是视频哦，仅支持mp4和mov格式')
+    //     return false
+    //   }
+    // },
+    // // 进度条
+    // uploadVideoProcess(event, file, fileList) {
+    //   // // console.log("进度条===file：",file)
+    //   this.videoFlag = true
+    //   this.videoUploadPercent = file.percentage.toFixed(0) * 1
+    // },
+    // // 自定义上传函数
+    // requestUploadVideo(params) {
+    //   // // console.log('params.file====:',params.file)
+    //   const _this = this
+    //   const { file } = params
+    //   const fileType = 1 // 1 视频 2 音频  默认设为1
+    //   const limitUpCount = 50 * 1024 * 1024 // 限制上传大小，大于50M不可以上传
+    //   const upFileSize = file.size
+    //   // // console.log("要上传的字节大小===",upFileSize,"限制上传的字节大小===",limitUpCount)
+    //   if (upFileSize <= limitUpCount) {
+    //     _this.videoSrc = ''
+    //     _this.uploadVideoFlag = true
+    //     // // console.log("文件小于00M,可以上传");
+    //     // _this.videoSrc="http://192.168.9.26:9107/ZDNAS/94/20210524/d588a538e8dd3f63b423e8648aba3ce8.mp4"
+    //     const chunkSize = 5 * 1024 * 1024// 每个chunk的大小，5兆
+    //     const totalChunk = Math.ceil(upFileSize / chunkSize) // 总分片数
+    //     // // console.log("总分片数----:",totalChunk)
+    //     const userID = sessionStorage.userId
+    //     // let tempFileName = file.name;
 
-        Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
-          const canvas = document.createElement('canvas') // 创建canvas元素
-          const { width } = Img // 确保canvas的尺寸和图片一样
-          const { height } = Img
-          // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
-          const ratio = width / height
-          const maxLength = 1000
-          let newHeight = height
-          let newWidth = width
-          // 在长宽超过最大长度时，按图片长宽比例等比缩小
-          if (width > maxLength || height > maxLength) {
-            if (width > height) {
-              newWidth = maxLength
-              newHeight = maxLength / ratio
-            } else {
-              newWidth = maxLength * ratio
-              newHeight = maxLength
-            }
-          }
-          canvas.width = newWidth
-          canvas.height = newHeight
-          canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
-          dataURL = canvas.toDataURL('image/jpeg', 0.6)
-          const str2 = dataURL.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
-          const strLength2 = str2.length
-          //   const fileLength2 = parseInt(strLength2 - (strLength2 / 8) * 2)
-          // 由字节转换为KB
-          const size2 = ''
-          //   size2 = (fileLength2 / 1024).toFixed(2)
-          // // console.log("图片压缩后的文件大小==，",size2)
-          arr.push(dataURL)
-          const con = {
-            files: arr.join('#@#'),
-            fileType: 0,
-            userId: sessionStorage.userId,
-          }
-          _this.$axios.post(`${_this.GLOBAL.system_manager_server}/file/uploadFile`, con).then((res) => {
-            if (res.data.code === 200) {
-              _this.imageUrl = res.data.data.fileUrls[0].fileUrl
-            } else {
-              _this.$message({
-                message: '上传失败',
-                type: 'warning',
-              })
-            }
-          }).catch(err => {
-            // console.log(err)
-          })
-        }
-      }
-    },
-    // 删除视频贴片
-    delVideoPatch() {
-      this.imageUrl = ''
-    },
-    // 压缩图片
-    imageCompress(base64) {
-      const _this = this
-      const Img = new Image()
-      let dataURL = ''
-      Img.src = base64
-      const p = new Promise((resolve, reject) => {
-        Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
-          const canvas = document.createElement('canvas') // 创建canvas元素
-          const { width } = Img // 确保canvas的尺寸和图片一样
-          const { height } = Img
-          // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
-          const ratio = width / height
-          const maxLength = 1000
-          let newHeight = height
-          let newWidth = width
-          // 在长宽超过最大长度时，按图片长宽比例等比缩小
-          if (width > maxLength || height > maxLength) {
-            if (width > height) {
-              newWidth = maxLength
-              newHeight = maxLength / ratio
-            } else {
-              newWidth = maxLength * ratio
-              newHeight = maxLength
-            }
-          }
-          canvas.width = newWidth
-          canvas.height = newHeight
-          canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
+    //     const nameArr = file.name.split('.')
+    //     // // console.log(nameArr)
+    //     const curtime = new Date().getTime() // name不可以带中文，以时间戳的形式重新组合传给后端
+    //     // // console.log('curtime===',curtime)
+    //     const tempFileName = `${curtime}.${nameArr[1]}`
 
-          dataURL = canvas.toDataURL('image/jpeg', 0.6)
-          // canvas的toDataURL()方法是返回一个包含图片展示的 数据URL，同时可以指定输出格式和质量。
-          // 语法：canvas.toDataURL(type, encoderOptions);
-          // 参数：1、type：图片格式，默认为 image/png,可以是其他image/jpeg等
-          //       2、encoderOptions：0到1之间的取值，主要用来选定图片的质量，默认值是0.92，超出范围也会选择默认值
+    //     _this.uploadSliceData(0, totalChunk, chunkSize, upFileSize, file, fileType, userID, tempFileName)
+    //   } else {
+    //     _this.$message({
+    //       type: 'warning',
+    //       message: '文件大小超过50M,不可以上传',
+    //     })
+    //     return false
+    //   }
+    // },
 
-          resolve(dataURL)
-        }
-      })
-      // // console.log("============p",p,)
-      // p.then(res=>{
-      //   // // console.log(res)
-      // })
-      return p
-    },
-    handleRemove(file, fileList) {
-      // // console.log(file, fileList);
-      this.fileList = fileList
-    },
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
-    },
-    // 上传视频前校验
-    beforeUploadVideo(file) {
-      // // console.log(file)
-      // 自己获取后缀名判断文件格式
-      const pointIndex = file.name.lastIndexOf('.')
-      const fileType = file.name.substring(pointIndex + 1) // 获取到文件后缀名
-      if (fileType !== 'mp4' && fileType !== 'mov') {
-        this.$message.error('你选择的文件不是视频哦，仅支持mp4和mov格式')
-        return false
-      }
-    },
-    // 进度条
-    uploadVideoProcess(event, file, fileList) {
-      // // console.log("进度条===file：",file)
-      this.videoFlag = true
-      this.videoUploadPercent = file.percentage.toFixed(0) * 1
-    },
-    // 自定义上传函数
-    requestUploadVideo(params) {
-      // // console.log('params.file====:',params.file)
-      const _this = this
-      const { file } = params
-      const fileType = 1 // 1 视频 2 音频  默认设为1
-      const limitUpCount = 50 * 1024 * 1024 // 限制上传大小，大于50M不可以上传
-      const upFileSize = file.size
-      // // console.log("要上传的字节大小===",upFileSize,"限制上传的字节大小===",limitUpCount)
-      if (upFileSize <= limitUpCount) {
-        _this.videoSrc = ''
-        _this.uploadVideoFlag = true
-        // // console.log("文件小于00M,可以上传");
-        // _this.videoSrc="http://192.168.9.26:9107/ZDNAS/94/20210524/d588a538e8dd3f63b423e8648aba3ce8.mp4"
-        const chunkSize = 5 * 1024 * 1024// 每个chunk的大小，5兆
-        const totalChunk = Math.ceil(upFileSize / chunkSize) // 总分片数
-        // // console.log("总分片数----:",totalChunk)
-        const userID = sessionStorage.userId
-        // let tempFileName = file.name;
+    // // 分段上传音视频函数
+    // uploadSliceData(i, totalChunk, chunkSize, totalSize, file, fType, userId, tempFileName) {
+    //   const _this = this
+    //   if (this.uploadTimer != null) {
+    //     clearTimeout(this.uploadTimer)
+    //     this.uploadTimer = null
+    //   }
 
-        const nameArr = file.name.split('.')
-        // // console.log(nameArr)
-        const curtime = new Date().getTime() // name不可以带中文，以时间戳的形式重新组合传给后端
-        // // console.log('curtime===',curtime)
-        const tempFileName = `${curtime}.${nameArr[1]}`
+    //   // this.perValue = Number((i * 100 / totalChunk).toFixed(1))// 进度
+    //   const startPos = i * chunkSize // 当前上传文件块的起始位置
+    //   const endPos = Math.min(file.size, startPos + chunkSize)
+    //   const formData = new FormData()
+    //   // formData.append('file', blobSlice.call(file, startPos, endPos))
+    //   formData.append('totalSize', totalSize)
+    //   formData.append('startPos', startPos)
+    //   formData.append('endPos', endPos)
+    //   formData.append('fileType', fType)
+    //   formData.append('userId', userId)
+    //   formData.append('fname', tempFileName)
+    //   formData.append('noThumb', 0)
+    //   // // console.log('formData====:',formData)
+    //   // // console.log(formData.get('file'))
 
-        _this.uploadSliceData(0, totalChunk, chunkSize, upFileSize, file, fileType, userID, tempFileName)
-      } else {
-        _this.$message({
-          type: 'warning',
-          message: '文件大小超过50M,不可以上传',
-        })
-        return false
-      }
-    },
+    //   _this.$axios.post(`${_this.GLOBAL.system_manager_server}/file/upVideoOrAudio`, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data',
+    //     },
+    //   }).then((res) => {
+    //     // // console.log("分片上传视频接口返回信息====",res);
+    //     // debugger
+    //     if (res.data.status === 101) {
+    //       // 一个分片上传成功后继续上传下一个分片
+    //       // debugger
+    //       _this.uploadTimer = setTimeout(() => {
+    //         _this.uploadSliceData(i + 1, totalChunk, chunkSize, totalSize, file, fType, userId, tempFileName)
+    //       }, 50)
+    //     } else if (res.data.status === 0) {
+    //       // 视频整个上传完成
+    //       _this.perValue = 100
+    //       _this.videoSrc = res.data.fileUrl
+    //       _this.uploadVideoFlag = false
+    //       // // console.log("上传视频成功后的url======",_this.videoSrc);
 
-    // 分段上传音视频函数
-    uploadSliceData(i, totalChunk, chunkSize, totalSize, file, fType, userId, tempFileName) {
-      const _this = this
-      if (this.uploadTimer != null) {
-        clearTimeout(this.uploadTimer)
-        this.uploadTimer = null
-      }
+    //       // thumbUrl
+    //     } else {
+    //       // 上传失败,重置信息
+    //       _this.perValue = 0
+    //       _this.uploadVideoFlag = false
+    //       _this.videoSrc = ''
+    //       _this.$message({
+    //         type: 'error',
+    //         message: '视频上传失败，请重试',
+    //       })
+    //     }
+    //   }).catch(err => {
+    //     // // 上传失败
+    //     // if(_this.iNum != i){
+    //     //   _this.iNum = i;
+    //     //   _this.errCount = 1;
+    //     //   _this.uploadSliceData(i,totalChunk,chunkSize,totalSize,file,fType,userId,tempFileName);
+    //     // }else{
+    //     //   _this.errCount = _this.errCount+1;
+    //     //   if(_this.errCount == 3){
+    //     //     // 彻底终止操作
+    //     //     // console.log("上传视频失败，请重试");
+    //     //     document.getElementsByClassName("bar")[0].style.width='0';
+    //     //     _this.perValue = '';
+    //     //     return false;
+    //     //   }else{
+    //     //     _this.uploadSliceData(i,totalChunk,chunkSize,totalSize,file,fType,userId,tempFileName);
+    //     //   }
+    //     // }
 
-      // this.perValue = Number((i * 100 / totalChunk).toFixed(1))// 进度
-      const startPos = i * chunkSize // 当前上传文件块的起始位置
-      const endPos = Math.min(file.size, startPos + chunkSize)
-      const formData = new FormData()
-      // formData.append('file', blobSlice.call(file, startPos, endPos))
-      formData.append('totalSize', totalSize)
-      formData.append('startPos', startPos)
-      formData.append('endPos', endPos)
-      formData.append('fileType', fType)
-      formData.append('userId', userId)
-      formData.append('fname', tempFileName)
-      formData.append('noThumb', 0)
-      // // console.log('formData====:',formData)
-      // // console.log(formData.get('file'))
-
-      _this.$axios.post(`${_this.GLOBAL.system_manager_server}/file/upVideoOrAudio`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }).then((res) => {
-        // // console.log("分片上传视频接口返回信息====",res);
-        // debugger
-        if (res.data.status === 101) {
-          // 一个分片上传成功后继续上传下一个分片
-          // debugger
-          _this.uploadTimer = setTimeout(() => {
-            _this.uploadSliceData(i + 1, totalChunk, chunkSize, totalSize, file, fType, userId, tempFileName)
-          }, 50)
-        } else if (res.data.status === 0) {
-          // 视频整个上传完成
-          _this.perValue = 100
-          _this.videoSrc = res.data.fileUrl
-          _this.uploadVideoFlag = false
-          // // console.log("上传视频成功后的url======",_this.videoSrc);
-
-          // thumbUrl
-        } else {
-          // 上传失败,重置信息
-          _this.perValue = 0
-          _this.uploadVideoFlag = false
-          _this.videoSrc = ''
-          _this.$message({
-            type: 'error',
-            message: '视频上传失败，请重试',
-          })
-        }
-      }).catch(err => {
-        // // 上传失败
-        // if(_this.iNum != i){
-        //   _this.iNum = i;
-        //   _this.errCount = 1;
-        //   _this.uploadSliceData(i,totalChunk,chunkSize,totalSize,file,fType,userId,tempFileName);
-        // }else{
-        //   _this.errCount = _this.errCount+1;
-        //   if(_this.errCount == 3){
-        //     // 彻底终止操作
-        //     // console.log("上传视频失败，请重试");
-        //     document.getElementsByClassName("bar")[0].style.width='0';
-        //     _this.perValue = '';
-        //     return false;
-        //   }else{
-        //     _this.uploadSliceData(i,totalChunk,chunkSize,totalSize,file,fType,userId,tempFileName);
-        //   }
-        // }
-
-      })
-    },
-    // 删除当前视频
-    delVideo() {
-      // // console.log("this.imageUrl:",this.imageUrl)
-      this.videoSrc = ''
-      this.imageUrl = ''
-      // // console.log("this.imageUrl:",this.imageUrl)
-    },
+    //   })
+    // },
+    // // 删除当前视频
+    // delVideo() {
+    //   // // console.log("this.imageUrl:",this.imageUrl)
+    //   this.videoSrc = ''
+    //   this.imageUrl = ''
+    //   // // console.log("this.imageUrl:",this.imageUrl)
+    // },
 
     // 尺码==========================
     // 获取商品尺码信息
@@ -1200,7 +1389,7 @@ export default {
             // styleVideoPatch: _this.ruleForm.styleVideoPatch,
             styleVideoPatch: _this.imageUrl,
             urlArray: picArr.join(','), // 在图片的url后要加上"_对应图片的序号"
-            // urlArray:'http://res.oitor.com:8099/upload/143/2021/4/02412068f2724b3cb216e57dd1fb7de3.png_0,http://res.gaodanyi.com:8102/upload/143/2021/5/696d98569ace4f11bd00e9348342d09b.jpg_1',
+            // urlArray:'http://res.oitor.com:8099/upload/143/2021/4/02412068f2724b3cb216e57dd1fb7de3.png_0,http://res.gaodanyi.com:8102/upload/143/2021/5/676d98569ace4f11bd00e9348342d09b.jpg_1',
             washMaintenance: _this.ruleForm.washMaintenance ? _this.ruleForm.washMaintenance : '', // 没有数据设为字符串
             wearSellingPoint: _this.ruleForm.wearSellingPoint,
             sizeList: _this.sizeTableList,
@@ -1388,5 +1577,17 @@ export default {
     outline: 1px solid #1978fe;//边框不用border，用outline
     // background: rgba(3, 16, 28, 0);//背景色
   }
+  .addGoods-addBtn{
+    margin-left: 10px;
+  }
+  .divider {
+    margin: 10px 0;
+  }
+}
+.el-tabs__item {
+  margin-left: 200px!important;
+}
+.left-box {
+  width: 372px;
 }
 </style>

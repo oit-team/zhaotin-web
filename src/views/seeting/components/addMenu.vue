@@ -86,6 +86,7 @@
 
 <script>
 import { getAllMenuList, insertMenu, updateMenuById } from '@/api/menu'
+import { getTreeMenuList } from '@/api/product'
 
 export default {
   name: 'AddMenu',
@@ -256,6 +257,7 @@ export default {
             // 新增菜单
             insertMenu(con).then((res) => {
               if (res.head.status === 0) {
+                // this.getTreeMenuList()
                 this.$message({
                   message: '新增菜单成功',
                   type: 'success',
@@ -267,6 +269,7 @@ export default {
                   type: 'warning',
                 })
               }
+              this.getTreeMenuList()
             }).catch(err => {
             })
           }
