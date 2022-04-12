@@ -318,13 +318,13 @@
                 </el-drawer>
               </div>
               <!-- 商品图片 -->
-              <!-- <el-form-item label="商品图片"> -->
+              <el-form-item label="商品图片">
               <!--http-request 覆盖默认的上传行为，实现自定义上传
                     on-exceed 文件超出限制个数时的钩子
                     on-preview 点击文件列表中已上传的文件时的钩子
                     on-remove 文件列表移除文件时的钩子  -->
               <!-- <el-upload
-                  action="#"
+                  action="http://home.gaodanyi.com/gdy/"
                   multiple
                   :limit="6"
                   :file-list="fileList"
@@ -339,15 +339,16 @@
                   <i class="el-icon-plus"></i>
                 </el-upload>
               </el-form-item>
-              <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p> -->
+              <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
 
-              <!-- <el-form-item label="商品细节">
-                  <el-upload v-bind="uploadOption" ref="uploadImage">
-                    <i class="el-icon-plus"></i>
-                  </el-upload>
-                </el-form-item>
-                <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
-              </el-form-item> -->
+              <el-form-item label="商品细节">
+                <el-upload v-bind="uploadOption" ref="uploadImage">
+                  <i class="el-icon-plus"></i>
+                </el-upload>
+              </el-form-item>
+              <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p> -->
+              <!-- </el-form-item> -->
+              </el-form-item>
             </div>
           </el-tab-pane>
           <!-- 商品价格面板 -->
@@ -403,6 +404,7 @@ import { addQuillTitle } from '@/assets/js/js/quill-title'
 import { getGoodsSizeInfo, getSeasonId, addAdvertsRes } from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
 import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
+// import axios from 'axios'
 
 export default {
   name: 'AddGoods',
@@ -562,6 +564,11 @@ export default {
         showFileList: false,
         multiple: true,
         typeOption: {
+          'image/*': {
+            data: {
+              fileType: 0,
+            },
+          },
           'video/*': {
             data: {
               fileType: 1,
@@ -580,25 +587,6 @@ export default {
         },
       }
     },
-    // uploadOption() {
-    //   return {
-    //     listType: 'picture-card',
-    //     multiple: true,
-    //     check: true,
-    //     limit: 6,
-    //     accept: 'image/*',
-    //     maxSize: 1024 * 5, // 5mb
-    //     fileKeyMap: {
-    //       uid: 'ID',
-    //       name: 'ID',
-    //       url: 'RES_URL',
-    //     },
-    //     fileList: this.ruleForm.imgDetailUrlList || [],
-    //     onError: (e, file) => {
-    //       this.$message.error(`${file.name} 上传失败，请重试！`)
-    //     },
-    //   }
-    // },
   },
   created() {
     // this.requestUploadImg()
@@ -655,35 +643,35 @@ export default {
       item.url = item.url || URL.createObjectURL(item.raw)
       this.selectedItem = item
     },
-    submit() {
-      if (!this.uploadList.length) return this.$message.warning('请先上传文件')
-      if (!this.$refs.upload.checkUploadDone()) return this.$message.warning('请等待文件全部上传完成后在提交')
-      console.log(this.uploadList)
-      // const params = this.uploadList.map(item => {
-      //   const { type } = item.raw
-      //   if (/video/.test(type)) {
-      //     return {
-      //       resName: item.name,
-      //       resUrl: item.response.data.fileUrl,
-      //       videoImg: item.response.data.thumbUrl,
-      //       resType: FILE_TYPE.VIDEO,
-      //     }
-      //   } if (/image/.test(type)) {
-      //     return {
-      //       resName: item.name,
-      //       resUrl: item.response.data.data.fileUrls[0].fileUrl,
-      //       resType: FILE_TYPE.IMAGE,
-      //     }
-      //   }
-      // })
+    // submit() {
+    //   if (!this.uploadList.length) return this.$message.warning('请先上传文件')
+    //   if (!this.$refs.upload.checkUploadDone()) return this.$message.warning('请等待文件全部上传完成后在提交')
+    //   console.log(this.uploadList)
+    //   const params = this.uploadList.map(item => {
+    //     const { type } = item.raw
+    //     if (/video/.test(type)) {
+    //       return {
+    //         resName: item.name,
+    //         resUrl: item.response.data.fileUrl,
+    //         videoImg: item.response.data.thumbUrl,
+    //         resType: FILE_TYPE.VIDEO,
+    //       }
+    //     } if (/image/.test(type)) {
+    //       return {
+    //         resName: item.name,
+    //         resUrl: item.response.data.data.fileUrls[0].fileUrl,
+    //         resType: FILE_TYPE.IMAGE,
+    //       }
+    //     }
+    //   })
 
-      // addAdvertsRes({
-      //   resList: params,
-      // }).then(res => {
-      //   this.$message.success('文件提交成功')
-      //   this.$router.back()
-      // })
-    },
+    //   addAdvertsRes({
+    //     resList: params,
+    //   }).then(res => {
+    //     this.$message.success('文件提交成功')
+    //     this.$router.back()
+    //   })
+    // },
     //   点击返回
     goBack() {
       if (this.operateFlag !== 'view') { // 编辑或新增提示一下
@@ -844,7 +832,7 @@ export default {
     delLabel(index) {
       this.labelList.splice(index, 1)
     },
-    // 上传前检测格式
+    // // 上传前检测格式
     // beforeUploadImg(file) {
     //   // // console.log("上传图片前：",file)
     //   const pointIndex = file.name.lastIndexOf('.')
@@ -975,84 +963,85 @@ export default {
     //   this.drawer = true
     // },
     // // 上传视频贴片，其实可以与上传商品图片走同一个方法，只是没有找到方法去区分上传商品图或者贴片，可以再优化一下
-    // // requestUploadPatch(params) {
-    // //   // // console.log("params=====",params)
-    // //   const reader = new FileReader()
-    // //   const arr = []
-    // //   let fileResult = ''
-    // //   const _this = this
-    // //   reader.readAsDataURL(params.file)
-    // //   // //开始转
-    // //   reader.onload = function (e) {
-    // //     fileResult = e.currentTarget.result // base64文件流
+    // requestUploadPatch(params) {
+    //   // // console.log("params=====",params)
+    //   const reader = new FileReader()
+    //   const arr = []
+    //   let fileResult = ''
+    //   const _this = this
+    //   reader.readAsDataURL(params.file)
+    //   // //开始转
+    //   reader.onload = function (e) {
+    //     fileResult = e.currentTarget.result // base64文件流
 
-    // //     const str1 = fileResult.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
-    // //     const strLength1 = str1.length
-    // //     // const fileLength1 = parseInt(strLength1 - (strLength1 / 8) * 2)
-    // //     // 由字节转换为KB
-    // //     const size1 = ''
-    // //     // size1 = (fileLength1 / 1024).toFixed(2)
-    // //     // // console.log("图片压缩前的文件大小==，",size1)
+    //     const str1 = fileResult.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
+    //     const strLength1 = str1.length
+    //     const strNum = (strLength1 / 8) * 2
+    //     const fileLength1 = parseInt(strLength1 - strNum, 2)
+    //     // 由字节转换为KB
+    //     let size1 = ''
+    //     size1 = (fileLength1 / 1024).toFixed(2)
+    //     // // console.log("图片压缩前的文件大小==，",size1)
 
-    // //     const Img = new Image()
-    // //     let dataURL = ''
-    // //     Img.src = fileResult
+    //     const Img = new Image()
+    //     let dataURL = ''
+    //     Img.src = fileResult
 
-    // //     Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
-    // //       const canvas = document.createElement('canvas') // 创建canvas元素
-    // //       const { width } = Img // 确保canvas的尺寸和图片一样
-    // //       const { height } = Img
-    // //       // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
-    // //       const ratio = width / height
-    // //       const maxLength = 1000
-    // //       let newHeight = height
-    // //       let newWidth = width
-    // //       // 在长宽超过最大长度时，按图片长宽比例等比缩小
-    // //       if (width > maxLength || height > maxLength) {
-    // //         if (width > height) {
-    // //           newWidth = maxLength
-    // //           newHeight = maxLength / ratio
-    // //         } else {
-    // //           newWidth = maxLength * ratio
-    // //           newHeight = maxLength
-    // //         }
-    // //       }
-    // //       canvas.width = newWidth
-    // //       canvas.height = newHeight
-    // //       canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
-    // //       dataURL = canvas.toDataURL('image/jpeg', 0.6)
-    // //       const str2 = dataURL.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
-    // //       const strLength2 = str2.length
-    // //       //   const fileLength2 = parseInt(strLength2 - (strLength2 / 8) * 2)
-    // //       // 由字节转换为KB
-    // //       const size2 = ''
-    // //       //   size2 = (fileLength2 / 1024).toFixed(2)
-    // //       // // console.log("图片压缩后的文件大小==，",size2)
-    // //       arr.push(dataURL)
-    // //       const con = {
-    // //         files: arr.join('#@#'),
-    // //         fileType: 0,
-    // //         userId: sessionStorage.userId,
-    // //       }
-    // //       _this.$axios.post(`${_this.GLOBAL.system_manager_server}/file/uploadFile`, con).then((res) => {
-    // //         if (res.data.code === 200) {
-    // //           _this.imageUrl = res.data.data.fileUrls[0].fileUrl
-    // //         } else {
-    // //           _this.$message({
-    // //             message: '上传失败',
-    // //             type: 'warning',
-    // //           })
-    // //         }
-    // //       }).catch(err => {
-    // //         // console.log(err)
-    // //       })
-    // //     }
-    // //   }
-    // // },
+    //     Img.onload = function () { // 要先确保图片完整获取到，这是个异步事件
+    //       const canvas = document.createElement('canvas') // 创建canvas元素
+    //       const { width } = Img // 确保canvas的尺寸和图片一样
+    //       const { height } = Img
+    //       // 默认将长宽设置为图片的原始长宽，这样在长宽不超过最大长度时就不需要再处理
+    //       const ratio = width / height
+    //       const maxLength = 1000
+    //       let newHeight = height
+    //       let newWidth = width
+    //       // 在长宽超过最大长度时，按图片长宽比例等比缩小
+    //       if (width > maxLength || height > maxLength) {
+    //         if (width > height) {
+    //           newWidth = maxLength
+    //           newHeight = maxLength / ratio
+    //         } else {
+    //           newWidth = maxLength * ratio
+    //           newHeight = maxLength
+    //         }
+    //       }
+    //       canvas.width = newWidth
+    //       canvas.height = newHeight
+    //       canvas.getContext('2d').drawImage(Img, 0, 0, newWidth, newHeight) // 将图片绘制到canvas中
+    //       dataURL = canvas.toDataURL('image/jpeg', 0.6)
+    //       const str2 = dataURL.replace('data:image/jpeg;base64,', '')// 这里根据自己上传图片的格式进行相应修改
+    //       // const strLength2 = str2.length
+    //       // const fileLength2 = parseInt(strLength2 - (strLength2 / 8) * 2)
+    //       // 由字节转换为KB
+    //       const size2 = ''
+    //       // size2 = (fileLength2 / 1024).toFixed(2)
+    //       // // console.log("图片压缩后的文件大小==，",size2)
+    //       arr.push(dataURL)
+    //       const con = {
+    //         files: arr.join('#@#'),
+    //         fileType: 0,
+    //         userId: sessionStorage.userId,
+    //       }
+    //       _this.$axios.post(`${_this.GLOBAL.system_manager_server}/file/uploadFile`, con).then((res) => {
+    //         if (res.data.code === 200) {
+    //           _this.imageUrl = res.data.data.fileUrls[0].fileUrl
+    //         } else {
+    //           _this.$message({
+    //             message: '上传失败',
+    //             type: 'warning',
+    //           })
+    //         }
+    //       }).catch(err => {
+    //         // console.log(err)
+    //       })
+    //     }
+    //   }
+    // },
     // // // 删除视频贴片
-    // // delVideoPatch() {
-    // //   this.imageUrl = ''
-    // // },
+    // delVideoPatch() {
+    //   this.imageUrl = ''
+    // },
     // // 压缩图片
     // imageCompress(base64) {
     //   const _this = this
@@ -1098,10 +1087,12 @@ export default {
     //   // })
     //   return p
     // },
+    // // 文件列表移除文件时的钩子
     // handleRemove(file, fileList) {
     //   // // console.log(file, fileList);
     //   this.fileList = fileList
     // },
+    // // 点击文件列表中已上传的文件时钩子
     // handlePictureCardPreview(file) {
     //   this.dialogImageUrl = file.url
     //   this.dialogVisible = true
@@ -1214,24 +1205,22 @@ export default {
     //       })
     //     }
     //   }).catch(err => {
-    //     // // 上传失败
-    //     // if(_this.iNum != i){
-    //     //   _this.iNum = i;
-    //     //   _this.errCount = 1;
-    //     //   _this.uploadSliceData(i,totalChunk,chunkSize,totalSize,file,fType,userId,tempFileName);
-    //     // }else{
-    //     //   _this.errCount = _this.errCount+1;
-    //     //   if(_this.errCount == 3){
-    //     //     // 彻底终止操作
-    //     //     // console.log("上传视频失败，请重试");
-    //     //     document.getElementsByClassName("bar")[0].style.width='0';
-    //     //     _this.perValue = '';
-    //     //     return false;
-    //     //   }else{
-    //     //     _this.uploadSliceData(i,totalChunk,chunkSize,totalSize,file,fType,userId,tempFileName);
-    //     //   }
-    //     // }
-
+    //     // 上传失败
+    //     if (_this.iNum !== i) {
+    //       _this.iNum = i
+    //       _this.errCount = 1
+    //       _this.uploadSliceData(i, totalChunk, chunkSize, totalSize, file, fType, userId, tempFileName)
+    //     } else {
+    //       _this.errCount += 1
+    //       if (_this.errCount === 3) {
+    //         // 彻底终止操作
+    //         // console.log("上传视频失败，请重试");
+    //         document.getElementsByClassName('bar')[0].style.width = '0'
+    //         _this.perValue = ''
+    //         return false
+    //       }
+    //       _this.uploadSliceData(i, totalChunk, chunkSize, totalSize, file, fType, userId, tempFileName)
+    //     }
     //   })
     // },
     // // 删除当前视频

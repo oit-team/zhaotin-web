@@ -99,15 +99,15 @@ export function getDefaultFormData(data, option) {
   // !!!副作用!!! 修改上传地址
   option.action = option.action || getDefaultUploadUrlByFileType(option.file.type)
 
-  if (/^image\//.test(option.file.type)) {
-    return getUploadImageFormData(data, option)
+  // if (/^image\//.test(option.file.type)) {
+  //   return getUploadImageFormData(data, option)
+  // } else {
+  if (option.fileChunk) {
+    return getUploadChunkFormData(data, option)
   } else {
-    if (option.fileChunk) {
-      return getUploadChunkFormData(data, option)
-    } else {
-      return getUploadFileFormData(data, option)
-    }
+    return getUploadFileFormData(data, option)
   }
+  // }
 }
 
 /**
@@ -115,7 +115,7 @@ export function getDefaultFormData(data, option) {
  * @return {{userId: string, token: string}}
  */
 export const getDefaultHeaders = () => ({
-  token: sessionStorage.accessToken,
+  token: localStorage.token,
   userId: sessionStorage.userId,
 })
 
@@ -188,13 +188,13 @@ function base64ToImage(base64) {
  * @return {string}
  */
 export function getDefaultUploadUrlByFileType(type) {
-  if (/^image\//.test(type)) {
-    // 图片上传地址
-    return API_SERVICE.SYSTEM + '/file/uploadFile'
-  } else {
+  // if (/^image\//.test(type)) {
+  //   // 图片上传地址
+  return API_SERVICE.SYSTEM + '/file/uploadFile'
+  // } else {
     // 默认地址
-    return API_SERVICE.SYSTEM + '/file/upVideoOrAudio'
-  }
+  // return API_SERVICE.SYSTEM + '/file/upVideoOrAudio'
+  // }
 }
 
 // 提供一些实用内容，与公共内容区分开

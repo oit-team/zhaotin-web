@@ -19,6 +19,8 @@ const ImageOverwrite = Vue.extend(Image).extend({
   },
 })
 
+const BASE_URL = process.env.NOOD_ENV === 'production' ? '' : '/api'
+
 export default {
   name,
 
@@ -73,11 +75,13 @@ export default {
   methods: {
     // 根据条件调用对应的上传
     handleHttpRequest(option) {
-      if (/^image\//.test(option.file.type)) {
-        this.uploadImage(option)
-      } else if (this.isChunked) {
+      // if (/^image\//.test(option.file.type)) {
+      //   this.uploadImage(option)
+      // } 
+      if (this.isChunked) {
         this.uploadChunk(option)
-      } else {
+      }
+       else {
         this.uploadFile(option)
       }
     },
@@ -189,7 +193,11 @@ export default {
         this.uploadQueue.set(config.cancelKey, cancel)
       })
 
-      return axios.post('http://home.gaodanyi.com/gdy/system/file/uploadFile', data, config)
+      return axios.post(url, data, {
+        baseURL: BASE_URL,
+        headers: this.headers,
+        ...config,
+      })
         .then(res => {
           return res
         })

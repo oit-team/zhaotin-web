@@ -6,7 +6,7 @@ import API_SERVICE from './API_SERVICE'
  * @param {object} params
  */
 export function getLiveBroadcastRoom(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/room/getLiveBroadcastRoom', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/room/getLiveBroadcastRoom`, params)
 }
 
 /**
@@ -14,7 +14,7 @@ export function getLiveBroadcastRoom(params) {
  * @param {number} roomId 房间id
  */
 export function delLiveBroadcastRoom(roomId) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/room/delLiveBroadcastRoom', { roomId })
+  return post(`${API_SERVICE.LIVE_BROADCAST}/room/delLiveBroadcastRoom`, { roomId })
 }
 
 /**
@@ -35,14 +35,14 @@ export function delLiveBroadcastRoom(roomId) {
  * @param {string} params.roomId 房间ID，修改直播间时传
  */
 export function addOrUpLiveBroadcastRoom(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/room/addOrUpLiveBroadcastRoom', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/room/addOrUpLiveBroadcastRoom`, params)
 }
 
 /**
  * 获取直播方式信息
  */
 export function getLiveBroadcastType() {
-  return post(API_SERVICE.LIVE_BROADCAST + '/room/getLiveBroadcastType')
+  return post(`${API_SERVICE.LIVE_BROADCAST}/room/getLiveBroadcastType`)
 }
 
 /**
@@ -55,7 +55,7 @@ export function getLiveBroadcastType() {
  * @param {string} params.devState 设备状态
  */
 export function getDeviceInfoList(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/device/getDeviceInfoList', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/device/getDeviceInfoList`, params)
 }
 
 /**
@@ -68,7 +68,7 @@ export function getDeviceInfoList(params) {
  * @param {string} params.devState 设备状态
  */
 export function getShopDevInfo(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/device/getShopDevInfo', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/device/getShopDevInfo`, params)
 }
 
 /**
@@ -76,7 +76,7 @@ export function getShopDevInfo(params) {
  * @param {string} devId 设备id
  */
 export function delDeviceInfo(devId) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/device/delDeviceInfo', { devId })
+  return post(`${API_SERVICE.LIVE_BROADCAST}/device/delDeviceInfo`, { devId })
 }
 
 /**
@@ -89,14 +89,14 @@ export function delDeviceInfo(devId) {
  * @param {string} params.devState 设备状态
  */
 export function updateDeviceInfo(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/device/updateDeviceInfo', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/device/updateDeviceInfo`, params)
 }
 
 /**
  * 查询品牌设备统计信息
  */
 export function getBrandIdDevCount() {
-  return post(API_SERVICE.LIVE_BROADCAST + '/device/getBrandIdDevCount')
+  return post(`${API_SERVICE.LIVE_BROADCAST}/device/getBrandIdDevCount`)
 }
 
 /**
@@ -111,7 +111,7 @@ export function getBrandIdDevCount() {
  * @param {string} params.state 房间状态（0：未发布，1：已发布）
  */
 export function publishOrWithdrawRoom(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/room/publishOrWithdrawRoom', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/room/publishOrWithdrawRoom`, params)
 }
 
 /**
@@ -119,14 +119,14 @@ export function publishOrWithdrawRoom(params) {
  * @param {string} devTypeCode 直播方式
  */
 export function getBrandAreaShopTree(devTypeCode) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/room/getBrandAreaShopTree', { devTypeCode })
+  return post(`${API_SERVICE.LIVE_BROADCAST}/room/getBrandAreaShopTree`, { devTypeCode })
 }
 
 /**
  * 查询设备供应商和设备型号信息
  */
 export function getDevTypeInfo() {
-  return post(API_SERVICE.LIVE_BROADCAST + '/device/getDevTypeInfo')
+  return post(`${API_SERVICE.LIVE_BROADCAST}/device/getDevTypeInfo`)
 }
 
 /**
@@ -139,7 +139,7 @@ export function getDevTypeInfo() {
  * @param {string} [params.resId = 0] 资源ID
  */
 export function pptToPicture(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/room/pptToPicture', {
+  return post(`${API_SERVICE.LIVE_BROADCAST}/room/pptToPicture`, {
     roomId: 0,
     resId: 0,
     ...params,
@@ -154,7 +154,7 @@ export function pptToPicture(params) {
  * @param {number} params.resType 资源类型
  */
 export function getAdvertsRes(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/getAdvertsRes', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/getAdvertsRes`, params)
 }
 
 /**
@@ -168,7 +168,7 @@ export function getAdvertsRes(params) {
  * @param params.endTime 创建结束时间
  */
 export function getAdvertsList(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/getAdvertsList', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/getAdvertsList`, params)
 }
 
 /**
@@ -181,7 +181,7 @@ export function getAdvertsList(params) {
  * @param params.resId 资源ID
  */
 export function addAdverts(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/addAdverts', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/addAdverts`, params)
 }
 
 /**
@@ -192,7 +192,7 @@ export function addAdverts(params) {
  * @param params.resList.resType 资源类型，0=图片，1=视频
  */
 export function addAdvertsRes(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/addAdvertsRes', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/addAdvertsRes`, params)
 }
 
 /**
@@ -205,7 +205,7 @@ export function addAdvertsRes(params) {
  * @param params.resId 资源ID
  */
 export function updateAdverts(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/updateAdverts', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/updateAdverts`, params)
 }
 
 /**
@@ -215,7 +215,7 @@ export function updateAdverts(params) {
  * @param params.state 状态值，0=未发布，1=已发布
  */
 export function updateAdvertsState(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/updateAdvertsState', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/updateAdvertsState`, params)
 }
 
 /**
@@ -223,7 +223,7 @@ export function updateAdvertsState(params) {
  * @param advId 广告ID
  */
 export function deleteAdverts(advId) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/deleteAdverts', { advId })
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/deleteAdverts`, { advId })
 }
 
 /**
@@ -233,5 +233,5 @@ export function deleteAdverts(advId) {
  * @param {number[]} params.devIds 设备ID
  */
 export function upDevAdverts(params) {
-  return post(API_SERVICE.LIVE_BROADCAST + '/adverts/upDevAdverts', params)
+  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/upDevAdverts`, params)
 }
