@@ -2,7 +2,7 @@
   <nav class="h-16 bg-black">
     <div class="container">
       <div class="flex">
-        <div class="h-16 w-44"><img class="h-full" src="../../../assets/icon/顶部导航/logo2.svg" alt="" /></div>
+        <div class="h-16 w-44"><img class="h-full" src="../../../assets/icon/header/logo2.svg" alt="" /></div>
         <ul
           class="flex-1 px-16 flex items-center text-gray-50 divide-x divide-white-500 justify-center"
         >
@@ -47,7 +47,7 @@
                 {{ userinfo.username }}<img
                   class="inline-block le
               ading-10 ml-2"
-                  src="../../../assets/icon/顶部导航/箭头下.svg"
+                  src="../../../assets/icon/header/down.svg"
                   alt=""
                 />
               </div>
@@ -61,9 +61,9 @@
             </template>
           </el-popover>
           <div class="space-x-4 ml-2">
-            <img class="inline-block leading-10" src="../../../assets/icon/顶部导航/消息.svg" alt="" />
-            <img class="inline-block leading-10" src="../../../assets/icon/顶部导航/客服.svg" alt="" />
-            <img class="inline-block leading-10" src="../../../assets/icon/顶部导航/设置.svg" alt="" />
+            <img class="inline-block leading-10" src="../../../assets/icon/header/msg.svg" alt="" />
+            <img class="inline-block leading-10" src="../../../assets/icon/header/servicer.svg" alt="" />
+            <img class="inline-block leading-10" src="../../../assets/icon/header/setting.svg" alt="" />
           </div>
         </div>
       </div>

@@ -10,16 +10,30 @@ export function getGoodsSizeInfo(params) {
 }
 // 所属季节
 export function getSeasonId(params) {
-  return post('/goods/series/seriesAllMethod', params, {
+  return post('/goods/season/getSeason', params, {
     mod: 'home',
-    cmd: 30001,
+    cmd: 10008,
   })
 }
-// 上传商品图片
-// export function uploadFile(params) {
-//   return post('/system/file/uploadFile', params)
-// }
-
+// 商品尺码
+export function getClothingSizeInfo(params) {
+  return post('/goods/size/clothingSizeInfo', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 删除商品
+export function getDeleteStyleInfo(params) {
+  return post('/goods/style/deleteStyleInfo', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 提交文件
 export function addAdvertsRes(params) {
   return post('/adverts/addAdvertsRes', params)
+}
+// 导出商品
+export function getExportInfo(params) {
+  return post('system/excelPublic/getExportInfo', params)
 }

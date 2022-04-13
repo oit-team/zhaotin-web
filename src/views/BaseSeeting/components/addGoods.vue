@@ -22,16 +22,16 @@
                 <el-form-item label="商品名称" prop="styleName">
                   <el-input v-model.trim="ruleForm.styleName" style="width:76%;" maxlength="32" placeholder="请输入商品名称" />
                 </el-form-item>
-                <el-form-item label="商品编号" prop="styleNo">
-                  <el-input v-model.trim="ruleForm.styleNo" style="width:76%;" maxlength="32" placeholder="请输入商品编号" />
+                <el-form-item label="商品编号" prop="styleId">
+                  <el-input v-model.trim="ruleForm.styleId" style="width:76%;" maxlength="32" placeholder="请输入商品编号" />
                 </el-form-item>
                 <el-form-item label="商品类别" prop="styleCategory">
-                  <el-select v-model="ruleForm.styleCategory" style="width:76%;" placeholder="请选择商品类别" @change="changeCate">
+                  <el-select v-model="ruleForm.styleCategory" style="width:76%;" placeholder="请选择商品类别" @change="changeStyleCategory">
                     <el-option
-                      v-for="item in cateOptions"
+                      v-for="item in styleCategory"
                       :key="item.styleType"
                       :label="item.DICTITEM_DISPLAY_NAME"
-                      :value="item.DICTITEM_CODE"
+                      :value="item.DICTITEM_DISPLAY_NAME"
                     />
                   </el-select>
                   <!-- <el-input
@@ -48,15 +48,15 @@
                   <el-input v-model.trim="ruleForm.styleFabric" style="width:76%;" maxlength="64" placeholder="请输入商品材质" />
                 </el-form-item>
                 <!-- 基础配置折叠面板 -->
-                <el-collapse v-model="ruleForm.seasonId">
+                <el-collapse>
                   <el-collapse-item title="基础配置" name="1">
                     <el-form-item label="所属季节" prop="seasonId">
-                      <el-select v-model="ruleForm.seasonId" style="width:76%;" placeholder="请选择所属季节" @change="changeCate">
+                      <el-select v-model="ruleForm.seasonId" style="width:76%;" placeholder="请选择所属季节">
                         <el-option
-                          v-for="item in cateOptions"
-                          :key="item.dicttimeDisplayName"
-                          :label="item.dicttimeDisplayName"
-                          :value="item.dicttimeDisplayName"
+                          v-for="item in seasonIdList"
+                          :key="item.id"
+                          :label="item.seasonName"
+                          :value="item.seasonName"
                         />
                       </el-select>
                     </el-form-item>
@@ -68,13 +68,13 @@
                 maxlength="10"
                 placeholder="需要确认字段的详细代表含义"
               /> -->
-                      <el-select v-model="ruleForm.recommendationLevel" style="width:76%;" placeholder="请选择是否标记为重点款">
+                      <el-select v-model="ruleForm.styleMajor" style="width:76%;" placeholder="请选择是否标记为重点款">
                         <el-option label="否" value="0" />
                         <el-option label="是" value="1" />
                       </el-select>
                     </el-form-item>
                     <el-form-item label="适用场合" prop="styleInfo">
-                      <el-input v-model.trim="ruleForm.styleInfo" style="width:76%;" placeholder="请输入适用场合" />
+                      <el-input v-model.trim="ruleForm.remarks" style="width:76%;" placeholder="请输入适用场合" />
                     </el-form-item>
                     <el-form-item label="商品标签">
                       <el-input v-model.trim="addLabel" style="width:56%;" maxlength="32" placeholder="请添加商品标签" />
@@ -228,7 +228,7 @@
                 </div>
                 <div v-else>
                   <div style="margin-right:20px;">商品尺码</div>
-                  <p class="noSizeInfo">未发现<span style="color:#e60012;">({{ ruleForm.styleSize }})</span>相关尺码配置，请前往信息预设中设置。</p>
+                  <p class="noSizeInfo">未发现<span style="color:#e60012;">{{ ruleForm.styleCategory }}</span>相关尺码配置，请前往信息预设中设置。</p>
                 </div>
               </div>
             </div>
@@ -241,9 +241,16 @@
                 <div class="my-4">
                   <div class="flex items-center">
                     <ul class="flex direction-col" v-if="colorList.length">
-                      <li @click="deleteColor(index)" @mouseenter="showColor" class="wordBorder" v-for="(item,index) in colorList" :key="item"><p class="text-4xl">{{ item }}</p></li>
+                      <li
+                        @click="deleteColor(index)"
+                        class="wordBorder"
+                        v-for="(item,index) in colorList"
+                        :key="item"
+                      >
+                        <p class="text-4xl">{{ item }}</p>
+                      </li>
                     </ul>
-                    <div class="wordBorder" @click="addColor"> <i class="el-icon-plus"></i></div>
+                    <div class="addColor" @click="addColor"> <i class="el-icon-plus"></i></div>
                   </div>
                   <el-drawer :show-close="false" :visible.sync="drawer" class="h-64 text-center">
                     <div class="flex justify-between items-center px-4">
@@ -342,25 +349,22 @@
             <!-- 批发价格面板 -->
             <div class="">
               <el-collapse label="批发价格" v-model="ruleForm.tradePrice" :accordion="true" name="tradePrice">
-                <!-- <el-collapse-item title="批发价格" name="tradePrice">
-                  <div class="flex">
-                    <el-form-item class="flex" label="" prop="costPrice">
-                      <el-input v-model.trim="ruleForm.costPrice" style="width:60%;" maxlength="32" placeholder="请输入起订数" />
-                      <el-input v-model.trim="ruleForm.costPrice" style="width:60%;" maxlength="32" placeholder="请输入截止数" />
-                    </el-form-item>
-                    <el-form-item label="" prop="costPrice">
-
-                    </el-form-item>
-                  </div>
-                <el-form-item label="" prop="tagPrice">
-                  <el-input v-model.trim="ruleForm.tagPrice" style="width:50%;" maxlength="32" placeholder="请输入品牌价格" />
-                </el-form-item>
-                <el-form-item label="" prop="retailPrice">
-                  <el-input v-model.trim="ruleForm.retailPrice" style="width:50%;" maxlength="32" placeholder="请输入零售价格" />
-                </el-form-item>
-                </el-collapse-item> -->
                 <el-collapse-item title="批发价格">
-                  <div><el-input v-model.trim="ruleForm.tradePrice" style="width:80%;" maxlength="32" placeholder="请输入起订数" /></div>
+                  <div class="flex items-center justify-between mb-4">
+                    <el-input v-model="styleTradePrice[0].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
+                    <el-input v-model="styleTradePrice[0].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
+                    <el-input v-model="styleTradePrice[0].styleTradePrice" style="width:20%;" placeholder="请输入批发价格" />
+                  </div>
+                  <div class="flex items-center justify-between mb-4">
+                    <el-input v-model="styleTradePrice[1].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
+                    <el-input v-model="styleTradePrice[1].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
+                    <el-input v-model="styleTradePrice[1].styleTradePrice" style="width:20%;" placeholder="请输入批发价格" />
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <el-input v-model="styleTradePrice[2].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
+                    <el-input v-model="styleTradePrice[2].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
+                    <el-input v-model="styleTradePrice[2].styleTradePrice" style="width:20%;" placeholder="请输入批发价格" />
+                  </div>
                   <!-- <div><input type="text" /></div> -->
                 </el-collapse-item>
               </el-collapse>
@@ -378,7 +382,7 @@
 <script>
 import quill from '@/views/common/quillEditor'
 import { addQuillTitle } from '@/assets/js/js/quill-title'
-import { getGoodsSizeInfo, getSeasonId, addAdvertsRes } from '@/api/goods'
+import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo } from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
 import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
 // import axios from 'axios'
@@ -399,8 +403,11 @@ export default {
       callback()
     }
     return {
-      colorList: [],
-      newColor: '',
+      styleCategory: [], // 商品类别渲染列表
+      seasonIdList: [], // 所属季节渲染列表
+      startPrice: '', // 起订数
+      colorList: [], // 新增颜色的集合数组
+      newColor: '', // 新增的商品颜色个体
       uploadList: [],
       selectedItem: null,
       maxMB: 50,
@@ -425,30 +432,48 @@ export default {
       ruleForm: {
         recommendationLevel: '0',
         status: 'NOTGROUNDING', // NOTGROUNDING  未上架  GROUNDING 已上架
-        styleCategory: [], // 商品类别
+        styleId: '', // 款式id
+        styleCategory: '', // 商品类别
         styleColor: '', // 商品颜色
         styleFabric: '', // 款式材质
         styleFlowerPattern: '', // 款式廓形
         styleInfo: '', // 款式风格
-        styleLabel: '',
-        seasonId: '', // 所属季节
         styleName: '', // 商品名称
         styleNo: '', // 商品编号
         stylePrice: '', // 商品价格
+        remarks: '', // 备注
+        seasonId: '', // 所属季节
         retailPrice: '', // 零售价格
         tagPrice: '', // 品牌价格
         costPrice: '', // 成本价格
-        tradePrice: '', // 批发价格
         styleVideo: '', // 商品视频
-        styleVideoPatch: '', // 款式视频贴片
         washMaintenance: '', // 洗涤保养
         wearSellingPoint: '', // 穿着卖点
         sellingPointFabric: '', // 面料卖点
         designSellingPoint: '', // 设计卖点
-        styleId: null, // 款式id
         styleSize: [], // 商品尺码
-        idList: [],
+        styleMajor: '', // 是否重点款
       },
+      styleTradePrice: [
+        {
+          minimumOrderQuantity: '',
+          maximumOrder: '',
+          styleTradePrice: '',
+          sort: 1,
+        },
+        {
+          minimumOrderQuantity: '',
+          maximumOrder: '',
+          styleTradePrice: '',
+          sort: 1,
+        },
+        {
+          minimumOrderQuantity: '',
+          maximumOrder: '',
+          styleTradePrice: '',
+          sort: 1,
+        },
+      ], // 批发价格
       rules: {
         styleName: [
           { required: true, message: '请输入商品名称', trigger: 'blur' },
@@ -567,42 +592,14 @@ export default {
     },
   },
   created() {
-    // this.requestUploadImg()
-    // this.getSeasonId()
-    // this.getGoodsInfo()
-    // this.getGoodstyle()
-    // this.getGoodsSizeInfo()
-    // this.getGoofdstyle()
-    // // console.log(this.$route.query.item)
-    // if (this.$route.query.item) {
-    //   this.goodSizeFlag = true
-    //   this.operateFlag = this.$route.query.operateFlag
-    //   this.styleId = this.$route.query.item.styleId
-    //   this.bandId = this.$route.query.item.bandId
-    //   this.bandName = this.$route.query.item.bandName
-    //   this.seriesId = this.$route.query.item.seriesId
-    //   this.seriesName = this.$route.query.item.seriesName
-    //   if (this.$route.query.item.styleVideoPatch) {
-    //     this.imageUrl = this.$route.query.item.styleVideoPatch
-    //   }
-    //   this.ruleForm = this.$route.query.item
-    //   this.ruleForm.styleNo = this.$route.query.item.styleNo
-    //   this.ruleForm.styleCategory = this.$route.query.item.styleCategory
-    //   if (this.ruleForm.stylePrice) {
-    //     this.ruleForm.stylePrice = String(this.ruleForm.stylePrice)
-    //   }
-
-    //   if (this.operateFlag === 'view') {
-    //     this.title = '查看商品'
-    //   }
-    //   if (this.operateFlag === 'edit') {
-    //     this.title = '编辑商品'
-    //   }
-    //   this.getGoodsInfo()
-    // } else {
-    //   this.operateFlag = this.$route.query.operateFlag
-    //   this.title = '新增商品'
-    // }
+    this.getSeasonId()
+    if (this.$route.query.item) {
+      this.title = '编辑'
+      this.ruleForm = this.$route.query.item.row
+    //   this.menuIds = '1'
+    } else {
+      this.title = '新增'
+    }
   },
   mounted() {
     addQuillTitle()
@@ -677,9 +674,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.colorInput.focus()
       })
-    },
-    showColor() {
-
     },
     deleteColor(index) {
       this.colorList.splice(index, 1)
@@ -776,7 +770,7 @@ export default {
       getGoodsSizeInfo(con).then((res) => {
         // console.log(res)
         if (res.head.status === 0) {
-          this.cateOptions = res.body.result
+          this.styleCategory = res.body.result
         } else {
           this.$message({
             message: res.head.msg,
@@ -790,17 +784,12 @@ export default {
     // 获取所属季节
     getSeasonId() {
       const con = {
-        brandId: sessionStorage.brandId,
-        pageNum: '1',
-        pageSize: '12',
-        seriesName: '',
-        seriesLabel: '',
+        seasonName: '',
       }
-      // 获取商品类别
       getSeasonId(con).then((res) => {
         console.log(res)
         if (res.head.status === 0) {
-          this.cateOptions = res.body.result
+          this.seasonIdList = res.body.resultList
         } else {
           this.$message({
             message: res.head.msg,
@@ -810,13 +799,6 @@ export default {
       }).catch(err => {
         // console.log(err)
       })
-    },
-    // 修改商品类别
-    changeCate(val) {
-      // // console.log("商品类别===",val)
-      this.ruleForm.styleCategory = val
-      this.goodSizeFlag = true
-      this.getGoodsSizeInfo()
     },
     // 新增商品标签
     addGoodLabel(val) {
@@ -836,25 +818,25 @@ export default {
     delLabel(index) {
       this.labelList.splice(index, 1)
     },
+    changeStyleCategory(val) {
+      this.getClothingSizeInfo(val)
+    },
     // 尺码==========================
     // 获取商品尺码信息
-    getGoodsSizeInfo() {
-      const _this = this
+    getClothingSizeInfo(val) {
       const con = {
         brandId: sessionStorage.brandId,
         // styleNo:_this.ruleForm.styleNo,
-        catergre: _this.ruleForm.styleCategory,
-        styleId: _this.ruleForm.styleId,
+        catergre: val,
+        styleId: this.ruleForm.styleId,
       }
-      const jsonParam = _this.GLOBAL.g_paramJson(con)
-      getGoodsSizeInfo(jsonParam).then((res) => {
-        // // console.log("获取商品尺码：",res.data.body);
-        _this.editSizeFlag = false
+      getClothingSizeInfo(con).then((res) => {
+        console.log(res)
         if (res.data.head.status === 0) {
           if (res.data.body) {
-            _this.sizeInfo = res.data.body
-            _this.sizeTableList = res.data.body.resultMap
-            _this.sizeTableList.forEach(el => {
+            this.sizeInfo = res.data.body
+            this.sizeTableList = res.data.body.resultMap
+            this.sizeTableList.forEach(el => {
               el.userId = sessionStorage.userId
               const temp = el.SIZE_NAME
               el.sizeName = temp // 入参时需要将大写（SIZE_NAME）改为小写（sizeName）
@@ -863,14 +845,14 @@ export default {
                 el.id = tempId
               }
             })
-            // // console.log("_this.sizeTableList,",_this.sizeTableList)
+            // // console.log("this.sizeTableList,",this.sizeTableList)
           } else {
-            _this.sizeInfo = null
-            _this.sizeTableList = []
+            this.sizeInfo = null
+            this.sizeTableList = []
           }
         } else {
-          _this.sizeInfo = null
-          _this.sizeTableList = []
+          this.sizeInfo = null
+          this.sizeTableList = []
           // _this.$message({
           //   message: res.data.head.msg,
           //   type: 'warning'
@@ -1196,6 +1178,21 @@ export default {
   margin-left: 20px;
   margin-bottom: 15px;
   background-color: rgb(240, 238, 238);
+}
+.addColor {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #ccc;
+  margin-left: 20px;
+  margin-bottom: 15px;
+  background-color: rgb(240, 238, 238);
+}
+.wordBorder:hover {
+  opacity: 0.3;
+  background-color: rgb(63, 61, 61);
 }
 .addColorStyle {
   height: 80px;

@@ -84,7 +84,7 @@ export default {
       this.$router.push('/system/menuList/AddMneu')
     },
     // 删除菜单
-    deleteMenu(item, index) {
+    deleteMenu(item) {
       this.$confirm('确认删除该菜单?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
