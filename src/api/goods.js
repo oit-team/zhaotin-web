@@ -21,5 +21,5 @@ export function getSeasonId(params) {
 // }
 
 export function addAdvertsRes(params) {
-  return post(`${API_SERVICE.LIVE_BROADCAST}/adverts/addAdvertsRes`, params)
+  return post('/adverts/addAdvertsRes', params)
 }
