@@ -17,6 +17,7 @@ const COMPRESSION_RATE = 0.7
  * @param {number} option.chunkEnd
  * @return {FormData}
  */
+// 获取Form Data的参数
 function getUploadChunkFormData(data = {}, option) {
   const formData = new FormData()
   const {

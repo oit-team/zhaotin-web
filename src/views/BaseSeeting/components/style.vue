@@ -57,7 +57,7 @@
         <div style="margin-top: 20px">
           <el-button v-if="importType==1" size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
           <el-button v-if="importType==2" size="small" type="success" @click="confirmImportStock">导入库存</el-button>
-          <el-button size="small" @click="cancelImport = false">取消导入</el-button>
+          <el-button size="small" @click="importFlag = false">取消导入</el-button>
         </div>
       </div>
     </el-drawer>
@@ -70,7 +70,7 @@
       direction="rtl"
       size="40%"
     >
-      <div class="">
+      <div class="text-center">
         <el-checkbox-group v-model="checkList" @change="changeChecked">
           <div
             style="text-align:left;margin:6px 0px;"
@@ -86,7 +86,7 @@
           </div>
         </el-checkbox-group>
         <div style="margin-top: 20px">
-          <el-button size="small" @click="cancelExportGoods">取 消</el-button>
+          <el-button size="small" @click="exportModelFlag =false">取 消</el-button>
           <el-button size="small" type="primary" @click="confirmExportGoods">确 认</el-button>
         </div>
       </div>
@@ -116,7 +116,7 @@
           </li>
         </ul>
         <div style="margin-top: 20px">
-          <el-button size="small" @click="cancelErrData">取消</el-button>
+          <el-button size="small" @click="importErrDataFlag = false">取消</el-button>
         </div>
       </div>
     </el-drawer>
@@ -126,7 +126,8 @@
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getProductList } from '@/api/product'
-import { getDeleteStyleInfo, getExportInfo } from '@/api/goods'
+import { getDeleteStyleInfo, getExportInfo, addimporStyleInfo } from '@/api/goods'
+import axios from 'axios'
 
 export default {
   name: 'Style',
@@ -188,7 +189,7 @@ export default {
             name: '导入库存',
             icon: 'el-icon-download',
             type: 'primary',
-            click: () => this.$refs.export.open(),
+            click: () => this.importStock(),
           },
         ],
         table: {
@@ -328,7 +329,82 @@ export default {
     },
     // 导入商品
     importGoods() {
+      this.importType = 1
       this.importFlag = true
+    },
+    // 点击导入库存按钮
+    importStock() {
+      this.importType = 2
+      this.importFlag = true
+    },
+    // 确认导入库存
+    confirmImportStock() {
+      if (this.fileList.length === 0) {
+        this.$message({
+          message: '请先选择文件',
+          type: 'warning',
+        })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '正在导入中，请稍候',
+        })
+
+        const formData = new FormData() //  用FormData存放上传文件
+        // console.log("this.fileList====",this.fileList)
+        formData.append('file', this.fileList[0].raw)
+        formData.append('brandId', sessionStorage.brandId)
+
+        // console.log("formData====",formData)
+        // 向webapi发起请求，等待后台接收
+        const _this = this
+
+        _this.$axios.post(`${_this.GLOBAL.data_manager_server}/dataStockInfo/importStockInfo`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }).then((res) => {
+          _this.importFlag = false
+          // console.log("-----------------",res.data);
+          _this.$refs.upload.clearFiles()
+          if (res.data.head.status === 0) {
+            // console.log("导入库存成功",res.data.body)
+            _this.importResult = res.data.body
+            _this.addCount = res.data.body.addCount
+            _this.upDateCount = res.data.body.upDateCount
+            _this.failureCount = res.data.body.failureCount
+
+            _this.fileList = []
+            _this.fileData = ''
+
+            if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
+              _this.importErrDataFlag = true
+              _this.importErrData = res.data.body.errorStr
+            } else {
+              this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
+                confirmButtonText: '确定',
+                callback: action => {},
+              })
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.data.head.msg,
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '导入商品失败',
+          })
+        })
+      }
+    },
+    handleImportClose() {
+      this.$confirm('确认关闭？').then(() => {
+        this.importFlag = false
+        this.$refs.upload.clearFiles()
+      }).catch(() => {})
     },
     // 监控上传文件列表
     changeFile(file, fileList) {
@@ -349,14 +425,91 @@ export default {
       this.fileData.append('file', file.file)
       // console.log("this.fileData====",this.fileData)
     },
-    // 取消导入
-    cancelImport() {
-      // this.importFlag = false
+    // 确认导入商品
+    confirmImportGoods() {
+      // this.$refs.upload.submit();
+      if (this.fileList.length === 0) {
+        this.$message({
+          message: '请先选择文件',
+          type: 'warning',
+        })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '正在导入中，请稍候',
+          duration: '1000',
+        })
+
+        const formData = new FormData() //  用FormData存放上传文件
+        // console.log("this.fileList====",this.fileList)
+        formData.append('file', this.fileList[0].raw)
+        formData.append('brandId', sessionStorage.brandId)
+
+        // console.log("formData====",formData)
+        // 向webapi发起请求，等待后台接收
+        const _this = this
+        // _this.$axios.post(`${_this.GLOBAL.goods_manager_server}/style/addimporStyleInfo`, formData, {
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data',
+        //   },
+        // }).then((res) => {
+        //   _this.importFlag = false
+        //   // console.log("-----------------",res.data);
+        //   _this.$refs.upload.clearFiles()
+        //   if (res.data.head.status === 0) {
+        //     _this.importResult = res.data.body
+
+        //     _this.addCount = res.data.body.addCount
+        //     _this.upDateCount = res.data.body.upDateCount
+        //     _this.failureCount = res.data.body.failureCount
+
+        //     _this.fileList = []
+        //     _this.fileData = ''
+        //     if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
+        //       _this.importErrDataFlag = true
+        //       _this.importErrData = res.data.body.errorStr
+        //     } else {
+        //       this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
+        //         confirmButtonText: '确定',
+        //         callback: action => {
+
+        //         },
+        //       })
+        //     }
+        //   } else {
+        //     this.$message({
+        //       type: 'error',
+        //       message: res.data.head.msg,
+        //     })
+        //   }
+        // }).catch(err => {
+        //   this.$message({
+        //     type: 'warning',
+        //     message: '导入商品失败',
+        //   })
+        // })
+      }
     },
-    // 导出商品
+    // 导入错误数据的关闭操作
+    handleImportErrClose() {
+      this.$confirm('确认关闭？').then(() => {
+        this.importErrDataFlag = false
+      }).catch(() => {})
+    },
+    // 点击打开导出商品弹框
     export() {
       this.exportModelFlag = true
       this.getExportInfo()
+    },
+    // 获取选中项的值
+    changeChecked(val) {
+      // console.log("复选框变化后的值===",val);
+      this.checkList = val
+      // console.log("this.checkList===",this.checkList);
+    },
+    // 确认导出商品按钮
+    confirmExportGoods() {
+
     },
   },
 

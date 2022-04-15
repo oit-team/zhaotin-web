@@ -13,312 +13,109 @@
     <el-form ref="ruleForm" class="demo-ruleForm" :model="ruleForm" :rules="rules" label-width="98px">
       <div class="goodsFormBox">
         <!-- 菜单栏 -->
-        <el-tabs class="" v-model="activeNum">
-          <!-- 基础信息面板 -->
-          <el-tab-pane class="msgTab" label="基础信息" name="message">
-            <!-- <el-collapse-item title="" name="1"> -->
-            <div class="flex">
-              <div class="left left-box">
-                <el-form-item label="商品名称" prop="styleName">
-                  <el-input v-model.trim="ruleForm.styleName" style="width:76%;" maxlength="32" placeholder="请输入商品名称" />
-                </el-form-item>
-                <el-form-item label="商品编号" prop="styleId">
-                  <el-input v-model.trim="ruleForm.styleId" style="width:76%;" maxlength="32" placeholder="请输入商品编号" />
-                </el-form-item>
-                <el-form-item label="商品类别" prop="styleCategory">
-                  <el-select v-model="ruleForm.styleCategory" style="width:76%;" placeholder="请选择商品类别" @change="changeStyleCategory">
-                    <el-option
-                      v-for="item in styleCategory"
-                      :key="item.styleType"
-                      :label="item.DICTITEM_DISPLAY_NAME"
-                      :value="item.DICTITEM_DISPLAY_NAME"
-                    />
-                  </el-select>
+        <div class="w-4/5">
+          <el-tabs class="" v-model="activeNum">
+            <!-- 基础信息面板 -->
+            <el-tab-pane class="msgTab" label="基础信息" name="message">
+              <!-- <el-collapse-item title="" name="1"> -->
+              <div class="flex">
+                <div class="left left-box">
+                  <el-form-item label="商品名称" prop="styleName">
+                    <el-input v-model.trim="ruleForm.styleName" style="width:76%;" maxlength="32" placeholder="请输入商品名称" />
+                  </el-form-item>
+                  <el-form-item label="商品编号" prop="styleNo">
+                    <el-input v-model.trim="ruleForm.styleNo" style="width:76%;" maxlength="32" placeholder="请输入商品编号" />
+                  </el-form-item>
+                  <el-form-item label="商品类别" prop="styleCategory">
+                    <el-select v-model="ruleForm.styleCategory" style="width:76%;" placeholder="请选择商品类别">
+                      <el-option
+                        v-for="item in styleCategory"
+                        :key="item.styleType"
+                        :label="item.DICTITEM_DISPLAY_NAME"
+                        :value="item.DICTITEM_DISPLAY_NAME"
+                      />
+                    </el-select>
                   <!-- <el-input
                     v-model="ruleForm.styleCategory"
                     style="width:76%;"
                     maxlength="32"
                     placeholder="请输入商品类别"
                   /> -->
-                </el-form-item>
-                <el-form-item label="商品廓形" prop="styleFlowerPattern">
-                  <el-input v-model.trim="ruleForm.styleFlowerPattern" style="width:76%;" maxlength="32" placeholder="请输入商品廓形" />
-                </el-form-item>
-                <el-form-item label="商品材质" prop="styleFabric">
-                  <el-input v-model.trim="ruleForm.styleFabric" style="width:76%;" maxlength="64" placeholder="请输入商品材质" />
-                </el-form-item>
-                <!-- 基础配置折叠面板 -->
-                <el-collapse>
-                  <el-collapse-item title="基础配置" name="1">
-                    <el-form-item label="所属季节" prop="seasonId">
-                      <el-select v-model="ruleForm.seasonId" style="width:76%;" placeholder="请选择所属季节">
-                        <el-option
-                          v-for="item in seasonIdList"
-                          :key="item.id"
-                          :label="item.seasonName"
-                          :value="item.seasonName"
-                        />
-                      </el-select>
-                    </el-form-item>
-                    <!-- recommendationLevel  '0' 非重点  ‘1’ 重点款 -->
-                    <el-form-item label="是否重点款" prop="recommendationLevel">
-                      <!-- <el-input
+                  </el-form-item>
+                  <el-form-item label="商品廓形" prop="styleFlowerPattern">
+                    <el-input v-model.trim="ruleForm.styleFlowerPattern" style="width:76%;" maxlength="32" placeholder="请输入商品廓形" />
+                  </el-form-item>
+                  <el-form-item label="商品材质" prop="styleFabric">
+                    <el-input v-model.trim="ruleForm.styleFabric" style="width:76%;" maxlength="64" placeholder="请输入商品材质" />
+                  </el-form-item>
+                  <!-- 基础配置折叠面板 -->
+                  <el-collapse>
+                    <el-collapse-item title="基础配置" name="1">
+                      <el-form-item label="所属季节" prop="bandName">
+                        <el-select v-model="ruleForm.bandName" style="width:76%;" placeholder="请选择所属季节">
+                          <el-option
+                            v-for="item in seasoNameList"
+                            :key="item.id"
+                            :label="item.seasonName"
+                            :value="item.seasonName"
+                          />
+                        </el-select>
+                      </el-form-item>
+                      <!-- recommendationLevel  '0' 非重点  ‘1’ 重点款 -->
+                      <el-form-item label="是否重点款" prop="recommendationLevel">
+                        <!-- <el-input
                 v-model="ruleForm.recommendationLevel"
                 style="width:76%;"
                 maxlength="10"
                 placeholder="需要确认字段的详细代表含义"
               /> -->
-                      <el-select v-model="ruleForm.styleMajor" style="width:76%;" placeholder="请选择是否标记为重点款">
-                        <el-option label="否" value="0" />
-                        <el-option label="是" value="1" />
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item label="适用场合" prop="styleInfo">
-                      <el-input v-model.trim="ruleForm.remarks" style="width:76%;" placeholder="请输入适用场合" />
-                    </el-form-item>
-                    <el-form-item label="商品标签">
-                      <el-input v-model.trim="addLabel" style="width:56%;" maxlength="32" placeholder="请添加商品标签" />
-                      <el-button class="addGoods-addBtn" @click="addGoodLabel(addLabel)">新增</el-button>
-                    </el-form-item>
-                    <div v-if="labelList.length>0" class="labelList">
-                      <div v-for="(item,i) in labelList" :key="i" class="labelItem">
-                        <span>{{ item }}</span>
-                        <i style="font-size:16px;margin-left:10px;" class="el-icon-circle-close" @click="delLabel(i)"></i>
+                        <el-select v-model="ruleForm.styleMajor" style="width:76%;" placeholder="请选择是否标记为重点款">
+                          <el-option label="否" value="0" />
+                          <el-option label="是" value="1" />
+                        </el-select>
+                      </el-form-item>
+                      <el-form-item label="适用场合" prop="styleInfo">
+                        <el-input v-model.trim="ruleForm.remarks" style="width:76%;" placeholder="请输入适用场合" />
+                      </el-form-item>
+                      <el-form-item label="商品标签">
+                        <el-input v-model.trim="addLabel" style="width:56%;" maxlength="32" placeholder="请添加商品标签" />
+                        <el-button class="addGoods-addBtn" @click="addGoodLabel(addLabel)">新增</el-button>
+                      </el-form-item>
+                      <div v-if="labelList.length>0" class="labelList">
+                        <div v-for="(item,i) in labelList" :key="i" class="labelItem">
+                          <span>{{ item }}</span>
+                          <i style="font-size:16px;margin-left:10px;" class="el-icon-circle-close" @click="delLabel(i)"></i>
+                        </div>
                       </div>
-                    </div>
-                  </el-collapse-item>
-                </el-collapse>
-              </div>
-              <div class="fileInfoBox right ml-8">
-                <!-- 商品视频 -->
-                <!-- https://www.cnblogs.com/1312mn/p/11233395.html  上传视频参考连接，本功能需要再完善 -->
-                <!-- :on-progress="uploadVideoProcess" 自定义上传的时候貌似不生效 -->
-                <!-- <el-form-item label="商品视频">
-                  <el-upload
-                    class="el-upload-video"
-                    action="#"
-                    accept=".mp4,.mov"
-                    :before-upload="beforeUploadVideo"
-                    :http-request="requestUploadVideo"
-                    :show-file-list="false"
-                  >
-                    <video
-                      v-if="videoSrc"
-                      style=""
-                      class="avatar video-avatar"
-                      :src="videoSrc"
-                      controls="controls"
-                    >
-                      <track
-                        default
-                        kind="captions"
-                        srclang="en"
-                        src="/video/php/friday.vtt"
-                      />
-                      抱歉，您的浏览器不支持嵌入视频！
-                    </video>
-                    <el-progress
-                      v-if="!videoSrc&&uploadVideoFlag"
-                      type="circle"
-                      :percentage="perValue"
-                    />
-                    <div v-if="!videoSrc&&!uploadVideoFlag" class="addVideoIcon"><i class="el-icon-plus" style="font-size:28px;color:#888;"></i></div>
-                  </el-upload>
-                  <div v-if="videoSrc"> <el-button @click="delVideo">删除视频</el-button> </div>
-                </el-form-item>
-                <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
-
-                <el-form-item v-if="videoSrc" label="视频贴片">
-                  <el-upload
-                    class="avatar-uploader"
-                    :show-file-list="false"
-                    action="#"
-                    accept=".jpg,.png"
-                    :before-upload="beforeUploadImg"
-                    :http-request="requestUploadPatch"
-                    :on-preview="handlePictureCardPreview"
-                    :on-remove="handleRemove"
-                  >
-                    <img v-if="imageUrl" alt="" class="patchImage" :src="imageUrl" />
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
-                  <div v-if="imageUrl"> <el-button @click="delVideoPatch">删除视频贴片</el-button> </div>
-                </el-form-item> -->
-                <div class="mt-12 ml-12">
-                  <el-collapse label="保养及卖点" name="sale">
-                    <el-collapse-item title="保养及卖点" name="sale">
-                      <el-form-item label="洗涤保养">
-                        <quill
-                          style="width:96%;"
-
-                          :value="ruleForm.washMaintenance"
-                          :editor-setting="editorSetting"
-                          :height="&quot;150px&quot;"
-                          @changeVal="changeWashMaintenance"
-                        />
-                      </el-form-item>
-                      <el-form-item label="面料卖点">
-                        <quill
-                          style="width:96%;"
-                          :value="ruleForm.sellingPointFabric"
-                          :editor-setting="editorSetting"
-                          :height="&quot;150px&quot;"
-                          @changeVal="changeSellingPointFabric"
-                        />
-                      </el-form-item>
-                      <el-form-item label="设计卖点">
-                        <quill
-                          style="width:96%;"
-                          :value="ruleForm.designSellingPoint"
-                          :editor-setting="editorSetting"
-                          :height="&quot;150px&quot;"
-                          @changeVal="changeDesignSellingPoint"
-                        />
-                      </el-form-item>
-                      <el-form-item label="穿着卖点">
-                        <quill
-                          style="width:96%;"
-                          :value="ruleForm.wearSellingPoint"
-                          :editor-setting="editorSetting"
-                          :height="&quot;150px&quot;"
-                          @changeVal="changeWearSellingPoint"
-                        />
-                      </el-form-item>
                     </el-collapse-item>
                   </el-collapse>
                 </div>
-              </div>
-            </div>
-            <el-divider />
-            <!-- 商品尺码 -->
-            <div>
-              <!-- 商品尺码 -->
-              <div v-if="true" class="goodsSizeBox">
-                <div v-if="sizeInfo">
-                  <div style="margin:20px 0px;">
-                    <span style="margin-right:20px;">商品尺码</span>
-                    <el-button v-if="operateFlag!=&quot;view&quot;&&editSizeFlag" size="small" @click="editSizeConfirm"><i class="el-icon-check"></i>确认</el-button>
-                    <el-button v-if="operateFlag!=&quot;view&quot;&&!editSizeFlag" size="small" @click="editSize"><i class="el-icon-edit"></i>编辑</el-button>
-                  </div>
-                  <el-table
-                    style="width: 100%"
-                    border
-                    :data="sizeInfo.resultMap"
-                    @current-change="changeRow"
-                  >
-                    <el-table-column label="尺码\部位">
-                      <template slot-scope="scope">
-                        <span>
-                          {{ scope.row.SIZE_NAME }}
-                        </span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      v-for="(item, index) in sizeInfo.sizeInfoVO.upTitle"
-                      :key="index"
-                      :label="item.value"
-                    >
-                      <!-- <template slot-scope="scope">
-              <input v-if="1" v-model="scope.row[item.key]" type="text" maxlength="8" />
-              <span v-else>{{ scope.row[item.key] }}</span>
-            </template> -->
-                    </el-table-column>
-                  </el-table>
-                  <div style="height:30px;"></div>
-                </div>
-                <div v-else>
-                  <div style="margin-right:20px;">商品尺码</div>
-                  <p class="noSizeInfo">未发现<span style="color:#e60012;">{{ ruleForm.styleCategory }}</span>相关尺码配置，请前往信息预设中设置。</p>
-                </div>
-              </div>
-            </div>
-          </el-tab-pane>
-          <!-- 商品颜色面板 -->
-          <el-tab-pane label="颜色" name="color">
-            <div>
-              <!-- 商品颜色 -->
-              <div>
-                <div class="my-4">
-                  <div class="flex items-center">
-                    <ul class="flex direction-col" v-if="colorList.length">
-                      <li
-                        @click="deleteColor(index)"
-                        class="wordBorder"
-                        v-for="(item,index) in colorList"
-                        :key="item"
-                      >
-                        <p class="text-4xl">{{ item }}</p>
-                      </li>
-                    </ul>
-                    <div class="addColor" @click="addColor"> <i class="el-icon-plus"></i></div>
-                  </div>
-                  <el-drawer :show-close="false" :visible.sync="drawer" class="h-64 text-center">
-                    <div class="flex justify-between items-center px-4">
-                      <p class="text-sm">请输入商品颜色</p>
-                      <el-input
-                        ref="colorInput"
-                        v-model="newColor"
-                        @keydown.enter.native="choseColor"
-                        style="width:70%;"
-                        maxlength="32"
-                        placeholder="请输入商品颜色"
-                      />
-                    </div>
-                    <div class="mt-8">
-                      <el-button size="small" type="primary" @click="choseColor">确 认</el-button>
-                      <el-button size="small" @click="close">取 消</el-button>
-                    </div>
-                  </el-drawer>
-                </div>
-                <!-- <page-container column>
-                  <page-header content="上传文件" /> -->
-                <!-- 上传图片 -->
-                <div class="flex overflow-hidden flex-1 mb-2">
-                  <div class="inline-flex flex-col h-full">
-                    <vc-upload v-bind="uploadOption" ref="upload">
-                      <i class="el-icon-upload"></i>
-                      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                      <div class="el-upload__tip">只能上传图片或视频文件，单次提交最多{{ uploadOption.limit }}个，且不得超过{{ maxMB }}MB</div>
+                <div class="fileInfoBox right ml-8">
+                  <!-- 商品视频 -->
+                  <el-form-item label="商品视频">
+                    <vc-upload v-bind="uploadOption" ref="uploadVideo">
+                      <i class="el-icon-plus"></i>
                     </vc-upload>
-                    <ul class="overflow-y-auto flex-1 mb-2 space-y-1">
-                      <li
-                        v-for="item in uploadList"
-                        :key="item.percentage"
-                        class="px-2 py-1 rounded-lg border border-gray-300 border-solid cursor-pointer"
-                        :class="{'bg-blue-50': item === selectedItem}"
-                        @click="preview(item)"
-                      >
-                        <div class="flex items-center">
-                          <span class="mr-2">
-                            <i v-if="/image/.test(item.raw.type)" class="text-xl el-icon-picture-outline"></i>
-                            <i v-if="/video/.test(item.raw.type)" class="text-xl el-icon-video-camera"></i>
-                          </span>
-                          <span class="flex-1 mr-2 truncate">{{ item.name }}</span>
-                          <span v-if="item.percentage > 0 && item.percentage < 100">{{ Math.floor(item.percentage) }}%</span>
-                          <span v-if="item.percentage >= 100" class="text-green-500">完成</span>
-                          <i
-                            class="ml-1 w-4 h-4 text-xl text-red-400 rounded-lg el-icon-close hover:bg-gray-100 flex-center"
-                            @click.stop="removeFile(index, item)"
-                          ></i>
-                        </div>
-                        <el-progress :show-text="false" :stroke-width="2" :percentage="item.percentage" />
-                      </li>
-                    </ul>
-                    <!-- <el-button type="primary" plain @click="submit()">提交</el-button> -->
-                  </div>
-                  <div class="flex overflow-hidden flex-1 ml-2 rounded-lg border flex-center">
-                    <template v-if="selectedItem">
-                      <el-image
-                        v-if="/image/.test(selectedItem.raw.type)"
-                        class="w-full h-full"
-                        :src="selectedItem.url"
-                        fit="scale-down"
-                      />
+                  </el-form-item>
+                  <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
+
+                  <!-- https://www.cnblogs.com/1312mn/p/11233395.html  上传视频参考连接，本功能需要再完善 -->
+                  <!-- :on-progress="uploadVideoProcess" 自定义上传的时候貌似不生效 -->
+                  <!-- <el-form-item label="商品视频">
+                    <el-upload
+                      class="el-upload-video"
+                      action="#"
+                      accept=".mp4,.mov"
+                      :before-upload="beforeUploadVideo"
+                      :http-request="requestUploadVideo"
+                      :show-file-list="false"
+                    >
                       <video
-                        v-if="/video/.test(selectedItem.raw.type)"
-                        class="w-full h-full bg-white"
-                        :src="selectedItem.url"
-                        controls
+                        v-if="videoSrc"
+                        style=""
+                        class="avatar video-avatar"
+                        :src="videoSrc"
+                        controls="controls"
                       >
                         <track
                           default
@@ -326,56 +123,225 @@
                           srclang="en"
                           src="/video/php/friday.vtt"
                         />
-                        抱歉，您的浏览器不支持嵌入视频！</video>
-                    </template>
-                    <el-empty v-else description="未选中文件" />
+                        抱歉，您的浏览器不支持嵌入视频！
+                      </video>
+                      <el-progress
+                        v-if="!videoSrc&&uploadVideoFlag"
+                        type="circle"
+                        :percentage="perValue"
+                      />
+                      <div v-if="!videoSrc&&!uploadVideoFlag" class="addVideoIcon"><i class="el-icon-plus" style="font-size:28px;color:#888;"></i></div>
+                    </el-upload>
+                    <div v-if="videoSrc"> <el-button @click="delVideo">删除视频</el-button> </div>
+                  </el-form-item>
+                  <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p> -->
+
+                  <!-- <el-form-item v-if="videoSrc" label="视频贴片">
+                    <el-upload
+                      class="avatar-uploader"
+                      :show-file-list="false"
+                      action="#"
+                      accept=".jpg,.png"
+                      :before-upload="beforeUploadImg"
+                      :http-request="requestUploadPatch"
+                      :on-preview="handlePictureCardPreview"
+                      :on-remove="handleRemove"
+                    >
+                      <img v-if="imageUrl" alt="" class="patchImage" :src="imageUrl" />
+                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                    <div v-if="imageUrl"> <el-button @click="delVideoPatch">删除视频贴片</el-button> </div>
+                  </el-form-item> -->
+                  <div class="mt-12 ml-12">
+                    <el-collapse label="保养及卖点" name="sale">
+                      <el-collapse-item title="保养及卖点" name="sale">
+                        <el-form-item label="洗涤保养">
+                          <quill
+                            style="width:96%;"
+
+                            :value="ruleForm.washMaintenance"
+                            :editor-setting="editorSetting"
+                            :height="&quot;150px&quot;"
+                            @changeVal="changeWashMaintenance"
+                          />
+                        </el-form-item>
+                        <el-form-item label="面料卖点">
+                          <quill
+                            style="width:96%;"
+                            :value="ruleForm.sellingPointFabric"
+                            :editor-setting="editorSetting"
+                            :height="&quot;150px&quot;"
+                            @changeVal="changeSellingPointFabric"
+                          />
+                        </el-form-item>
+                        <el-form-item label="设计卖点">
+                          <quill
+                            style="width:96%;"
+                            :value="ruleForm.designSellingPoint"
+                            :editor-setting="editorSetting"
+                            :height="&quot;150px&quot;"
+                            @changeVal="changeDesignSellingPoint"
+                          />
+                        </el-form-item>
+                        <el-form-item label="穿着卖点">
+                          <quill
+                            style="width:96%;"
+                            :value="ruleForm.wearSellingPoint"
+                            :editor-setting="editorSetting"
+                            :height="&quot;150px&quot;"
+                            @changeVal="changeWearSellingPoint"
+                          />
+                        </el-form-item>
+                      </el-collapse-item>
+                    </el-collapse>
                   </div>
                 </div>
-                <!-- </page-container> -->
               </div>
-            </div>
-          </el-tab-pane>
-          <!-- 商品价格面板 -->
-          <el-tab-pane class="" label="价格" name="price">
-            <el-form-item label="成本价格" prop="costPrice">
-              <el-input v-model.trim="ruleForm.costPrice" style="width:100%;" maxlength="32" placeholder="请输入成本价格" />
-            </el-form-item>
-            <el-form-item label="吊牌价格" prop="tagPrice">
-              <el-input v-model.trim="ruleForm.tagPrice" style="width:100%;" maxlength="32" placeholder="请输入品牌价格" />
-            </el-form-item>
-            <el-form-item label="零售价格" prop="retailPrice">
-              <el-input v-model.trim="ruleForm.retailPrice" style="width:100%;" maxlength="32" placeholder="请输入零售价格" />
-            </el-form-item>
-            <!-- 批发价格面板 -->
-            <div class="">
-              <el-collapse label="批发价格" v-model="ruleForm.tradePrice" :accordion="true" name="tradePrice">
-                <el-collapse-item title="批发价格">
-                  <div class="flex items-center justify-between mb-4">
-                    <el-input v-model="styleTradePrice[0].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
-                    <el-input v-model="styleTradePrice[0].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
-                    <el-input v-model="styleTradePrice[0].styleTradePrice" style="width:20%;" placeholder="请输入批发价格" />
+              <el-divider />
+              <!-- 商品尺码 -->
+              <div>
+                <!-- 商品尺码 -->
+                <div v-if="true" class="goodsSizeBox">
+                  <div v-if="sizeInfo">
+                    <div style="margin:20px 0px;">
+                      <span style="margin-right:20px;">商品尺码</span>
+                      <el-button v-if="operateFlag!=&quot;view&quot;&&editSizeFlag" size="small" @click="editSizeConfirm"><i class="el-icon-check"></i>确认</el-button>
+                      <el-button v-if="operateFlag!=&quot;view&quot;&&!editSizeFlag" size="small" @click="editSize"><i class="el-icon-edit"></i>编辑</el-button>
+                    </div>
+                    <el-table
+                      style="width: 100%"
+                      border
+                      :data="sizeInfo.resultMap"
+                      @current-change="changeRow"
+                    >
+                      <el-table-column label="尺码\部位">
+                        <template slot-scope="scope">
+                          <span>
+                            {{ scope.row.SIZE_NAME }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        v-for="(item, index) in sizeInfo.sizeInfoVO.upTitle"
+                        :key="index"
+                        :label="item.value"
+                      >
+                      <!-- <template slot-scope="scope">
+              <input v-if="1" v-model="scope.row[item.key]" type="text" maxlength="8" />
+              <span v-else>{{ scope.row[item.key] }}</span>
+            </template> -->
+                      </el-table-column>
+                    </el-table>
+                    <div style="height:30px;"></div>
                   </div>
-                  <div class="flex items-center justify-between mb-4">
-                    <el-input v-model="styleTradePrice[1].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
-                    <el-input v-model="styleTradePrice[1].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
-                    <el-input v-model="styleTradePrice[1].styleTradePrice" style="width:20%;" placeholder="请输入批发价格" />
+                  <div v-else>
+                    <div style="margin-right:20px;">商品尺码</div>
+                    <p class="noSizeInfo">未发现<span style="color:#e60012;">{{ ruleForm.styleCategory }}</span>相关尺码配置，请前往信息预设中设置。</p>
                   </div>
-                  <div class="flex items-center justify-between">
-                    <el-input v-model="styleTradePrice[2].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
-                    <el-input v-model="styleTradePrice[2].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
-                    <el-input v-model="styleTradePrice[2].styleTradePrice" style="width:20%;" placeholder="请输入批发价格" />
+                </div>
+              </div>
+            </el-tab-pane>
+            <!-- 商品颜色面板 -->
+            <el-tab-pane label="颜色" name="color">
+              <div>
+                <!-- 商品颜色 -->
+                <div>
+                  <div class="my-4">
+                    <div class="flex items-center">
+                      <ul class="flex direction-col" v-if="colorList.length">
+                        <li
+                          @click="deleteColor(item,index)"
+                          class="wordBorder"
+                          v-for="(item,index) in colorList"
+                          :key="item"
+                        >
+                          <p class="text-4xl">{{ item }}</p>
+                        </li>
+                      </ul>
+                      <div class="addColor" @click="addColor"> <i class="el-icon-plus"></i></div>
+                    </div>
+                    <el-drawer size="30%" :show-close="false" :visible.sync="drawer" class="text-center">
+                      <div class="flex justify-between items-center px-4">
+                        <p class="text-sm">请输入商品颜色</p>
+                        <el-input
+                          ref="colorInput"
+                          v-model="newColor"
+                          @keydown.enter.native="choseColor"
+                          style="width:70%;"
+                          maxlength="32"
+                          placeholder="请输入商品颜色"
+                        />
+                      </div>
+                      <div class="mt-8">
+                        <el-button size="small" type="primary" @click="choseColor">确 认</el-button>
+                        <el-button size="small" @click="close">取 消</el-button>
+                      </div>
+                    </el-drawer>
                   </div>
+                  <!-- <page-container column>
+                  <page-header content="上传文件" /> -->
+                  <!-- 上传图片 -->
+                  <div class="flex flex-col" v-if="uploadImgFlag">
+                    <el-form-item label="商品图片">
+                      <vc-upload v-bind="uploadOption" ref="uploadImage">
+                        <i class="el-icon-plus"></i>
+                      </vc-upload>
+                    </el-form-item>
+                    <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
+
+                    <el-form-item label="商品细节">
+                      <vc-upload v-bind="uploadOption" ref="uploadImage">
+                        <i class="el-icon-plus"></i>
+                      </vc-upload>
+                    </el-form-item>
+                    <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
+                  </div>
+                <!-- </page-container> -->
+                </div>
+              </div>
+            </el-tab-pane>
+            <!-- 商品价格面板 -->
+            <el-tab-pane class="" label="价格" name="price">
+              <el-form-item label="成本价格" prop="costPrice">
+                <el-input v-model.trim="ruleForm.costPrice" style="width:100%;" maxlength="32" placeholder="请输入成本价格" />
+              </el-form-item>
+              <el-form-item label="吊牌价格" prop="tagPrice">
+                <el-input v-model.trim="ruleForm.tagPrice" style="width:100%;" maxlength="32" placeholder="请输入品牌价格" />
+              </el-form-item>
+              <el-form-item label="零售价格" prop="retailPrice">
+                <el-input v-model.trim="ruleForm.retailPrice" style="width:100%;" maxlength="32" placeholder="请输入零售价格" />
+              </el-form-item>
+              <!-- 批发价格面板 -->
+              <div class="">
+                <el-collapse label="批发价格" v-model="ruleForm.tradePrice" :accordion="true" name="tradePrice">
+                  <el-collapse-item title="批发价格">
+                    <div class="flex items-center justify-between mb-4">
+                      <el-input v-model="styleTradePrice[0].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
+                      <el-input v-model="styleTradePrice[0].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
+                      <el-input v-model="onePrice" style="width:20%;" placeholder="请输入批发价格" />
+                    </div>
+                    <!-- <div class="flex items-center justify-between mb-4">
+                      <el-input v-model="styleTradePrice[1].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
+                      <el-input v-model="styleTradePrice[1].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
+                      <el-input v-model="twoPrice" style="width:20%;" placeholder="请输入批发价格" />
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <el-input v-model="styleTradePrice[2].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
+                      <el-input v-model="styleTradePrice[2].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
+                      <el-input v-model="threePrice" style="width:20%;" placeholder="请输入批发价格" />
+                    </div> -->
                   <!-- <div><input type="text" /></div> -->
-                </el-collapse-item>
-              </el-collapse>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
+                  </el-collapse-item>
+                </el-collapse>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
       </div>
     </el-form>
-    <el-dialog :visible.sync="dialogVisible">
+    <!-- <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt="" />
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -384,7 +350,7 @@ import quill from '@/views/common/quillEditor'
 import { addQuillTitle } from '@/assets/js/js/quill-title'
 import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo } from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
-import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
+// import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
 // import axios from 'axios'
 
 export default {
@@ -403,10 +369,20 @@ export default {
       callback()
     }
     return {
+      uploadImgFlag: false, // 上传图片的显示隐藏
+      colorNum: undefined,
+      selectedColorName: [], //
       styleCategory: [], // 商品类别渲染列表
-      seasonIdList: [], // 所属季节渲染列表
+      seasoNameList: [], // 所属季节渲染列表
       startPrice: '', // 起订数
-      colorList: [], // 新增颜色的集合数组
+      colorList: [
+        // {
+        //   colorName: '',
+        //   imgUrl: '',
+        //   xijieUrl: '',
+        //   chima: '',
+        // },
+      ], // 新增颜色的集合数组
       newColor: '', // 新增的商品颜色个体
       uploadList: [],
       selectedItem: null,
@@ -418,7 +394,7 @@ export default {
       brandId: 0,
       goodsId: '',
       activeName: '1',
-      addLabel: '',
+      addLabel: '', // 商品标签
       labelList: [], // 标签列表
       // 反显的fileList里的url是官方规定字段，拿到的值如果不是url，需要手动的替换一下，要注意逻辑
       fileList: [],
@@ -427,7 +403,7 @@ export default {
         [{ list: 'ordered' }, { list: 'bullet' }],
         ['clean'],
       ],
-      imageUrl: '',
+      // imageUrl: '',
       // sellPoint:"<p>销售买点说的是的空间发生口角发生口角的看法大哥大很好看交换空间</p><br/><p>dfkjgdfkghdfjkgjdk</p>",
       ruleForm: {
         recommendationLevel: '0',
@@ -442,7 +418,8 @@ export default {
         styleNo: '', // 商品编号
         stylePrice: '', // 商品价格
         remarks: '', // 备注
-        seasonId: '', // 所属季节
+        // seasonId: '', // 所属季节
+        bandName: '', // 所属季节
         retailPrice: '', // 零售价格
         tagPrice: '', // 品牌价格
         costPrice: '', // 成本价格
@@ -454,6 +431,7 @@ export default {
         styleSize: [], // 商品尺码
         styleMajor: '', // 是否重点款
       },
+      // 不同的批发价格
       styleTradePrice: [
         {
           minimumOrderQuantity: '',
@@ -465,13 +443,13 @@ export default {
           minimumOrderQuantity: '',
           maximumOrder: '',
           styleTradePrice: '',
-          sort: 1,
+          sort: 2,
         },
         {
           minimumOrderQuantity: '',
           maximumOrder: '',
           styleTradePrice: '',
-          sort: 1,
+          sort: 3,
         },
       ], // 批发价格
       rules: {
@@ -507,7 +485,7 @@ export default {
           },
           { validator: pricevalidate, trigger: 'blur' },
         ],
-        seasonId: [
+        bandName: [
           { required: true, message: '请选择所属季节', trigger: 'blur' },
         ],
         costPrice: [
@@ -533,38 +511,38 @@ export default {
         ],
 
       },
-      dialogImageUrl: '',
-      dialogVisible: false,
+      // dialogImageUrl: '',
+      // dialogVisible: false,
 
-      uploadTimer: null,
-      uploadVideoFlag: false,
-      videoUploadPercent: 0, // 上传进度
-      perValue: 0,
-      videoSrc: '',
+      // uploadTimer: null,
+      // uploadVideoFlag: false,
+      // videoUploadPercent: 0, // 上传进度
+      // perValue: 0,
+      // videoSrc: '',
       // videoSrc:'http://192.168.9.26:9107/ZDNAS/94/20210524/d588a538e8dd3f63b423e8648aba3ce8.mp4',
 
-      styleId: null,
-      cateOptions: [], // 商品类别
+      // styleId: null,
+      // cateOptions: [], // 商品类别
 
       operateFlag: null, // 操作标志  'view'  查看  'edit'  编辑
-      bandId: null,
-      bandName: null,
-      seriesId: null,
-      seriesName: null,
-      // idList:[],   // 级联回显id数组
-      bandOptions: [],
+      // bandId: null,
+      // bandName: null,
+      // seriesId: null,
+      // seriesName: null,
+      // // idList:[],   // 级联回显id数组
+      // bandOptions: [],
 
-      goodSizeFlag: false, // 商品尺寸默认显示与否
-      sizeInfo: null,
-      editSizeFlag: false,
-      sizeTableList: [], // 修改商品尺寸传参值
+      // goodSizeFlag: false, // 商品尺寸默认显示与否
+      sizeInfo: null, // 商品尺码
+      // editSizeFlag: false,
+      // sizeTableList: [], // 修改商品尺寸传参值
     }
   },
   computed: {
+    // 上传文件组件
     uploadOption() {
       return {
-        drag: true,
-        showFileList: false,
+        showFileList: true,
         multiple: true,
         typeOption: {
           'image/*': {
@@ -578,17 +556,35 @@ export default {
             },
           },
         },
-        maxSize: 1024 * this.maxMB,
+        listType: 'picture-card',
+        maxSize: 1024 * 20,
         limit: 6,
         chunkSize: 1024 * 5,
         check: true,
-        accept: 'image/*,video/*',
-        onChange: (file, fileList) => {
+        accept: 'image/*, video/*',
+        onSuccess: (file, fileList) => {
           // console.dir(fileList)
           this.uploadList = fileList
-          console.log(this.uploadList)
+          this.selectedColorName[this.colorNum].imgUrl = this.uploadList.response.data.fileUrl
         },
       }
+    },
+    onePrice() {
+      let result = Number(this.ruleForm.retailPrice)
+      //   if (this.styleTradePrice[0].minimumOrderQuantity > 0 && this.styleTradePrice[0].maximumOrder < 5)
+      //    return  this.styleTradePrice[0].styleTradePrice * 0.8
+      // console.log(result)
+      this.styleTradePrice.forEach(item => {
+        if (Number(item.minimumOrderQuantity) > 0 & Number(item.maximumOrder) < 5) {
+          // console.log(Number(item.minimumOrderQuantity))
+          result *= 0.9
+        } else if (Number(item.minimumOrderQuantity) > 5 & Number(item.maximumOrder) < 10) {
+          result *= 0.8
+        } else {
+          result *= 0.7
+        }
+      })
+      return result
     },
   },
   created() {
@@ -607,6 +603,11 @@ export default {
     this.getGoodsCategory()
   },
   methods: {
+    //
+    handlePictureCardPreview(file) {
+      console.log(file)
+    },
+
     // 删除文件
     // removeFile(index, item) {
     //   this.$refs.upload.abort(item)
@@ -620,34 +621,6 @@ export default {
       item.url = item.url || URL.createObjectURL(item.raw)
       this.selectedItem = item
     },
-    // submit() {
-    //   if (!this.uploadList.length) return this.$message.warning('请先上传文件')
-    //   if (!this.$refs.upload.checkUploadDone()) return this.$message.warning('请等待文件全部上传完成后在提交')
-    //   console.log(this.uploadList)
-    //   const params = this.uploadList.map(item => {
-    //     const { type } = item.raw.type
-    //     if (/image/.test(type)) {
-    //       return {
-    //         resName: item.name,
-    //         resUrl: item.response.data.data.fileUrls[0].fileUrl,
-    //         resType: FILE_TYPE.IMAGE,
-    //       }
-    //     }
-    //     return {
-    //       resName: item.name,
-    //       resUrl: item.response.data.fileUrl,
-    //       videoImg: item.response.data.thumbUrl,
-    //       resType: FILE_TYPE.VIDEO,
-    //     }
-    //   })
-
-    //   // addAdvertsRes({
-    //   //   resList: params,
-    //   // }).then(res => {
-    //   //   this.$message.success('文件提交成功')
-    //   //   this.$router.back()
-    //   // })
-    // },
     //   点击返回
     goBack() {
       if (this.operateFlag !== 'view') { // 编辑或新增提示一下
@@ -675,8 +648,14 @@ export default {
         this.$refs.colorInput.focus()
       })
     },
-    deleteColor(index) {
-      this.colorList.splice(index, 1)
+    // 点击删除已输入的商品颜色
+    deleteColor(item, index) {
+      this.uploadImgFlag = true
+      // this.colorList.splice(item, 1)
+      this.colorNum = index
+      console.log(item)
+      this.selectedColorName.push({ item })
+      console.log(this.selectedColorName)
     },
     close() {
       this.drawer = false
@@ -689,6 +668,7 @@ export default {
       this.newColor = ''
       this.drawer = false
     },
+    // 卖点去除html标签，多行文本框里使用v-html行不通
     changeWashMaintenance(val) {
       this.ruleForm.washMaintenance = val
       // // console.log("洗涤卖点==",val)
@@ -705,7 +685,6 @@ export default {
       this.ruleForm.wearSellingPoint = val
       // // console.log("穿着卖点==",val)
     },
-    // 卖点去除html标签，多行文本框里使用v-html行不通
     removeLabel(val) {
       if (val) {
         const content = val.replace(/<\/?.+?\/?>/g, '')
@@ -713,52 +692,6 @@ export default {
       }
       return ''
     },
-    // 获取商品信息
-    // getGoodsInfo() {
-    //   const _this = this
-    //   const con = {
-    //     styleId: _this.styleId,
-    //   }
-    //   getGoodstyle(con).then((res) => {
-    //     console.log('获取到的商品信息-----', res.data.body)
-    //     if (res.data.head.status === 0) {
-    //       _this.ruleForm = res.data.body.styleInfo
-    //       _this.ruleForm.imgUrlList.forEach(el => {
-    //         const obj = {}
-    //         obj.url = el.RES_URL
-    //         _this.fileList.push(obj)
-    //       })
-    //       _this.videoSrc = _this.ruleForm.styleVideo
-    //       _this.ruleForm.stylePrice = String(_this.ruleForm.stylePrice)
-    //       // // console.log('_this.ruleForm.styleLabel===',_this.ruleForm.styleLabel)
-    //       // _this.labelList = _this.ruleForm.styleLabel.split(',');
-    //       if (_this.ruleForm.styleLabel) {
-    //         _this.labelList = _this.ruleForm.styleLabel.split(',')
-    //       }
-    //       if (_this.ruleForm.styleVideoPatch) {
-    //         _this.imageUrl = _this.ruleForm.styleVideoPatch
-    //       }
-    //       // // console.log("_this.imageUrl:",_this.imageUrl)
-
-    //       // // console.log("_this.ruleForm====",_this.ruleForm)
-    //       _this.ruleForm.idList = []
-    //       if (_this.ruleForm.bandId) {
-    //         _this.ruleForm.idList.push(String(_this.ruleForm.bandId))
-    //         if (this.seriesId) {
-    //           _this.ruleForm.idList.push(String(_this.ruleForm.seriesId))
-    //         }
-    //       }
-    //       _this.getGoodsSizeInfo()
-    //     } else {
-    //       _this.$message({
-    //         message: res.data.head.msg,
-    //         type: 'warning',
-    //       })
-    //     }
-    //   }).catch(err => {
-    //     // console.log(err)
-    //   })
-    // },
     // 获取商品类别
     getGoodsCategory() {
       const con = {
@@ -784,12 +717,12 @@ export default {
     // 获取所属季节
     getSeasonId() {
       const con = {
-        seasonName: '',
+        bandName: '',
       }
       getSeasonId(con).then((res) => {
-        console.log(res)
+        // console.log(res)
         if (res.head.status === 0) {
-          this.seasonIdList = res.body.resultList
+          this.seasoNameList = res.body.resultList
         } else {
           this.$message({
             message: res.head.msg,
@@ -817,9 +750,6 @@ export default {
     // 删除标签
     delLabel(index) {
       this.labelList.splice(index, 1)
-    },
-    changeStyleCategory(val) {
-      this.getClothingSizeInfo(val)
     },
     // 尺码==========================
     // 获取商品尺码信息
@@ -1196,5 +1126,21 @@ export default {
 }
 .addColorStyle {
   height: 80px;
+}
+/deep/ .el-tabs__item {
+  padding: 0 80px;
+  height: 40px;
+  box-sizing: border-box;
+  line-height: 40px;
+  display: inline-block;
+  list-style: none;
+  font-size: 14px;
+  font-weight: 800;
+  color: #303133;
+  position: relative;
+    left: 300px;
+}
+/deep/ .el-tabs__active-bar {
+  display: none;
 }
 </style>

@@ -199,6 +199,7 @@ export default {
         ...config,
       })
         .then(res => {
+          console.log(res);
           return res
         })
         .catch(err => {

@@ -1,5 +1,5 @@
 import { post } from './index'
-import API_SERVICE from './API_SERVICE'
+// import API_SERVICE from './API_SERVICE'
 
 // 商品类别
 export function getGoodsSizeInfo(params) {
@@ -32,6 +32,10 @@ export function getDeleteStyleInfo(params) {
 // 提交文件
 export function addAdvertsRes(params) {
   return post('/adverts/addAdvertsRes', params)
+}
+// 导入商品
+export function addimporStyleInfo(params) {
+  return post('addimporStyleInfo', params)
 }
 // 导出商品
 export function getExportInfo(params) {
