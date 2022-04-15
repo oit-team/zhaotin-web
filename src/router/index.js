@@ -17,6 +17,8 @@ import AddRole from '@/views/seeting/components/addRole'
 import AddGoods from '@/views/BaseSeeting/components/addGoods'
 import AuthUsersByRoleId from '@/views/seeting/components/authUsersByRoleId'
 import AddMenu from '@/views/seeting/components/addMenu'
+import CustomerAccount from '@/views/BaseSeeting/components/customerAccount'
+import AddCustomer from '@/views/BaseSeeting/components/addCustomer'
 
 Vue.use(VueRouter)
 
@@ -69,10 +71,6 @@ const routes = [
         path: '/system/addRole',
         component: AddRole,
       },
-      {
-        path: '/system/authUsersByRoleId',
-        component: AuthUsersByRoleId,
-      },
     ],
   },
   {
@@ -95,6 +93,18 @@ const routes = [
       {
         path: '/basls/style/addGoods',
         component: AddGoods,
+      },
+      {
+        path: '/basls/customerAccount',
+        component: CustomerAccount,
+      },
+      {
+        path: '/basls/customerAccount',
+        component: CustomerAccount,
+      },
+      {
+        path: '/basls/customerAccount/addCustomer',
+        component: AddCustomer,
       },
     ],
   },

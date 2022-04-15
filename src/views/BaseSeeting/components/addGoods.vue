@@ -93,65 +93,11 @@
                 <div class="fileInfoBox right ml-8">
                   <!-- 商品视频 -->
                   <el-form-item label="商品视频">
-                    <vc-upload v-bind="uploadOption" ref="uploadVideo">
+                    <vc-upload v-bind="uploadOptionVidel" ref="uploadVideo">
                       <i class="el-icon-plus"></i>
                     </vc-upload>
                   </el-form-item>
                   <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
-
-                  <!-- https://www.cnblogs.com/1312mn/p/11233395.html  上传视频参考连接，本功能需要再完善 -->
-                  <!-- :on-progress="uploadVideoProcess" 自定义上传的时候貌似不生效 -->
-                  <!-- <el-form-item label="商品视频">
-                    <el-upload
-                      class="el-upload-video"
-                      action="#"
-                      accept=".mp4,.mov"
-                      :before-upload="beforeUploadVideo"
-                      :http-request="requestUploadVideo"
-                      :show-file-list="false"
-                    >
-                      <video
-                        v-if="videoSrc"
-                        style=""
-                        class="avatar video-avatar"
-                        :src="videoSrc"
-                        controls="controls"
-                      >
-                        <track
-                          default
-                          kind="captions"
-                          srclang="en"
-                          src="/video/php/friday.vtt"
-                        />
-                        抱歉，您的浏览器不支持嵌入视频！
-                      </video>
-                      <el-progress
-                        v-if="!videoSrc&&uploadVideoFlag"
-                        type="circle"
-                        :percentage="perValue"
-                      />
-                      <div v-if="!videoSrc&&!uploadVideoFlag" class="addVideoIcon"><i class="el-icon-plus" style="font-size:28px;color:#888;"></i></div>
-                    </el-upload>
-                    <div v-if="videoSrc"> <el-button @click="delVideo">删除视频</el-button> </div>
-                  </el-form-item>
-                  <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p> -->
-
-                  <!-- <el-form-item v-if="videoSrc" label="视频贴片">
-                    <el-upload
-                      class="avatar-uploader"
-                      :show-file-list="false"
-                      action="#"
-                      accept=".jpg,.png"
-                      :before-upload="beforeUploadImg"
-                      :http-request="requestUploadPatch"
-                      :on-preview="handlePictureCardPreview"
-                      :on-remove="handleRemove"
-                    >
-                      <img v-if="imageUrl" alt="" class="patchImage" :src="imageUrl" />
-                      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                    <div v-if="imageUrl"> <el-button @click="delVideoPatch">删除视频贴片</el-button> </div>
-                  </el-form-item> -->
                   <div class="mt-12 ml-12">
                     <el-collapse label="保养及卖点" name="sale">
                       <el-collapse-item title="保养及卖点" name="sale">
@@ -283,14 +229,14 @@
                   <!-- 上传图片 -->
                   <div class="flex flex-col" v-if="uploadImgFlag">
                     <el-form-item label="商品图片">
-                      <vc-upload v-bind="uploadOption" ref="uploadImage">
+                      <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
                         <i class="el-icon-plus"></i>
                       </vc-upload>
                     </el-form-item>
                     <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
 
                     <el-form-item label="商品细节">
-                      <vc-upload v-bind="uploadOption" ref="uploadImage">
+                      <vc-upload v-bind="uploadOptionxijie" ref="uploadxijieImage">
                         <i class="el-icon-plus"></i>
                       </vc-upload>
                     </el-form-item>
@@ -539,8 +485,8 @@ export default {
     }
   },
   computed: {
-    // 上传文件组件
-    uploadOption() {
+    // 上传图片
+    uploadOptionimg() {
       return {
         showFileList: true,
         multiple: true,
@@ -550,9 +496,29 @@ export default {
               fileType: 0,
             },
           },
-          'video/*': {
+        },
+        listType: 'picture-card',
+        maxSize: 1024 * 20,
+        limit: 6,
+        chunkSize: 1024 * 5,
+        check: true,
+        accept: 'image/*',
+        onSuccess: (file, fileList) => {
+          this.uploadList = fileList
+          this.selectedColorName[this.colorNum].imgUrl = this.uploadList.response.data.fileUrl
+          // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
+        },
+      }
+    },
+    // 上传细节图片
+    uploadOptionxijie() {
+      return {
+        showFileList: true,
+        multiple: true,
+        typeOption: {
+          'image/*': {
             data: {
-              fileType: 1,
+              fileType: 0,
             },
           },
         },
@@ -561,11 +527,34 @@ export default {
         limit: 6,
         chunkSize: 1024 * 5,
         check: true,
-        accept: 'image/*, video/*',
+        accept: 'image/*',
         onSuccess: (file, fileList) => {
-          // console.dir(fileList)
+          console.log(fileList)
           this.uploadList = fileList
-          this.selectedColorName[this.colorNum].imgUrl = this.uploadList.response.data.fileUrl
+          this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.fileUrl
+          // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
+        },
+      }
+    },
+    // 上传视频
+    uploadOptionVidel() {
+      return {
+        showFileList: true,
+        multiple: true,
+        data: {
+          fileType: 1,
+        },
+        listType: 'picture-card',
+        maxSize: 1024 * 50,
+        limit: 6,
+        chunkSize: 1024 * 50,
+        check: true,
+        accept: 'video/*',
+        onSuccess: (file, fileList) => {
+          console.log(fileList)
+          this.uploadList = fileList
+          this.selectedColorName[this.colorNum].videoUrl = this.uploadList.response.data.fileUrl
+          // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
         },
       }
     },

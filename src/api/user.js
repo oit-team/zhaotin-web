@@ -44,12 +44,12 @@ export function getRoleUserList(params) {
   })
 }
 // 获取用户
-export function getRoleUser(params) {
-  return post('/system/user/getUsers', params, {
-    mod: 'home',
-    cmd: 10008,
-  })
-}
+// export function getRoleUser(params) {
+//   return post('/system/user/getUsers', params, {
+//     mod: 'home',
+//     cmd: 10008,
+//   })
+// }
 // 用户授权
 export function addUserAndRole(params) {
   return post('/system/user/addUserAndRole', params, {
