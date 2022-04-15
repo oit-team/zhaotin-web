@@ -80,7 +80,7 @@ export default {
       ruleForm: {
         realName: '',
         contactPerson: '',
-        contactNumber: 0,
+        contactNumber: '',
         customerAddress: '',
         customerType: 0,
         id: '', // 客户id
@@ -108,7 +108,6 @@ export default {
     }
   },
   created() {
-    // console.log(this.$route.query.item)
     if (this.$route.query.item) {
       this.editFlag = true
       this.ruleForm.realName = this.$route.query.item.row.realName
@@ -120,36 +119,14 @@ export default {
       this.ruleForm.customerName = this.$route.query.item.row.customerName
       this.ruleForm.loginId = this.$route.query.item.row.logId
     }
-    // if (this.$route.query.item) {
-    // //   console.log(this.$route.query.item.row)
-    // //   this.editFlag = true
-    //   this.ruleForm = this.$route.query.item.row
-    // //   if (this.ruleForm) {
-    // //     this.ruleForm = this.ruleForm.path
-    // //     if (this.ruleForm.path !== '0') {
-    // //       this.pMenu.menuId = this.ruleForm.menuId
-    // //     }
-    // //     // // console.log("this.pMenu===",this.pMenu)
-    // //   } else {
-    // //     // // console.log('this.ruleForm.path====',this.ruleForm.path)
-    // //     const arr = this.ruleForm.path.split(',')
-    // //     // // console.log(this.ruleForm.path,arr);
-    // //     this.pId = this.ruleForm.path
-    // //     this.pMenu.menuId = arr[arr.length - 2]
-    // //     // // console.log("this.pMenu===",this.pMenu)
-    // //   }
-    //   // this.pMenu = this.ruleForm.menuId;
-    //   // // console.log("转为Number类型之后的 this.pMenu",this.pMenu)
-    // }
-    // this.userId = this.userId
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (!this.ruleForm.realName) {
+          if (this.editFlag) {
+            // 编辑客户
             changeCustomer({ code: '1', ...this.ruleForm }).then((res) => {
-            //   console.log(res)
               if (res.head.status === 0) {
                 this.$message({
                   message: '编辑菜单成功',
@@ -165,13 +142,18 @@ export default {
             }).catch(() => {
             })
           } else {
-            console.log('新增')
-            // 新增菜单
-            addCustomer({ code: '1', ...this.ruleForm }).then((res) => {
+          //   // 新增
+            addCustomer({
+              code: '1',
+              customerName: this.ruleForm.customerName,
+              realName: this.ruleForm.realName,
+              contactPerson: this.ruleForm.contactPerson,
+              contactNumber: Number(this.ruleForm.contactNumber),
+              customerType: this.ruleForm.customerType,
+              customerAddress: this.ruleForm.customerAddress,
+            }).then((res) => {
               this.editFlag = false
-              console.log(res)
               if (res.head.status === 0) {
-                // this.getTreeMenuList()
                 this.$message({
                   message: '新增菜单成功',
                   type: 'success',
@@ -184,7 +166,7 @@ export default {
                 })
               }
               this.getTreeMenuList()
-            }).catch(err => {
+            }).catch(() => {
             })
           }
         } else {

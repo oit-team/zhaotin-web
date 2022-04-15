@@ -264,7 +264,7 @@ export default {
         code: 'goods',
       }
       getExportInfo(con).then((res) => {
-        console.log(res)
+        // console.log(res)
         if (res.data.head.status === 0) {
           this.exportInfoList = res.data.body.exportTitle
           for (let i = 0; i < this.exportInfoList.length; i++) {
@@ -279,7 +279,7 @@ export default {
           })
         }
       }).catch(err => {
-        console.log(err)
+        // console.log(err)
       })
     },
     // 删除商品
@@ -289,7 +289,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
-        console.log(item)
+        // console.log(item)
         const con = {
           styleId: item.row.styleId.toString(),
         }

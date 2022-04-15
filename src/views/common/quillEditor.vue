@@ -288,8 +288,7 @@ export default {
               type: 'warning',
             })
           }
-        }).catch(err => {
-          console.log(err)
+        }).catch(() => {
         })
       }
     },

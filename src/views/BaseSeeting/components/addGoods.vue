@@ -529,7 +529,7 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
-          console.log(fileList)
+          // console.log(fileList)
           this.uploadList = fileList
           this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.fileUrl
           // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
@@ -551,7 +551,7 @@ export default {
         check: true,
         accept: 'video/*',
         onSuccess: (file, fileList) => {
-          console.log(fileList)
+          // console.log(fileList)
           this.uploadList = fileList
           this.selectedColorName[this.colorNum].videoUrl = this.uploadList.response.data.fileUrl
           // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
@@ -594,7 +594,7 @@ export default {
   methods: {
     //
     handlePictureCardPreview(file) {
-      console.log(file)
+      // console.log(file)
     },
 
     // 删除文件
@@ -642,9 +642,9 @@ export default {
       this.uploadImgFlag = true
       // this.colorList.splice(item, 1)
       this.colorNum = index
-      console.log(item)
+      // console.log(item)
       this.selectedColorName.push({ item })
-      console.log(this.selectedColorName)
+      // console.log(this.selectedColorName)
     },
     close() {
       this.drawer = false
@@ -750,7 +750,7 @@ export default {
         styleId: this.ruleForm.styleId,
       }
       getClothingSizeInfo(con).then((res) => {
-        console.log(res)
+        // console.log(res)
         if (res.data.head.status === 0) {
           if (res.data.body) {
             this.sizeInfo = res.data.body
@@ -860,7 +860,7 @@ export default {
             const newUrl = `${_this.fileList[i].url}_${i}`
             picArr.push(newUrl)
           }
-          console.log(_this.$refs.uploadImage.getUploadImageResults())
+          // console.log(_this.$refs.uploadImage.getUploadImageResults())
           const con = {
             bandId: _this.ruleForm.idList[0] ? _this.ruleForm.idList[0] : null, // 先写死，要动接口的
             seriesId: _this.ruleForm.idList[1] ? _this.ruleForm.idList[1] : null, // 先写死，要动接口的

@@ -20,3 +20,10 @@ export function changeCustomer(params) {
     cmd: 10008,
   })
 }
+// 删除客户
+export function delUserById(params) {
+  return post('/system/user/delUserById', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}

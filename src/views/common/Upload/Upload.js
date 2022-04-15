@@ -199,7 +199,7 @@ export default {
         ...config,
       })
         .then(res => {
-          console.log(res);
+          // console.log(res);
           return res
         })
         .catch(err => {
@@ -268,7 +268,7 @@ export default {
     handleError(...e) {
       this.emitEvent('onError', ...e)
       if (typeof this.onError !== 'function') {
-        console.error(...e)
+        // console.error(...e)//
         this.$message.error(`${e[1].name} 上传失败，请重试！`)
       }
     },

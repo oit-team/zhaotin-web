@@ -12,7 +12,7 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getCustomer } from '@/api/customer'
+import { getCustomer, delUserById } from '@/api/customer'
 
 export default {
   name: 'Style',
@@ -55,7 +55,7 @@ export default {
                 tip: '删除',
                 type: 'primary',
                 icon: 'el-icon-delete',
-                click: this.deleteRole,
+                click: this.deleteCustomer,
               },
             ],
           },
@@ -75,11 +75,60 @@ export default {
     async loadData() {
       const res = await getCustomer({
         pageNum: '1',
-        pageSize: '2',
+        pageSize: '999',
         code: '1',
       })
-      console.log(res)
+      // console.log(res)
       this.data = res.body
+    },
+    // 删除角色
+    deleteCustomer(item) {
+      this.$confirm('确认删除该角色吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        // console.log(item.row.id.toString())
+        const con = {
+          id: item.row.id.toString(),
+          userId: sessionStorage.userId,
+          code: '1',
+        }
+        delUserById(con).then((res) => {
+          // console.log(res)
+          // this.loadData()
+          if (res.head.status === 0) {
+            // 删除列表中点击删除的数据，item是被点击行的信息
+            this.data.resultList.splice(item.$index, 1)
+            if (this.total > 0) {
+              this.total -= 1
+            }
+            if (this.data.resultList.length === 0 && this.total > 0) {
+              this.pageNum -= 1
+              this.dynamicParam.forEach(el => {
+                if (el.key === 'pageNum') {
+                  el.value = this.pageNum
+                }
+              })
+              // this.$refs.child.parentMsgs(this.dynamicParam)
+            }
+            this.$message({
+              type: 'success',
+              message: '删除成功!',
+            })
+          } else {
+            this.$message({
+              message: res.head.msg,
+              type: 'warning',
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除',
+        })
+      })
     },
   },
 
