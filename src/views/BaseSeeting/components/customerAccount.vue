@@ -7,12 +7,50 @@
       <!-- 出口 -->
       <router-view />
     </div>
+    <!-- 导入客户 -->
+    <el-drawer
+      :title="'导入商品'"
+      :visible.sync="importFlag"
+      direction="rtl"
+      size="30%"
+      :before-close="handleImportClose"
+    >
+      <div class="text-center">
+        <el-upload
+          class="upload-demo"
+          style="margin:30px 0px;"
+          ref="upload"
+          :limit="1"
+          action="#"
+          accept=".xlsx,.xls"
+          :http-request="uploadFile"
+          :on-change="changeFile"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+          :auto-upload="false"
+        >
+          <template #trigger>
+            <el-button size="small" type="primary">选取文件</el-button>
+          </template>
+          <template #tip>
+            <div class="el-upload__tip mt-4">
+              只能上传 .xlsx/.xls 文件，且不超过 1000kb
+            </div>
+          </template>
+        </el-upload>
+        <div style="margin-top: 20px">
+          <el-button size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
+          <el-button size="small" @click="importFlag = false">取消导入</el-button>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getCustomer, delUserById } from '@/api/customer'
+import { getCustomer, delUserById, addImportCustomer } from '@/api/customer'
+import axios from 'axios'
 
 export default {
   name: 'Style',
@@ -22,6 +60,8 @@ export default {
   data() {
     return {
       data: {},
+      importFlag: false, // 导入客户显示隐藏
+      fileList: [], // 上传的文件列表
     }
   },
 
@@ -33,6 +73,18 @@ export default {
           {
             name: '新增客户',
             type: 'success',
+            icon: 'el-icon-plus',
+            click: () => this.$router.push('/basls/customerAccount/addCustomer'),
+          },
+          {
+            name: '导入客户',
+            type: 'primary',
+            icon: 'el-icon-download',
+            click: () => this.importGoods(),
+          },
+          {
+            name: '导出客户',
+            type: 'primary',
             icon: 'el-icon-plus',
             click: () => this.$router.push('/basls/customerAccount/addCustomer'),
           },
@@ -67,9 +119,7 @@ export default {
     },
   },
   created() {
-    // this.loadData()
-    // console.log(localStorage.getItem('token'))
-    // getUser()
+
   },
   methods: {
     async loadData() {
@@ -129,6 +179,103 @@ export default {
           message: '已取消删除',
         })
       })
+    },
+    // 导入商品
+    importGoods() {
+      this.importFlag = true
+    },
+    // 关闭提示
+    handleImportClose() {
+      this.$confirm('确认关闭？').then(() => {
+        this.importFlag = false
+        this.$refs.upload.clearFiles()
+      }).catch(() => {})
+    },
+    // 监控上传文件列表
+    changeFile(file, fileList) {
+      console.log(file)
+      const existFile = fileList.slice(0, fileList.length - 1).find((f) => f.name === file.name)
+      if (existFile) {
+        this.$message.error('当前文件已经存在!')
+        fileList.pop()
+      }
+      this.fileList = fileList
+      // console.log("this.fileList===",this.fileList)
+    },
+    // 限制每次只能上传一个文件
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    // // 上传文件
+    uploadFile(file) {
+      this.fileData.append('file', file.file)
+      console.log(this.fileData)
+    },
+    // 确认导入商品
+    confirmImportGoods() {
+      // this.$refs.upload.submit();
+      if (this.fileList.length === 0) {
+        this.$message({
+          message: '请先选择文件',
+          type: 'warning',
+        })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '正在导入中，请稍候',
+          duration: '1000',
+        })
+        const formData = new FormData() //  用FormData存放上传文件
+        formData.append('file', this.fileList[0].raw)
+        formData.append('brandId', sessionStorage.brandId)
+        formData.append('code', '2')
+        formData.append('userId', sessionStorage.userId)
+        // console.log(formData)
+        // console.log("formData====",formData)
+        // 向webapi发起请求，等待后台接收
+        axios({
+          url: '/api/system/user/addImportCustomer',
+          method: 'post',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            token: sessionStorage.accessToken,
+          },
+          data: formData,
+        }).then((res) => {
+          this.importFlag = false
+          // console.log(res)
+          this.$refs.upload.clearFiles()
+          if (res.data.head.status === 0) {
+            this.importResult = res.data.body
+            this.addCount = res.data.body.addCount
+            this.upDateCount = res.data.body.upDateCount
+            this.failureCount = res.data.body.failureCount
+            this.fileList = []
+            this.fileData = ''
+            if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
+              this.importErrDataFlag = true
+              this.importErrData = res.data.body.errorStr
+            } else {
+              this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+
+                },
+              })
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.data.head.msg,
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '导入商品失败',
+          })
+        })
+      }
     },
   },
 

@@ -72,6 +72,7 @@ export default {
       })
     },
     genFormItem(item, el) {
+      // console.log(item);
       return h(FormItem, {
         key: item.fieldKey,
         props: {
@@ -194,7 +195,7 @@ export default {
         }
       })
 
-      // console.debug('查询 ==>', JSON.parse(JSON.stringify(queryForm)))
+      console.debug('查询 ==>', JSON.parse(JSON.stringify(queryForm)))
 
       return queryForm
     },

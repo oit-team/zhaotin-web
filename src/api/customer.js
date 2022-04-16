@@ -27,3 +27,10 @@ export function delUserById(params) {
     cmd: 10008,
   })
 }
+// 导入客户
+export function addImportCustomer(params) {
+  return post('/system/user/addImportCustomer', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
