@@ -343,17 +343,6 @@ export default {
       // console.log(sessionStorage.headTitString);
       // console.log(JSON.parse(sessionStorage.headTitString));
         this.innerFields = JSON.parse(sessionStorage.headTitString)
-
-        console.log(JSON.parse(sessionStorage.headTitString));
-        this.innerFields.forEach(a => {
-          const options = typeof a.fieldAttr === 'object' ? a.fieldAttr : JSON.parse(a.fieldAttr)
-          console.log(options);
-          this.options.filter(item => {
-           item.fieldKey = optionValue
-
-          })
-
-        });
       }
     },
   },

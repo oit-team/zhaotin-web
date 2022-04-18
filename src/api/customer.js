@@ -27,9 +27,17 @@ export function delUserById(params) {
     cmd: 10008,
   })
 }
-// 导入客户
-export function addImportCustomer(params) {
-  return post('/system/user/addImportCustomer', params, {
+// 导出客户导出字段
+export function getExportinfo(params) {
+  return post('/system/excelPublic/getExportInfo', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 导出客户
+export function getExportCustomer(params, config) {
+  return post('system/user/getExportCustomer', params, {
+    ...config,
     mod: 'home',
     cmd: 10008,
   })

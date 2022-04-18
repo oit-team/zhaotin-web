@@ -11,7 +11,6 @@
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-// import TablePage from '@/components/business/TablePage'
 
 export default {
   components: {

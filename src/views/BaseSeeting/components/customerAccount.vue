@@ -39,8 +39,40 @@
           </template>
         </el-upload>
         <div style="margin-top: 20px">
-          <el-button size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
+          <el-button size="small" type="success" @click="confirmImportGoods">导入客户</el-button>
           <el-button size="small" @click="importFlag = false">取消导入</el-button>
+        </div>
+      </div>
+    </el-drawer>
+
+    <!-- 导出客户 -->
+    <el-drawer
+      title="请选择需要导出的字段"
+      :visible.sync="exportModelFlag"
+      :before-close="handleExportClose"
+      direction="rtl"
+      size="30%"
+      ref="export"
+    >
+      <div class="text-center">
+        <el-checkbox-group v-model="checkList" :checked="true" @change="changeChecked">
+          <div
+            style="text-align:left;margin:6px 0px;"
+            v-for="(item,index) in exportInfoList"
+            :key="index"
+            class="text-center"
+          >
+            <el-checkbox
+              :label="item.columnDesc"
+              true-label
+            >
+              {{ item.columnDesc }}
+            </el-checkbox>
+          </div>
+        </el-checkbox-group>
+        <div style="margin-top: 20px">
+          <el-button size="small" @click="cancelExport">取 消</el-button>
+          <el-button size="small" type="primary" @click="confirmExportCustomer">确 认</el-button>
         </div>
       </div>
     </el-drawer>
@@ -49,7 +81,7 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getCustomer, delUserById, addImportCustomer } from '@/api/customer'
+import { getCustomer, delUserById, getExportinfo,getExportCustomer } from '@/api/customer'
 import axios from 'axios'
 
 export default {
@@ -61,7 +93,12 @@ export default {
     return {
       data: {},
       importFlag: false, // 导入客户显示隐藏
+      exportModelFlag: false, // 导出客户显示隐藏
       fileList: [], // 上传的文件列表
+      checkList: [], // 导出字段选中项
+      exportInfoList: [], // 导出模板字段列表，由用户勾选，传参给导出接口
+      tempCheckList: [], // 默认全部选中，先把选项临时存储起来，方便赋值操作
+      rowList: null, // 导出传递的参数
     }
   },
 
@@ -80,13 +117,13 @@ export default {
             name: '导入客户',
             type: 'primary',
             icon: 'el-icon-download',
-            click: () => this.importGoods(),
+            click: () => this.importCustomer(),
           },
           {
             name: '导出客户',
             type: 'primary',
             icon: 'el-icon-plus',
-            click: () => this.$router.push('/basls/customerAccount/addCustomer'),
+            click: () => this.exportCustomer(),
           },
         ],
         table: {
@@ -180,20 +217,31 @@ export default {
         })
       })
     },
-    // 导入商品
-    importGoods() {
+    // 导入客户
+    importCustomer() {
       this.importFlag = true
     },
-    // 关闭提示
-    handleImportClose() {
-      this.$confirm('确认关闭？').then(() => {
-        this.importFlag = false
-        this.$refs.upload.clearFiles()
-      }).catch(() => {})
+    // 导出客户字段
+    exportCustomer() {
+      this.exportModelFlag = true
+      const con = {
+        type: 'customerList',
+        code: 'customer',
+      }
+      getExportinfo(con).then((res) => {
+        if (res.head.status === 0) {
+          this.exportInfoList = res.body.exportTitle
+          // 实现点击导出默认全选效果
+          for (let i = 0; i < this.exportInfoList.length; i++) {
+            // console.log(this.exportInfoList[i]);
+            this.tempCheckList.push(this.exportInfoList[i].columnDesc)
+          }
+            this.checkList = this.tempCheckList
+        }
+      })
     },
     // 监控上传文件列表
     changeFile(file, fileList) {
-      console.log(file)
       const existFile = fileList.slice(0, fileList.length - 1).find((f) => f.name === file.name)
       if (existFile) {
         this.$message.error('当前文件已经存在!')
@@ -209,9 +257,9 @@ export default {
     // // 上传文件
     uploadFile(file) {
       this.fileData.append('file', file.file)
-      console.log(this.fileData)
+      // console.log(this.fileData)
     },
-    // 确认导入商品
+    // 确认导入客户文件
     confirmImportGoods() {
       // this.$refs.upload.submit();
       if (this.fileList.length === 0) {
@@ -243,9 +291,9 @@ export default {
           data: formData,
         }).then((res) => {
           this.importFlag = false
-          // console.log(res)
+          console.log(res)
           this.$refs.upload.clearFiles()
-          if (res.data.head.status === 0) {
+          if (res.status === 200) {
             this.importResult = res.data.body
             this.addCount = res.data.body.addCount
             this.upDateCount = res.data.body.upDateCount
@@ -272,8 +320,76 @@ export default {
         }).catch(() => {
           this.$message({
             type: 'warning',
-            message: '导入商品失败',
+            message: '导入客户失败',
           })
+        })
+      }
+    },
+    // 导入关闭提示
+    handleImportClose() {
+      this.$confirm('确认关闭？').then(() => {
+        this.importFlag = false
+        this.$refs.upload.clearFiles()
+      })
+    },
+    // 导出关闭提示
+    handleExportClose() {
+      this.$confirm('确认关闭？').then(() => {
+        this.exportModelFlag = false
+        this.$refs.export.clearFiles()
+      })
+    },
+    // 获取选中项的值
+    changeChecked(val) {
+      this.checkList = val
+    },
+    // 取消导出
+    cancelExport() {
+      this.exportModelFlag = false
+      this.checkList = this.tempCheckList
+    },
+    // 确认导出
+    confirmExportCustomer() {
+      this.rowList = {}
+      if (this.checkList.length > 0) {
+        for(let i=0;i<this.checkList.length;i++){
+          for(let j=0;j<this.exportInfoList.length;j++){
+            if(this.checkList[i]==this.exportInfoList[j].columnDesc){
+              this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc;
+            }
+          }
+        }
+      }
+      if (this.rowList) {
+        this.exportModelFlag = false
+        const con = {
+          // code: "1",
+          pageNum: "1",
+          pageSize: "999",
+          rowList:this.rowList
+        }
+        getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
+            console.log(res.data);
+            var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
+            var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
+            var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
+            var result = patt.exec(contentDisposition);
+            console.log(result)
+            var filename = result[1];
+            var downloadElement = document.createElement('a');
+            var href = window.URL.createObjectURL(blob); //创建下载的链接
+            downloadElement.style.display = 'none';
+            downloadElement.href = href;
+            downloadElement.download = `${filename}-用户列表-${filename}` ; //下载后文件名
+            document.body.appendChild(downloadElement);
+            downloadElement.click(); //点击下载
+            document.body.removeChild(downloadElement); //下载完成移除元素
+            window.URL.revokeObjectURL(href); //释放掉blob对象
+          })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '请先选择导出数据相关字段',
         })
       }
     },
