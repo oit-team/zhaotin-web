@@ -10,7 +10,7 @@
           <el-button type="primary" @click="changeOperate(1)" icon="el-icon-search" circle />
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="数据统计" placement="top">
-          <el-button class="authBtnOnly" style="border-color: #FCCB02;background: #FCCB02;color:#fff;" icon="el-icon-s-data" circle />
+          <el-button class="authBtnOnly" style="border-color: #FCCB02;background: #FCCB02;color:#fff;" @click="changeOperate(2)" icon="el-icon-s-data" circle />
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="导入店铺" placement="top">
           <el-button style="border-color: #4FD5AC;background: #4FD5AC;color:#fff;" class="addBtnOnly" icon="el-icon-download" circle />
@@ -20,12 +20,12 @@
         </el-tooltip>
       </div>
       <!-- 搜索框 -->
-      <!-- <div class="searchIpt" v-if="showPanel&&operateLabel==1">
+      <div class="searchIpt" v-if="showPanel&&operateLabel==1">
         <el-input
           placeholder="关键字过滤"
           v-model="filterText"
         />
-      </div> -->
+      </div>
       <!-- 数据统计 -->
       <!-- <div class="statisticsBox" v-if="showPanel&&operateLabel==2">
         <div class="item">
@@ -73,8 +73,8 @@
           v-if="orgList && orgList.length>0"
           :data="orgList"
           icon-class="el-icon-s-shop"
-          highlight-current
-          :props="{children: 'childrenMenu',label: 'menuName'}"
+          :highlight-current="true"
+          :props="{children: 'childrenList',label: 'osName'}"
           node-key="menuId"
           :current-node-key="curCheckedKey"
           :default-expanded-keys="defaultOpenArr"
@@ -93,8 +93,8 @@
           ref="tree"
         >
           <div class="custom-tree-node" slot-scope="{ data }">
-            <span>{{ data.menuName }}</span>
-            <span>({{ data.menuName }})</span>
+            <span>{{ data.osName }}</span>
+            <span>({{ data.osName }})</span>
             <span v-if="data.isShop==&quot;2&quot;" style="margin-left:30px;" @click.stop="getTreeOrgList()"><i style="font-size:16px;" class="el-icon-refresh"></i></span>
           </div>
         </el-tree>
@@ -117,7 +117,7 @@
 
 <script>
 // import TablePage from '@/components/business/TablePage'
-import { getTreeMenuList } from '@/api/product'
+import { getTreeOrgList } from '@/api/brand'
 
 export default {
   name: 'Role',
@@ -127,10 +127,13 @@ export default {
   data() {
     return {
       data: {},
+      showPanel: false, // 输入框显示隐藏
+      operateLabel: 1, // 1 搜索  2 查看统计数据
       orgList: [], // 综合管理左侧树列表
       orgListLoading: false, // 树菜单加载状态
       curCheckedKey: null, // 当前选中的节点
       defaultOpenArr: [], // 默认展开的节点的数组
+      filterText: '',
     }
   },
 
@@ -153,20 +156,52 @@ export default {
   //         // data: this.data.resultList,
   //       },
   //       pager: {
-  //         // total: this.data.totalCount,
+  //         // total: this.data.count,
   //       },
   //     }
   //   },
   // },
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
+    },
+    $route(to, from) {
+      // // console.log(">>>>>>>>>",to,from);
+      // if(to.fullPath == '/brand/addUser'){
+      //   from.meta.keepAlive = true
+      // }else{
+      //   from.meta.keepAlive = false
+      // }
+    },
+    data(val) {
+      // // console.log("this.taskCheckedList===",this.taskCheckedList)
+      // // console.log("val====",val)
+      if (val && this.taskCheckedList && this.activeTab === 2) {
+        // // console.log("11111111111")
+        this.$nextTick(() => {
+          val.forEach(item => {
+            this.taskCheckedList.forEach(self => {
+              // // console.log("2222222222")
+              if (item.taskId === self.taskId) {
+                // // console.log("33333=====",item.taskId)
+                this.$refs.taskTable.toggleRowSelection(item, true)
+              }
+            })
+          })
+        })
+      }
+    },
+  },
   created() {
-    this.getTreeMenuList()
+    this.getTreeOrgList()
   },
   methods: {
-    // 获取属性菜单列表
-    async getTreeMenuList() {
-      const res = await getTreeMenuList()
-      // console.log(res)
-      this.orgList = res.body.resultList
+    // 获取客户列表
+    async getTreeOrgList() {
+      const res = await getTreeOrgList({
+        brandId: sessionStorage.brandId,
+      })
+      this.orgList = res.body.orgList
     },
     // 新增区域或用户
     addAreaOrShopFun() {
@@ -174,7 +209,7 @@ export default {
     },
     // 搜索方法
     changeOperate() {
-
+      this.showPanel = true
     },
     // 节点开始拖拽时触发的事件
     handleDragStart() {
