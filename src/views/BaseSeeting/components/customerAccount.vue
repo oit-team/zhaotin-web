@@ -76,6 +76,31 @@
         </div>
       </div>
     </el-drawer>
+
+        <!-- 导入excel时错误数据的展示 -->
+    <el-drawer
+      title="导入错误数据展示"
+      :visible.sync="importErrDataFlag"
+      direction="rtl"
+      size="40%"
+      :before-close="handleImportErrClose"
+      >
+      <div class="demo-drawer__content">
+        <h3>{{addCount}}</h3>
+        <h3>{{upDateCount}}</h3>
+        <h3>{{failureCount}}</h3>
+        <h3>失败数据如下:</h3>
+        <ul class='errDataBox' style="text-align:left;">
+          <li class='errDataItem'
+              style="line-height:30px;"
+              v-for='(item,index) in importErrData'
+              :key='index'>{{item}}</li>
+        </ul>
+        <div style="margin-top: 20px">
+          <el-button size="small" @click='cancelErrData'>取消</el-button>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -99,6 +124,12 @@ export default {
       exportInfoList: [], // 导出模板字段列表，由用户勾选，传参给导出接口
       tempCheckList: [], // 默认全部选中，先把选项临时存储起来，方便赋值操作
       rowList: null, // 导出传递的参数
+
+      importErrDataFlag:false, // 导入显示
+      addCount:null, // 导入错误数据
+      upDateCount:null,
+      failureCount:null,
+      importErrData:null, // 导入失败数据列表
     }
   },
 
@@ -221,6 +252,16 @@ export default {
     importCustomer() {
       this.importFlag = true
     },
+        // 导入错误数据的关闭操作
+    handleImportErrClose(){
+      this.$confirm('确认关闭？').then(_ => {
+        this.importErrDataFlag = false;
+      }).catch(_ => {});
+    },
+         // 错误数据取消操作
+    cancelErrData(){
+      this.importErrDataFlag = false;
+    },
     // 导出客户字段
     exportCustomer() {
       this.exportModelFlag = true
@@ -278,9 +319,6 @@ export default {
         formData.append('brandId', sessionStorage.brandId)
         formData.append('code', '2')
         formData.append('userId', sessionStorage.userId)
-        // console.log(formData)
-        // console.log("formData====",formData)
-        // 向webapi发起请求，等待后台接收
         axios({
           url: '/api/system/user/addImportCustomer',
           method: 'post',
@@ -294,6 +332,7 @@ export default {
           console.log(res)
           this.$refs.upload.clearFiles()
           if (res.status === 200) {
+            console.log(formData);
             this.importResult = res.data.body
             this.addCount = res.data.body.addCount
             this.upDateCount = res.data.body.upDateCount
@@ -307,7 +346,7 @@ export default {
               this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
                 confirmButtonText: '确定',
                 callback: action => {
-
+                  this.loadData()
                 },
               })
             }

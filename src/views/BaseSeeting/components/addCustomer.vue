@@ -145,6 +145,7 @@ export default {
           //   // 新增
             addCustomer({
               code: '1',
+              customerState:0,
               customerName: this.ruleForm.customerName,
               realName: this.ruleForm.realName,
               contactPerson: this.ruleForm.contactPerson,
