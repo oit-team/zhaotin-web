@@ -1,12 +1,25 @@
 <template>
   <div class="table-page">
     <!-- 控制搜索表单 -->
-    <search-form v-bind="search" ref="search" :fields="innerFields" @query="handleQuery" @reset="handleReset" />
+    <search-form
+      v-bind="search"
+      ref="search"
+      :fields="innerFields"
+      @query="handleQuery"
+      @reset="handleReset"
+    />
     <template v-if="(actions && actions.length > 0) || $slots.actions">
       <div class="flex mt-4">
         <slot name="actions">
           <template v-for="(item, index) of actions">
-            <el-button v-if="!item.slot" :key="index" :icon="item.icon" :type="item.type" size="middle" @click="handleAction(item)">
+            <el-button
+              v-if="!item.slot"
+              :key="index"
+              :icon="item.icon"
+              :type="item.type"
+              size="middle"
+              @click="handleAction(item)"
+            >
               {{ item.name }}
             </el-button>
             <slot v-else :name="`actions:${item.slot}`"></slot>
@@ -15,14 +28,28 @@
       </div>
       <el-divider />
     </template>
-    <!-- 表格 -->
+  <!-- 表格 -->
     <!-- handleCurrentChange表格的当前行发生变化 -->
     <!-- handleSelectionChange表格的选择项发生变化 -->
     <!-- 以上两个是配合单选复选框使用 -->
     <!-- row-click当某一行被点击时 -->
-    <el-table v-loading="loading" ref="table" :data="table.data" border height="100%" :highlight-current-row="table.selectionItem" @selection-change="handleSelectionChange" @current-change="handleCurrentChange" @row-click="$emit('row-click', $event)">
-      <!-- 控制单选 -->
-      <el-table-column v-if="table.selectionItem" align="center" width="50">
+    <el-table
+      v-loading="loading"
+      ref="table"
+      :data="table.data"
+      border
+      height="100%"
+      :highlight-current-row="table.selectionItem"
+      @selection-change="handleSelectionChange"
+      @current-change="handleCurrentChange"
+      @row-click="$emit('row-click', $event)"
+    >
+    <!-- 控制单选 -->
+      <el-table-column
+        v-if="table.selectionItem"
+        align="center"
+        width="50"
+      >
         <template slot-scope="scope">
           <el-radio class="table-radio" :value="selectedItem" :label="scope.row">
             <span></span>
@@ -30,27 +57,58 @@
         </template>
       </el-table-column>
       <!-- 控制全选反选 -->
-      <el-table-column v-if="table.selection" :selectable="table.selectable" align="center" type="selection" width="50" />
+      <el-table-column
+        v-if="table.selection"
+        :selectable="table.selectable"
+        align="center"
+        type="selection"
+        width="50"
+      />
       <!-- 表格核心 -->
       <template v-for="item in tableFields">
         <slot v-bind="item" :name="`column:${item.fieldKey}`">
           <!-- fieldName 表头信息 -->
           <!-- fieldKey  对应表头信息下面的具体商品信息  -->
-          <el-table-column :label="item.fieldName" :prop="item.fieldKey" min-width="140" show-overflow-tooltip sortable>
+          <el-table-column
+            :label="item.fieldName" 
+            :prop="item.fieldKey"
+            min-width="140"
+            show-overflow-tooltip
+            sortable
+          >
             <template slot-scope="scope">
-              <!-- scope.row[item.fieldKey] -->
-              <slot v-bind="scope" :name="`content:${item.fieldKey}`">{{ handleTabValue(item, scope.row[item.fieldKey]) }}</slot>
+              <slot v-bind="scope" :name="`content:${item.fieldKey}`">{{ handleTabValue(item,scope.row[item.fieldKey]) }}</slot>
             </template>
           </el-table-column>
         </slot>
       </template>
       <!-- 控制操作按钮 -->
-      <el-table-column v-if="table.actions && table.actions.buttons && table.actions.buttons.length" :width="(table.actions && table.actions.width) || 100" align="center" fixed="right" label="操作">
+      <el-table-column
+        v-if="table.actions && table.actions.buttons && table.actions.buttons.length"
+        :width="(table.actions && table.actions.width) || 100"
+        align="center"
+        fixed="right"
+        label="操作"
+      >
         <template slot-scope="scope">
           <slot v-bind="scope" name="rowActions">
             <template>
-              <el-tooltip v-for="(btn, index) of table.actions.buttons" :key="index" :content="getContent(btn.tip, scope)" effect="dark" placement="top">
-                <el-button :class="btn.class" :disabled="getContent(btn.disabled, scope)" :icon="getContent(btn.icon, scope)" :type="getContent(btn.type, scope)" circle size="mini" @click="rowClick(btn, scope)" />
+              <el-tooltip
+                v-for="(btn, index) of table.actions.buttons"
+                :key="index"
+                :content="getContent(btn.tip, scope)"
+                effect="dark"
+                placement="top"
+              >
+                <el-button
+                  :class="btn.class"
+                  :disabled="getContent(btn.disabled, scope)"
+                  :icon="getContent(btn.icon, scope)"
+                  :type="getContent(btn.type, scope)"
+                  circle
+                  size="mini"
+                  @click="rowClick(btn, scope)"
+                />
               </el-tooltip>
             </template>
           </slot>
@@ -58,19 +116,28 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination ref="pager" :current-page.sync="innerPager.index" :page-size.sync="innerPager.size" :page-sizes="innerPager.sizes" :total="innerPager.total" layout="total, sizes, prev, pager, next, jumper" @size-change="loadData()" @current-change="loadData()" />
+    <el-pagination
+      ref="pager"
+      :current-page.sync="innerPager.index"
+      :page-size.sync="innerPager.size"
+      :page-sizes="innerPager.sizes"
+      :total="innerPager.total"
+      layout="total, sizes, prev, pager, next, jumper"
+      @size-change="loadData()"
+      @current-change="loadData()"
+    />
   </div>
 </template>
 
 <script>
-import SearchForm from "../SearchForm";
+import SearchForm from '../SearchForm'
 
 const ROW_ACTION_TYPES = {
-  DELETE: "delete",
-};
+  DELETE: 'delete',
+}
 
 export default {
-  name: "TablePage",
+  name: 'TablePage',
 
   components: { SearchForm },
 
@@ -118,58 +185,48 @@ export default {
 
   computed: {
     tableFields() {
-      return this.innerFields.filter((item) => !item.noTableShow);
+      return this.innerFields.filter(item => !item.noTableShow)
     },
   },
 
   watch: {
-    "pager.total": function (value) {
-      this.innerPager.total = value;
+    'pager.total': function (value) {
+      this.innerPager.total = value
     },
-    fields: "setFields",
+    fields: 'setFields',
   },
 
   created() {
-    Object.assign(this.innerPager, this.pager);
+    Object.assign(this.innerPager, this.pager)
 
-    this.setFields();
+    this.setFields()
   },
 
   mounted() {
-    this.auto && this.initLoad();
+    this.auto && this.initLoad()
   },
 
   methods: {
-    handleTabValue(item, value) {
-      const typeList = ['customerType', 'customerState']
-      if(typeList.includes(item.fieldKey)) {
-          return JSON.parse(item.fieldAttr)[value].optionValue;
-      }else {
-        return  value
-      }
-      // switch (item.fieldKey) {
-      //   case "customerType":
-      //     return JSON.parse(item.fieldAttr)[value].optionValue;
-      //     break;
-      //   case "customerState":
-      //     return JSON.parse(item.fieldAttr)[value].optionValue;
-      //   default:
-      //     return value;
-      //     break;
-      // }
+    handleTabValue(item,value) {
+    const typeList = ['customerType','customerState']
+    if(typeList.includes(item.fieldKey)) {
+      return JSON.parse(item.fieldAttr)[value].optionValue
+    }
+    return value
     },
+
     initLoad() {
-      this.$refs.search.query();
+      this.$refs.search.query()
     },
     getQueryParams() {
       return {
         pageNum: this.innerPager.index,
         pageSize: this.innerPager.size,
         ...this.queryData,
-      };
+      }
     },
     rowClick(btn, scope) {
-      const option = btn.option || {};
+      const option = btn.option || {}
 
       if (btn.to) {
         return this.$router.push({
@@ -177,71 +234,80 @@ export default {
           params: {
             item: scope.row,
           },
-        });
+        })
       }
 
       // 根据传入类型做简单提示，复杂提示请自行编写
       switch (option.type) {
         case ROW_ACTION_TYPES.DELETE:
-          const message = this.getContent(option.message, scope) || (option.field ? `确定删除${option.fieldTip || ""} ${scope.row[option.field]} 吗？` : "确定要删除吗？");
+          const message = this.getContent(option.message, scope)
+            || (option.field ? `确定删除${option.fieldTip || ''} ${scope.row[option.field]} 吗？` : '确定要删除吗？')
 
-          this.$confirm(message, "提示", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
+          this.$confirm(message, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
           }).then(async () => {
             // try {
-            await btn.click(scope);
+            await btn.click(scope)
 
-            const successTips = option.field ? `删除${option.fieldTip || ""} ${scope.row[option.field]} 成功！` : "删除成功！";
-            this.messageTips("success", this.getContent(option.success, scope), successTips);
+            const successTips = option.field
+              ? `删除${option.fieldTip || ''} ${scope.row[option.field]} 成功！`
+              : '删除成功！'
+            this.messageTips(
+              'success',
+              this.getContent(option.success, scope),
+              successTips,
+            )
             // } catch (e) {
             //   this.messageTips('error', this.getContent(option.error, scope), '删除失败！')
             // }
-          });
-          break;
+          })
+          break
         default:
-          btn.click(scope);
+          btn.click(scope)
       }
     },
     getContent(opt, ...params) {
-      return typeof opt === "function" ? opt(...params) : opt;
+      return typeof opt === 'function' ? opt(...params) : opt
     },
     messageTips(tipsType, tips, defaultTips) {
       // 如果tips是false则取消提示
-      if (typeof tips === "boolean" && !tips) return;
+      if (typeof tips === 'boolean' && !tips) return
 
-      this.$message[tipsType](tips || defaultTips);
+      this.$message[tipsType](tips || defaultTips)
     },
     handleQuery(e) {
-      this.queryData = e;
-      this.loadData();
+      this.queryData = e
+      this.loadData()
     },
     handleReset(e) {
-      this.queryData = e;
-      this.loadData();
+      this.queryData = e
+      this.loadData()
     },
     handleSelectionChange(e) {
-      this.selected = e;
-      this.$emit("selection-change", e);
+      this.selected = e
+      this.$emit('selection-change', e)
     },
     handleCurrentChange(e) {
-      this.selectedItem = e;
-      this.$emit("current-change", e);
+      this.selectedItem = e
+      this.$emit('current-change', e)
     },
     handleAction(item) {
       // 页面跳转
       if (item.to) {
-        if (typeof item.to === "string") {
-          const isPath = /^\.{0,2}\//.test(item.to);
+        if (typeof item.to === 'string') {
+          const isPath = /^\.{0,2}\//.test(item.to)
           // 路径跳转还是命名跳转
-          const route = isPath ? { path: item.to } : { name: item.to };
-          this.$router.push(route);
+          const route = isPath
+            ? { path: item.to }
+            : { name: item.to }
+          this.$router.push(route)
         } else {
-          this.$router.push(item.to);
+          this.$router.push(item.to)
         }
       } else if (item.click) {
-        item.click();
+        item.click()
       }
     },
     /**
@@ -249,17 +315,18 @@ export default {
      * @public
      */
     async loadData() {
-      this.loading = true;
-      const promised = this.promise(this.getQueryParams());
+      this.loading = true
+      const promised = this.promise(this.getQueryParams())
       if (promised instanceof Promise) {
-        await promised.finally(() => {
-          this.loading = false;
-        });
+        await promised
+          .finally(() => {
+            this.loading = false
+          })
         // 自动更新布局
-        this.autoLayout && this.$nextTick(this.$refs.table.doLayout);
+        this.autoLayout && this.$nextTick(this.$refs.table.doLayout)
       } else {
-        this.loading = false;
-        console.error("[table-page] promise 必须返回一个Promise对象!");
+        this.loading = false
+        console.error('[table-page] promise 必须返回一个Promise对象!')
       }
     },
     /**
@@ -268,36 +335,36 @@ export default {
      * @param {boolean|string} tips 定义提示，传入false不提示
      * @return {boolean}
      */
-    checkSelected(tips = "请至少选中一项数据！") {
+    checkSelected(tips = '请至少选中一项数据！') {
       if (this.selected.length === 0) {
-        tips && this.$message.warning(tips);
-        return false;
+        tips && this.$message.warning(tips)
+        return false
       }
-      return true;
+      return true
     },
     /**
      * 设置字段
      * @public
      */
-    setFields(fields) {
+    setFields(fields) { 
       if (sessionStorage.headTitString) {
-        // console.log(sessionStorage.headTitString);
-        // console.log(JSON.parse(sessionStorage.headTitString));
-        this.innerFields = JSON.parse(sessionStorage.headTitString);
+      // console.log(sessionStorage.headTitString);
+      // console.log(JSON.parse(sessionStorage.headTitString));
+        this.innerFields = JSON.parse(sessionStorage.headTitString)
       }
     },
   },
-};
+}
 </script>
 
 <style lang="scss">
 .table-page {
-  // @apply flex-1 flex flex-col overflow-hidden h-full;
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  height: 100%;
-  flex-direction: column;
+// @apply flex-1 flex flex-col overflow-hidden h-full;
+display: flex;
+flex: 1;
+overflow: hidden;
+height: 100%;
+flex-direction: column;
 
   .el-table-column--selection {
     .cell {
@@ -307,7 +374,7 @@ export default {
   }
 
   .el-loading-mask {
-    background-color: rgba(255, 255, 255, 0.9) !important;
+    background-color: rgba(255, 255, 255, .9) !important;
 
     svg {
       display: inline-block;

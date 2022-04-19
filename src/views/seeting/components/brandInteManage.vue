@@ -12,10 +12,10 @@
         <el-tooltip class="item" effect="dark" content="数据统计" placement="top">
           <el-button class="authBtnOnly" style="border-color: #FCCB02;background: #FCCB02;color:#fff;" @click="changeOperate(2)" icon="el-icon-s-data" circle />
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="导入店铺" placement="top">
+        <el-tooltip class="item" effect="dark" content="导入区域" placement="top">
           <el-button style="border-color: #4FD5AC;background: #4FD5AC;color:#fff;" class="addBtnOnly" icon="el-icon-download" circle />
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="导出店铺" placement="top">
+        <el-tooltip class="item" effect="dark" content="导出区域" placement="top">
           <el-button style="border-color: #ADA3EE;background: #ADA3EE;color:#fff;" class="downLoadBtnOnly" icon="el-icon-upload2" circle />
         </el-tooltip>
       </div>
@@ -24,6 +24,7 @@
         <el-input
           placeholder="关键字过滤"
           v-model="filterText"
+          ref="searchInput"
         />
       </div>
       <!-- 数据统计 -->
@@ -70,6 +71,7 @@
       <!-- 树形控件 -->
       <div class="orgTreeBox" ref="orgTree">
         <el-tree
+          :default-expand-all="true"
           v-if="orgList && orgList.length>0"
           :data="orgList"
           icon-class="el-icon-s-shop"
@@ -110,57 +112,154 @@
     <div style="width:0.5px;background-color:#ddd;margin-left:6px;"></div>
     <!-- 组件 -->
     <div class="rightListCon" ref="brandRightCon">
-      <!-- <div class="table_height"> <TablePage v-bind="tablePageOption" auto /></div> -->
+      <div class="table_height"> <TablePage v-bind="tablePageOption" auto /></div>
     </div>
+    <!-- 新增区域 -->
+    <el-drawer
+      :title="editFlag?'新增':'编辑'"
+      :visible.sync="areadrawer"
+      size="30%"
+    >
+      <!-- 新增表单 -->
+      <el-form
+        label-width="80px"
+        class="flex flex-col px-8"
+        :inline="true"
+        :model="areaForm"
+        :rules="areaRules"
+        ref="areaForm"
+        v-if="editFlag"
+      >
+        <el-form-item label="区域名称" prop="deptName">
+          <el-input v-model="areaForm.deptName" placeholder="请输入区域名称" />
+        </el-form-item>
+        <!-- <el-form-item label="区域代码" prop="deptCode">
+          <el-input v-model="areaForm.deptCode" placeholder="区请输入域编码" />
+        </el-form-item> -->
+        <el-form-item label="责任人" prop="dutyId">
+          <el-select filterable v-model="areaForm.dutyId" placeholder="请选择区域负责人" @change="changeAreaManger">
+            <el-option
+              v-for="item in chargeList"
+              :key="item.id"
+              :label="item.nickName"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <div class="text-center">
+          <el-button size="small" type="primary" @click="addArea('areaForm')">确认新增</el-button>
+          <el-button size="small" @click="close">取消新增</el-button>
+        </div>
+      </el-form>
+      <!-- 编辑表单 -->
+      <el-form v-else :model="areaForm" :rules="areaRules" ref="areaForm">
+        <el-form-item label="区域名称" prop="deptName">
+          <el-input v-model="areaForm.deptName" placeholder="请输入区域名称" />
+        </el-form-item>
+        <el-form-item label="区域编码" prop="deptCode">
+          <el-input v-model="areaForm.deptCode" placeholder="区请输入域编码" />
+        </el-form-item>
+        <el-form-item label="责任人" prop="dutyId">
+          <el-select filterable v-model="areaForm.dutyId" placeholder="请选择区域负责人" @change="changeAreaManger">
+            <el-option
+              v-for="item in chargeList"
+              :key="item.id"
+              :label="item.nickName"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <div class="text-center">
+          <el-button size="small" type="primary" @click="addedit('areaForm')">确认编辑</el-button>
+          <el-button size="small" @click="closeEdit">取消编辑</el-button>
+        </div>
+      </el-form>
+    </el-drawer>
+
+    <!-- 区域修改删除弹框 -->
+    <el-dialog
+      title="操作"
+      :visible.sync="handleClickFlag"
+      center
+      width="270px"
+      class="align-center"
+    >
+      <!-- <el-button size="small" @click="clickAdd">新 增</el-button> -->
+      <el-button type="primary" size="small" @click="openDailog">编辑区域</el-button>
+      <el-button type="info" size="small" @click="delArea">删除区域</el-button>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-// import TablePage from '@/components/business/TablePage'
+import TablePage from '@/components/business/TablePage'
 import { getTreeOrgList } from '@/api/brand'
+import { getCustomer } from '@/api/customer'
+import { insertOrg, delOrgById, updateShopOrOrgById } from '@/api/org'
 
 export default {
   name: 'Role',
   components: {
-    // TablePage,
+    TablePage,
   },
   data() {
     return {
       data: {},
       showPanel: false, // 输入框显示隐藏
+      handleClickFlag: false, // 弹框显示隐藏
+      areadrawer: false, // draweer显示隐藏
       operateLabel: 1, // 1 搜索  2 查看统计数据
+
       orgList: [], // 综合管理左侧树列表
       orgListLoading: false, // 树菜单加载状态
       curCheckedKey: null, // 当前选中的节点
       defaultOpenArr: [], // 默认展开的节点的数组
+      nodeInfo: null, // 单击节点的信息
+      path: null, // 父级部门路径
       filterText: '',
+      editFlag: true, // 新增/编辑
+      chargeList: [], // 区域负责人列表
+      orgId: null, // 区域Id
+      areaForm: {
+        deptName: '', // 区域名称
+        dutyId: '', // 负责人
+        deptCode: '', // 区域编码
+      },
+      areaRules: {
+        deptName: [
+          { required: true, message: '请输入区域名称', trigger: 'blur' },
+          { max: 12, message: '长度在 12 个字以内', trigger: 'blur' },
+        ],
+        deptCode: [
+          { required: true, message: '请输入区域代码', trigger: 'blur' },
+        ],
+        dutyId: [
+          { required: true, message: '请输入区域代码', trigger: 'blur' },
+        ],
+      },
     }
   },
 
-  // computed: {
-  //   tablePageOption() {
-  //     return {
-  //       promise: this.loadData,
-  //       // ({
-  //       //   // token: JSON.parse(localStorage.getItem('token')),
-  //       //   userId: sessionStorage.getItem('userId'),
-  //       // }),
-  //       actions: [
-  //         {
-  //           name: '导出数据',
-  //           type: 'primary',
-  //           click: () => this.$refs.export.open(),
-  //         },
-  //       ],
-  //       table: {
-  //         // data: this.data.resultList,
-  //       },
-  //       pager: {
-  //         // total: this.data.count,
-  //       },
-  //     }
-  //   },
-  // },
+  computed: {
+    tablePageOption() {
+      return {
+        promise: this.loadData,
+        actions: [
+          {
+            name: '导出数据',
+            type: 'primary',
+            click: () => this.$refs.export.open(),
+          },
+        ],
+        table: {
+          data: this.data.resultList,
+        },
+        pager: {
+          total: this.data.count,
+        },
+      }
+    },
+  },
   watch: {
     filterText(val) {
       this.$refs.tree.filter(val)
@@ -196,6 +295,107 @@ export default {
     this.getTreeOrgList()
   },
   methods: {
+    // 获取用户列表
+    async loadData() {
+      const con = {
+        pageNum: '1',
+        pageSize: '999',
+        code: '2',
+        brandId: sessionStorage.brandId,
+      }
+      await getCustomer(con).then((res) => {
+        this.data = res.body
+        this.chargeList = res.body.resultList
+      })
+    },
+    // 确认新增区域
+    addArea() {
+      this.$refs.areaForm.validate((valid) => {
+        if (valid) {
+          let path = null
+          if (this.nodeInfo) {
+            path = `${this.nodeInfo.path},${this.nodeInfo.id}`
+          } else {
+            path = '0'
+          }
+          const con = {
+            brandId: sessionStorage.brandId,
+            deptName: this.areaForm.deptName,
+            dutyId: this.areaForm.dutyId,
+            path,
+            deptImg: '../../../assets/loginLeft.png',
+            userId: sessionStorage.userId,
+            deptCode: this.areaForm.areaCode,
+          }
+          insertOrg(con).then(() => {
+            this.getTreeOrgList()
+            this.areadrawer = false
+          })
+        }
+      })
+    },
+    // 更换区域负责人
+    changeAreaManger(val) {
+      this.areaForm.dutyId = val
+    },
+    // 取消新增区域
+    close() {
+      this.areadrawer = false
+    },
+    // 打开编辑区域框
+    openDailog() {
+      this.areadrawer = true
+      this.editFlag = false
+      console.log(this.nodeInfo)
+      if (this.nodeInfo) {
+        this.areaForm.deptName = this.nodeInfo.osName
+        this.areaForm.deptCode = this.nodeInfo.nodeCode
+        this.areaForm.dutyId = Number(this.nodeInfo.dutyId)
+      } else {
+        this.areaForm.dutyId = null
+      }
+    },
+    // 确认编辑区域
+    addedit() {
+      const con = {
+        id: this.nodeInfo.id,
+        isShop: '0',
+        orgStId: this.orgId,
+        deptName: this.areaForm.deptName,
+        deptCode: this.nodeInfo.nodeCode,
+        dutyId: this.areaForm.dutyId,
+      }
+      updateShopOrOrgById(con).then((res) => {
+        this.getTreeOrgList()
+        this.areadrawer = false
+      })
+    },
+    // 取消编辑区域
+    closeEdit() {
+      this.areadrawer = false
+    },
+    // 关闭编辑弹框
+    closeDailog() {
+      this.handleClickFlag = false
+      this.editFlag = true
+    },
+    // 删除区域
+    delArea() {
+      this.$confirm('确认删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        const con = {
+          isShop: '0',
+          orgId: this.orgId,
+        }
+        delOrgById(con).then(() => {
+          this.getTreeOrgList()
+          this.handleClickFlag = false
+        })
+      })
+    },
     // 获取客户列表
     async getTreeOrgList() {
       const res = await getTreeOrgList({
@@ -203,13 +403,17 @@ export default {
       })
       this.orgList = res.body.orgList
     },
-    // 新增区域或用户
-    addAreaOrShopFun() {
-
+    // 新增区域
+    async addAreaOrShopFun() {
+      this.areadrawer = true
+      this.editFlag = true
+      this.areaForm.deptName = ''
+      this.areaForm.deptCode = ''
+      this.areaForm.dutyId = ''
     },
     // 搜索方法
     changeOperate() {
-      this.showPanel = true
+      this.showPanel = !this.showPanel
     },
     // 节点开始拖拽时触发的事件
     handleDragStart() {
@@ -233,55 +437,55 @@ export default {
       // // console.log('tree drag end: ', dropType);
       // // console.log('tree drag end 被拖拽节点: ',draggingNode,'被放置的节点', dropNode);
       // 判断拖拽节点是否为店铺
-      let isShop = null
-      let orgStId = null
+      // let isShop = null
+      // let orgStId = null
 
-      if (draggingNode.data.isShop && draggingNode.data.isShop === '1') {
-        // // console.log("dropNode.data===========",dropNode.data)
-        isShop = '1' // 拖拽点是店铺，orgStId1不需要拼接
-        if (dropType !== 'none') {
-          // // console.log("拖拽结束，，dropType=====",dropType)
-          if (dropType === 'inner') {
-            // // console.log("dropNode.data===========",dropNode.data)
-            orgStId = dropNode.data.id
-          } else if (dropType === 'before' || dropType === 'after') {
-            orgStId = dropNode.data.parentId
-          }
-          // // console.log("orgStId=====",orgStId)
-        }
-      } else if (draggingNode.data.isShop && draggingNode.data.isShop === '0') {
-        isShop = '0' // 被拖拽点不是店铺，orgStId需要拼接
-        // // console.log("dropNode.data===========",dropNode.data)
-        // // console.log("dropNode.data.path===========",dropNode.data.path)
-        if (dropType === 'inner') {
-          // // console.log("dropNode.data.path===========",dropNode.data.path)
-          const lastStr = dropNode.data.path.substring(dropNode.data.path.length - 1)
-          if (lastStr === ',') {
-            orgStId = `${dropNode.data.path}${dropNode.data.id}`
-          } else {
-            orgStId = `${dropNode.data.path},${dropNode.data.id}`
-          }
-          // // console.log("this is cms orgstid",orgStId)
-          // orgStId = dropNode.data.id
-        } else if (dropType === 'before' || dropType === 'after') { // dropType == 'before' || dropType == 'after'
-          // orgStId = '0'
-          // // console.log("父节点",dropNode.data,dropNode.parent.data)
-          if (dropNode.data.isShop && dropNode.data.isShop === '1') { // 被放置点是店铺，看父节点
-            if (dropNode.parent.data.isShop === '2') { // 品牌
-              orgStId = '0'
-            }
-            if (dropNode.parent.data.isShop === '0') { // 区域
-              // orgStId = dropNode.parent.data.path
-              orgStId = `${dropNode.parent.data.path},${dropNode.parent.data.id}`
-            }
-          }
-          if (dropNode.data.isShop && dropNode.data.isShop === '0') {
-            orgStId = dropNode.data.path
-          }
-          // orgStId = dropNode.data.path
-          // // console.log("before:this is cms orgstid",orgStId)
-        }
-      }
+      // if (draggingNode.data.isShop && draggingNode.data.isShop === '1') {
+      //   // // console.log("dropNode.data===========",dropNode.data)
+      //   isShop = '1' // 拖拽点是店铺，orgStId1不需要拼接
+      //   if (dropType !== 'none') {
+      //     // // console.log("拖拽结束，，dropType=====",dropType)
+      //     if (dropType === 'inner') {
+      //       // // console.log("dropNode.data===========",dropNode.data)
+      //       orgStId = dropNode.data.id
+      //     } else if (dropType === 'before' || dropType === 'after') {
+      //       orgStId = dropNode.data.parentId
+      //     }
+      //     // // console.log("orgStId=====",orgStId)
+      //   }
+      // } else if (draggingNode.data.isShop && draggingNode.data.isShop === '0') {
+      //   isShop = '0' // 被拖拽点不是店铺，orgStId需要拼接
+      //   // // console.log("dropNode.data===========",dropNode.data)
+      //   // // console.log("dropNode.data.path===========",dropNode.data.path)
+      //   if (dropType === 'inner') {
+      //     // // console.log("dropNode.data.path===========",dropNode.data.path)
+      //     const lastStr = dropNode.data.path.substring(dropNode.data.path.length - 1)
+      //     if (lastStr === ',') {
+      //       orgStId = `${dropNode.data.path}${dropNode.data.id}`
+      //     } else {
+      //       orgStId = `${dropNode.data.path},${dropNode.data.id}`
+      //     }
+      //     // // console.log("this is cms orgstid",orgStId)
+      //     // orgStId = dropNode.data.id
+      //   } else if (dropType === 'before' || dropType === 'after') { // dropType == 'before' || dropType == 'after'
+      //     // orgStId = '0'
+      //     // // console.log("父节点",dropNode.data,dropNode.parent.data)
+      //     if (dropNode.data.isShop && dropNode.data.isShop === '1') { // 被放置点是店铺，看父节点
+      //       if (dropNode.parent.data.isShop === '2') { // 品牌
+      //         orgStId = '0'
+      //       }
+      //       if (dropNode.parent.data.isShop === '0') { // 区域
+      //         // orgStId = dropNode.parent.data.path
+      //         orgStId = `${dropNode.parent.data.path},${dropNode.parent.data.id}`
+      //       }
+      //     }
+      //     if (dropNode.data.isShop && dropNode.data.isShop === '0') {
+      //       orgStId = dropNode.data.path
+      //     }
+      //     // orgStId = dropNode.data.path
+      //     // // console.log("before:this is cms orgstid",orgStId)
+      //   }
+      // }
 
       let sort = null
       if (dropNode.data.isShop && dropNode.data.isShop !== '2') {
@@ -294,86 +498,86 @@ export default {
         }
       }
 
-      if (dropType !== 'none') {
-        const _this = this
-        const con = {
-          id: draggingNode.data.id, // 区域ID或店铺ID  被拖拽节点id
-          dropNodeId: dropNode.data.id, // 被放置节点id
-          isShop, // 0=区域;1=店铺query string
-          orgStId, // 直接上级ID  // 即店铺所属区域id
-          beforeSort: draggingNode.data.sort, // 修改之前的排序值
-          sort, // 修改之后的排序值
-        }
+      // if (dropType !== 'none') {
+      //   const _this = this
+      //   const con = {
+      //     id: draggingNode.data.id, // 区域ID或店铺ID  被拖拽节点id
+      //     dropNodeId: dropNode.data.id, // 被放置节点id
+      //     isShop, // 0=区域;1=店铺query string
+      //     orgStId, // 直接上级ID  // 即店铺所属区域id
+      //     beforeSort: draggingNode.data.sort, // 修改之前的排序值
+      //     sort, // 修改之后的排序值
+      //   }
 
-        // // console.log("迁移节点参数：",con)
-        const jsonParam = _this.GLOBAL.g_paramJson(con)
-        // _this.$set(draggingNode.data,'sort',sort)
-        _this.$axios.post(`${_this.GLOBAL.system_manager_server}/org/updateShopOrOrgById`, jsonParam).then((res) => {
-          // // console.log("====确认编辑接口==========",res.data.body);   // 成功时 body为null
-          if (res.data.head.status === 0) {
-            if (draggingNode.data.isShop && draggingNode.data.isShop === '1') {
-              // // console.log("dropNode.data===========",dropNode.data)
-              // isShop = '1';  // 拖拽点是店铺，orgStId1不需要拼接
-              if (dropType !== 'none') {
-                // // console.log("拖拽结束，，dropType=====",dropType)
-                if (dropType === 'inner') {
-                  _this.$set(draggingNode.data, 'parentId', String(dropNode.data.id))
-                  // // console.log("改变后的draggingNode.data===========",draggingNode.data)
-                } else if (dropType === 'before' || dropType === 'after') {
-                  _this.$set(draggingNode.data, 'parentId', dropNode.data.parentId)
-                  // // console.log("改变后的draggingNode.data===========",draggingNode.data)
-                }
-              }
-            } else if (draggingNode.data.isShop && draggingNode.data.isShop === '0') { // 被拖拽点不是店铺，orgStId需要拼接
-              // // console.log("dropNode.data===========",dropNode.data)
-              if (dropType === 'inner') {
-                let path = ''
-                path = `${dropNode.data.path},${dropNode.data.id}`
-                _this.$set(draggingNode.data, 'parentId', dropNode.data.id)
-                _this.$set(draggingNode.data, 'path', path)
-                // // console.log("改变后的draggingNode.data===========",draggingNode.data);
-              } else if (dropType === 'before' || dropType === 'after') {
-                let path = ''
-                if (dropNode.data.isShop && dropNode.data.isShop === '1') { // 被放置点是店铺，看父节点
-                  if (dropNode.parent.data.isShop === '2') { // 品牌
-                    path = '0'
-                  }
-                  if (dropNode.parent.data.isShop === '0') { // 区域
-                    // path = dropNode.parent.data.path
-                    path = `${dropNode.parent.data.path},${dropNode.parent.data.id}`
-                  }
-                  // // console.log("path==",path)
-                }
-                // // console.log("path==",path)
-                if (dropNode.data.isShop && dropNode.data.isShop === '0') {
-                  path = dropNode.data.path
-                }
+      //   // // console.log("迁移节点参数：",con)
+      //   const jsonParam = _this.GLOBAL.g_paramJson(con)
+      //   // _this.$set(draggingNode.data,'sort',sort)
+      //   _this.$axios.post(`${_this.GLOBAL.system_manager_server}/org/updateShopOrOrgById`, jsonParam).then((res) => {
+      //     // // console.log("====确认编辑接口==========",res.data.body);   // 成功时 body为null
+      //     if (res.data.head.status === 0) {
+      //       if (draggingNode.data.isShop && draggingNode.data.isShop === '1') {
+      //         // // console.log("dropNode.data===========",dropNode.data)
+      //         // isShop = '1';  // 拖拽点是店铺，orgStId1不需要拼接
+      //         if (dropType !== 'none') {
+      //           // // console.log("拖拽结束，，dropType=====",dropType)
+      //           if (dropType === 'inner') {
+      //             _this.$set(draggingNode.data, 'parentId', String(dropNode.data.id))
+      //             // // console.log("改变后的draggingNode.data===========",draggingNode.data)
+      //           } else if (dropType === 'before' || dropType === 'after') {
+      //             _this.$set(draggingNode.data, 'parentId', dropNode.data.parentId)
+      //             // // console.log("改变后的draggingNode.data===========",draggingNode.data)
+      //           }
+      //         }
+      //       } else if (draggingNode.data.isShop && draggingNode.data.isShop === '0') { // 被拖拽点不是店铺，orgStId需要拼接
+      //         // // console.log("dropNode.data===========",dropNode.data)
+      //         if (dropType === 'inner') {
+      //           let path = ''
+      //           path = `${dropNode.data.path},${dropNode.data.id}`
+      //           _this.$set(draggingNode.data, 'parentId', dropNode.data.id)
+      //           _this.$set(draggingNode.data, 'path', path)
+      //           // // console.log("改变后的draggingNode.data===========",draggingNode.data);
+      //         } else if (dropType === 'before' || dropType === 'after') {
+      //           let path = ''
+      //           if (dropNode.data.isShop && dropNode.data.isShop === '1') { // 被放置点是店铺，看父节点
+      //             if (dropNode.parent.data.isShop === '2') { // 品牌
+      //               path = '0'
+      //             }
+      //             if (dropNode.parent.data.isShop === '0') { // 区域
+      //               // path = dropNode.parent.data.path
+      //               path = `${dropNode.parent.data.path},${dropNode.parent.data.id}`
+      //             }
+      //             // // console.log("path==",path)
+      //           }
+      //           // // console.log("path==",path)
+      //           if (dropNode.data.isShop && dropNode.data.isShop === '0') {
+      //             path = dropNode.data.path
+      //           }
 
-                _this.$set(draggingNode.data, 'parentId', dropNode.data.parentId)
-                _this.$set(draggingNode.data, 'path', path)
-              }
-            }
-            // // console.log("之前的sort===:",dropNode.data.sort,draggingNode.data.sort)
-            const dropTempSort = draggingNode.data.sort
-            _this.$set(dropNode.data, 'sort', dropTempSort)
-            _this.$set(draggingNode.data, 'sort', sort)
-            // // console.log("之后的sort===:",dropNode.data.sort,draggingNode.data.sort)
+      //           _this.$set(draggingNode.data, 'parentId', dropNode.data.parentId)
+      //           _this.$set(draggingNode.data, 'path', path)
+      //         }
+      //       }
+      //       // // console.log("之前的sort===:",dropNode.data.sort,draggingNode.data.sort)
+      //       const dropTempSort = draggingNode.data.sort
+      //       _this.$set(dropNode.data, 'sort', dropTempSort)
+      //       _this.$set(draggingNode.data, 'sort', sort)
+      //       // // console.log("之后的sort===:",dropNode.data.sort,draggingNode.data.sort)
 
-            _this.$message({
-              message: '节点迁移成功',
-              type: 'success',
-            })
-            _this.getTreeOrgList() // 每回迁移成功之后都要重亲请求，否则连续进行节点迁移以后会不生效，因为拿到的节点数据不对，只是页面节点改变，数据未改变
-          } else {
-            _this.$message({
-              message: res.data.head.msg,
-              type: 'warning',
-            })
-          }
-        }).catch(err => {
-          // console.log(err)
-        })
-      }
+      //       _this.$message({
+      //         message: '节点迁移成功',
+      //         type: 'success',
+      //       })
+      //       _this.getTreeOrgList() // 每回迁移成功之后都要重亲请求，否则连续进行节点迁移以后会不生效，因为拿到的节点数据不对，只是页面节点改变，数据未改变
+      //     } else {
+      //       _this.$message({
+      //         message: res.data.head.msg,
+      //         type: 'warning',
+      //       })
+      //     }
+      //   }).catch(err => {
+      //     // console.log(err)
+      //   })
+      // }
     },
     // 拖拽成功完成时触发的事件
     handleDrop() {
@@ -401,7 +605,8 @@ export default {
     async handleNodeClick(MouseEvent, object, Node, VueComponent) {
       // this.administration.id = object.data.id
       // this.administration.isShop = object.data.isShop
-      // this.nodeInfo = object.data // 先将data存到变量里
+      // console.log(object)
+      this.nodeInfo = object.data // 先将data存到变量里
 
       // this.activeTab = 1 // 左键单击节点时让tab初始化到activeTab为1
 
@@ -490,18 +695,20 @@ export default {
     nodeRightClick(MouseEvent, object, Node, VueComponent) {
       // // console.log("节点右击------",MouseEvent, object, Node, VueComponent);
       // console.log("树节点右键单击======",Node.data)   // 单击节点的信息
-      if (Node.data.isShop === '1') { // 店铺
-        this.isShop = '1'
-      }
-      if (Node.data.isShop === '2') { // 品牌节点
-        this.isShop = '2'
-      }
-      if (Node.data.isShop === '0') {
-        this.isShop = '0' // 区域
-      }
-      if (this.isShop === '0' || this.isShop === '1') {
-        this.handleClickFlag = true
-      }
+      // if (Node.data.isShop === '1') { // 店铺
+      //   this.isShop = '1'
+      // }
+      // if (Node.data.isShop === '2') { // 品牌节点
+      //   this.isShop = '2'
+      // }
+      // if (Node.data.isShop === '0') {
+      //   this.isShop = '0' // 区域
+      // }
+      // if (this.isShop === '0' || this.isShop === '1') {
+      // console.log(Node)
+      this.orgId = Node.data.id
+      this.handleClickFlag = true
+      // }
       this.nodeInfo = Node.data // 先将data存到变量里
     },
     // 树节点搜索过滤
@@ -706,5 +913,10 @@ export default {
   line-height: 50px;
   color: #e60012;
 }
-
+/deep/ .el-drawer__header > :first-child {
+  text-align: center;
+}
+/deep/ .el-dialog--center .el-dialog__body {
+  text-align: center;
+}
 </style>
