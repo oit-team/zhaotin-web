@@ -89,7 +89,9 @@
     </el-form-item>
 
        <el-form-item label="客户商标" prop="trademark">
-        <el-input v-model="ruleForm.trademark" style="width:60%" placeholder="请上传客户商标" />
+                      <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
+                        <i class="el-icon-plus"></i>
+                      </vc-upload>
     </el-form-item>
 
        <el-form-item label="客户洗唛车法" prop="washingLabel">
@@ -167,13 +169,15 @@
 <script>
 import {getCustomer, addCustomer, changeCustomer } from '@/api/customer'
 import quill from '@/views/common/quillEditor'
+import VcUpload from '@/views/common/Upload'
 import {getTreeOrgList} from '@/api/org'
 import axios from 'axios'
 export default {
   name: 'AddMenu',
-  components: {quill},
+  components: {quill,VcUpload},
   data() {
     return {
+      uploadList:[],
       peopleList:[],
       documentaryList:[], // 跟单人员列表
       marketList:[], // 市场人员列表
@@ -207,7 +211,6 @@ export default {
         contactPerson: '',
         contactNumber: null,
         customerAddress: '',
-        realName: '',
         customerType: 0,
         tagPrice:'', // 吊牌价
         customerWashing:'', // 客户洗唛
@@ -255,7 +258,7 @@ export default {
           { required: true, message: '请选择区县', trigger: 'blur' },
         ],
          realName: [
-          { required: true, message: '请选择客户类型', trigger: 'blur' },
+          { required: true, message: '请输入真实姓名', trigger: 'blur' },
         ],
       },
 
@@ -266,18 +269,44 @@ export default {
     this.getCityList()
     this.getTreeOrgList()
     if (this.$route.query.item) {
-      // console.log(this.$route.query.item.row);
+      console.log(this.$route.query.item.row);
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
       // this.ruleForm.realName = this.$route.query.item.row.realName
-      // this.ruleForm.contactPerson = this.$route.query.item.row.contactPerson
+      this.ruleForm.contactPerson = this.$route.query.item.row.contactPerson
       this.ruleForm.contactNumber = Number(this.$route.query.item.row.contactNumber)
-      this.ruleForm.orgName = this.$route.query.item.row.orgName
+      // this.ruleForm.orgName = this.$route.query.item.row.orgName
       // this.ruleForm.customerType = this.$route.query.item.row.customerType
       // this.ruleForm.id = this.$route.query.item.row.id.toString()
       // this.ruleForm.customerName = this.$route.query.item.row.customerName
       // this.ruleForm.loginId = this.$route.query.item.row.logId
     }
+  },
+  computed: {
+    // 上传商标
+    uploadOptionimg() {
+      return {
+        showFileList: true,
+        multiple: true,
+        typeOption: {
+          'image/*': {
+            data: {
+              fileType: 0,
+            },
+          },
+        },
+        listType: 'picture-card',
+        maxSize: 1024 * 20,
+        limit: 6,
+        chunkSize: 1024 * 5,
+        check: true,
+        accept: 'image/*',
+        onSuccess: (file, fileList) => {
+          console.log(fileList);
+          this.uploadList = fileList.response.data.fileUrl
+        },
+      }
+    },
   },
   methods: {
     // 获取区域数据
@@ -321,6 +350,7 @@ export default {
           managerName:item.managerName,
           id:item.id
         })
+        // console.log(item);
         this.ruleForm.refereesId = item.refereesId
       })
   },
@@ -367,7 +397,19 @@ export default {
         if (valid) {
           if (this.editFlag) {
             // 编辑客户
-            changeCustomer({ code: '1', ...this.ruleForm }).then((res) => {
+            changeCustomer({
+              code: '1',
+              // customerState:0,
+              // updateTime:null,
+              // customerIntegral:null,
+              // refereesName:'daoru',
+              // refereesType:null,
+              ...this.ruleForm,
+              loginId:this.ruleForm.logId,
+              // loginId:this.ruleForm.loginId,
+              // contactDate:null,
+              contactNumber: Number(this.ruleForm.contactNumber),
+            }).then((res) => {
               if (res.head.status === 0) {
                 this.$message({
                   message: '编辑菜单成功',
@@ -446,7 +488,10 @@ export default {
 // /deep/ .el-input__inner {
 //   margin-left: 40px;
 // }
-// /deep/ .quill {
-//   margin-left: 40px;
-// }
+/deep/ .quill {
+  margin-left: 40px;
+}
+/deep/ .el-form-item__label {
+  margin-right: 40px;
+}
 </style>

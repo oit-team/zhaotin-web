@@ -329,7 +329,7 @@ export default {
           data: formData,
         }).then((res) => {
           this.importFlag = false
-          console.log(res)
+          // console.log(res)
           this.$refs.upload.clearFiles()
           if (res.status === 200) {
             console.log(formData);
