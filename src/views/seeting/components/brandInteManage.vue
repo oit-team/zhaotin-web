@@ -346,7 +346,7 @@ export default {
     openDailog() {
       this.areadrawer = true
       this.editFlag = false
-      console.log(this.nodeInfo)
+      // console.log(this.nodeInfo)
       if (this.nodeInfo) {
         this.areaForm.deptName = this.nodeInfo.osName
         this.areaForm.deptCode = this.nodeInfo.nodeCode
@@ -357,15 +357,21 @@ export default {
     },
     // 确认编辑区域
     addedit() {
+      let path = null
+      if (this.nodeInfo) {
+        path = `${this.nodeInfo.path}`
+      } else {
+        path = '0'
+      }
       const con = {
         id: this.nodeInfo.id,
         isShop: '0',
-        orgStId: this.orgId,
+        orgStId: path,
         deptName: this.areaForm.deptName,
         deptCode: this.nodeInfo.nodeCode,
         dutyId: this.areaForm.dutyId,
       }
-      updateShopOrOrgById(con).then((res) => {
+      updateShopOrOrgById(con).then(() => {
         this.getTreeOrgList()
         this.areadrawer = false
       })

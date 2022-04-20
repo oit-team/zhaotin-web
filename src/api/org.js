@@ -20,3 +20,10 @@ export function updateShopOrOrgById(params) {
     cmd: 10008,
   })
 }
+// 查询区域列表
+export function getTreeOrgList(params) {
+  return post('system/org/getOrgAll', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}

@@ -10,13 +10,13 @@
 
     <el-divider class="divider" />
 
-    <el-form ref="ruleForm" class="demo-ruleForm" :model="ruleForm" :rules="rules" label-width="98px">
+    <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="98px">
       <div class="goodsFormBox">
         <!-- 菜单栏 -->
-        <div class="w-4/5">
+        <div>
           <el-tabs class="" v-model="activeNum">
             <!-- 基础信息面板 -->
-            <el-tab-pane class="msgTab" label="基础信息" name="message">
+            <el-tab-pane label="基础信息" name="message">
               <!-- <el-collapse-item title="" name="1"> -->
               <div class="flex">
                 <div class="left left-box">
