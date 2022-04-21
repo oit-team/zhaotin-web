@@ -246,7 +246,17 @@ export default {
         promise: this.loadData,
         actions: [
           {
-            name: '导出数据',
+            name: '角色授权',
+            type: 'primary',
+            click: () => this.$refs.export.open(),
+          },
+          {
+            name: '导入用户',
+            type: 'primary',
+            click: () => this.$refs.export.open(),
+          },
+          {
+            name: '导出用户',
             type: 'primary',
             click: () => this.$refs.export.open(),
           },
