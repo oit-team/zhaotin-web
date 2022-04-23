@@ -1,10 +1,11 @@
 <template>
   <!-- 把角色赋予用户 -->
-  <div class="ml-56" id="authUsersByRoleId">
+  <div class="ml-32" id="authUsersByRoleId">
     <el-page-header @back="goBack" :content="pageTitle" />
-    <el-divider />
+    <el-divider class="mt-20" />
     <!-- <div class="roleDesc">{{roleName}}--{{roleRemark}}</div> -->
     <el-transfer
+      class="mt-24"
       filterable
       v-model="associatedUser"
       :data="allUserList"
@@ -146,13 +147,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
-#authUsersByRoleId{
-  height: 80vh;
-  width: 80vw;
-  .roleDesc{
-    line-height: 32px;
-    text-align: left;
-  }
+// #authUsersByRoleId{
+//   height: 80vh;
+//   width: 80vw;
+//   .roleDesc{
+//     line-height: 32px;
+//     text-align: left;
+//   }
+// }
+/deep/.el-transfer-panel {
+  width: 380px;
+  margin-left: 0;
 }
-
 </style>

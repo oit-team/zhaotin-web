@@ -153,7 +153,7 @@ export default {
           {
             name: '导出客户',
             type: 'primary',
-            icon: 'el-icon-plus',
+            icon: 'el-icon-upload2',
             click: () => this.exportCustomer(),
           },
         ],
@@ -206,15 +206,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
-        // console.log(item.row.id.toString())
         const con = {
-          id: item.row.id.toString(),
-          userId: sessionStorage.userId,
+          id: item.row.id,
           code: '1',
         }
         delUserById(con).then((res) => {
-          // console.log(res)
-          // this.loadData()
           if (res.head.status === 0) {
             // 删除列表中点击删除的数据，item是被点击行的信息
             this.data.resultList.splice(item.$index, 1)

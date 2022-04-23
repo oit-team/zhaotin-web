@@ -158,6 +158,7 @@ export default {
             roleRemark: this.ruleForm.roleRemark,
             userId: sessionStorage.userId,
             brandId: sessionStorage.brandId,
+            loginId:'1',
             // userId: '476',
             // brandId: '1',
             roleId: this.ruleForm.roleId,

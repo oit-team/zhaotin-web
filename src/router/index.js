@@ -19,6 +19,7 @@ import AuthUsersByRoleId from '@/views/seeting/components/authUsersByRoleId'
 import AddMenu from '@/views/seeting/components/addMenu'
 import CustomerAccount from '@/views/BaseSeeting/components/customerAccount'
 import AddCustomer from '@/views/BaseSeeting/components/addCustomer'
+import AddUser from '@/views/seeting/components/addUser'
 
 Vue.use(VueRouter)
 
@@ -70,6 +71,14 @@ const routes = [
       {
         path: '/system/addRole',
         component: AddRole,
+      },
+      {
+        path: '/system/authUsersByRoleId',
+        component: AuthUsersByRoleId,
+      },
+      {
+        path: '/system/addUser',
+        component: AddUser,
       },
     ],
   },

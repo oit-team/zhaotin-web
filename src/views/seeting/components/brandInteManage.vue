@@ -94,11 +94,11 @@
           :filter-node-method="filterNode"
           ref="tree"
         >
-          <div class="custom-tree-node" slot-scope="{ data }">
+          <!-- <div class="custom-tree-node" slot-scope="{ data }">
             <span>{{ data.osName }}</span>
             <span>({{ data.osName }})</span>
             <span v-if="data.isShop==&quot;2&quot;" style="margin-left:30px;" @click.stop="getTreeOrgList()"><i style="font-size:16px;" class="el-icon-refresh"></i></span>
-          </div>
+          </div> -->
         </el-tree>
         <div v-else>
           <div v-if="!orgListLoading" style="line-height:200px;">加载中...</div>
@@ -133,9 +133,6 @@
         <el-form-item label="区域名称" prop="deptName">
           <el-input v-model="areaForm.deptName" placeholder="请输入区域名称" />
         </el-form-item>
-        <!-- <el-form-item label="区域代码" prop="deptCode">
-          <el-input v-model="areaForm.deptCode" placeholder="区请输入域编码" />
-        </el-form-item> -->
         <el-form-item label="责任人" prop="dutyId">
           <el-select filterable v-model="areaForm.dutyId" placeholder="请选择区域负责人" @change="changeAreaManger">
             <el-option
@@ -188,13 +185,45 @@
       <el-button type="primary" size="small" @click="openDailog">编辑区域</el-button>
       <el-button type="info" size="small" @click="delArea">删除区域</el-button>
     </el-dialog>
+
+    <!-- 导出客户 -->
+    <el-drawer
+      title="请选择需要导出的字段"
+      :visible.sync="exportModelFlag"
+      :before-close="handleExportClose"
+      direction="rtl"
+      size="30%"
+      ref="export"
+    >
+      <div class="text-center">
+        <!-- <el-checkbox-group v-model="checkList" :checked="true" @change="changeChecked">
+          <div
+            style="text-align:left;margin:6px 0px;"
+            v-for="(item,index) in exportInfoList"
+            :key="index"
+            class="text-center"
+          >
+            <el-checkbox
+              :label="item.columnDesc"
+              true-label
+            >
+              {{ item.columnDesc }}
+            </el-checkbox>
+          </div>
+        </el-checkbox-group> -->
+        <div style="margin-top: 20px">
+          <el-button size="small" @click="cancelExport">取 消</el-button>
+          <el-button size="small" type="primary" @click="confirmExportUser">确 认</el-button>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getTreeOrgList } from '@/api/brand'
-import { getCustomer } from '@/api/customer'
+import { getCustomer, delUserById, getExportCustomer,getExportinfo } from '@/api/customer'
 import { insertOrg, delOrgById, updateShopOrOrgById } from '@/api/org'
 
 export default {
@@ -204,12 +233,20 @@ export default {
   },
   data() {
     return {
+
+      // 导出用户
+      exportModelFlag: false, // 导出客户显示隐藏
+      checkList: [], // 导出字段选中项
+      exportInfoList: [], // 导出模板字段列表，由用户勾选，传参给导出接口
+      tempCheckList: [], // 默认全部选中，先把选项临时存储起来，方便赋值操作
+
       data: {},
       showPanel: false, // 输入框显示隐藏
       handleClickFlag: false, // 弹框显示隐藏
       areadrawer: false, // draweer显示隐藏
       operateLabel: 1, // 1 搜索  2 查看统计数据
 
+      orgStId: '', // 区域ID
       orgList: [], // 综合管理左侧树列表
       orgListLoading: false, // 树菜单加载状态
       curCheckedKey: null, // 当前选中的节点
@@ -246,23 +283,64 @@ export default {
         promise: this.loadData,
         actions: [
           {
+            name: '新增用户',
+            type: 'success',
+            icon: 'el-icon-plus',
+            click: () => this.$router.push({
+              path: '/system/addUser',
+              query: { orgStId: this.orgStId },
+            }),
+          },
+          {
             name: '角色授权',
             type: 'primary',
+            icon: 'el-icon-user',
             click: () => this.$refs.export.open(),
           },
           {
             name: '导入用户',
             type: 'primary',
+            icon: 'el-icon-download',
             click: () => this.$refs.export.open(),
           },
           {
             name: '导出用户',
             type: 'primary',
-            click: () => this.$refs.export.open(),
+            icon: 'el-icon-upload2',
+            click: this.exportCustomer,
           },
         ],
         table: {
           data: this.data.resultList,
+          actions: {
+            width: 180,
+            buttons: [
+              {
+                tip: '编辑',
+                type: 'primary',
+                icon: 'el-icon-edit',
+                click: (scope) => this.$router.push({
+                  path: '/system/addUser',
+                  query: { item: scope },
+                }),
+              },
+              {
+                tip: '删除',
+                type: 'danger',
+                icon: 'el-icon-delete',
+                click: this.deleteUser,
+              },
+              {
+                tip: '禁用',
+                type: 'success',
+                icon: 'el-icon-open',
+                click: this.deleteCustomer,
+              },
+            ],
+          },
+          // 开启多选
+          selection: true,
+          loading: false,
         },
         pager: {
           total: this.data.count,
@@ -271,35 +349,36 @@ export default {
     },
   },
   watch: {
+    // 区域树搜索
     filterText(val) {
       this.$refs.tree.filter(val)
     },
-    $route(to, from) {
-      // // console.log(">>>>>>>>>",to,from);
-      // if(to.fullPath == '/brand/addUser'){
-      //   from.meta.keepAlive = true
-      // }else{
-      //   from.meta.keepAlive = false
-      // }
-    },
-    data(val) {
-      // // console.log("this.taskCheckedList===",this.taskCheckedList)
-      // // console.log("val====",val)
-      if (val && this.taskCheckedList && this.activeTab === 2) {
-        // // console.log("11111111111")
-        this.$nextTick(() => {
-          val.forEach(item => {
-            this.taskCheckedList.forEach(self => {
-              // // console.log("2222222222")
-              if (item.taskId === self.taskId) {
-                // // console.log("33333=====",item.taskId)
-                this.$refs.taskTable.toggleRowSelection(item, true)
-              }
-            })
-          })
-        })
-      }
-    },
+    // $route(to, from) {
+    //   // // console.log(">>>>>>>>>",to,from);
+    //   // if(to.fullPath == '/brand/addUser'){
+    //   //   from.meta.keepAlive = true
+    //   // }else{
+    //   //   from.meta.keepAlive = false
+    //   // }
+    // },
+    // data(val) {
+    //   // // console.log("this.taskCheckedList===",this.taskCheckedList)
+    //   // console.log(this.data)
+    //   if (val && this.taskCheckedList && this.activeTab === 2) {
+    //     // // console.log("11111111111")
+    //     this.$nextTick(() => {
+    //       val.forEach(item => {
+    //         this.taskCheckedList.forEach(self => {
+    //           // // console.log("2222222222")
+    //           if (item.taskId === self.taskId) {
+    //             // // console.log("33333=====",item.taskId)
+    //             this.$refs.taskTable.toggleRowSelection(item, true)
+    //           }
+    //         })
+    //       })
+    //     })
+    //   }
+    // },
   },
   created() {
     this.getTreeOrgList()
@@ -308,12 +387,13 @@ export default {
     // 获取用户列表
     async loadData() {
       const con = {
-        pageNum: '1',
-        pageSize: '999',
         code: '2',
         brandId: sessionStorage.brandId,
+        idDuty: '0',
+        // orgStId: this.orgStId,
       }
       await getCustomer(con).then((res) => {
+        // console.log(res)
         this.data = res.body
         this.chargeList = res.body.resultList
       })
@@ -381,9 +461,21 @@ export default {
         deptCode: this.nodeInfo.nodeCode,
         dutyId: this.areaForm.dutyId,
       }
-      updateShopOrOrgById(con).then(() => {
-        this.getTreeOrgList()
-        this.areadrawer = false
+      updateShopOrOrgById(con).then((res) => {
+        if (res.head.status === 0) {
+          this.$message({
+            message: '编辑菜单成功',
+            type: 'success',
+          })
+          this.getTreeOrgList()
+          this.areadrawer = false
+          this.handleClickFlag = false
+        } else {
+          this.$message({
+            message: res.head.msg,
+            type: 'warning',
+          })
+        }
       })
     },
     // 取消编辑区域
@@ -412,11 +504,12 @@ export default {
         })
       })
     },
-    // 获取客户列表
+    // 获取区域列表
     async getTreeOrgList() {
       const res = await getTreeOrgList({
         brandId: sessionStorage.brandId,
       })
+      // console.log(res)
       this.orgList = res.body.orgList
     },
     // 新增区域
@@ -428,8 +521,33 @@ export default {
       this.areaForm.dutyId = ''
     },
     // 搜索方法
-    changeOperate() {
+    changeOperate(val) {
       this.showPanel = !this.showPanel
+      // console.log(val)
+    },
+    // 节点被点击时的回调
+    async handleNodeClick(MouseEvent, object, Node, VueComponent) {
+      // this.administration.id = object.data.id
+      // this.administration.isShop = object.data.isShop
+      // object里有被点击区域的区域信息
+      console.log(MouseEvent.id)
+      this.orgStId = MouseEvent.id // 区域id
+      this.nodeInfo = object.data // 将被点击的区域信息存起来
+      // if (!object.data.isShop) {
+      //   this.tablePageOption.actions.splice(0, 1)
+      // }
+      const con = {
+        brandId: sessionStorage.brandId,
+        orgStId: MouseEvent.id,
+        pageNum: '1',
+        pageSize: '10',
+        code: '2',
+      }
+      getCustomer(con).then((res) => {
+        // console.log(res)
+        this.data = res.body
+        this.chargeList = res.body.resultList
+      })
     },
     // 节点开始拖拽时触发的事件
     handleDragStart() {
@@ -617,114 +735,10 @@ export default {
       // // console.log("-------判断节点能否被拖拽-------",draggingNode)
       return draggingNode.data.isShop !== '2' // true 可拖拽 false 不可拖拽 可排除不可被拖拽的情况
     },
-    // 节点被点击时的回调
-    async handleNodeClick(MouseEvent, object, Node, VueComponent) {
-      // this.administration.id = object.data.id
-      // this.administration.isShop = object.data.isShop
-      // console.log(object)
-      this.nodeInfo = object.data // 先将data存到变量里
-
-      // this.activeTab = 1 // 左键单击节点时让tab初始化到activeTab为1
-
-      // await this.$nextTick()
-      // if (this.$refs.multipleTable) {
-      //   this.$refs.multipleTable.clearSelection()
-      // }
-      // // debugger
-      // const curCheckedKey = this.$refs.tree.getCurrentKey()
-      // // // console.log('当前选中节点curCheckedKey===',curCheckedKey)
-      // this.curCheckedKey = curCheckedKey
-      // this.checkedUserArr = []
-
-      // this.clickNodeFlag = true
-      // // console.log("树节点左键单击-----",object.data)
-      // this.nodeId = object.data.id
-      // this.orgStId = this.nodeId
-      // this.curOsName = object.data.osName
-      // this.nodeParentId = object.data.parentId
-      // this.path = object.data.path
-      // if (object.data.isShop === '1') {
-      //   this.isShop = '1'
-      // }
-      // if (object.data.isShop === '2') {
-      //   this.isShop = '2'
-      // }
-      // if (object.data.isShop === '0') {
-      //   this.isShop = '0'
-      // }
-      // // 如果初始化为用户列表，要重新请求数据
-      // if (this.activeTab === 1) {
-      //   this.loading = true
-      //   this.dynamicParam = [
-      //     {
-      //       key: 'pageNum', value: this.pageNum, isTrue: true, msg: '请确认pageNum.',
-      //     },
-      //     {
-      //       key: 'pageSize', value: this.pageSize, isTrue: true, msg: '请确认pageSize.',
-      //     },
-      //     {
-      //       key: 'brandId', value: sessionStorage.brandId, isTrue: true, msg: '请确认品牌Id.',
-      //     },
-      //     {
-      //       key: 'orgStId', value: this.orgStId, isTrue: true, msg: '请先选择区域或者店铺.',
-      //     },
-      //     {
-      //       key: 'type', value: this.isShop, isTrue: true, msg: '请先选择区域或者店铺.',
-      //     },
-      //   ]
-      //   this.serverName = this.GLOBAL.system_manager_server
-      //   this.requestUrl = '/user/getUsers'
-      //   // sessionStorage.headTitString = this.brandTitArr[0]
-      //   this.headTitArr = JSON.parse(sessionStorage.headTitString)
-      //   this.$refs.child.getRequestUrl(this.serverName, this.requestUrl)
-
-      //   // 点击左侧节点时列表页headTitArr更新了，但是搜索组件没有实时接收更改后的数据，只能通过父组件向子组件传值进行更改子组件的数据了
-      //   this.headTitArr.forEach(el => {
-      //     // el.searchValKey = '';
-      //     this.$set(el, 'searchValKey', '')
-      //     if (el.fieldType === '值列') {
-      //       // // console.log(el.fieldAttr ,typeof(el.fieldAttr))
-      //       if (el.fieldAttr && typeof (el.fieldAttr) === 'string') {
-      //         el.fieldAttr = JSON.parse(el.fieldAttr)
-      //       }
-      //       // // console.log("================",el.fieldAttr)
-      //     }
-      //   })
-
-      //   this.$refs.child.parentHeadArr(this.headTitArr)
-      //   // // console.log("------this.nodeId------",this.nodeId,this.isShop,object.data.isShop);
-      //   this.dynamicParam.forEach(el => {
-      //     if (el.key === 'orgStId') {
-      //       el.value = this.nodeId
-      //     }
-      //     if (el.key === 'type') {
-      //       el.value = this.isShop
-      //     }
-      //     if (el.key === 'pageNum') {
-      //       el.value = 1
-      //     }
-      //   })
-      //   this.$refs.child.parentMsgs(this.dynamicParam)
-      // }
-    },
     // 当某一节点被鼠标右键点击时会触发该事件
     nodeRightClick(MouseEvent, object, Node, VueComponent) {
-      // // console.log("节点右击------",MouseEvent, object, Node, VueComponent);
-      // console.log("树节点右键单击======",Node.data)   // 单击节点的信息
-      // if (Node.data.isShop === '1') { // 店铺
-      //   this.isShop = '1'
-      // }
-      // if (Node.data.isShop === '2') { // 品牌节点
-      //   this.isShop = '2'
-      // }
-      // if (Node.data.isShop === '0') {
-      //   this.isShop = '0' // 区域
-      // }
-      // if (this.isShop === '0' || this.isShop === '1') {
-      // console.log(Node)
       this.orgId = Node.data.id
       this.handleClickFlag = true
-      // }
       this.nodeInfo = Node.data // 先将data存到变量里
     },
     // 树节点搜索过滤
@@ -732,6 +746,119 @@ export default {
       // // console.log("--------------",value,data)
       if (!value) return true
       return data.osName.indexOf(value) !== -1
+    },
+    // 删除用户
+    deleteUser(item) {
+      this.$confirm('确认删除该用户吗', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        console.log(item)
+        const con = {
+          userId: item.row.id,
+          code: '2',
+          loginId:item.row.loginId
+        }
+        delUserById(con).then(() => {
+          getCustomer({
+            brandId: sessionStorage.brandId,
+            orgStId: this.orgStId,
+            pageNum: '1',
+            pageSize: '10',
+            code: '2',
+          }).then((res) => {
+            // console.log(res)
+            this.data = res.body
+            this.chargeList = res.body.resultList
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除',
+        })
+      })
+    },
+        // 导出客户字段
+    exportCustomer() {
+      this.exportModelFlag = true
+      const con = {
+        type: 'customerList',
+        code: 'customer',
+      }
+      getExportinfo(con).then((res) => {
+        if (res.head.status === 0) {
+          this.exportInfoList = res.body.exportTitle
+          // 实现点击导出默认全选效果
+          for (let i = 0; i < this.exportInfoList.length; i++) {
+            // console.log(this.exportInfoList[i]);
+            this.tempCheckList.push(this.exportInfoList[i].columnDesc)
+          }
+            this.checkList = this.tempCheckList
+        }
+      })
+    },
+        // 导出关闭提示
+    handleExportClose() {
+      this.$confirm('确认关闭？').then(() => {
+        this.exportModelFlag = false
+        this.$refs.export.clearFiles()
+      })
+    },
+    // 获取选中项的值
+    changeChecked(val) {
+      this.checkList = val
+    },
+    // 取消导出
+    cancelExport() {
+      this.exportModelFlag = false
+      this.checkList = this.tempCheckList
+    },
+        // 确认导出
+    confirmExportUser() {
+      this.rowList = {}
+      if (this.checkList.length > 0) {
+        for(let i=0;i<this.checkList.length;i++){
+          for(let j=0;j<this.exportInfoList.length;j++){
+            if(this.checkList[i]==this.exportInfoList[j].columnDesc){
+              this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc;
+            }
+          }
+        }
+      }
+      if (this.rowList) {
+        this.exportModelFlag = false
+        const con = {
+          // code: "1",
+          pageNum: "1",
+          pageSize: "999",
+          rowList:this.rowList
+        }
+        getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
+            console.log(res.data);
+            var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
+            var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
+            var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
+            var result = patt.exec(contentDisposition);
+            console.log(result)
+            var filename = result[1];
+            var downloadElement = document.createElement('a');
+            var href = window.URL.createObjectURL(blob); //创建下载的链接
+            downloadElement.style.display = 'none';
+            downloadElement.href = href;
+            downloadElement.download = `${filename}-用户列表-${filename}` ; //下载后文件名
+            document.body.appendChild(downloadElement);
+            downloadElement.click(); //点击下载
+            document.body.removeChild(downloadElement); //下载完成移除元素
+            window.URL.revokeObjectURL(href); //释放掉blob对象
+          })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '请先选择导出数据相关字段',
+        })
+      }
     },
   },
 

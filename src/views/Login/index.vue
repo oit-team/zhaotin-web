@@ -38,14 +38,17 @@ export default {
   }),
   methods: {
     async login() {
-      const res = await reqLogin(this.formData)
-      // console.log(res)
-      sessionStorage.userId = res.body.resultList.id
-      sessionStorage.brandId = res.body.resultList.brandId
-      sessionStorage.userName = res.body.resultList.userName
-      sessionStorage.accessToken = res.body.accessToken
-      this.$store.commit('getUserinfo', res.body)
-      this.$router.push('/')
+      await reqLogin(this.formData).then((res) => {
+        // console.log(res)
+        sessionStorage.userId = res.body.resultList.id
+        sessionStorage.brandId = res.body.resultList.brandId
+        sessionStorage.userName = res.body.resultList.userName
+        sessionStorage.accessToken = res.body.accessToken
+        this.$store.commit('getUserinfo', res.body)
+        this.$router.push('/')
+      }).catch(() => {
+
+      })
     },
   },
 }

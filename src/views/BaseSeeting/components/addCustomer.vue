@@ -24,6 +24,13 @@
     >
       <el-tabs v-model="activeName">
         <el-tab-pane label="基本信息" name="1">
+            <el-form-item label="登录账号" prop="loginName">
+            <el-input
+              v-model="ruleForm.loginName"
+              style="width: 60%"
+              placeholder="请输入登录账号"
+            />
+          </el-form-item>
           <el-form-item label="客户名称" prop="customerName">
             <el-input
               v-model="ruleForm.customerName"
@@ -134,7 +141,6 @@
             <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
               <i class="el-icon-plus"></i>
             </vc-upload>
-
           </el-form-item>
 
           <el-form-item label="客户洗唛车法" prop="washingLabel">
@@ -308,6 +314,7 @@ export default {
         ["clean"],
       ],
       ruleForm: {
+        loginName:'', // 登录账号
         orgName: "", // 所属大区
         provinces: "",
         city: "",
@@ -340,12 +347,9 @@ export default {
         customerName: [
           { required: true, message: "请输入真实姓名", trigger: "blur" },
         ],
-        // contactPerson: [
-        //   { required: true, message: "请填写联系人姓名", trigger: "blur" },
-        // ],
-        // contactNumber: [
-        //   { required: true, message: "请输入联系电话", trigger: "blur" },
-        // ],
+        loginName: [
+          { required: true, message: "请填写联系人姓名", trigger: "blur" },
+        ],
         customerAddress: [
           { required: true, message: "请输入联系地址", trigger: "blur" },
         ],
@@ -370,16 +374,7 @@ export default {
       console.log(this.$route.query.item.row)
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
-      // this.ruleForm.realName = this.$route.query.item.row.realName
-      // this.ruleForm.contactPerson = this.$route.query.item.row.contactPerson;
-      // this.ruleForm.contactNumber = Number(
-      //   this.$route.query.item.row.contactNumber
-      // );
-      this.ruleForm.orgName = this.$route.query.item.row.orgName
-      // this.ruleForm.customerType = this.$route.query.item.row.customerType
-      // this.ruleForm.id = this.$route.query.item.row.id.toString()
-      // this.ruleForm.customerName = this.$route.query.item.row.customerName
-      // this.ruleForm.loginId = this.$route.query.item.row.logId
+      // this.ruleForm.loginName = this.$route.query.item.row.loginName
     }
   },
   computed: {
@@ -403,7 +398,7 @@ export default {
         accept: "image/*",
         onSuccess: (file, fileList) => {
           console.log(fileList);
-          this.uploadList = fileList.response.data.fileUrl
+          this.uploadList.push(fileList.response.data.fileUrl)
         },
       };
     },
@@ -455,7 +450,6 @@ export default {
       });
     },
     changeDocumentary(val) {
-      console.log(val);
       this.ruleForm.documentaryId = val.documentaryId;
       this.ruleForm.documentaryName = val.documentaryName;
     },
@@ -471,7 +465,6 @@ export default {
     // 获取区域下拉列表数据
     async getTreeOrgList() {
       await getTreeOrgList({ brandId: sessionStorage.brandId }).then((res) => {
-        //  console.log(res);
         this.OrgList = res.body.resultMap;
       });
     },
@@ -508,7 +501,6 @@ export default {
               refereesType: null,
               ...this.ruleForm,
               loginId: this.ruleForm.logId,
-              // contactNumber: Number(this.ruleForm.contactNumber),
             })
               .then((res) => {
                 if (res.head.status === 0) {
@@ -532,10 +524,9 @@ export default {
               customerState: 0,
               updateTime: null,
               customerIntegral: null,
-              refereesName: "daoru",
+              // refereesName: "daoru",
               refereesType: null,
               ...this.ruleForm,
-              // contactNumber: Number(this.ruleForm.contactNumber),
             })
               .then((res) => {
                 this.editFlag = false;

@@ -75,6 +75,10 @@
             min-width="140"
             show-overflow-tooltip
             sortable
+            v-loading="loading"
+          element-loading-text="小易拼命加载中..."
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
           >
             <template slot-scope="scope">
               <slot v-bind="scope" :name="`content:${item.fieldKey}`">{{ handleTabValue(item,scope.row[item.fieldKey]) }}</slot>
@@ -208,6 +212,7 @@ export default {
 
   methods: {
     handleTabValue(item,value) {
+      // console.log(item,value);
     const typeList = ['customerType','customerState']
     if(typeList.includes(item.fieldKey)) {
       return JSON.parse(item.fieldAttr)[value].optionValue
