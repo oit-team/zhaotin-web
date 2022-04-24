@@ -32,24 +32,23 @@
         </el-select>
       </el-form-item>
 
-      <!-- <el-form-item label="所属店铺/区域" v-if="editFlag">
+      <el-form-item label="所属店铺/区域" v-if="editFlag">
         <el-cascader
           style="width:60%;"
           ref="chooseOption"
-          v-model="orgList"
-          :options="shopAndareaList"
+          :options="orgList"
           filterable
           :show-all-levels="false"
           :props="{ checkStrictly: true, children:'childrenList',value:'id',label:'osName'}"
           @change="changeShop"
         />
-      </el-form-item> -->
-
-      <el-form-item label="用户密码" prop="passWord">
-        <el-input v-model="ruleForm.passWord" style="width:60%;" type="password" placeholder="用户密码" />
-        <div v-if="editFlag" class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>原密码不显示，若要修改请直接输入新密码保存即可</div>
-        <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>不填则为默认密码</div>
       </el-form-item>
+
+      <!-- <el-form-item label="用户密码" prop="passWord">
+        <el-input v-model="ruleForm.passWord" style="width:60%;" type="password" placeholder="用户密码" />
+        <div v-if="editFlag" class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>若要修改请直接输入新密码保存即可</div>
+        <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>不填则为默认密码</div>
+      </el-form-item> -->
       <el-form-item label="性别" prop="sex">
         <el-select v-model="ruleForm.sex" placeholder="请选择">
           <el-option label="男" value="0" />
@@ -94,7 +93,7 @@
 
 <script>
 // import bus from '@/assets/js/js/eventBus'
-import CryptoJS from '@/assets/js/js/CryptoJS'
+// import CryptoJS from '@/assets/js/js/CryptoJS'
 import { addCustomer, changeCustomer } from '@/api/customer'
 import { getTreeOrgList } from '@/api/org'
 
@@ -114,7 +113,8 @@ export default ({
     }
 
     return {
-        orgList: [],
+        orgNum:'', // 级联选中的值
+        orgList: [], // 级联数据源
         editFlag: false,
         ruleForm: {
         orgStId: '',
@@ -181,12 +181,13 @@ export default ({
     }
   },
   created() {
-    this.getTreeOrgList()
     // 编辑
     if (this.$route.query.item) {
       console.log(this.$route.query)
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
+      this.ruleForm.passWord = ''
+      // this.orgNum = 
     }
     // 新增
     if (this.$route.query) {
@@ -194,11 +195,7 @@ export default ({
     }
   },
   mounted() {
-    // this.getShopAndAreaList()
-  },
-  beforeDestroyed() {
-    // this.$bus.$emit('detailShow',_this.ruleForm) // 事件分发
-
+    this.getTreeOrgList()
   },
   methods: {
     goBack() {
@@ -206,36 +203,15 @@ export default ({
     },
     // 获取区域列表
     async getTreeOrgList() {
-      const res = await getTreeOrgList({
+      await getTreeOrgList({
         brandId: sessionStorage.brandId,
+      }).then((res) => {
+        console.log(res);
+      if(res.head.status === 0) {
+        this.orgList = res.body.resultMap
+        // this.orgNum = 
+      }
       })
-      // console.log(res)
-      this.orgList = res.body.orgList
-    },
-    // 修改用户所属店铺列表，请求数据
-    getShopAndAreaList() {
-    //   const _this = this
-    //   const con = {
-    //     brandId: sessionStorage.brandId,
-    //   }
-
-    //   const jsonParam = _this.GLOBAL.g_paramJson(con)
-    //   _this.$axios.post(`${_this.GLOBAL.system_manager_server}/org/getTreeOrgList`, jsonParam).then((res) => {
-    //     // console.log("====获取用户所属店铺列表==========",res.data.body);
-    //     if (res.data.head.status === 0) {
-    //       _this.shopAndareaList = res.data.body.orgList[0].childrenList
-    //       if (res.data.body.orgList[0].abbreviation) {
-    //         _this.brandAbbreviation = res.data.body.orgList[0].abbreviation
-    //       }
-    //     } else {
-    //       _this.$message({
-    //         message: res.data.head.msg,
-    //         type: 'warning',
-    //       })
-    //     }
-    //   }).catch(err => {
-    //     // console.log(err)
-    //   })
     },
     // 修改所属店铺或者区域
     changeShop(val) {

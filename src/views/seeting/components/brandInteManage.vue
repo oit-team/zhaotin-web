@@ -9,7 +9,7 @@
         <el-tooltip class="item" effect="dark" content="搜索" placement="top">
           <el-button type="primary" @click="changeOperate(1)" icon="el-icon-search" circle />
         </el-tooltip>
-        <el-tooltip class="item" effect="dark" content="数据统计" placement="top">
+        <!-- <el-tooltip class="item" effect="dark" content="数据统计" placement="top">
           <el-button class="authBtnOnly" style="border-color: #FCCB02;background: #FCCB02;color:#fff;" @click="changeOperate(2)" icon="el-icon-s-data" circle />
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="导入区域" placement="top">
@@ -17,7 +17,7 @@
         </el-tooltip>
         <el-tooltip class="item" effect="dark" content="导出区域" placement="top">
           <el-button style="border-color: #ADA3EE;background: #ADA3EE;color:#fff;" class="downLoadBtnOnly" icon="el-icon-upload2" circle />
-        </el-tooltip>
+        </el-tooltip> -->
       </div>
       <!-- 搜索框 -->
       <div class="searchIpt" v-if="showPanel&&operateLabel==1">
@@ -27,47 +27,6 @@
           ref="searchInput"
         />
       </div>
-      <!-- 数据统计 -->
-      <!-- <div class="statisticsBox" v-if="showPanel&&operateLabel==2">
-        <div class="item">
-          <div class="titleBox">
-            <span class="titltTip"></span><span>区域</span><span class="countNums">({{ orgCount }})</span>
-            <el-tooltip class="item" effect="dark" content="区域总数" placement="top">
-              <i style="font-size:14px;" class="el-icon-question"></i>
-            </el-tooltip>
-          </div>
-        </div>
-        <div class="item">
-          <div class="titleBox">
-            <span class="titltTip"></span><span>店铺</span><span class="countNums">({{ shopCountNum }})</span>
-            <el-tooltip class="item" effect="dark" content="SABC为店铺等级，其后数字为对应等级店铺数量" placement="top">
-              <i style="font-size:14px;" class="el-icon-question"></i>
-            </el-tooltip>
-          </div>
-          <div class="numMain">
-            <span class="numsBox" v-for="(item,index) in shopCount" :key="index">
-              <span class="numItemBox" v-if="item.gradeId">
-                <span>{{ item.gradeId }}</span><div class="numBox">({{ item.shopsNum }})</div> </span>
-              <span class="numItemBox" v-else><span>其它</span><div class="numBox">({{ item.shopsNum }})</div></span>
-            </span>
-          </div>
-        </div>
-        <div class="item">
-          <div class="titleBox">
-            <span class="titltTip"></span><span>用户</span><span class="countNums">({{ userCountNum }})</span>
-            <el-tooltip class="item" effect="dark" content="APP为app端用户，HOME为管家端用户，A+H为同时拥有APP和管家端权限的用户" placement="top">
-              <i style="font-size:14px;" class="el-icon-question"></i>
-            </el-tooltip>
-          </div>
-          <div class="numMain">
-            <span class="numsBox" v-for="(item,index) in userCount" :key="index">
-              <span class="numItemBox" v-if="item.accountType==0"> <span class="userTip">APP</span> <div class="numBox">({{ item.usersNum }})</div> </span>
-              <span class="numItemBox" v-if="item.accountType==1"> <span class="userTip">HOME</span> <div class="numBox">({{ item.usersNum }})</div> </span>
-              <span class="numItemBox" v-if="item.accountType==3"> <span class="userTip">A+H</span> <div class="numBox">({{ item.usersNum }})</div> </span>
-            </span>
-          </div>
-        </div>
-      </div> -->
       <!-- 树形控件 -->
       <div class="orgTreeBox" ref="orgTree">
         <el-tree
@@ -94,18 +53,11 @@
           :filter-node-method="filterNode"
           ref="tree"
         >
-          <!-- <div class="custom-tree-node" slot-scope="{ data }">
-            <span>{{ data.osName }}</span>
-            <span>({{ data.osName }})</span>
-            <span v-if="data.isShop==&quot;2&quot;" style="margin-left:30px;" @click.stop="getTreeOrgList()"><i style="font-size:16px;" class="el-icon-refresh"></i></span>
-          </div> -->
         </el-tree>
         <div v-else>
           <div v-if="!orgListLoading" style="line-height:200px;">加载中...</div>
           <div v-if="orgListLoading" style="line-height:100px;">暂无数据</div>
         </div>
-        <!-- props="{children: 'childrenList', label: 'osName'}" -->
-        <!-- :render-content="renderContent" -->
       </div>
     </div>
     <!-- 分割线 -->
@@ -182,8 +134,8 @@
       class="align-center"
     >
       <!-- <el-button size="small" @click="clickAdd">新 增</el-button> -->
-      <el-button type="primary" size="small" @click="openDailog">编辑区域</el-button>
-      <el-button type="info" size="small" @click="delArea">删除区域</el-button>
+      <el-button type="primary" size="small" @click="openDailog">编辑</el-button>
+      <el-button type="info" size="small" @click="delArea">删除</el-button>
     </el-dialog>
 
     <!-- 导出客户 -->
@@ -464,7 +416,7 @@ export default {
       updateShopOrOrgById(con).then((res) => {
         if (res.head.status === 0) {
           this.$message({
-            message: '编辑菜单成功',
+            message: '编辑区域成功',
             type: 'success',
           })
           this.getTreeOrgList()
@@ -754,7 +706,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
-        console.log(item)
         const con = {
           userId: item.row.id,
           code: '2',
@@ -768,7 +719,6 @@ export default {
             pageSize: '10',
             code: '2',
           }).then((res) => {
-            // console.log(res)
             this.data = res.body
             this.chargeList = res.body.resultList
           })
@@ -873,36 +823,14 @@ export default {
   height: 100%;
   padding-left: 10px;
 }
-// #brandInteManage >>> .el-tooltip {
-//   padding: 7px 7px!important;
-// }
-// #brandInteManage >>> .el-tooltip .el-button--small {
-//   padding: 9px 15px;
-// }
-// #brandInteManage >>> .el-collapse {
-//   border-top: none;
-//   border-bottom: none;
-// }
-// #brandInteManage >>> .el-collapse-item__header {
-//   height: 40px;
-//   line-height: 40px;
-//   border: none;
-// }
-// #brandInteManage >>> .el-collapse-item__wrap {
-//   border-bottom: none;
-// }
-// #brandInteManage >>> .el-collapse-item__content {
-//   padding-bottom: 0px;
-// }
-// #brandInteManage >>> .el-drawer__body {
-//   overflow-y: auto;
-// }
 #brandInteManage .leftTreeCon {
-  width: 260px;
+  margin: 0 40px;
   display: flex;
   flex-direction: column;
 }
 #brandInteManage .leftTreeCon .btnBox {
+  display: flex;
+  justify-content: space-between;
   margin: 6px 0px 12px;
 }
 #brandInteManage .leftTreeCon .statisticsBox {
@@ -964,26 +892,6 @@ export default {
   overflow: auto;
   box-sizing: border-box;
 }
-// #brandInteManage .leftTreeCon .orgTreeBox >>> .el-tree {
-//   min-width: 100%;
-//   padding-right: 6px;
-//   display: inline-block;
-//   margin-bottom: 6px;
-// }
-// #brandInteManage .leftTreeCon .orgTreeBox >>> .el-tree .el-tree-node__content {
-//   height: 38px;
-// }
-// #brandInteManage .leftTreeCon .orgTreeBox >>> .el-tree-node:focus > .el-tree-node__content {
-//   color: #1978FE;
-// }
-// #brandInteManage .leftTreeCon .orgTreeBox >>> .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-//   background-color: #C5DDFF;
-//   color: #1978FE;
-// }
-// #brandInteManage .leftTreeCon .orgTreeBox >>> .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content:hover {
-//   background-color: #F5F7FA;
-// }
-
 #brandInteManage .rightListCon {
   display: flex;
   overflow: hidden;
@@ -1033,23 +941,6 @@ export default {
 #brandInteManage .rightListCon .examListBox .operateBtn #authBtn {
   padding: 9px 15px!important;
 }
-// #brandInteManage >>> .el-dialog--center .el-dialog__body {
-//   display: flex;
-//   justify-content: space-around;
-// }
-// #brandInteManage >>> .el-drawer__body .el-select {
-//   width: 100%;
-// }
-// #brandInteManage >>> .el-date-editor.el-input,
-// #brandInteManage .el-date-editor.el-input__inner {
-//   width: 100%;
-// }
-// #brandInteManage >>> .el-form-item__label {
-//   text-align: left;
-// }
-// #brandInteManage >>> .demo-drawer__content .el-tooltip {
-//   padding: 0px 10px!important;
-// }
 #brandInteManage .roleTips {
   text-align: left;
   padding-left: 12px;

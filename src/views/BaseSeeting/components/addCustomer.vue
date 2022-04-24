@@ -1,5 +1,5 @@
 <template>
-  <div class="ml-56" id="addMenu">
+  <div class="ml-48" id="addMenu">
     <el-backtop
       target="#addMenu"
       :visibility-height="200"
@@ -22,10 +22,13 @@
       label-width="90px"
       :label-position="labelPosition"
     >
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="基本信息" name="1">
-            <el-form-item label="登录账号" prop="loginName">
+
+      <div class="flex">
+
+        <div class="left">
+           <el-form-item label="登录账号" prop="loginName">
             <el-input
+             :disabled="editFlag"
               v-model="ruleForm.loginName"
               style="width: 60%"
               placeholder="请输入登录账号"
@@ -43,6 +46,15 @@
               v-model="ruleForm.realName"
               style="width: 60%"
               placeholder="请输入真实姓名"
+            />
+          </el-form-item>
+          <el-form-item label="入驻日期" prop="enterTime">
+            <el-date-picker
+              v-model="ruleForm.enterTime"
+              style="width: 60%"
+              type="date"
+              value-format="yyyy-MM-dd"
+              placeholder="请选择日期"
             />
           </el-form-item>
           <el-form-item label="大区选择" prop="orgName">
@@ -119,9 +131,10 @@
               placeholder="请输入地址"
             />
           </el-form-item>
-        </el-tab-pane>
-        <el-tab-pane label="详细信息" name="2">
-          <el-form-item label="客户吊牌/吊牌价" prop="tagPrice">
+        </div>
+          <el-divider direction="vertical" />
+           <div class="right">
+        <el-form-item label="客户吊牌/吊牌价" prop="tagPrice">
             <el-input
               v-model="ruleForm.tagPrice"
               style="width: 60%"
@@ -138,9 +151,11 @@
           </el-form-item>
 
           <el-form-item label="客户商标" prop="trademark">
-            <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
+            <vc-upload v-if="!editFlag" v-bind="uploadOptionimg" ref="uploadImage">
               <i class="el-icon-plus"></i>
             </vc-upload>
+           <!-- <div v-if="uploadList.length" class="w-24 h-24 bg-blue-300"></div> -->
+            <img v-else v-for="item in uploadList" :key="item" :src="item" alt="">
           </el-form-item>
 
           <el-form-item label="客户洗唛车法" prop="washingLabel">
@@ -149,6 +164,23 @@
               style="width: 60%"
               placeholder="请输入客户洗唛车法"
             />
+          </el-form-item>
+
+           <el-form-item label="推荐人" prop="refereesName">
+            <el-select
+              @change="changeRefereesName"
+              v-model="ruleForm.refereesName"
+              style="width: 60%"
+              placeholder="请选择推荐人"
+            >
+              <el-option
+                v-for="item in refereesList"
+                :key="item.id"
+                :label="item.realName"
+                :value="item"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
 
           <el-form-item label="跟单人员" prop="documentaryName">
@@ -202,62 +234,61 @@
             </el-select>
           </el-form-item>
 
-    <el-collapse v-model="collapse">
-              <el-collapse-item title="装箱注意事项" name="1">
-                        <el-form-item label="" prop="matters">
-            <quill
-              class="quill"
+          <el-collapse v-model="activeNames">
+            <el-collapse-item title="详细备注" name="1">
+              <el-form-item label="装箱注意事项" prop="matters">
+            <el-input
+              type="textarea"
+              placeholder="请输入内容"
               style="width: 60%"
               :value="ruleForm.matters"
               :editor-setting="editorSetting"
               :height="'150px'"
               @changeVal="changeWashMatters"
-            />
+            >
+            </el-input>
           </el-form-item>
-              </el-collapse-item>
 
-              <el-collapse-item title="发货明细表格要求" name="2">
-              
-          <el-form-item label=""
-            prop="deliveryDetails"
-            class="mt-16"
-          >
-            <quill
-              class="quill"
+          <el-form-item label="发货明细表格要求" prop="deliveryDetails">
+            <el-input
+              type="textarea"
+              placeholder="请输入内容"
               style="width: 60%"
               :value="ruleForm.deliveryDetails"
               :editor-setting="editorSetting"
               :height="'150px'"
               @changeVal="changeWashDeliveryDetails"
-            />
+            >
+            </el-input>
           </el-form-item>
-              </el-collapse-item>
 
-               <el-collapse-item title="联系人及联系方式" name="3">
-                         <el-form-item class="mt-20" label="" prop="contactDate">
-            <quill
-              class="quill"
+           <el-form-item label="联系人及联系方式" prop="contactDate">
+            <el-input
+              type="textarea"
+              placeholder="请输入内容"
               style="width: 60%"
               :value="ruleForm.contactDate"
               :editor-setting="editorSetting"
               :height="'150px'"
               @changeVal="changeWashContactDate"
-            />
+            >
+            </el-input>
           </el-form-item>
-              </el-collapse-item>
-            </el-collapse>
+            </el-collapse-item>
+          </el-collapse>
 
-          <el-form-item label="快递方式" prop="courier" class="mt-20">
+          <el-form-item label="快递方式" prop="courier" class="mt-4">
             <el-input
               v-model="ruleForm.courier"
               style="width: 60%"
               placeholder="请输入快递方式"
             />
           </el-form-item>
-        </el-tab-pane>
-      </el-tabs>
-      <el-form-item>
-        <el-button
+        </div>
+      </div>
+    </el-form>
+      <div class="text-center">
+         <el-button
           size="small"
           icon="el-icon-check"
           type="primary"
@@ -271,8 +302,7 @@
           @click="resetForm('ruleForm')"
           >重置</el-button
         >
-      </el-form-item>
-    </el-form>
+      </div>
   </div>
 </template>
 
@@ -287,8 +317,10 @@ export default {
   components: { quill, VcUpload },
   data() {
     return {
+      activeNames:['1'],
       uploadList: [],
       peopleList: [],
+      refereesList:[], // 推荐人列表
       documentaryList: [], // 跟单人员列表
       marketList: [], // 市场人员列表
       managerList: [],
@@ -298,7 +330,6 @@ export default {
       regionList: [], // 县
       OrgList: [], // 区域列表
       collapse: ["1"],
-      activeName: "1", // tab页切换
       editFlag: false, // 是否是编辑菜单   false 新增  true 编辑
       userId: 1, // 即createdId
       pId: "", // 父菜单id   新增菜单时不选父菜单则默认为一级菜单，pId 传 "0"
@@ -314,7 +345,8 @@ export default {
         ["clean"],
       ],
       ruleForm: {
-        loginName:'', // 登录账号
+        enterTime : "", // 入驻日期
+        loginName: "", // 登录账号
         orgName: "", // 所属大区
         provinces: "",
         city: "",
@@ -322,8 +354,6 @@ export default {
         realName: "",
         customerName: "", // 客户名称
         contactDate: "", // 联系人及联系方式
-        // contactPerson: '',
-        // contactNumber: null,
         customerAddress: "",
         customerType: 0,
         tagPrice: "", // 吊牌价
@@ -340,6 +370,7 @@ export default {
         managerName: "", // 客户经理
         managerId: "",
         id: "", // 客户id
+        refereesName:'',
         refereesId: "", // 推荐人ID
         loginId: "",
       },
@@ -347,6 +378,7 @@ export default {
         customerName: [
           { required: true, message: "请输入真实姓名", trigger: "blur" },
         ],
+        enterTime: [{ required: true, message: "请选择入驻日期", trigger: "blur" }],
         loginName: [
           { required: true, message: "请填写联系人姓名", trigger: "blur" },
         ],
@@ -363,17 +395,25 @@ export default {
         realName: [
           { required: true, message: "请输入真实姓名", trigger: "blur" },
         ],
+        documentaryName: [{ required: true, message: "请选择跟单人员", trigger: "blur" }],
+        marketName: [{ required: true, message: "请选择市场人员", trigger: "blur" }],
+        managerName: [{ required: true, message: "请选择客户经理", trigger: "blur" }],
+        refereesName: [{ required: true, message: "请选择推荐人", trigger: "blur" }],
       },
     };
   },
   created() {
-    this.getCustomerList()
-    this.getCityList()
-    this.getTreeOrgList()
+    this.getCustomerList();
+    this.getCityList();
+    this.getTreeOrgList();
     if (this.$route.query.item) {
-      console.log(this.$route.query.item.row)
-      this.editFlag = true
-      this.ruleForm = this.$route.query.item.row
+      this.imgVisible = true
+      console.log(this.$route.query.item.row);
+      this.editFlag = true;
+      this.ruleForm = this.$route.query.item.row;
+      // this.ruleForm.documentaryName = this.$route.query.item.row.realName
+      // this.ruleForm.marketName = this.$route.query.item.row.realName
+      // this.ruleForm.managerName = this.$route.query.item.row.realName
       // this.ruleForm.loginName = this.$route.query.item.row.loginName
     }
   },
@@ -398,7 +438,7 @@ export default {
         accept: "image/*",
         onSuccess: (file, fileList) => {
           console.log(fileList);
-          this.uploadList.push(fileList.response.data.fileUrl)
+          this.uploadList.push(fileList.response.data.fileUrl);
         },
       };
     },
@@ -420,34 +460,53 @@ export default {
         }
       });
     },
-    // 获取送单人员
     async getCustomerList() {
+      // 获取送单人员
       const res = await getCustomer({
         pageNum: "1",
         pageSize: "999",
-        code: "1",
+        code: "2",
+        brandId:sessionStorage.brandId,
         userId: sessionStorage.userId,
       });
       this.peopleList = res.body.resultList;
       this.peopleList.forEach((item) => {
         this.documentaryList.push({
-          documentaryId: item.documentaryId,
-          documentaryName: item.documentaryName,
+          documentaryId: item.id,
+          documentaryName: item.nickName,
           id: item.id,
         });
         this.marketList.push({
-          marketId: item.marketId,
-          marketName: item.marketName,
+          marketId: item.id,
+          marketName: item.nickName,
           id: item.id,
         });
         this.managerList.push({
-          managerId: item.managerId,
-          managerName: item.managerName,
+          managerId: item.id,
+          managerName: item.nickName,
           id: item.id,
         });
-        // console.log(item);
-        this.ruleForm.refereesId = item.refereesId;
+        // console.log(item)
+        // this.ruleForm.refereesId = item.refereesId;
       });
+      // 获取推荐人
+      const response = await getCustomer({
+        pageNum: "1",
+        pageSize: "999",
+        code: "1",
+      }).then((res) => {
+        console.log(res);
+        if(res.head.status === 0) {
+          this.refereesList = res.body.resultList
+        }
+        // 
+      })
+    },
+    // 选中推荐人
+    changeRefereesName(val) {
+      console.log(val);
+      this.ruleForm.refereesName = val.realName
+      this.ruleForm.refereesId = val.id
     },
     changeDocumentary(val) {
       this.ruleForm.documentaryId = val.documentaryId;
@@ -495,8 +554,7 @@ export default {
             changeCustomer({
               code: "1",
               customerState: 0,
-              updateTime: null,
-              customerIntegral: null,
+              customerIntegral: 0,
               refereesName: "daoru",
               refereesType: null,
               ...this.ruleForm,
@@ -522,9 +580,7 @@ export default {
             addCustomer({
               code: "1",
               customerState: 0,
-              updateTime: null,
-              customerIntegral: null,
-              // refereesName: "daoru",
+              customerIntegral: 0,
               refereesType: null,
               ...this.ruleForm,
             })
@@ -552,7 +608,7 @@ export default {
       });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields()
+      this.$refs[formName].resetFields();
     },
     // 联系人及其联系方式
     changeWashContactDate(val) {
@@ -578,20 +634,29 @@ export default {
 /deep/ .el-form-item__label {
   padding: 0 0;
 }
-/deep/ .quill {
-  margin-left: 40px;
-}
 /deep/ .el-form-item__label {
   margin-right: 40px;
 }
 /deep/.el-collapse-item__header {
-  width: 69%;
+  border-top: 1px solid #ebeef5;
 }
-/deep/.el-collapse {
-  border-top: 0;
-  border-bottom: 0;
+/deep/.el-divider--vertical {
+  display: inline-block;
+    width: 1px;
+    height: auto;
+    margin: 0 8px;
+    vertical-align: middle;
+    position: relative;
+    margin-right: 80px;
 }
-/deep/.el-collapse-item__header {
-  border-top: 1px solid #EBEEF5;
-} 
+.left {
+  width: 450px;
+}
+.right {
+  width: 450px;
+}
+/deep/.text-center {
+  margin-left: -105px;
+  margin-top: 20px;
+}
 </style>

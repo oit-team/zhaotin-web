@@ -106,7 +106,7 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getCustomer, delUserById, getExportinfo,getExportCustomer } from '@/api/customer'
+import { getCustomer, delUserById, getExportinfo,getExportCustomer,changeCustomer } from '@/api/customer'
 import axios from 'axios'
 
 export default {
@@ -177,6 +177,12 @@ export default {
                 icon: 'el-icon-delete',
                 click: this.deleteCustomer,
               },
+               {
+                tip: '启用/禁用',
+                type: 'primary',
+                icon: 'el-icon-open',
+                click: this.changeState,
+              },
             ],
           },
         },
@@ -201,6 +207,7 @@ export default {
     },
     // 删除角色
     deleteCustomer(item) {
+      console.log(item);
       this.$confirm('确认删除该角色吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -208,6 +215,7 @@ export default {
       }).then(() => {
         const con = {
           id: item.row.id,
+          loginId:item.row.logId,
           code: '1',
         }
         delUserById(con).then((res) => {
@@ -428,6 +436,19 @@ export default {
         })
       }
     },
+    // 修改客户状态
+    changeState(item) {
+      console.log(item)
+      const con = {
+        id:item.row.id,
+        customerState:item.row.customerState === 1 ? '0' :'1',
+        loginId:item.row.logId,
+        code:'1'
+      }
+      changeCustomer(con).then(()=> {
+      this.loadData()
+      })
+    }
   },
 
 }
