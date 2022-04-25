@@ -17,7 +17,7 @@
               :key="index"
               :icon="item.icon"
               :type="item.type"
-              size="middle"
+              size="small"
               @click="handleAction(item)"
             >
               {{ item.name }}
@@ -75,13 +75,9 @@
             min-width="140"
             show-overflow-tooltip
             sortable
-            v-loading="loading"
-          element-loading-text="小易拼命加载中..."
-          element-loading-spinner="el-icon-loading"
-          element-loading-background="rgba(0, 0, 0, 0.8)"
           >
             <template slot-scope="scope">
-              <slot v-bind="scope" :name="`content:${item.fieldKey}`">{{ handleTabValue(item,scope.row[item.fieldKey]) }}</slot>
+              <slot v-bind="scope" :name="`content:${item.fieldKey}`">{{ scope.row[item.fieldKey] }}</slot>
             </template>
           </el-table-column>
         </slot>
@@ -351,10 +347,12 @@ export default {
      * 设置字段
      * @public
      */
-    setFields(fields) { 
-      if (sessionStorage.headTitString) {
-      // console.log(sessionStorage.headTitString);
-      // console.log(JSON.parse(sessionStorage.headTitString));
+    setFields(fields) {
+      if (fields) {
+        this.innerFields = fields
+      } else if (this.fields) {
+        this.innerFields = this.fields
+      } else if (sessionStorage.headTitString) {
         this.innerFields = JSON.parse(sessionStorage.headTitString)
       }
     },
@@ -364,12 +362,7 @@ export default {
 
 <style lang="scss">
 .table-page {
-// @apply flex-1 flex flex-col overflow-hidden h-full;
-display: flex;
-flex: 1;
-overflow: hidden;
-height: 100%;
-flex-direction: column;
+@apply flex-1 flex flex-col overflow-hidden h-full;
 
   .el-table-column--selection {
     .cell {

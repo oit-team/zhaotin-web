@@ -72,7 +72,6 @@ export default {
       })
     },
     genFormItem(item, el) {
-      // console.log(item);
       return h(FormItem, {
         key: item.fieldKey,
         props: {

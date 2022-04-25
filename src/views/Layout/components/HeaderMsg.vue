@@ -28,7 +28,11 @@
 
 <script>
 export default {
-
+  methods: {
+    show() {
+      // console.log(1)
+    },
+  },
 }
 </script>
 
