@@ -2,7 +2,7 @@
   <div>
     <div class="main container">
       <div class="tablel-h">
-        <TablePage v-bind="tablePageOption" auto />
+        <TablePage v-bind="tablePageOption" auto ref="table" />
       </div>
       <!-- 出口 -->
       <router-view />
@@ -192,17 +192,15 @@ export default {
       }
     },
   },
-  created() {
-
-  },
   methods: {
-    async loadData() {
-      const res = await getCustomer({
-        pageNum: '1',
-        pageSize: '999',
-        code: '1',
-      })
-      // console.log(res)
+    async loadData(params) {
+      const con = {
+        ...params,
+        brandId:sessionStorage.brandId,
+        code:'1'
+      }
+      const res = await getCustomer(con)
+      console.log(res)
       this.data = res.body
     },
     // 删除角色
@@ -350,7 +348,7 @@ export default {
               this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
                 confirmButtonText: '确定',
                 callback: action => {
-                  this.loadData()
+                  this.$refs.table.loadData()
                 },
               })
             }
@@ -446,7 +444,7 @@ export default {
         code:'1'
       }
       changeCustomer(con).then(()=> {
-      this.loadData()
+      this.$refs.table.loadData()
       })
     }
   },

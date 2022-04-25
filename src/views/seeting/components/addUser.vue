@@ -56,18 +56,19 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="职位" prop="job">
+      <!-- <el-form-item label="职位" prop="job">
         <el-input v-model="ruleForm.job" style="width:60%;" maxlength="20" placeholder="请输入职位" />
-      </el-form-item>
+      </el-form-item> -->
 
-      <el-form-item label="出生日期" prop="birthDate">
+      <!-- <el-form-item label="出生日期" prop="birthDate">
         <el-date-picker
           v-model="ruleForm.birthDate"
           type="date"
           value-format="yyyy-MM-dd"
           placeholder="请选择日期"
         />
-      </el-form-item>
+      </el-form-item> -->
+
       <el-form-item label="入职日期" prop="hireDate">
         <el-date-picker
           v-model="ruleForm.hireDate"
@@ -123,9 +124,9 @@ export default ({
         telephone: '',
         passWord: '',
         sex: '',
-        job: '',
+        // job: '',
         accountType: '',
-        birthDate: '',
+        // birthDate: '',
         address: '',
         autograph: '',
         loginId:''

@@ -1,15 +1,16 @@
 <template>
   <div class="table-page">
-    <!-- 控制搜索表单 -->
     <search-form
       v-bind="search"
       ref="search"
       :fields="innerFields"
       @query="handleQuery"
       @reset="handleReset"
-    />
+      class="mb-4"
+    ></search-form>
+
     <template v-if="(actions && actions.length > 0) || $slots.actions">
-      <div class="flex mt-4">
+      <div class="flex">
         <slot name="actions">
           <template v-for="(item, index) of actions">
             <el-button
@@ -26,13 +27,9 @@
           </template>
         </slot>
       </div>
-      <el-divider />
+      <el-divider></el-divider>
     </template>
-  <!-- 表格 -->
-    <!-- handleCurrentChange表格的当前行发生变化 -->
-    <!-- handleSelectionChange表格的选择项发生变化 -->
-    <!-- 以上两个是配合单选复选框使用 -->
-    <!-- row-click当某一行被点击时 -->
+
     <el-table
       v-loading="loading"
       ref="table"
@@ -44,7 +41,6 @@
       @current-change="handleCurrentChange"
       @row-click="$emit('row-click', $event)"
     >
-    <!-- 控制单选 -->
       <el-table-column
         v-if="table.selectionItem"
         align="center"
@@ -56,21 +52,18 @@
           </el-radio>
         </template>
       </el-table-column>
-      <!-- 控制全选反选 -->
       <el-table-column
         v-if="table.selection"
         :selectable="table.selectable"
         align="center"
         type="selection"
         width="50"
-      />
-      <!-- 表格核心 -->
+      >
+      </el-table-column>
       <template v-for="item in tableFields">
         <slot v-bind="item" :name="`column:${item.fieldKey}`">
-          <!-- fieldName 表头信息 -->
-          <!-- fieldKey  对应表头信息下面的具体商品信息  -->
           <el-table-column
-            :label="item.fieldName" 
+            :label="item.fieldName"
             :prop="item.fieldKey"
             min-width="140"
             show-overflow-tooltip
@@ -82,7 +75,6 @@
           </el-table-column>
         </slot>
       </template>
-      <!-- 控制操作按钮 -->
       <el-table-column
         v-if="table.actions && table.actions.buttons && table.actions.buttons.length"
         :width="(table.actions && table.actions.width) || 100"
@@ -108,7 +100,7 @@
                   circle
                   size="mini"
                   @click="rowClick(btn, scope)"
-                />
+                ></el-button>
               </el-tooltip>
             </template>
           </slot>
@@ -125,7 +117,8 @@
       layout="total, sizes, prev, pager, next, jumper"
       @size-change="loadData()"
       @current-change="loadData()"
-    />
+    >
+    </el-pagination>
   </div>
 </template>
 
@@ -150,8 +143,8 @@ export default {
     table: {
       type: Object,
       default: () => ({
-        data: [], // 数据
-        actions: [], // 表格按钮
+        data: [],
+        actions: [],
         // 开启多选
         selection: false,
         // 开启单选
@@ -183,17 +176,17 @@ export default {
     loading: false,
   }),
 
+  watch: {
+    'pager.total': function(value) {
+      this.innerPager.total = value
+    },
+    fields: 'setFields',
+  },
+
   computed: {
     tableFields() {
       return this.innerFields.filter(item => !item.noTableShow)
     },
-  },
-
-  watch: {
-    'pager.total': function (value) {
-      this.innerPager.total = value
-    },
-    fields: 'setFields',
   },
 
   created() {
@@ -207,15 +200,6 @@ export default {
   },
 
   methods: {
-    handleTabValue(item,value) {
-      // console.log(item,value);
-    const typeList = ['customerType','customerState']
-    if(typeList.includes(item.fieldKey)) {
-      return JSON.parse(item.fieldAttr)[value].optionValue
-    }
-    return value
-    },
-
     initLoad() {
       this.$refs.search.query()
     },
@@ -248,7 +232,7 @@ export default {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning',
-          }).then(async () => {
+          }).then(async() => {
             // try {
             await btn.click(scope)
 
@@ -360,7 +344,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="less" scoped>
 .table-page {
 @apply flex-1 flex flex-col overflow-hidden h-full;
 

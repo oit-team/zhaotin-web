@@ -154,8 +154,8 @@
             <vc-upload v-if="!editFlag" v-bind="uploadOptionimg" ref="uploadImage">
               <i class="el-icon-plus"></i>
             </vc-upload>
-           <!-- <div v-if="uploadList.length" class="w-24 h-24 bg-blue-300"></div> -->
-            <img v-else v-for="item in uploadList" :key="item" :src="item" alt="">
+           <div v-else><img class="w-24 h-24" :src="uploadList" alt=""></div>
+           <!-- <div v-else> 1</div> -->
           </el-form-item>
 
           <el-form-item label="客户洗唛车法" prop="washingLabel">
@@ -237,16 +237,14 @@
           <el-collapse v-model="activeNames">
             <el-collapse-item title="详细备注" name="1">
               <el-form-item label="装箱注意事项" prop="matters">
-            <el-input
-              type="textarea"
-              placeholder="请输入内容"
-              style="width: 60%"
-              :value="ruleForm.matters"
-              :editor-setting="editorSetting"
-              :height="'150px'"
-              @changeVal="changeWashMatters"
-            >
-            </el-input>
+               <el-input
+                 type="textarea"
+                 placeholder="请输入装箱注意事项"
+                 style="width: 60%"
+                 v-model="ruleForm.matters"
+                 :height="'150px'"
+               >
+               </el-input>
           </el-form-item>
 
           <el-form-item label="发货明细表格要求" prop="deliveryDetails">
@@ -254,25 +252,21 @@
               type="textarea"
               placeholder="请输入内容"
               style="width: 60%"
-              :value="ruleForm.deliveryDetails"
-              :editor-setting="editorSetting"
+              v-model="ruleForm.deliveryDetails"
               :height="'150px'"
-              @changeVal="changeWashDeliveryDetails"
             >
             </el-input>
           </el-form-item>
 
            <el-form-item label="联系人及联系方式" prop="contactDate">
-            <el-input
-              type="textarea"
-              placeholder="请输入内容"
-              style="width: 60%"
-              :value="ruleForm.contactDate"
-              :editor-setting="editorSetting"
-              :height="'150px'"
-              @changeVal="changeWashContactDate"
-            >
-            </el-input>
+              <el-input
+                 type="textarea"
+                 placeholder="请输入装箱注意事项"
+                 style="width: 60%"
+                 v-model="ruleForm.contactDate"
+                 :height="'150px'"
+               >
+               </el-input>
           </el-form-item>
             </el-collapse-item>
           </el-collapse>
@@ -318,7 +312,7 @@ export default {
   data() {
     return {
       activeNames:['1'],
-      uploadList: [],
+      uploadList: '',
       peopleList: [],
       refereesList:[], // 推荐人列表
       documentaryList: [], // 跟单人员列表
@@ -338,12 +332,12 @@ export default {
 
       menuOption: [],
       checked: false, // 是否新增根菜单
-      editorSetting: [
-        // 文本编辑器
-        ["bold", "italic"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["clean"],
-      ],
+      // editorSetting: [
+      //   // 文本编辑器
+      //   ["bold", "italic"],
+      //   [{ list: "ordered" }, { list: "bullet" }],
+      //   ["clean"],
+      // ],
       ruleForm: {
         enterTime : "", // 入驻日期
         loginName: "", // 登录账号
@@ -411,10 +405,7 @@ export default {
       console.log(this.$route.query.item.row);
       this.editFlag = true;
       this.ruleForm = this.$route.query.item.row;
-      // this.ruleForm.documentaryName = this.$route.query.item.row.realName
-      // this.ruleForm.marketName = this.$route.query.item.row.realName
-      // this.ruleForm.managerName = this.$route.query.item.row.realName
-      // this.ruleForm.loginName = this.$route.query.item.row.loginName
+      this.uploadList = sessionStorage.imgUrl
     }
   },
   computed: {
@@ -432,13 +423,13 @@ export default {
         },
         listType: "picture-card",
         maxSize: 1024 * 20,
-        limit: 6,
+        limit: 1,
         chunkSize: 1024 * 5,
         check: true,
         accept: "image/*",
         onSuccess: (file, fileList) => {
           console.log(fileList);
-          this.uploadList.push(fileList.response.data.fileUrl);
+          sessionStorage.setItem('imgUrl',fileList.response.data.fileUrl)
         },
       };
     },
@@ -612,15 +603,16 @@ export default {
     },
     // 联系人及其联系方式
     changeWashContactDate(val) {
-      this.ruleForm.contactDate = val.replace(/<\/?.+?\/?>/g, "");
+      this.ruleForm.contactDate = val
     },
     // 装箱
     changeWashMatters(val) {
-      this.ruleForm.matters = val.replace(/<\/?.+?\/?>/g, "");
+      console.log(val);
+      this.ruleForm.matters = val
     },
     // 发货注意事项
     changeWashDeliveryDetails(val) {
-      this.ruleForm.deliveryDetails = val.replace(/<\/?.+?\/?>/g, "");
+      this.ruleForm.deliveryDetails = val
     },
   },
 };

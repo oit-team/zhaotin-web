@@ -138,8 +138,56 @@
       <el-button type="info" size="small" @click="delArea">删除</el-button>
     </el-dialog>
 
-    <!-- 导出客户 -->
+    <!-- 批量授权 -->
     <el-drawer
+      title="角色授权"
+      :visible.sync="batchPowerFlag"
+      :wrapperClosable='false'
+      direction="rtl"
+      size="40%"
+      >
+      <div class="demo-drawer__content">
+        <!-- <el-table
+          ref="roleMultipleTable"
+          :data="rolesList"
+          tooltip-effect="dark"
+          style="width: 100%"
+          @selection-change="roleSelection"
+          @select="changeSelectRole"
+	        @select-all="selectAllRole">
+          <el-table-column
+            prop="id" align="center"
+            type="selection"
+            width="50">
+          </el-table-column>
+          <el-table-column
+            prop="roleName"
+            label="角色名"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="roleRemark"
+            label="角色描述"
+            show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column
+            prop="roleCode"
+            label="角色编码"
+            show-overflow-tooltip>
+          </el-table-column>
+        </el-table> -->
+        <div class="roleTips"> <i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;"></i>选择单用户时，可查看该用户已授权的角色。</div>
+
+        <div style="margin-top: 20px">
+          <el-button size="small" @click="cancelBatch()">取 消</el-button>
+          <el-button size="small" type="primary" @click="confirmBatch()">确 认</el-button>
+        </div>
+
+      </div>
+    </el-drawer>
+
+    <!-- 导出客户 -->
+    <!-- <el-drawer
       title="请选择需要导出的字段"
       :visible.sync="exportModelFlag"
       :before-close="handleExportClose"
@@ -148,7 +196,7 @@
       ref="export"
     >
       <div class="text-center">
-        <!-- <el-checkbox-group v-model="checkList" :checked="true" @change="changeChecked">
+        <el-checkbox-group v-model="checkList" :checked="true" @change="changeChecked">
           <div
             style="text-align:left;margin:6px 0px;"
             v-for="(item,index) in exportInfoList"
@@ -162,13 +210,13 @@
               {{ item.columnDesc }}
             </el-checkbox>
           </div>
-        </el-checkbox-group> -->
+        </el-checkbox-group>
         <div style="margin-top: 20px">
           <el-button size="small" @click="cancelExport">取 消</el-button>
           <el-button size="small" type="primary" @click="confirmExportUser">确 认</el-button>
         </div>
       </div>
-    </el-drawer>
+    </el-drawer> -->
   </div>
 </template>
 
@@ -185,6 +233,9 @@ export default {
   },
   data() {
     return {
+
+      // 角色授权
+      batchPowerFlag:false,
 
       // 导出用户
       exportModelFlag: false, // 导出客户显示隐藏
@@ -247,20 +298,20 @@ export default {
             name: '角色授权',
             type: 'primary',
             icon: 'el-icon-user',
-            click: () => this.$refs.export.open(),
+            click: this.showPower,
           },
-          {
-            name: '导入用户',
-            type: 'primary',
-            icon: 'el-icon-download',
-            click: () => this.$refs.export.open(),
-          },
-          {
-            name: '导出用户',
-            type: 'primary',
-            icon: 'el-icon-upload2',
-            click: this.exportCustomer,
-          },
+          // {
+          //   name: '导入用户',
+          //   type: 'primary',
+          //   icon: 'el-icon-download',
+          //   click: () => this.$refs.export.open(),
+          // },
+          // {
+          //   name: '导出用户',
+          //   type: 'primary',
+          //   icon: 'el-icon-upload2',
+          //   click: this.exportCustomer,
+          // },
         ],
         table: {
           data: this.data.resultList,
@@ -583,87 +634,6 @@ export default {
           sort = dropNode.data.sort
         }
       }
-
-      // if (dropType !== 'none') {
-      //   const _this = this
-      //   const con = {
-      //     id: draggingNode.data.id, // 区域ID或店铺ID  被拖拽节点id
-      //     dropNodeId: dropNode.data.id, // 被放置节点id
-      //     isShop, // 0=区域;1=店铺query string
-      //     orgStId, // 直接上级ID  // 即店铺所属区域id
-      //     beforeSort: draggingNode.data.sort, // 修改之前的排序值
-      //     sort, // 修改之后的排序值
-      //   }
-
-      //   // // console.log("迁移节点参数：",con)
-      //   const jsonParam = _this.GLOBAL.g_paramJson(con)
-      //   // _this.$set(draggingNode.data,'sort',sort)
-      //   _this.$axios.post(`${_this.GLOBAL.system_manager_server}/org/updateShopOrOrgById`, jsonParam).then((res) => {
-      //     // // console.log("====确认编辑接口==========",res.data.body);   // 成功时 body为null
-      //     if (res.data.head.status === 0) {
-      //       if (draggingNode.data.isShop && draggingNode.data.isShop === '1') {
-      //         // // console.log("dropNode.data===========",dropNode.data)
-      //         // isShop = '1';  // 拖拽点是店铺，orgStId1不需要拼接
-      //         if (dropType !== 'none') {
-      //           // // console.log("拖拽结束，，dropType=====",dropType)
-      //           if (dropType === 'inner') {
-      //             _this.$set(draggingNode.data, 'parentId', String(dropNode.data.id))
-      //             // // console.log("改变后的draggingNode.data===========",draggingNode.data)
-      //           } else if (dropType === 'before' || dropType === 'after') {
-      //             _this.$set(draggingNode.data, 'parentId', dropNode.data.parentId)
-      //             // // console.log("改变后的draggingNode.data===========",draggingNode.data)
-      //           }
-      //         }
-      //       } else if (draggingNode.data.isShop && draggingNode.data.isShop === '0') { // 被拖拽点不是店铺，orgStId需要拼接
-      //         // // console.log("dropNode.data===========",dropNode.data)
-      //         if (dropType === 'inner') {
-      //           let path = ''
-      //           path = `${dropNode.data.path},${dropNode.data.id}`
-      //           _this.$set(draggingNode.data, 'parentId', dropNode.data.id)
-      //           _this.$set(draggingNode.data, 'path', path)
-      //           // // console.log("改变后的draggingNode.data===========",draggingNode.data);
-      //         } else if (dropType === 'before' || dropType === 'after') {
-      //           let path = ''
-      //           if (dropNode.data.isShop && dropNode.data.isShop === '1') { // 被放置点是店铺，看父节点
-      //             if (dropNode.parent.data.isShop === '2') { // 品牌
-      //               path = '0'
-      //             }
-      //             if (dropNode.parent.data.isShop === '0') { // 区域
-      //               // path = dropNode.parent.data.path
-      //               path = `${dropNode.parent.data.path},${dropNode.parent.data.id}`
-      //             }
-      //             // // console.log("path==",path)
-      //           }
-      //           // // console.log("path==",path)
-      //           if (dropNode.data.isShop && dropNode.data.isShop === '0') {
-      //             path = dropNode.data.path
-      //           }
-
-      //           _this.$set(draggingNode.data, 'parentId', dropNode.data.parentId)
-      //           _this.$set(draggingNode.data, 'path', path)
-      //         }
-      //       }
-      //       // // console.log("之前的sort===:",dropNode.data.sort,draggingNode.data.sort)
-      //       const dropTempSort = draggingNode.data.sort
-      //       _this.$set(dropNode.data, 'sort', dropTempSort)
-      //       _this.$set(draggingNode.data, 'sort', sort)
-      //       // // console.log("之后的sort===:",dropNode.data.sort,draggingNode.data.sort)
-
-      //       _this.$message({
-      //         message: '节点迁移成功',
-      //         type: 'success',
-      //       })
-      //       _this.getTreeOrgList() // 每回迁移成功之后都要重亲请求，否则连续进行节点迁移以后会不生效，因为拿到的节点数据不对，只是页面节点改变，数据未改变
-      //     } else {
-      //       _this.$message({
-      //         message: res.data.head.msg,
-      //         type: 'warning',
-      //       })
-      //     }
-      //   }).catch(err => {
-      //     // console.log(err)
-      //   })
-      // }
     },
     // 拖拽成功完成时触发的事件
     handleDrop() {
@@ -810,6 +780,18 @@ export default {
         })
       }
     },
+    // 授权
+    showPower() {
+      this.batchPowerFlag = true
+    },
+    // 取消授权
+    cancelBatch() {
+      this.batchPowerFlag = false
+    },
+    // 确认授权
+    confirmBatch() {
+
+    }
   },
 
 }
