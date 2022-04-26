@@ -223,7 +223,7 @@
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getTreeOrgList } from '@/api/brand'
-import { getCustomer, delUserById, getExportCustomer,getExportinfo } from '@/api/customer'
+import { getCustomer, delUserById, getExportCustomer,getExportinfo,changeCustomer } from '@/api/customer'
 import {reqRole} from '@/api/user'
 import { insertOrg, delOrgById, updateShopOrOrgById } from '@/api/org'
 import {addUserAndRole} from '@/api/user'
@@ -339,10 +339,10 @@ export default {
                 click: this.deleteUser,
               },
               {
-                tip: '禁用',
-                type: 'success',
-                icon: 'el-icon-open',
-                click: this.deleteCustomer,
+               tip: ({ row }) => ['禁用', '启用'][row.status],
+                type: ({ row }) => ['success'][row.status] || 'info',
+                icon: ({ row }) => ['el-icon-open'][row.status] || 'el-icon-turn-off',
+                click: this.ban,
               },
             ],
           },
@@ -394,6 +394,7 @@ export default {
   methods: {
     // 获取用户列表
     async loadData(params) {
+      console.log(params);
       this.params = params
       const con = {
         code: '2',
@@ -858,6 +859,19 @@ export default {
               type: 'warning',
             })
         }
+      })
+    },
+    // 禁用
+    ban(item) {
+       console.log(item)
+        const con = {
+        id:item.row.id,
+        status:item.row.status === '1' ? '0' :'1',
+        loginId:item.row.loginId,
+        code:'2'
+      }
+      changeCustomer(con).then(()=> {
+      this.$refs.table.loadData()
       })
     }
   },

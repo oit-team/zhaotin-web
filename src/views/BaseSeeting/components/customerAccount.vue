@@ -1,10 +1,28 @@
 <template>
   <div>
     <div>
-        <TablePage v-bind="tablePageOption" auto ref="table" />
+        <TablePage v-bind="tablePageOption" auto ref="table"> 
+        <template slot="content:describe" slot-scope="{ row }">
+        <el-tag
+          v-if="true"
+          class="mr-1"
+          size="small"
+          type="primary"
+        >
+          默认
+        </el-tag>
+        <span>{{ row.describe }}</span>
+      </template>
+      <template slot="content:stateName" slot-scope="{ row }">
+        <span
+          :class="['text-red-400', 'text-green-400'][row.customerState]"
+        >{{ row.stateName }}</span>
+      </template>
+        </TablePage>
       <!-- 出口 -->
       <router-view />
     </div>
+
     <!-- 导入客户 -->
     <el-drawer
       :title="'导入商品'"
@@ -107,6 +125,19 @@ import TablePage from '@/components/business/TablePage'
 import { getCustomer, delUserById, getExportinfo,getExportCustomer,changeCustomer } from '@/api/customer'
 import axios from 'axios'
 
+// // 发布状态
+// export const PUBLISHED_STATE = {
+//   // 未发布
+//   UNPUBLISHED: 0,
+//   // 已发布
+//   PUBLISHED: 1,
+// }
+
+// export const DEFAULT_STATE = {
+//   YES: '1',
+//   NO: '0',
+// }
+
 export default {
   name: 'Style',
   components: {
@@ -114,6 +145,12 @@ export default {
   },
   data() {
     return {
+      // PUBLISHED_STATE,
+      // DEFAULT_STATE,
+      // selectedItem: {}, 
+      // dialogVisible: false,
+
+
       data: {},
       importFlag: false, // 导入客户显示隐藏
       exportModelFlag: false, // 导出客户显示隐藏
@@ -175,11 +212,35 @@ export default {
                 icon: 'el-icon-delete',
                 click: this.deleteCustomer,
               },
-               {
-                tip: '启用/禁用',
-                type: 'primary',
-                icon: 'el-icon-open',
-                click: this.changeState,
+              {
+                tip: ({ row }) => ['禁用', '启用'][row.customerState],
+                type: ({ row }) => ['success'][row.customerState] || 'info',
+                icon: ({ row }) => ['el-icon-open'][row.customerState] || 'el-icon-turn-off',
+                click: this.changeState
+                // async ({ row }) => {
+                //   console.log(row);
+                  
+                //   // if(row.customerState === 0) {
+                //   //   // await this.changeCustomer({
+                //   //   //    id:item.row.id,
+                //   //   //    customerState:row.customerState === 1 ? '0' :'1',
+                //   //   //    loginId:row.logId,
+                //   //   //    code:'1'
+                //   //   // })
+                //   //   await this.changeState(con)
+                //   // }else {
+                //   //   await this.$confirm('启用')
+                //   // }
+                //   // this.selectedItem = row
+                //   // if (row.state === PUBLISHED_STATE.PUBLISHED) {
+                //   //   await this.$confirm('确定要撤销已发布的广告吗？', '提示', { type: 'warning' })
+                //   //   await this.updateAdvertsState(PUBLISHED_STATE.UNPUBLISHED)
+                //   //   this.$message.success('撤销成功！')
+                //   //   this.$refs.table.loadData()
+                //   // } else {
+                //   //   this.dialogVisible = true
+                //   // }
+                // },
               },
             ],
           },
@@ -228,7 +289,6 @@ export default {
                   el.value = this.pageNum
                 }
               })
-              // this.$refs.child.parentMsgs(this.dynamicParam)
             }
             this.$message({
               type: 'success',
@@ -252,13 +312,13 @@ export default {
     importCustomer() {
       this.importFlag = true
     },
-        // 导入错误数据的关闭操作
+    // 导入错误数据的关闭操作
     handleImportErrClose(){
       this.$confirm('确认关闭？').then(_ => {
         this.importErrDataFlag = false;
       }).catch(_ => {});
     },
-         // 错误数据取消操作
+    // 错误数据取消操作
     cancelErrData(){
       this.importErrDataFlag = false;
     },
@@ -295,7 +355,7 @@ export default {
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
-    // // 上传文件
+    // 上传文件
     uploadFile(file) {
       this.fileData.append('file', file.file)
       // console.log(this.fileData)
@@ -434,7 +494,6 @@ export default {
     },
     // 修改客户状态
     changeState(item) {
-      console.log(item)
       const con = {
         id:item.row.id,
         customerState:item.row.customerState === 1 ? '0' :'1',

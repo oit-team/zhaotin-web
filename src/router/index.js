@@ -20,6 +20,7 @@ import AddMenu from '@/views/seeting/components/addMenu'
 import CustomerAccount from '@/views/BaseSeeting/components/customerAccount'
 import AddCustomer from '@/views/BaseSeeting/components/addCustomer'
 import AddUser from '@/views/seeting/components/addUser'
+import OrderInfo from '@/views/order/components/orderInfo'
 
 Vue.use(VueRouter)
 
@@ -41,6 +42,10 @@ const routes = [
     // 订单管理
     path: '/order',
     component: Order,
+    children: [{
+      path: '/order/orderInfo',
+      component: OrderInfo,
+    }],
   },
   {
     // 客户管理

@@ -16,9 +16,9 @@
 
     <el-form
       style="margin-top: 20px"
-      :model="ruleForm"
+      :model="customerForm"
       :rules="rules"
-      ref="ruleForm"
+      ref="customerForm"
       label-width="90px"
       :label-position="labelPosition"
     >
@@ -29,28 +29,42 @@
            <el-form-item label="登录账号" prop="loginName">
             <el-input
              :disabled="editFlag"
-              v-model="ruleForm.loginName"
+              v-model="customerForm.loginName"
               style="width: 60%"
               placeholder="请输入登录账号"
             />
           </el-form-item>
+
+           <el-form-item label="用户密码" prop="passWord">
+            <el-input
+              type="password"
+              autocomplete="new-password"
+              v-model="customerForm.passWord"
+              style="width: 60%"
+              @input="$forceUpdate()"
+              placeholder="请输入用户密码"
+            />
+              <div v-if="editFlag" class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>若要修改请直接输入新密码保存即可</div>
+              <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:0px;color:#e60012;"></i>不填则为默认密码</div>
+          </el-form-item>
+
           <el-form-item label="客户名称" prop="customerName">
             <el-input
-              v-model="ruleForm.customerName"
+              v-model="customerForm.customerName"
               style="width: 60%"
               placeholder="请输入客户名称"
             />
           </el-form-item>
           <el-form-item label="真实姓名" prop="realName">
             <el-input
-              v-model="ruleForm.realName"
+              v-model="customerForm.realName"
               style="width: 60%"
               placeholder="请输入真实姓名"
             />
           </el-form-item>
           <el-form-item label="入驻日期" prop="enterTime">
             <el-date-picker
-              v-model="ruleForm.enterTime"
+              v-model="customerForm.enterTime"
               style="width: 60%"
               type="date"
               value-format="yyyy-MM-dd"
@@ -59,7 +73,7 @@
           </el-form-item>
           <el-form-item label="大区选择" prop="orgName">
             <el-select
-              v-model="ruleForm.orgName"
+              v-model="customerForm.orgName"
               placeholder="请选择您所在的大区"
               @change="changeOrg"
               style="width: 60%"
@@ -75,7 +89,7 @@
 
           <el-form-item label="所属省：" prop="provinces">
             <el-select
-              v-model="ruleForm.provinces"
+              v-model="customerForm.provinces"
               placeholder="请选择您所在的省份"
               style="width: 60%"
               @change="changeProvince"
@@ -92,7 +106,7 @@
 
           <el-form-item label="所属市" prop="city">
             <el-select
-              v-model="ruleForm.city"
+              v-model="customerForm.city"
               style="width: 60%"
               placeholder="请选择您所在的城市"
               @change="changeCity"
@@ -110,7 +124,7 @@
           <el-form-item label="所属县" prop="region">
             <el-select
               @change="changeRegion"
-              v-model="ruleForm.region"
+              v-model="customerForm.region"
               style="width: 60%"
               placeholder="请选择您所在的区县"
             >
@@ -126,7 +140,7 @@
 
           <el-form-item label="地址" prop="customerAddress">
             <el-input
-              v-model="ruleForm.customerAddress"
+              v-model="customerForm.customerAddress"
               style="width: 60%"
               placeholder="请输入地址"
             />
@@ -136,7 +150,7 @@
            <div class="right">
         <el-form-item label="客户吊牌/吊牌价" prop="tagPrice">
             <el-input
-              v-model="ruleForm.tagPrice"
+              v-model="customerForm.tagPrice"
               style="width: 60%"
               placeholder="请输入客户吊牌/吊牌价"
             />
@@ -144,7 +158,7 @@
 
           <el-form-item label="客户洗唛" prop="customerWashing">
             <el-input
-              v-model="ruleForm.customerWashing"
+              v-model="customerForm.customerWashing"
               style="width: 60%"
               placeholder="请输入客户洗唛"
             />
@@ -160,7 +174,7 @@
 
           <el-form-item label="客户洗唛车法" prop="washingLabel">
             <el-input
-              v-model="ruleForm.washingLabel"
+              v-model="customerForm.washingLabel"
               style="width: 60%"
               placeholder="请输入客户洗唛车法"
             />
@@ -169,7 +183,7 @@
            <el-form-item label="推荐人" prop="refereesName">
             <el-select
               @change="changeRefereesName"
-              v-model="ruleForm.refereesName"
+              v-model="customerForm.refereesName"
               style="width: 60%"
               placeholder="请选择推荐人"
             >
@@ -186,7 +200,7 @@
           <el-form-item label="跟单人员" prop="documentaryName">
             <el-select
               @change="changeDocumentary"
-              v-model="ruleForm.documentaryName"
+              v-model="customerForm.documentaryName"
               style="width: 60%"
               placeholder="请选择跟单人员"
             >
@@ -203,7 +217,7 @@
           <el-form-item label="市场人员" prop="marketName">
             <el-select
               @change="changeMarket"
-              v-model="ruleForm.marketName"
+              v-model="customerForm.marketName"
               style="width: 60%"
               placeholder="请选择市场人员"
             >
@@ -220,7 +234,7 @@
           <el-form-item label="客户经理" prop="documentaryName">
             <el-select
               @change="changeManager"
-              v-model="ruleForm.managerName"
+              v-model="customerForm.managerName"
               style="width: 60%"
               placeholder="请选择客户经理"
             >
@@ -241,8 +255,8 @@
                  type="textarea"
                  placeholder="请输入装箱注意事项"
                  style="width: 60%"
-                 v-model="ruleForm.matters"
-                 :height="'150px'"
+                 v-model="customerForm.matters"
+                 :height="'280px'"
                >
                </el-input>
           </el-form-item>
@@ -252,8 +266,8 @@
               type="textarea"
               placeholder="请输入内容"
               style="width: 60%"
-              v-model="ruleForm.deliveryDetails"
-              :height="'150px'"
+              v-model="customerForm.deliveryDetails"
+              :height="'280px'"
             >
             </el-input>
           </el-form-item>
@@ -263,8 +277,8 @@
                  type="textarea"
                  placeholder="请输入装箱注意事项"
                  style="width: 60%"
-                 v-model="ruleForm.contactDate"
-                 :height="'150px'"
+                 v-model="customerForm.contactDate"
+                 :height="'280px'"
                >
                </el-input>
           </el-form-item>
@@ -273,7 +287,7 @@
 
           <el-form-item label="快递方式" prop="courier" class="mt-4">
             <el-input
-              v-model="ruleForm.courier"
+              v-model="customerForm.courier"
               style="width: 60%"
               placeholder="请输入快递方式"
             />
@@ -286,14 +300,14 @@
           size="small"
           icon="el-icon-check"
           type="primary"
-          @click="submitForm('ruleForm')"
+          @click="submitForm('customerForm')"
           >保存</el-button
         >
         <el-button
           size="small"
           icon="el-icon-refresh"
           v-if="!editFlag"
-          @click="resetForm('ruleForm')"
+          @click="resetForm('customerForm')"
           >重置</el-button
         >
       </div>
@@ -332,14 +346,9 @@ export default {
 
       menuOption: [],
       checked: false, // 是否新增根菜单
-      // editorSetting: [
-      //   // 文本编辑器
-      //   ["bold", "italic"],
-      //   [{ list: "ordered" }, { list: "bullet" }],
-      //   ["clean"],
-      // ],
-      ruleForm: {
-        enterTime : "", // 入驻日期
+      customerForm: {
+        passWord:"",
+        enterTime: "", // 入驻日期
         loginName: "", // 登录账号
         orgName: "", // 所属大区
         provinces: "",
@@ -385,7 +394,6 @@ export default {
         orgName: [{ required: true, message: "请选择大区", trigger: "blur" }],
         provinces: [{ required: true, message: "请选择省份", trigger: "blur" }],
         city: [{ required: true, message: "请选择城市", trigger: "blur" }],
-        region: [{ required: true, message: "请选择区县", trigger: "blur" }],
         realName: [
           { required: true, message: "请输入真实姓名", trigger: "blur" },
         ],
@@ -400,11 +408,13 @@ export default {
     this.getCustomerList();
     this.getCityList();
     this.getTreeOrgList();
+     this.customerForm.passWord = ''
+      this.customerForm.loginName = ''
     if (this.$route.query.item) {
       this.imgVisible = true
-      console.log(this.$route.query.item.row);
       this.editFlag = true;
-      this.ruleForm = this.$route.query.item.row;
+      this.customerForm = this.$route.query.item.row;
+      this.customerForm.passWord = ''
       this.uploadList = sessionStorage.imgUrl
     }
   },
@@ -478,7 +488,7 @@ export default {
           id: item.id,
         });
         // console.log(item)
-        // this.ruleForm.refereesId = item.refereesId;
+        // this.customerForm.refereesId = item.refereesId;
       });
       // 获取推荐人
       const response = await getCustomer({
@@ -486,7 +496,6 @@ export default {
         pageSize: "999",
         code: "1",
       }).then((res) => {
-        console.log(res);
         if(res.head.status === 0) {
           this.refereesList = res.body.resultList
         }
@@ -496,21 +505,21 @@ export default {
     // 选中推荐人
     changeRefereesName(val) {
       console.log(val);
-      this.ruleForm.refereesName = val.realName
-      this.ruleForm.refereesId = val.id
+      this.customerForm.refereesName = val.realName
+      this.customerForm.refereesId = val.id
     },
     changeDocumentary(val) {
-      this.ruleForm.documentaryId = val.documentaryId;
-      this.ruleForm.documentaryName = val.documentaryName;
+      this.customerForm.documentaryId = val.documentaryId;
+      this.customerForm.documentaryName = val.documentaryName;
     },
     // 市场人员id
     changeMarket(val) {
-      this.ruleForm.marketId = val.marketId;
-      this.ruleForm.marketName = val.marketName;
+      this.customerForm.marketId = val.marketId;
+      this.customerForm.marketName = val.marketName;
     },
     changeManager(val) {
-      this.ruleForm.managerId = val.managerId;
-      this.ruleForm.managerName = val.managerName;
+      this.customerForm.managerId = val.managerId;
+      this.customerForm.managerName = val.managerName;
     },
     // 获取区域下拉列表数据
     async getTreeOrgList() {
@@ -521,21 +530,21 @@ export default {
     // 修改入参的区域数据
     changeOrg(val) {
       console.log(val);
-      this.ruleForm.orgName = val.osName;
-      this.ruleForm.orgStId = val.id;
+      this.customerForm.orgName = val.osName;
+      this.customerForm.orgStId = val.id;
     },
     // 选择省
     changeProvince(val) {
-      this.ruleForm.provinces = val.name;
+      this.customerForm.provinces = val.name;
       this.cityList = val.areaList;
     },
     // 选择市
     changeCity(val) {
-      this.ruleForm.city = val.name;
+      this.customerForm.city = val.name;
       this.regionList = val.areaList;
     },
     changeRegion(val) {
-      // this.ruleForm.region = val.name
+      // this.customerForm.region = val.name
     },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -548,8 +557,8 @@ export default {
               customerIntegral: 0,
               refereesName: "daoru",
               refereesType: null,
-              ...this.ruleForm,
-              loginId: this.ruleForm.logId,
+              ...this.customerForm,
+              loginId: this.customerForm.logId,
             })
               .then((res) => {
                 if (res.head.status === 0) {
@@ -573,7 +582,7 @@ export default {
               customerState: 0,
               customerIntegral: 0,
               refereesType: null,
-              ...this.ruleForm,
+              ...this.customerForm,
             })
               .then((res) => {
                 this.editFlag = false;
@@ -603,16 +612,16 @@ export default {
     },
     // 联系人及其联系方式
     changeWashContactDate(val) {
-      this.ruleForm.contactDate = val
+      this.customerForm.contactDate = val
     },
     // 装箱
     changeWashMatters(val) {
       console.log(val);
-      this.ruleForm.matters = val
+      this.customerForm.matters = val
     },
     // 发货注意事项
     changeWashDeliveryDetails(val) {
-      this.ruleForm.deliveryDetails = val
+      this.customerForm.deliveryDetails = val
     },
   },
 };
@@ -650,5 +659,11 @@ export default {
 /deep/.text-center {
   margin-left: -105px;
   margin-top: 20px;
+}
+/deep/ .el-textarea__inner {
+  height: 100px;
+}
+.pwdTip {
+  margin-left: 40px;
 }
 </style>

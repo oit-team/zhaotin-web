@@ -2,7 +2,6 @@
   <div>
     <HeaderNav class="mb-4" />
     <div class="main container">
-      <!-- <div>商品中心</div> -->
       <!-- 出口 -->
       <router-view />
     </div>
@@ -16,15 +15,11 @@ export default {
   components: {
     HeaderNav,
   },
-  data() {
-    return {
-      data: {},
-    }
-  },
-
 }
 </script>
 
 <style>
-
+.main {
+  min-height: 600px;
+}
 </style>

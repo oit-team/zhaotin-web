@@ -102,7 +102,10 @@ export default {
       this.list = res.body.resultList
     },
     skip(item) {
-      this.$router.push(item.menuUrl)
+      sessionStorage.setItem('headTitString', item.fieldDes)
+      if (sessionStorage.getItem('headTitString')) {
+        this.$router.push(item.menuUrl)
+      }
     },
     skipSecond(items) {
       sessionStorage.setItem('headTitString', items.fieldDes)

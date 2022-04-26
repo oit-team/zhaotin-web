@@ -38,10 +38,11 @@
         <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>不填则为默认密码</div>
       </el-form-item>
 
-      <el-form-item label="所属店铺/区域" v-if="editFlag">
+      <el-form-item label="所属区域" v-if="editFlag">
         <el-cascader
           style="width:60%;"
           ref="chooseOption"
+          :data="osName"  
           :options="orgList"
           filterable
           :show-all-levels="false"
@@ -117,6 +118,7 @@ export default ({
     return {
         orgNum:'', // 级联选中的值
         orgList: [], // 级联数据源
+        osName:[],
         editFlag: false,
         ruleForm: {
         orgStId: '',
