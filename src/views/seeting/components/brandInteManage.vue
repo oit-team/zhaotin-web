@@ -64,7 +64,7 @@
     <div style="width:0.5px;background-color:#ddd;margin-left:6px;"></div>
     <!-- 组件 -->
     <div class="rightListCon" ref="brandRightCon">
-      <div class="table_height"> <TablePage v-bind="tablePageOption" auto /></div>
+      <div class="table_height"> <TablePage v-bind="tablePageOption" auto ref="table" /></div>
     </div>
     <!-- 新增区域 -->
     <el-drawer
@@ -144,12 +144,12 @@
       :visible.sync="batchPowerFlag"
       :wrapperClosable='false'
       direction="rtl"
-      size="40%"
+      size="30%"
       >
-      <div class="demo-drawer__content">
-        <!-- <el-table
+      <div class="p-8">
+        <el-table
           ref="roleMultipleTable"
-          :data="rolesList"
+          :data="powerList"
           tooltip-effect="dark"
           style="width: 100%"
           @selection-change="roleSelection"
@@ -175,12 +175,12 @@
             label="角色编码"
             show-overflow-tooltip>
           </el-table-column>
-        </el-table> -->
+        </el-table>
         <div class="roleTips"> <i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;"></i>选择单用户时，可查看该用户已授权的角色。</div>
 
-        <div style="margin-top: 20px">
-          <el-button size="small" @click="cancelBatch()">取 消</el-button>
+        <div class="text-center">
           <el-button size="small" type="primary" @click="confirmBatch()">确 认</el-button>
+          <el-button size="small" @click="cancelBatch()">取 消</el-button>
         </div>
 
       </div>
@@ -224,7 +224,9 @@
 import TablePage from '@/components/business/TablePage'
 import { getTreeOrgList } from '@/api/brand'
 import { getCustomer, delUserById, getExportCustomer,getExportinfo } from '@/api/customer'
+import {reqRole} from '@/api/user'
 import { insertOrg, delOrgById, updateShopOrOrgById } from '@/api/org'
+import {addUserAndRole} from '@/api/user'
 
 export default {
   name: 'Role',
@@ -233,9 +235,12 @@ export default {
   },
   data() {
     return {
-
+      params:{},
       // 角色授权
       batchPowerFlag:false,
+      powerList:[], // 角色列表
+      userIds:[], // 选中的用户列表
+      roleId:[], // 选中的授权角色id
 
       // 导出用户
       exportModelFlag: false, // 导出客户显示隐藏
@@ -296,7 +301,7 @@ export default {
           },
           {
             name: '角色授权',
-            type: 'primary',
+            type: 'warning',
             icon: 'el-icon-user',
             click: this.showPower,
           },
@@ -388,15 +393,15 @@ export default {
   },
   methods: {
     // 获取用户列表
-    async loadData() {
+    async loadData(params) {
+      this.params = params
       const con = {
         code: '2',
         brandId: sessionStorage.brandId,
         idDuty: '0',
-        // orgStId: this.orgStId,
+        ...params
       }
       await getCustomer(con).then((res) => {
-        // console.log(res)
         this.data = res.body
         this.chargeList = res.body.resultList
       })
@@ -782,15 +787,78 @@ export default {
     },
     // 授权
     showPower() {
-      this.batchPowerFlag = true
+      // console.log(this.$refs.table.selected);
+      if(this.$refs.table.selected.length) {
+          this.batchPowerFlag = true
+          reqRole({
+            ...this.params,
+            brandId:sessionStorage.brandId
+          }).then((res) => {
+            this.powerList = res.body.resultList
+          })
+          // this.changeSelectRole()
+          // this.checkedUserList = this.$refs.table.selected
+          this.$refs.table.selected.forEach(item => {
+            console.log(item.id);
+             this.userIds.push(item.id)
+          })
+      } else {
+        this.$message({
+          message:'请先选择要批量授权的用户',
+          type:'warning'
+        })
+      }
+    
+    },
+        // 角色选项有变化时
+    roleSelection(val){
+    },
+        // 当页勾选以及取消
+    changeSelectRole(selection, row) {
+      // 从保存项saveCheckList里面寻找,如果找到了row则删除，如果没找到则添加
+      let fitemIndex = this.roleId.findIndex((item) => {
+        return item == row.roleId;
+      })
+      if (fitemIndex < 0) {
+        this.roleId.push(row.roleId);
+      } else {
+        this.roleId.splice(fitemIndex, 1);
+      }
+    },
+        // 表格全选内容
+    selectAllRole(val) {
+      if(val.length) {
+        val.forEach(item => {
+          this.roleId.push(item.roleId)
+        })
+      } else {
+        this.roleId = []
+      }
     },
     // 取消授权
     cancelBatch() {
       this.batchPowerFlag = false
+      this.$refs.roleMultipleTable.clearSelection()
     },
     // 确认授权
     confirmBatch() {
-
+      addUserAndRole({
+        roleIds:this.roleId.toString(),
+        userIds:this.userIds.toString()
+      }).then((res) =>{
+        if(res.head.status === 0) {
+          this.$message({
+            message:'用户授权成功',
+            type:'success',
+          })
+          this.batchPowerFlag = false
+        } else {
+           this.$message({
+              message: res.head.msg,
+              type: 'warning',
+            })
+        }
+      })
     }
   },
 
@@ -934,5 +1002,8 @@ export default {
 }
 /deep/ .el-dialog--center .el-dialog__body {
   text-align: center;
+}
+.table_height {
+  height: 700px;
 }
 </style>

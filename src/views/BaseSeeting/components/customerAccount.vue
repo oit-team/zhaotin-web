@@ -1,9 +1,7 @@
 <template>
   <div>
-    <div class="main container">
-      <div class="tablel-h">
+    <div>
         <TablePage v-bind="tablePageOption" auto ref="table" />
-      </div>
       <!-- 出口 -->
       <router-view />
     </div>
@@ -454,6 +452,6 @@ export default {
 
 <style lang="less" scoped>
 /deep/ .el-table__body-wrapper {
-    height: 600px;
+    height: 500px;
 }
 </style>

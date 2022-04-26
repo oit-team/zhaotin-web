@@ -32,6 +32,12 @@
         </el-select>
       </el-form-item>
 
+        <el-form-item label="用户密码" prop="passWord">
+        <el-input v-model="ruleForm.passWord" style="width:60%;" type="password" placeholder="用户密码" />
+        <div v-if="editFlag" class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>若要修改请直接输入新密码保存即可</div>
+        <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>不填则为默认密码</div>
+      </el-form-item>
+
       <el-form-item label="所属店铺/区域" v-if="editFlag">
         <el-cascader
           style="width:60%;"
@@ -44,11 +50,6 @@
         />
       </el-form-item>
 
-      <!-- <el-form-item label="用户密码" prop="passWord">
-        <el-input v-model="ruleForm.passWord" style="width:60%;" type="password" placeholder="用户密码" />
-        <div v-if="editFlag" class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>若要修改请直接输入新密码保存即可</div>
-        <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>不填则为默认密码</div>
-      </el-form-item> -->
       <el-form-item label="性别" prop="sex">
         <el-select v-model="ruleForm.sex" placeholder="请选择">
           <el-option label="男" value="0" />
@@ -284,143 +285,6 @@ export default ({
         }
       })
      },
-
-    // submitForm(formName) {
-    //   _this.$refs[formName].validate((valid) => {
-    //     if (valid) {
-    //       if(this.editFlag) {
-    //         console.log('新增');
-    //                     const con = {
-    //           brandId: sessionStorage.brandId,
-    //           userId: sessionStorage.userId,
-    //           ...this.ruleForm,
-    //           code: '2',
-    //         }
-    //         addCustomer(con).then(() => {
-    //           this.$router.back()
-    //         })
-    //         // c
-    //       }
-    //       let encryPwd = null
-    //       if (_this.ruleForm.passWord) {
-    //         encryPwd = CryptoJS.encrypt(this.ruleForm.passWord)
-    //       }
-    //       // console.log('加密后的密码===',encryPwd);
-    //       // 密码的处理逻辑：
-    //       // 非必填，不填传参为空，后台取默认值六个一，传参的话，使用AES加密，将加密后的字符串传给后台，后台解密后再MD5存储
-    //       if (this.editFlag) {
-    //         // 编辑用户接口
-    //         const con = {
-    //           // id: _this.ruleForm.id,
-    //           // userName: _this.ruleForm.userName,
-    //           // // passWord:_this.ruleForm.passWord,  // passWord逻辑待定
-    //           // passWord: encryPwd,
-    //           // status: _this.ruleForm.status, // status页面也没让改,传参多余么
-    //           // accountType: _this.ruleForm.accountType,
-    //           // telephone: _this.ruleForm.telephone,
-    //           // headPortrait: _this.ruleForm.headPortrait,
-    //           // job: _this.ruleForm.job,
-    //           // sex: _this.ruleForm.sex,
-    //           // nickName: _this.ruleForm.nickName,
-    //           // userId: sessionStorage.userId,
-    //           // address: _this.ruleForm.address,
-    //           // autograph: _this.ruleForm.autograph,
-    //           // hireDate: _this.ruleForm.hireDate,
-    //           // birthDate: _this.ruleForm.birthDate,
-    //           // // 修改用户所属店铺或区域
-    //           // isShop: _this.nodeType,
-    //           // // 0 区域 1 店铺 2 品牌  为1或2时isShop有值 为null 自己取'0'
-    //           // nodeId: _this.nodeId,
-    //           ...this.ruleForm,
-    //         }
-    //         changeCustomer(con).then((res) => {
-    //           console.log(res)
-    //         })
-    //         // const jsonParam = _this.GLOBAL.g_paramJson(con)
-    //         // // console.log("jsonParam===",jsonParam)
-    //         // _this.$axios.post(`${_this.GLOBAL.system_manager_server}/user/updateUserById`, jsonParam).then((res) => {
-    //         //   // console.log("编辑用户接口返回信息==========",res.data.body);
-    //         //   if (res.data.head.status === 0) {
-    //         //     _this.$message({
-    //         //       message: '编辑保存成功',
-    //         //       type: 'success',
-    //         //     })
-    //         //     if (_this.ruleForm.accountType === '0') {
-    //         //       _this.ruleForm.accountTypeMsg = 'APP用户'
-    //         //     }
-    //         //     if (_this.ruleForm.accountType === '1') {
-    //         //       _this.ruleForm.accountTypeMsg = '管家用户'
-    //         //     }
-    //         //     if (_this.ruleForm.accountType === '3') {
-    //         //       _this.ruleForm.accountTypeMsg = 'APP及管家用户'
-    //         //     }
-    //         //     if (_this.ruleForm.sex === '1') {
-    //         //       _this.ruleForm.sexMsg = '女'
-    //         //     }
-    //         //     if (_this.ruleForm.sex === '0') {
-    //         //       _this.ruleForm.sexMsg = '男'
-    //         //     }
-    //         //     if (_this.oldNodeId === _this.nodeId) {
-    //         //       _this.$bus.$emit('detailShow', _this.ruleForm) // 事件分发
-    //         //       _this.$router.back()
-    //         //     } else {
-    //         //       _this.$set(_this.ruleForm, 'changeShopFlag', true)
-    //         //       _this.$bus.$emit('detailShow', _this.ruleForm) // 事件分发
-    //         //       _this.$router.back()
-    //         //     }
-    //         //   } else {
-    //         //     _this.$message({
-    //         //       message: res.data.head.msg,
-    //         //       type: 'warning',
-    //         //     })
-    //         //   }
-    //         // }).catch(err => {
-    //         //   // console.log(err)
-    //         // })
-    //       } else {
-    //         // 新增用户接口
-    //         // let curUserName = ''
-    //         // if (_this.brandAbbreviation) {
-    //         //   curUserName = `${_this.brandAbbreviation}${_this.ruleForm.userName}`
-    //         // } else {
-    //         //   curUserName = _this.ruleForm.userName
-    //         // }
-    //         // const con = {
-    //         //   brandId: sessionStorage.brandId,
-    //         //   userId: sessionStorage.userId,
-    //         //   ...this.ruleForm,
-    //         //   code: '2',
-    //         // }
-    //         // addCustomer(con).then(() => {
-    //         //   this.$router.back()
-    //         // })
-    //         // // const jsonParam = _this.GLOBAL.g_paramJson(con)
-    //         // _this.$axios.post(`${_this.GLOBAL.system_manager_server}/user/insertUser`, jsonParam).then((res) => {
-    //         //   // console.log("新增用户接口返回信息==========",res.data.body);
-    //         //   if (res.data.head.status === 0) {
-    //         //     _this.$message({
-    //         //       message: '新增保存成功',
-    //         //       type: 'success',
-    //         //     })
-
-    //         //     _this.$bus.$emit('detailShow', _this.ruleForm) // 事件分发
-    //         //     _this.$router.back()
-    //         //   } else {
-    //         //     _this.$message({
-    //         //       message: res.data.head.msg,
-    //         //       type: 'warning',
-    //         //     })
-    //         //   }
-    //         // }).catch(err => {
-    //         //   // console.log(err)
-    //         // })
-    //       }
-    //     } else {
-    //       // console.log('error submit!!');
-    //       return false
-    //     }
-    //   })
-    // },
     resetForm(formName) {
       this.$refs[formName].resetFields()
     },

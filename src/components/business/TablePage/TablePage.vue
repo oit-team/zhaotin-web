@@ -271,6 +271,7 @@ export default {
       this.loadData()
     },
     handleSelectionChange(e) {
+      // console.log(e);
       this.selected = e
       this.$emit('selection-change', e)
     },

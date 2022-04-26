@@ -28,17 +28,22 @@
 
 <script>
 import { reqLogin } from '@/api/user'
+import CryptoJS from '@/assets/js/js/CryptoJS'
 
 export default {
   data: () => ({
     formData: {
-      userName: 'admin',
-      password: 'bk7fL7wA47fM1cl9I9h3qQ==',
+      userName: '',
+      password: '',
     },
   }),
   methods: {
     async login() {
-      await reqLogin(this.formData).then((res) => {
+      const encryPwd = CryptoJS.encrypt(this.formData.password)
+      await reqLogin({
+        userName: this.formData.userName,
+        password: encryPwd,
+      }).then((res) => {
         // console.log(res)
         sessionStorage.userId = res.body.resultList.id
         sessionStorage.brandId = res.body.resultList.brandId

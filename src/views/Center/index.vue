@@ -56,11 +56,10 @@ export default {
     // getUser()
   },
   methods: {
-    async loadData() {
+    async loadData(params) {
       const res = await getProductList({
         styleNo: '',
-        pageNum: '1',
-        pageSize: '2',
+        ...params,
       })
       // console.log(res)
       this.data = res.body
