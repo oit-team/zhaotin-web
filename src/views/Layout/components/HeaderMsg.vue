@@ -10,10 +10,12 @@
     <div class="flex-1 flex items-center px-32">
       <el-input
         placeholder=""
+        v-model="inputVal"
         class="one"
         prefix-icon="el-icon-search"
+        @change="cgVal"
       >
-        <el-button class="search" slot="append">搜索</el-button>
+        <el-button class="search" slot="append" @click="cgVal(inputVal)">搜索</el-button>
       </el-input>
     </div>
     <div class="w-60 flex items-center">
@@ -28,9 +30,18 @@
 
 <script>
 export default {
+  data() {
+    return {
+      inputVal: '',
+    }
+  },
   methods: {
     show() {
       // console.log(1)
+    },
+    cgVal(val) {
+      console.log(val)
+      this.$emit('searchVal', val)
     },
   },
 }

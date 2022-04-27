@@ -6,6 +6,9 @@ import Order from '@/views/order/index'
 import customer from '@/views/customer/index'
 import System from '@/views/seeting/index'
 import Center from '@/views/Center/index'
+import GoodsDetails from '@/views/Center/components/goodsDetails'
+import GoodsList from '@/views/Center/components/goodsList'
+import Nullpage from '@/views/Center/components/nullpage'
 import BaseSeeting from '@/views/BaseSeeting/index'
 import SystemRole from '@/views/seeting/components/role'
 import MenuList from '@/views/seeting/components/menuList'
@@ -20,6 +23,7 @@ import AddMenu from '@/views/seeting/components/addMenu'
 import CustomerAccount from '@/views/BaseSeeting/components/customerAccount'
 import AddCustomer from '@/views/BaseSeeting/components/addCustomer'
 import AddUser from '@/views/seeting/components/addUser'
+import { getGoodsDetailes } from '@/api/product'
 
 Vue.use(VueRouter)
 
@@ -36,6 +40,22 @@ const routes = [
     // 商品中心
     path: '/styleCenter',
     component: Center,
+    redirect: '/styleCenter/goodsList',
+    children: [
+      {
+        path: '/styleCenter/goodsDetails',
+        component: GoodsDetails,
+      },
+      {
+        path: '/styleCenter/goodsList',
+        component: GoodsList,
+      },
+      {
+        path: '/styleCenter/nullpage',
+        component: Nullpage,
+        name: 'Nullpage',
+      },
+    ],
   },
   {
     // 订单管理
