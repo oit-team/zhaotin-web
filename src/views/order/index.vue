@@ -47,26 +47,11 @@ export default {
             width: 180,
             buttons: [
               {
-                tip: '编辑',
-                type: 'warning',
-                icon: 'el-icon-edit',
+                tip: '订单详情',
+                type: 'success',
+                icon: 'el-icon-view',
                 click: (scope) => this.$router.push({
-                  path: '/system/addRole',
-                  query: { item: scope },
-                }),
-              },
-              {
-                tip: '删除',
-                type: 'primary',
-                icon: 'el-icon-delete',
-                click: this.deleteRole,
-              },
-              {
-                tip: '授权',
-                type: 'danger',
-                icon: 'el-icon-thumb',
-                click: (scope) => this.$router.push({
-                  path: '/system/authUsersByRoleId',
+                  path: '/order/orderMsg',
                   query: { item: scope },
                 }),
               },
@@ -91,6 +76,8 @@ export default {
         if (res.head.status === 0) {
           this.data = res.body
         }
+      }).catch(() => {
+
       })
     },
   },

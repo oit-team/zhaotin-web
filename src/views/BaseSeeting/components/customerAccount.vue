@@ -2,22 +2,12 @@
   <div>
     <div>
         <TablePage v-bind="tablePageOption" auto ref="table"> 
-        <template slot="content:describe" slot-scope="{ row }">
-        <el-tag
-          v-if="true"
-          class="mr-1"
-          size="small"
-          type="primary"
-        >
-          默认
-        </el-tag>
-        <span>{{ row.describe }}</span>
-      </template>
-      <template slot="content:stateName" slot-scope="{ row }">
-        <span
-          :class="['text-red-400', 'text-green-400'][row.customerState]"
-        >{{ row.stateName }}</span>
-      </template>
+          <template slot="content:customerType" slot-scope="{ row }">
+            {{ CUSTOMER_TYPE_TEXT[row.customerType] }}
+          </template>
+           <template slot="content:customerState" slot-scope="{ row }">
+            {{ CUSTOMER_STATE_TEXT[row.customerState] }}
+          </template>
         </TablePage>
       <!-- 出口 -->
       <router-view />
@@ -125,18 +115,17 @@ import TablePage from '@/components/business/TablePage'
 import { getCustomer, delUserById, getExportinfo,getExportCustomer,changeCustomer } from '@/api/customer'
 import axios from 'axios'
 
-// // 发布状态
-// export const PUBLISHED_STATE = {
-//   // 未发布
-//   UNPUBLISHED: 0,
-//   // 已发布
-//   PUBLISHED: 1,
-// }
+// 客户类型
+const CUSTOMER_TYPE_TEXT = {
+  0: '普通客户',
+  1: 'VIP客户',
+}
 
-// export const DEFAULT_STATE = {
-//   YES: '1',
-//   NO: '0',
-// }
+// 账号状态
+const CUSTOMER_STATE_TEXT = {
+  0:'有效',
+  1:'无效'
+}
 
 export default {
   name: 'Style',
@@ -145,6 +134,8 @@ export default {
   },
   data() {
     return {
+      CUSTOMER_TYPE_TEXT,
+      CUSTOMER_STATE_TEXT,
       // PUBLISHED_STATE,
       // DEFAULT_STATE,
       // selectedItem: {}, 
