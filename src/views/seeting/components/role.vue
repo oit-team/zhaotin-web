@@ -146,7 +146,7 @@ export default {
 </script>
 
 <style>
-/* .table_height {
+.table_height {
   height: 500px;
-} */
+}
 </style>

@@ -114,7 +114,6 @@ export default {
     },
     // 获取此角色菜单列表
     power() {
-      const _this = this
       const con = {
         userId: '0', // 这个userId传死值“0”，为了兼容首页左侧菜单必须要有的
         roleId: this.$route.query.item.row.roleId,
@@ -124,10 +123,10 @@ export default {
         // console.log('获取此角色所拥有的菜单id列表-----', res.data.body)
         if (res.head.status === 0) {
         //   console.log(res.body)
-          _this.defaultCheckedKeys = res.body.menuIdList// 此角色的菜单menuIds
+          this.defaultCheckedKeys = res.body.menuIdList// 此角色的菜单menuIds
           this.getHomeMenuList()// 获取菜单树
         } else {
-          _this.$message({
+          this.$message({
             message: res.data.head.msg,
             type: 'warning',
           })

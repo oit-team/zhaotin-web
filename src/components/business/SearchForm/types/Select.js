@@ -13,7 +13,11 @@ export default {
       item,
     } = ctx.props
 
-    const options = typeof item.fieldAttr === 'object' ? item.fieldAttr : JSON.parse(item.fieldAttr)
+    const options = typeof item.fieldAttr === 'object'
+      ? item.fieldAttr
+      : item.fieldAttr
+        ? JSON.parse(item.fieldAttr)
+        : []
 
     const optionsRender = options.map(option => {
       return h(Option, {

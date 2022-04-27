@@ -338,6 +338,7 @@ export default {
       } else if (this.fields) {
         this.innerFields = this.fields
       } else if (sessionStorage.headTitString) {
+        console.log(JSON.parse(sessionStorage.headTitString))
         this.innerFields = JSON.parse(sessionStorage.headTitString)
       }
     },
@@ -347,8 +348,11 @@ export default {
 
 <style lang="less" scoped>
 .table-page {
-@apply flex-1 flex flex-col overflow-hidden h-full;
-
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
   .el-table-column--selection {
     .cell {
       padding-right: 10px;

@@ -11,15 +11,12 @@
         />
       </div>
     </div>
-    <div class="main container">
-      <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
-    </div>
+    <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-// import { getProductList, getGoodsDetailes } from '@/api/product'
 import { getGoodsSizeInfo } from '@/api/goods'
 import HeaderMsg from '../Layout/components/HeaderMsg'
 import Tabs from '../../components/tabs/tabs'

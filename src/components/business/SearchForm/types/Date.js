@@ -45,6 +45,7 @@ export default {
       }
     }
 
+
     return h(DatePicker, {
       ref: ctx.data.ref,
       props: Object.assign(props, fieldTypeProps(item.fieldType)),
