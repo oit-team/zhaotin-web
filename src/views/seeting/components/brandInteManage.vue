@@ -64,7 +64,11 @@
     <div style="width:0.5px;background-color:#ddd;margin-left:6px;"></div>
     <!-- 组件 -->
     <div class="rightListCon" ref="brandRightCon">
-      <div class="table_height"> <TablePage v-bind="tablePageOption" auto ref="table" /></div>
+      <div class="table_height"> <TablePage v-bind="tablePageOption" auto ref="table">
+         <template slot="content:accountTypeMsg" slot-scope="{ row }">
+            {{ ACCOUNT_TYPE_MSG_TEXT[row.accountType] }}
+          </template>
+        </TablePage></div>
     </div>
     <!-- 新增区域 -->
     <el-drawer
@@ -228,6 +232,12 @@ import {reqRole} from '@/api/user'
 import { insertOrg, delOrgById, updateShopOrOrgById } from '@/api/org'
 import {addUserAndRole} from '@/api/user'
 
+const ACCOUNT_TYPE_MSG_TEXT = {
+  0:'APP用户',
+  1:'管家用户',
+  2:'APP及管家用户'
+}
+
 export default {
   name: 'Role',
   components: {
@@ -235,6 +245,7 @@ export default {
   },
   data() {
     return {
+      ACCOUNT_TYPE_MSG_TEXT,
       params:{},
       // 角色授权
       batchPowerFlag:false,
@@ -361,32 +372,6 @@ export default {
     filterText(val) {
       this.$refs.tree.filter(val)
     },
-    // $route(to, from) {
-    //   // // console.log(">>>>>>>>>",to,from);
-    //   // if(to.fullPath == '/brand/addUser'){
-    //   //   from.meta.keepAlive = true
-    //   // }else{
-    //   //   from.meta.keepAlive = false
-    //   // }
-    // },
-    // data(val) {
-    //   // // console.log("this.taskCheckedList===",this.taskCheckedList)
-    //   // console.log(this.data)
-    //   if (val && this.taskCheckedList && this.activeTab === 2) {
-    //     // // console.log("11111111111")
-    //     this.$nextTick(() => {
-    //       val.forEach(item => {
-    //         this.taskCheckedList.forEach(self => {
-    //           // // console.log("2222222222")
-    //           if (item.taskId === self.taskId) {
-    //             // // console.log("33333=====",item.taskId)
-    //             this.$refs.taskTable.toggleRowSelection(item, true)
-    //           }
-    //         })
-    //       })
-    //     })
-    //   }
-    // },
   },
   created() {
     this.getTreeOrgList()
@@ -394,7 +379,6 @@ export default {
   methods: {
     // 获取用户列表
     async loadData(params) {
-      console.log(params);
       this.params = params
       const con = {
         code: '2',
@@ -576,60 +560,6 @@ export default {
     },
     // 拖拽成功时触发的事件
     handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      // draggingNode,dropNode  被拖拽节点
-      // // console.log('tree drag end: ', dropType);
-      // // console.log('tree drag end 被拖拽节点: ',draggingNode,'被放置的节点', dropNode);
-      // 判断拖拽节点是否为店铺
-      // let isShop = null
-      // let orgStId = null
-
-      // if (draggingNode.data.isShop && draggingNode.data.isShop === '1') {
-      //   // // console.log("dropNode.data===========",dropNode.data)
-      //   isShop = '1' // 拖拽点是店铺，orgStId1不需要拼接
-      //   if (dropType !== 'none') {
-      //     // // console.log("拖拽结束，，dropType=====",dropType)
-      //     if (dropType === 'inner') {
-      //       // // console.log("dropNode.data===========",dropNode.data)
-      //       orgStId = dropNode.data.id
-      //     } else if (dropType === 'before' || dropType === 'after') {
-      //       orgStId = dropNode.data.parentId
-      //     }
-      //     // // console.log("orgStId=====",orgStId)
-      //   }
-      // } else if (draggingNode.data.isShop && draggingNode.data.isShop === '0') {
-      //   isShop = '0' // 被拖拽点不是店铺，orgStId需要拼接
-      //   // // console.log("dropNode.data===========",dropNode.data)
-      //   // // console.log("dropNode.data.path===========",dropNode.data.path)
-      //   if (dropType === 'inner') {
-      //     // // console.log("dropNode.data.path===========",dropNode.data.path)
-      //     const lastStr = dropNode.data.path.substring(dropNode.data.path.length - 1)
-      //     if (lastStr === ',') {
-      //       orgStId = `${dropNode.data.path}${dropNode.data.id}`
-      //     } else {
-      //       orgStId = `${dropNode.data.path},${dropNode.data.id}`
-      //     }
-      //     // // console.log("this is cms orgstid",orgStId)
-      //     // orgStId = dropNode.data.id
-      //   } else if (dropType === 'before' || dropType === 'after') { // dropType == 'before' || dropType == 'after'
-      //     // orgStId = '0'
-      //     // // console.log("父节点",dropNode.data,dropNode.parent.data)
-      //     if (dropNode.data.isShop && dropNode.data.isShop === '1') { // 被放置点是店铺，看父节点
-      //       if (dropNode.parent.data.isShop === '2') { // 品牌
-      //         orgStId = '0'
-      //       }
-      //       if (dropNode.parent.data.isShop === '0') { // 区域
-      //         // orgStId = dropNode.parent.data.path
-      //         orgStId = `${dropNode.parent.data.path},${dropNode.parent.data.id}`
-      //       }
-      //     }
-      //     if (dropNode.data.isShop && dropNode.data.isShop === '0') {
-      //       orgStId = dropNode.data.path
-      //     }
-      //     // orgStId = dropNode.data.path
-      //     // // console.log("before:this is cms orgstid",orgStId)
-      //   }
-      // }
-
       let sort = null
       if (dropNode.data.isShop && dropNode.data.isShop !== '2') {
         if (dropType === 'inner') {
@@ -762,12 +692,10 @@ export default {
           rowList:this.rowList
         }
         getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
-            console.log(res.data);
             var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
             var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
             var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
             var result = patt.exec(contentDisposition);
-            console.log(result)
             var filename = result[1];
             var downloadElement = document.createElement('a');
             var href = window.URL.createObjectURL(blob); //创建下载的链接
@@ -788,7 +716,6 @@ export default {
     },
     // 授权
     showPower() {
-      // console.log(this.$refs.table.selected);
       if(this.$refs.table.selected.length) {
           this.batchPowerFlag = true
           reqRole({
@@ -797,10 +724,7 @@ export default {
           }).then((res) => {
             this.powerList = res.body.resultList
           })
-          // this.changeSelectRole()
-          // this.checkedUserList = this.$refs.table.selected
           this.$refs.table.selected.forEach(item => {
-            console.log(item.id);
              this.userIds.push(item.id)
           })
       } else {
@@ -863,7 +787,6 @@ export default {
     },
     // 禁用
     ban(item) {
-       console.log(item)
         const con = {
         id:item.row.id,
         status:item.row.status === '1' ? '0' :'1',

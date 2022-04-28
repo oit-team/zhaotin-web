@@ -211,9 +211,7 @@ export default ({
       await getTreeOrgList({
         brandId: sessionStorage.brandId,
       }).then((res) => {
-        console.log(res);
       if(res.head.status === 0) {
-        console.log(res);
         this.orgList = res.body.resultMap
         // this.orgNum = 
       }

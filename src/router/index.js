@@ -21,6 +21,8 @@ import CustomerAccount from '@/views/BaseSeeting/components/customerAccount'
 import AddCustomer from '@/views/BaseSeeting/components/addCustomer'
 import AddUser from '@/views/seeting/components/addUser'
 import OrderMsg from '@/views/order/components/orderMsg'
+import AddCateGory from '@/views/BaseSeeting/components/addCateGory'
+import SizeInfo from '@/views/BaseSeeting/components/sizeInfo'
 
 Vue.use(VueRouter)
 
@@ -123,6 +125,14 @@ const routes = [
       {
         path: '/basls/customerAccount/addCustomer',
         component: AddCustomer,
+      },
+      {
+        path: '/basls/styleType/addCateGory',
+        component: AddCateGory,
+      },
+      {
+        path: '/basls/styleType/sizeInfo',
+        component: SizeInfo,
       },
     ],
   },

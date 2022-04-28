@@ -53,7 +53,7 @@ export default {
               },
               {
                 tip: '删除',
-                type: 'primary',
+                type: 'danger',
                 icon: 'el-icon-delete',
                 click: this.deleteRole,
               },

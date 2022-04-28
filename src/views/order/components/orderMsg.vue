@@ -3,6 +3,9 @@
     <HeaderNav class="mb-4" />
     <div class="main container">
       <div class="">
+        <el-page-header
+          @back="$router.back()"
+        />
         <div class="flex justify-between px-14">
           <div class=" font-extrabold text-xl">订单编号：{{ orderNo }}</div>
           <div class="font-extrabold text-xl">下单时间: {{ orderTime }}</div>
@@ -136,5 +139,13 @@ export default {
   }
   /deep/ .font-extrabold {
     width: auto;
+  }
+  /deep/.el-page-header__left .el-icon-back {
+    font-size: 26px;
+  }
+  /deep/.el-page-header__title {
+    font-size: 22px;
+    margin: 28px 0;
+   line-height: 22px;
   }
 </style>
