@@ -11,7 +11,9 @@
         />
       </div>
     </div>
-    <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
+    <div class="container main">
+      <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
+    </div>
   </div>
 </template>
 
@@ -73,12 +75,20 @@ export default {
         type: 'STYLE_LENGTH',
       })
       this.tabList = res.body.result
+      const all = {
+        dicttimeDisplayName: '综合推荐',
+        dictitemCode: '',
+      }
+      this.tabList.unshift(all)
       // const styleL = this.tabList[0].dicttimeDisplayName
       // this.styleLength = styleL
     },
     checkTab(index) {
       const that = this
-      const styleL = that.tabList[index].dicttimeDisplayName
+      let styleL = ''
+      if (index !== 0) {
+        styleL = that.tabList[index].dicttimeDisplayName
+      }
       that.styleLength = styleL
       that.$nextTick(() => {
         that.$refs.child.loadData()

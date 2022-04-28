@@ -8,6 +8,7 @@ import System from '@/views/seeting/index'
 import Center from '@/views/Center/index'
 import GoodsDetails from '@/views/Center/components/goodsDetails'
 import GoodsList from '@/views/Center/components/goodsList'
+import ShopCart from '@/views/Center/components/shopCart'
 import Nullpage from '@/views/Center/components/nullpage'
 import BaseSeeting from '@/views/BaseSeeting/index'
 import SystemRole from '@/views/seeting/components/role'
@@ -49,6 +50,10 @@ const routes = [
       {
         path: '/styleCenter/goodsList',
         component: GoodsList,
+      },
+      {
+        path: '/styleCenter/shopCart',
+        component: ShopCart,
       },
       {
         path: '/styleCenter/nullpage',

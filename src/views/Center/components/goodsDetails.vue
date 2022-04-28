@@ -2,8 +2,8 @@
   <div class="zt-page">
     <!-- 顶部面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right" class="zt-head">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/styleCenter' }">商品中心</el-breadcrumb-item>
+      <el-breadcrumb-item>商品详情</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 主题内容 -->
     <div class="zt-content">
@@ -32,6 +32,7 @@
             <div class="zt-images__left">
               <div
                 class="zt-images__item"
+                :class="imageIndex===index?'zt-images__select':''"
                 v-for="(item, index) in infoData.imgUrlList"
                 :key="index"
               >
@@ -39,7 +40,7 @@
                   fit="contain"
                   class="zt-images__image"
                   :src="item.resUrl"
-                  @click="setCarouselItem(index)"
+                  @click="imageIndex=index,setCarouselItem(index)"
                 />
               </div>
             </div>
@@ -74,7 +75,7 @@
               价格
               <div class="zt-price__data zt-red">
                 ￥<span class="zt-wt">{{ infoData.costPrice }}</span>
-                <div class="zt-hui">3件起订</div>
+                <!-- <div class="zt-hui">3件起订</div> -->
               </div>
             </div>
             <div class="zt-price">
@@ -89,37 +90,50 @@
             <div class="zt-data__color">
               <div class="zt-data__label">颜色</div>
               <div v-for="(item, index) in infoData.styleColorList" :key="index">
-                <div class="zt-color__item" @click="colorcgId(index)">
-                  <div v-if="item.styleImg">
-                    <el-image
-                      :src="item.styleImg[0].resUrl"
-                      fit="contain"
-                    />
-                    <div class="zt-color__name">{{ item.styleColor }}</div>
+                <el-badge :value="item.num" class="item" type="warning">
+                  <div
+                    class="zt-color__item"
+                    @click="colorIndex = index,colorcgId(index)"
+                    :class="colorIndex===index?'zt-color__select':''"
+                  >
+                    <div v-if="item.styleImg">
+                      <el-image
+                        :src="item.colorImg"
+                        fit="contain"
+                      />
+                      <div class="zt-color__name">{{ item.styleColor }}</div>
+                    </div>
                   </div>
-                </div>
+                </el-badge>
               </div>
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">尺码</div>
               <div v-if="infoData.styleColorList">
-                <div v-for="(item, index) in infoData.styleColorList[sizeId].styleSize" :key="index">
-                  <div class="zt-size__item">
-                    <!-- {{ item.sizeName }} -->
-                    <el-button plain>{{ item.sizeName }}</el-button>
-                  </div>
+                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
+                  <el-badge :value="item.num" class="item" type="warning">
+                    <div class="zt-size__item" :class="sizeIndex===index?'zt-size__select':''" @click="sizeIndex = index,checkSize(index)">
+                      <!-- <el-button plain @click="sizeIndex = index,checkSize(index)">{{ item.sizeName }}</el-button> -->
+                      {{ item.sizeName }}
+                    </div>
+                  </el-badge>
                 </div>
               </div>
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">数量</div>
               <el-input-number size="small" v-model="num" @change="handleChange" :min="1" :max="99" />
+              <!-- <div v-if="infoData.styleColorList">
+                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
+                  <el-input-number size="small" v-model="item.num" @change="handleChange" :min="1" :max="99" />
+                </div>
+              </div> -->
             </div>
           </div>
           <!-- 购买 -->
           <div class="zt-data__btn">
-            <div class="zt-btn__hei">立即订购</div>
-            <div class="zt-btn__jin"><i class="el-icon-plus"></i> 加入订货清单</div>
+            <div class="zt-btn__hei" @click="toshoping">立即订购</div>
+            <div class="zt-btn__jin" @click="toorder"><i class="el-icon-plus"></i> 加入订货清单</div>
           </div>
         </div>
       </div>
@@ -302,13 +316,13 @@
 </template>
 
 <script>
-import Tabs from '@/components/tabs/tabs'
+// import Tabs from '@/components/tabs/tabs'
 import { getGoodsDetailes, getProductList } from '@/api/product'
 
 export default {
   name: 'GoodsDetails',
   components: {
-    Tabs,
+    // Tabs,
   },
   data() {
     return {
@@ -317,8 +331,6 @@ export default {
       value2: 3,
       colors: ['#CDA46C', '#CDA46C', '#CDA46C'],
       num: 1,
-      colorId: 0,
-      sizeId: 0,
       ishome: false,
       tabList: [],
       dataList: [],
@@ -340,12 +352,19 @@ export default {
         tradePriceSort: 0, // 上架时间排序（0：从小到大 1是从大到小）
       },
       goodsLength: 0,
+      imageIndex: 0, // 选择图片
+      colorIndex: 0, // 选择颜色
+      sizeIndex: 0, // 选择大小
+      orderData: {},
+      beforeOrder: {},
     }
   },
   created() {
     this.goodsId = this.$route.query.id
     this.getData()
     this.loadData()
+  },
+  mounted() {
   },
   methods: {
     async getData() {
@@ -355,6 +374,35 @@ export default {
       })
       that.infoData = res.body.resultList
       that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
+      // 给数据中  加入数量
+      this.infoData.styleColorList.forEach(e => {
+        let n = 0
+        e.styleSize.forEach(i => {
+          i.num = 1
+          n += i.num
+          return n
+        })
+        e.num = n
+      })
+      const data = {
+        imageUrl: this.infoData.styleColorList[this.colorIndex].colorImg,
+        color: this.infoData.styleColorList[this.colorIndex].styleColor,
+        goodsName: this.infoData.styleName,
+        goodsCode: this.infoData.styleNo,
+        goodscostPrice: this.infoData.costPrice,
+        goodsNum: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num,
+        goodsSizeName: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].sizeName,
+        totailPrice: this.infoData.costPrice * this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num,
+        checked: false,
+      }
+      this.beforeOrder = data
+      this.orderData = {
+        goodsId: this.goodsId,
+        goodsName: this.infoData.styleName,
+        addOrder: [],
+      }
+      console.log(this.orderData)
+      console.log(this.beforeOrder)
     },
     async loadData() {
       const that = this
@@ -364,23 +412,62 @@ export default {
       that.dataList = res.body.resultList
       that.goodsLength = res.body.resultList.length
     },
+    // 轮播图 切换出控制
     setCarouselItem(index) {
       this.$refs.carousel.setActiveItem(index)
     },
+    // 商品数量
     handleChange(value) {
-      console.log(value)
+      if (value <= 99 && value >= 1) {
+        this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
+        this.beforeOrder.goodsNum = value
+        this.infoData.styleColorList.forEach(e => {
+          let n = 0
+          e.styleSize.forEach(i => {
+            n += i.num
+            return n
+          })
+          e.num = n
+        })
+        this.$forceUpdate
+      } else {
+        this.$message('请填写正确数字')
+      }
+      // this.beforeOrder.goodsNum = value
     },
+    // 切换大小
+    checkSize(id) {
+      // this.num = 1
+      this.num = this.infoData.styleColorList[this.colorIndex].styleSize[id].num
+      this.beforeOrder.goodsSizeName = this.infoData.styleColorList[this.colorIndex].styleSize[id].sizeName
+      this.$forceUpdate
+    },
+    // 切换颜色
     colorcgId(id) {
-      this.sizeId = id
+      this.sizeIndex = 0
+      // this.num = 1
+      this.num = this.infoData.styleColorList[id].styleSize[this.sizeIndex].num
+      this.orderData.addOrder.push(this.beforeOrder)
+      this.$store.commit('order/addOrder', this.orderData)
       this.$forceUpdate()
-    },
-    checkTab(index) {
-      console.log(index)
     },
     todetails(id) {
       this.goodsId = id
       this.getData()
       this.$forceUpdate()
+    },
+    toshoping() {
+      // this.num = 1
+      this.$store.commit('order/addOrder', this.orderData)
+      this.orderData.addOrder = {}
+      this.$forceUpdate()
+    },
+    toorder() {
+      this.orderData.addOrder.push(this.beforeOrder)
+      sessionStorage.setItem('orderData', JSON.stringify(this.orderData))
+      this.$store.commit('order/addOrder', this.orderData)
+      // this.$store.commit('order/addOrder', this.infoData)
+      this.$router.push('/styleCenter/shopCart')
     },
   },
 }
@@ -419,6 +506,9 @@ export default {
               width: 80px;
               height: 80px;
             }
+          }
+          .zt-images__select{
+            border: 1px solid #CDA46C;
           }
         }
         .zt-images__right{
@@ -489,7 +579,7 @@ export default {
           align-items: center;
           .zt-color__item{
             position: relative;
-            margin: 0 5px;
+            margin-left: 20px;
             border-radius: 10px;
             border: 1px solid #ECE8E5;
             .el-image{
@@ -509,17 +599,23 @@ export default {
               color: #fff;
             }
           }
+          .zt-color__select{
+            border: 1px solid #CDA46C;
+          }
         }
         .zt-data__size{
           display: flex;
           align-items: center;
           margin-top: 20px;
           .zt-size__item{
-            // padding: 5px 20px;
-            // border: 1px solid #ccc;
-            // border-radius: 5px;
-            // box-sizing: border-box;
-            margin-right: 20px;
+            padding: 5px 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-left: 20px;
+          }
+          .zt-size__select{
+            border: 1px solid #CDA46C;
           }
         }
       }
@@ -674,7 +770,7 @@ export default {
         width: 230px;
         color: #333333;
         font-size: 14px;
-        margin: 0 10px 10px 0;
+        margin: 0 0 10px 15px;
         border: 1px solid #ECE8E5;
         .zt-good__image{
           width: 230px;

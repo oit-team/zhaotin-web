@@ -19,11 +19,18 @@
       </el-input>
     </div>
     <div class="w-60 flex items-center">
-      <el-input
+      <!-- <el-input
         placeholder=""
-        prefix-icon="el-icon-search"
+        prefix-icon="el-icon-s-order"
         class="one"
-      />
+      /> -->
+      <!-- <el-button round icon="el-icon-s-order">
+        订货清单
+        <span class="order-num">0</span>
+      </el-button> -->
+      <el-badge :value="12" class="item">
+        <el-button icon="el-icon-s-order" plain round>订货清单</el-button>
+      </el-badge>
     </div>
   </div>
 </template>
@@ -68,5 +75,11 @@ export default {
 }
 .one .search  span{
   color: white;
+}
+.order-num{
+  display: inline-block;
+  padding: 5px 7px;
+  border-radius: 50%;
+  background-color: #cca46c;
 }
 </style>

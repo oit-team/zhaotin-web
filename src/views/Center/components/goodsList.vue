@@ -14,33 +14,36 @@
           >默认</div>
           <div
             :class="selectB===1?'selectB':'zt-bottom__item'"
-            @click="selectItem(1)"
+            @click="shouDjiantou = !shouDjiantou,selectItem(1)"
           >
             上架时间
-            <i class="el-icon-bottom"></i>
+            <i v-if="shouDjiantou" class="el-icon-bottom"></i>
+            <i v-else class="el-icon-top"></i>
           </div>
-          <div
+          <!-- <div
             :class="selectB===2?'selectB':'zt-bottom__item'"
             @click="selectItem(2)"
           >
             销量
             <i class="el-icon-top"></i>
-          </div>
+          </div> -->
           <div
             :class="selectB===3?'selectB':'zt-bottom__item'"
-            @click="selectItem(3)"
+            @click="priceTF = !priceTF,selectItem(3)"
           >
             价格
-            <i class="el-icon-d-caret"></i>
+            <i v-if="priceTF" class="el-icon-caret-bottom"></i>
+            <i v-else class="el-icon-caret-top"></i>
           </div>
         </div>
       </div>
       <el-divider />
     </div>
-    <div class="zt-content">
+    <el-empty v-if="showEmp" description="暂无相关数据" />
+    <div class="zt-content" v-else>
+      <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
       <div
         class="zt-content__item"
-        :class="goodsLength>=5?'zt-content__item_margin':''"
         v-for="(item, index) in dataList"
         :key="index"
         @click="todetails(item.styleId)"
@@ -53,7 +56,7 @@
         <div class="zt-item__line">{{ item.styleName }}</div>
         <div class="zt-item__line">
           <div class="zt-price__l">{{ item.styleNo }}</div>
-          <div class="zt-price__r">￥<div class="zt-item__price">{{ item.tagPrice }}</div></div>
+          <div class="zt-price__r">￥<div class="zt-item__price">{{ item.tradePrice }}</div></div>
         </div>
         <!-- <el-divider /> -->
         <!-- <div class="zt-item__line top-line">已售50000件</div> -->
@@ -110,6 +113,9 @@ export default {
         shelfTimeSort: 0, // 批发价排序（0：从小到大 1是从大到小）
         tradePriceSort: 0, // 上架时间排序（0：从小到大 1是从大到小）
       },
+      showEmp: false,
+      shouDjiantou: true,
+      priceTF: true,
     }
   },
   computed: {
@@ -135,15 +141,25 @@ export default {
       const res = await getProductList({
         ...that.formData,
       })
+      if (res.body.resultList.length === 0) {
+        this.showEmp = true
+      } else {
+        this.showEmp = false
+      }
       that.dataList = res.body.resultList
       that.tabList1 = res.body.styelTypeList
+      const all = {
+        styleType: '全部',
+      }
+      this.tabList1.unshift(all)
       that.goodsLength = res.body.resultList.length
     },
     checkTab(index) {
       const that = this
-      console.log(index)
-      const cla = that.tabList1[index].styleType
-      console.log(cla)
+      let cla = ''
+      if (index !== 0) {
+        cla = that.tabList1[index].styleType
+      }
       that.$nextTick(() => {
         that.formData.styleCategory = cla
         that.loadData()
@@ -151,10 +167,41 @@ export default {
       })
     },
     selectItem(id) {
-      this.selectB = id
-      if (id === 1) {
-        this.styleCategory
-        this.loadData()
+      const that = this
+      that.selectB = id
+      console.log(id)
+      if (id === 0) {
+        that.$nextTick(() => {
+          that.formData.styleCategory = ''
+          that.formData.shelfTimeSort = 0
+          that.formData.tradePriceSort = 0
+          that.loadData()
+          that.$forceUpdate()
+        })
+      } else if (id === 1 && !this.shouDjiantou) {
+        that.$nextTick(() => {
+          that.formData.shelfTimeSort = 1
+          that.loadData()
+          that.$forceUpdate()
+        })
+      } else if (id === 1 && that.shouDjiantou) {
+        that.$nextTick(() => {
+          that.formData.shelfTimeSort = 0
+          that.loadData()
+          that.$forceUpdate()
+        })
+      } else if (id === 3 && that.priceTF) {
+        that.$nextTick(() => {
+          that.formData.tradePriceSort = 1
+          that.loadData()
+          that.$forceUpdate()
+        })
+      } else if (id === 3 && !that.priceTF) {
+        that.$nextTick(() => {
+          that.formData.tradePriceSort = 0
+          that.loadData()
+          that.$forceUpdate()
+        })
       }
     },
     // searchVal(val) {
@@ -210,7 +257,7 @@ export default {
     width: 230px;
     color: #333333;
     font-size: 14px;
-    margin: 0 10px 10px 0;
+    margin: 0 0 10px 15px;
     border: 1px solid #ECE8E5;
     .zt-good__image{
       width: 230px;
