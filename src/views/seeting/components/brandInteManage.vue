@@ -1020,4 +1020,7 @@ export default {
 .table_height {
   height: 700px;
 }
+/deep/.el-table {
+  margin-left: 0;
+}
 </style>

@@ -47,7 +47,7 @@
           filterable
           :show-all-levels="false"
           :props="{ checkStrictly: true, children:'childrenList',value:'id',label:'osName'}"
-          @change="changeShop"
+          @change="changeArea"
         />
       </el-form-item>
 
@@ -116,9 +116,10 @@ export default ({
     }
 
     return {
+        value: [],
         orgNum:'', // 级联选中的值
         orgList: [], // 级联数据源
-        osName:[],
+        osName:null,
         editFlag: false,
         ruleForm: {
         orgStId: '',
@@ -187,10 +188,10 @@ export default ({
   created() {
     // 编辑
     if (this.$route.query.item) {
-      console.log(this.$route.query)
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
-      this.ruleForm.passWord = ''
+      this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substr(0,10)
+      this.osName = this.$route.query.item.row.nodeName
       // this.orgNum = 
     }
     // 新增
@@ -212,13 +213,14 @@ export default ({
       }).then((res) => {
         console.log(res);
       if(res.head.status === 0) {
+        console.log(res);
         this.orgList = res.body.resultMap
         // this.orgNum = 
       }
       })
     },
     // 修改所属店铺或者区域
-    changeShop(val) {
+    changeArea(val) {
       // console.log("val=====",val);
       const checkedNodeList = this.$refs.chooseOption.getCheckedNodes()
       if (checkedNodeList[0]) {

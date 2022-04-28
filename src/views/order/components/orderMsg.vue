@@ -2,50 +2,59 @@
   <div>
     <HeaderNav class="mb-4" />
     <div class="main container">
-      <el-table
-        :data="orderInfoList"
-        style="width: 100%"
-        class="font-extrabold text-xl"
-      >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <div class="flex container flex-wrap ml-4">
-              <el-form v-for="item in props.row.style" :key="item.id" label-position="left" inline class="font-extrabold text-3xl flex items-center justify-center">
-                <el-form-item>
-                  <div class="w-36 h-44 border border-solid border-gray-300 flex items-center"><img :src="item.imgUrl" alt="" /></div>
-                </el-form-item>
-                <div class="flex flex-col mt-8">
-                  <el-form-item>
-                    <span>商品颜色: {{ item.styleColor }}</span>
-                  </el-form-item>
-                  <el-form-item class="" v-for="items in item.styleSize" :key="items">
-                    <span>尺码*数量: {{ items.sizeName }} * {{ items.sizeNumber }}</span>
-                  </el-form-item>
-                  <el-form-item class="" v-for="items in item.styleSize" :key="items">
-                    <span>尺码*数量: {{ items.sizeName }} * {{ items.sizeNumber }}</span>
-                  </el-form-item>
+      <div class="">
+        <div class="flex justify-between px-14">
+          <div class=" font-extrabold text-xl">订单编号：{{ orderNo }}</div>
+          <div class="font-extrabold text-xl">下单时间: {{ orderTime }}</div>
+          <div class="font-extrabold text-xl">订单类型: {{ orderTypeName }}</div>
+        </div>
+        <el-table
+          :data="orderInfoList"
+          style="width: 100%"
+          class="font-extrabold text-xl"
+          cell-class-name="testclass"
+          :cell-style="cellStyle"
+        >
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <div class="flex container flex-wrap ml-4">
+                <div v-for="item in props.row.style" :key="item.id" label-position="left" inline class="flex items-center justify-center">
+                  <div>
+                    <div class="w-36 h-44 border border-solid border-gray-300 flex items-center"><img :src="item.imgUrl" alt="" /></div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div>
+                      <span>{{ item.styleColor }}</span>
+                    </div>
+                    <div class="" v-for="items in item.styleSize" :key="items.index">
+                      <span>尺码*数量: {{ items.sizeName }} * {{ items.sizeNumber }}</span>
+                    </div>
+                    <div class="" v-for="items in item.styleSize" :key="items.index">
+                      <span>尺码*数量: {{ items.sizeName }} * {{ items.sizeNumber }}</span>
+                    </div>
+                  </div>
                 </div>
-              </el-form>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="商品名称"
-          prop="styleName"
-        />
-        <el-table-column
-          label="商品单价"
-          prop="stylePrice"
-        />
-        <el-table-column
-          label="商品总价"
-          prop="styleTotal"
-        />
-        <el-table-column
-          label="商品总数"
-          prop="styleNumber"
-        />
-      </el-table>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="商品名称"
+            prop="styleName"
+          />
+          <el-table-column
+            label="商品单价"
+            prop="stylePrice"
+          />
+          <el-table-column
+            label="商品总价"
+            prop="styleTotal"
+          />
+          <el-table-column
+            label="商品总数"
+            prop="styleNumber"
+          />
+        </el-table>
+      </div>
       <!-- 出口 -->
       <router-view />
     </div>
@@ -63,8 +72,10 @@ export default {
   data() {
     return {
       orderId: '', // 订单编号
+      orderNo: '',
+      orderTime: '',
+      orderTypeName: '',
       orderInfoList: [],
-      orderMsg: [], // 基本信息
     }
   },
   created() {
@@ -80,10 +91,21 @@ export default {
         orderId: this.orderId,
       }
       await getOrderById(con).then((res) => {
+        // console.log(res)
         if (res.head.status === 0) {
+          this.orderNo = res.body.resultList.orderNo
+          this.orderTypeName = res.body.resultList.orderTypeName
+          this.orderTime = res.body.resultList.orderTime
           this.orderInfoList = res.body.resultList.orderStyleList
         }
       })
+    },
+    cellStyle({ columnIndex }) {
+      if ([2, 3].includes(columnIndex)) {
+        return {
+          color: 'red',
+        }
+      }
     },
   },
 }
@@ -111,5 +133,8 @@ export default {
   }
   /deep/.el-form-item  {
     margin-bottom: 0;
+  }
+  /deep/ .font-extrabold {
+    width: auto;
   }
 </style>
