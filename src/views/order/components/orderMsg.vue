@@ -107,7 +107,9 @@ export default {
   }
   /deep/.el-table td.el-table__cell div {
     margin-left: 10px;
-    // display: flex;
-    // height: auto;
+    margin-bottom: 5px;
+  }
+  /deep/.el-form-item  {
+    margin-bottom: 0;
   }
 </style>
