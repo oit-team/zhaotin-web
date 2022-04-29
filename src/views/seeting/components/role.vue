@@ -1,11 +1,9 @@
 <template>
   <div>
-    <div class="main container">
       <!-- <div>商品中心</div> -->
-      <div class="table_height"> <TablePage v-bind="tablePageOption" auto /></div>
+      <div> <TablePage v-bind="tablePageOption" auto /></div>
       <!-- 出口 -->
       <router-view />
-    </div>
   </div>
 </template>
 
@@ -59,7 +57,7 @@ export default {
               },
               {
                 tip: '授权',
-                type: 'danger',
+                type: 'success',
                 icon: 'el-icon-thumb',
                 click: (scope) => this.$router.push({
                   path: '/system/authUsersByRoleId',
@@ -145,8 +143,8 @@ export default {
 }
 </script>
 
-<style>
-.table_height {
-  height: 500px;
+<style lang="less" scoped>
+/deep/ .el-table__body-wrapper {
+    height: 600px;
 }
 </style>

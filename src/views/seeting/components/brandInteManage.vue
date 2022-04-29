@@ -64,7 +64,7 @@
     <div style="width:0.5px;background-color:#ddd;margin-left:6px;"></div>
     <!-- 组件 -->
     <div class="rightListCon" ref="brandRightCon">
-      <div class="table_height"> <TablePage v-bind="tablePageOption" auto ref="table">
+      <div><TablePage v-bind="tablePageOption" auto ref="table">
          <template slot="content:accountTypeMsg" slot-scope="{ row }">
             {{ ACCOUNT_TYPE_MSG_TEXT[row.accountType] }}
           </template>
@@ -106,13 +106,13 @@
       </el-form>
       <!-- 编辑表单 -->
       <el-form v-else :model="areaForm" :rules="areaRules" ref="areaForm">
-        <el-form-item label="区域名称" prop="deptName">
+        <el-form-item :label-width="formLabelWidth" label="区域名称" prop="deptName">
           <el-input v-model="areaForm.deptName" placeholder="请输入区域名称" />
         </el-form-item>
-        <el-form-item label="区域编码" prop="deptCode">
+        <el-form-item :label-width="formLabelWidth" label="区域编码" prop="deptCode">
           <el-input v-model="areaForm.deptCode" placeholder="区请输入域编码" />
         </el-form-item>
-        <el-form-item label="责任人" prop="dutyId">
+        <el-form-item :label-width="formLabelWidth" label="责任人" prop="dutyId">
           <el-select filterable v-model="areaForm.dutyId" placeholder="请选择区域负责人" @change="changeAreaManger">
             <el-option
               v-for="item in chargeList"
@@ -123,8 +123,8 @@
           </el-select>
         </el-form-item>
         <div class="text-center">
-          <el-button size="small" type="primary" @click="addedit('areaForm')">确认编辑</el-button>
-          <el-button size="small" @click="closeEdit">取消编辑</el-button>
+          <el-button size="small" type="primary" @click="addedit('areaForm')">确认</el-button>
+          <el-button size="small" @click="closeEdit">取消</el-button>
         </div>
       </el-form>
     </el-drawer>
@@ -245,6 +245,7 @@ export default {
   },
   data() {
     return {
+      formLabelWidth: '100px',
       ACCOUNT_TYPE_MSG_TEXT,
       params:{},
       // 角色授权
@@ -814,6 +815,7 @@ export default {
   margin: 0 40px;
   display: flex;
   flex-direction: column;
+  width: 150px;
 }
 #brandInteManage .leftTreeCon .btnBox {
   display: flex;
@@ -945,5 +947,14 @@ export default {
 }
 /deep/.el-table {
   margin-left: 0;
+}
+/deep/.el-drawer__open .el-drawer.rtl  {
+  padding: 0 20px;
+}
+/deep/.el-select {
+  width: 100%;
+}
+/deep/ .el-table__body-wrapper {
+    height: 600px;
 }
 </style>

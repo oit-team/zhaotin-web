@@ -27,7 +27,7 @@
       <el-form-item label="账号类型" prop="accountType">
         <el-select v-model="ruleForm.accountType" placeholder="请选择">
           <el-option label="APP用户" value="0" />
-          <el-option label="高单易管家用户" value="1" />
+          <el-option label="管家用户" value="1" />
           <el-option label="APP及管家用户" value="3" />
         </el-select>
       </el-form-item>

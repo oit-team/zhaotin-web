@@ -67,7 +67,7 @@
     </div>
 
     <el-drawer
-      title="新增尺寸"
+      :title="changeTitle"
       :visible.sync="sizeFlag"
       :wrapperClosable='false'
       direction="rtl"
@@ -94,11 +94,15 @@
 </template>
 
 <script>
+import {getSizeInfoAll,clothingSizeInfo,delSizeInfo,updateSizeInfo,updateSizeConfInfo} from '@/api/category'
 export default {
   name:'cateRelatedInfo',
   components:{},
   data(){
     return {
+      sort:'', // 排序
+
+      changeTitle:'',
       categoryName:'',
       baseInfo:null,
       dataList: [
@@ -138,15 +142,16 @@ export default {
       formLabelWidth: '76px',
       defaultCheckedKeys:[],
       cateId:null,
-      // defaultCheckedKeys:[21, 19, 20, 17],
 
     }
   },
   created(){
-    // console.log("query",this.$route.query.item)
-    this.categoryName = this.$route.query.item.dictitemDisplayName;
-    // console.log("this.categoryName",this.categoryName)
-    // 编辑反显时需要这样做
+    if(this.$route.query.item.row) {
+      this.categoryName = this.$route.query.item.row.dictitemDisplayName;
+    }
+      if(!this.categoryName) {
+      this.$router.back()
+    }
     for(let i=0;i<this.state.length;i++){
       this.partList.push(`${i+1}`)
     }
@@ -158,63 +163,84 @@ export default {
   },
   methods:{
     goBack(){
-      this.$router.go(-1);   // 查看直接返回
+      this.$router.go(-1);
+    },
+    // 获取尺码列表
+    getSizeList(){
+      let con = {
+        brandId:sessionStorage.brandId   
+      }
+      getSizeInfoAll(con).then((res) => {
+        if(res.head.status === 0) {
+          this.sizeList = res.body.resultList
+        }else {
+          this.$message({
+            message:res.head.msg,
+            type:'warning'
+          })
+        }
+      }).catch(() => {
+      })
+    },
+    // 编辑尺码
+    editSize(item){
+      this.sizeFlag = true;
+      this.changeTitle = '编辑尺码'
+      this.sizeId = item.id;
+      this.ruleForm.sizeName = item.sizeName;
+      this.ruleForm.aliasName = item.aliasName;
+    },
+    // 新增尺码
+    addSize(){
+      this.changeTitle = '新增尺码'
+      this.sizeFlag = true;
+      this.sizeId = null;
     },
     // 获取相关联类别信息
     getGoodsSizeInfo(){
-      let _this = this;
       let con = {
         brandId: sessionStorage.brandId,
-        catergre:_this.$route.query.item.dictitemDisplayName,
+        catergre:this.$route.query.item.row.dictitemDisplayName,
         styleId:null,
       }
-      let jsonParam = _this.GLOBAL.g_paramJson(con);
-      _this.$axios.post(_this.GLOBAL.goods_manager_server + "/size/clothingSizeInfo", jsonParam).then((res) => {
-        // console.log("获取商品尺码：",res.data.body);
-        _this.editSizeFlag = false;
-        if(res.data.head.status == 0){
-          if(res.data.body){
-            _this.baseInfo = res.data.body;
-            // res.data.body.resultMap;  
-            // res.data.body.sizeInfoVO.upTitle;
-            _this.state = [];
-            _this.partList = [];
-            _this.cateId = _this.baseInfo.sizeInfoVO.styleId;
-            for(let i=0;i<_this.baseInfo.sizeInfoVO.upTitle.length;i++){
-              if(_this.baseInfo.sizeInfoVO.upTitle[i].value){
-                _this.state.push(_this.baseInfo.sizeInfoVO.upTitle[i].value)
+      clothingSizeInfo(con).then((res) => {
+        // console.log(res);
+        this.editSizeFlag = false;
+        if(res.head.status === 0){
+          if(res.body){
+            this.baseInfo = res.body;
+            this.state = [];
+            this.partList = [];
+            this.cateId = this.baseInfo.sizeInfoVO.styleId;
+            for(let i=0;i<this.baseInfo.sizeInfoVO.upTitle.length;i++){
+              if(this.baseInfo.sizeInfoVO.upTitle[i].value){
+                this.state.push(this.baseInfo.sizeInfoVO.upTitle[i].value)
               }
             }
-            // console.log("this.state:",_this.state,_this.state.length );
             for(let i=0;i<this.state.length;i++){
               this.partList.push(`${i+1}`)
             }
-            // console.log("this.partList:",this.partList);
-
-            _this.defaultCheckedKeys = [];
-            for(let i=0;i<_this.baseInfo.resultMap.length;i++){
-              _this.defaultCheckedKeys.push(_this.baseInfo.resultMap[i].SIZEID)
+            this.defaultCheckedKeys = [];
+            for(let i=0;i<this.baseInfo.resultMap.length;i++){
+              this.defaultCheckedKeys.push(this.baseInfo.resultMap[i].SIZEID)
             }
-            // console.log("_this.defaultCheckedKeys:",_this.defaultCheckedKeys)
-  
           }
-        }else if(res.data.head.status == -3){
-            _this.cateId = null;
-            _this.state = [];
-            _this.partList = [];
-            _this.defaultCheckedKeys = [];
-            // _this.$message({
-            //   message: '该类别暂未设置关联部位和尺码，请设置',
-            //   type: 'warning'
-            // });
+        }else if(res.head.status === -3){
+            this.cateId = null;
+            this.state = [];
+            this.partList = [];
+            this.defaultCheckedKeys = [];
+            this.$message({
+              message: '该类别暂未设置关联部位和尺码，请设置',
+              type: 'warning'
+            });
         } else {
-          _this.$message({
-            message: res.data.head.msg,
+          this.$message({
+            message: res.head.msg,
             type: 'warning'
           });
         }
-      }).catch(err=>{
-        console.log(err)
+      }).catch(()=>{
       });
     },
     // 以下为部位搜索框相关函数
@@ -261,160 +287,84 @@ export default {
     },
     // 保存类别相关联的信息
     saveCateRelatedInfo(){
-      // console.log("this.stata",this.state);
+      // console.log(this.state);
       let obj = {};
       let newArr =  Array.from(new Set(this.state))
-      // console.log("this.stata",newArr);
       this.state = newArr;
       for(let i=0;i<newArr.length;i++){
         let key = `KEY${i+1}`;
-        // console.log("key:",key)
         obj[key] = newArr[i]
       }
-      // console.log("部位对象为：",obj);
-
       let checkedKeys = this.$refs.tree.getCheckedKeys();     // 选中的节点所组成的数组
-      // console.log("选中的节点为：",checkedKeys);
-      // console.log("title:",obj)
-      if(JSON.stringify(obj) == '{}'){
-        this.$message({
-          type:'warning',
-          message:'请添加部位配置'
-        })
-        return
-      }
-      if(checkedKeys.length==0){
-        this.$message({
-          type:'warning',
-          message:'请勾选尺码配置'
-        })
-        return
-      }
-      let _this = this;
-      if(_this.cateId){  // 编辑
         let con = {
-          id:_this.cateId,
+          id:this.cateId,
           brandId:sessionStorage.brandId,
-          catergre:_this.$route.query.item.dictitemDisplayName,
+          catergre:this.$route.query.item.row.dictitemDisplayName,
           userId:sessionStorage.userId,
           title:JSON.stringify(obj),
           sizeId:checkedKeys,
         }
-        
-        
-        // console.log("保存类别相关配置con:",con)
-        let jsonParam = _this.GLOBAL.g_paramJson(con);
-        _this.$axios.post(_this.GLOBAL.goods_manager_server + "/size/updateSizeConfInfo", jsonParam).then((res) => {
-          // console.log("保存类别相关配置成功-----",res.data.body);
-          if(res.data.head.status == 0){
-            _this.$message({
+      if(this.state.length){  // 编辑
+        updateSizeConfInfo(con).then((res) => {
+          if(res.head.status === 0){
+            this.$message({
               type:"success",
-              message:`编辑${_this.$route.query.item.dictitemDisplayName}关联信息成功`
+              message:`${this.$route.query.item.row.dictitemDisplayName}关联信息成功`
             })
+            this.$router.back()
           }else{
-            _this.$message({
+            this.$message({
               message: res.data.head.msg,
               type: 'warning'
             });
           }
-        }).catch(err=>{
-          console.log(err)
+        }).catch(() =>{
         });
-      }else{  // 新增
-        let cateArr = [];
-        cateArr.push(this.$route.query.item.dictitemDisplayName);
-        let con = {
-          brandId:sessionStorage.brandId,
-          catergre:cateArr,
-          userId:sessionStorage.userId,
-          title:JSON.stringify(obj),
-          sizeId:checkedKeys,
-        }
-        
-        // console.log("保存类别相关配置con:",con)
-        let jsonParam = _this.GLOBAL.g_paramJson(con);
-        _this.$axios.post(_this.GLOBAL.goods_manager_server + "/size/insertSizeConfInfo", jsonParam).then((res) => {
-          // console.log("保存类别相关配置成功-----",res.data.body);
-          if(res.data.head.status == 0){
-            _this.$message({
+      }else {
+        updateSizeConfInfo(con).then((res) => {
+          if(res.head.status === 0){
+            this.$message({
               type:"success",
-              message:`编辑${_this.$route.query.item.dictitemDisplayName}关联信息成功`
+              message:`${this.$route.query.item.row.dictitemDisplayName}关联信息成功`
             })
+            this.$router.back()
           }else{
-            _this.$message({
+            this.$message({
               message: res.data.head.msg,
               type: 'warning'
             });
           }
-        }).catch(err=>{
-          console.log(err)
+        }).catch(()=>{
         });
-      } 
-      // console.log(obj)
-    },
-    // 获取sizeList
-    getSizeList(){
-      let _this = this;
-      let con = {
-        brandId:sessionStorage.brandId   
       }
-      let jsonParam = _this.GLOBAL.g_paramJson(con);
-      _this.$axios.post(_this.GLOBAL.goods_manager_server + "/size/getSizeInfoAll", jsonParam).then((res) => {
-        // console.log("获取到的尺码信息-----",res.data.body);
-        if(res.data.head.status == 0){
-          _this.sizeList = res.data.body.resultList;
-
-        }else{
-          _this.$message({
-            message: res.data.head.msg,
-            type: 'warning'
-          });
-        }
-      }).catch(err=>{
-        console.log(err)
-      });
-    },
-    editSize(item){
-      // console.log("编辑尺码，",item);
-      this.sizeFlag = true;
-      this.sizeId = item.id;
-      this.ruleForm.sizeName = item.sizeName;
-      this.ruleForm.aliasName = item.aliasName;
-    },
-    // 新增size
-    addSize(){
-      // console.log("addSize");
-      this.sizeFlag = true;
-      this.sizeId = null;
     },
     confirmSize(formName){
       // console.log("确认新增或编辑尺寸");
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if(this.sizeId){  // 编辑
-            let _this = this;
+    
             let con = {
-              "id":_this.sizeId,
-              "sizeName":_this.ruleForm.sizeName,
-              "aliasName":_this.ruleForm.aliasName,
-              "userId": sessionStorage.userId,
-              "brandId": sessionStorage.brandId,
+              id:this.sizeId,
+              sizeName:this.ruleForm.sizeName,
+              aliasName:this.ruleForm.aliasName,
+              userId: sessionStorage.userId,
+              brandId: sessionStorage.brandId,
             }
-            let jsonParam = _this.GLOBAL.g_paramJson(con);
-            _this.$axios.post(_this.GLOBAL.goods_manager_server + "/size/updateSizeInfo", jsonParam).then((res) => {
-              if(res.data.head.status == 0){
+            updateSizeInfo(con).then((res) => {
+              if(res.head.status === 0){
                 // console.log("编辑尺码成功-----",res.data.body);
-                _this.$message({
+                this.$message({
                   message: '编辑尺码成功',
                   type: 'success'
                 });
-                _this.sizeFlag = false;
-                // _this.$refs[formName].resetFields();
-                _this.ruleForm.sizeName = '';
-                _this.ruleForm.aliasName = '';
-                _this.getSizeList();
+                this.sizeFlag = false;
+                // this.$refs[formName].resetFields();
+                this.ruleForm.sizeName = '';
+                this.ruleForm.aliasName = '';
+                this.getSizeList();
               }else{
-                _this.$message({
+                this.$message({
                   message: res.data.head.msg,
                   type: 'warning'
                 });
@@ -423,28 +373,26 @@ export default {
               console.log(err)
             });
           }else{
-            let _this = this;
+    
             let con = {
-              "userId": sessionStorage.userId,
-              "brandId": sessionStorage.brandId,
-              "sizeName":_this.ruleForm.sizeName,
-              "aliasName":_this.ruleForm.aliasName,
+              userId: sessionStorage.userId,
+              brandId: sessionStorage.brandId,
+              sizeName:this.ruleForm.sizeName,
+              aliasName:this.ruleForm.aliasName,
+              sort:this.$route.query.item.row.dictitemOrderkey
             }
-            let jsonParam = _this.GLOBAL.g_paramJson(con);
-            _this.$axios.post(_this.GLOBAL.goods_manager_server + "/size/insertSizeInfo", jsonParam).then((res) => {
-              if(res.data.head.status == 0){
-                // console.log("新增尺码成功-----",res.data.body);
-                _this.$message({
+            insertSizeInfo(con).then((res) => {
+              if(res.head.status === 0){
+                this.$message({
                   message: '新增尺码成功',
                   type: 'success'
                 });
-                _this.sizeFlag = false;
-                // _this.$refs[formName].resetFields();
-                _this.ruleForm.sizeName = '';
-                _this.ruleForm.aliasName = '';
-                _this.getSizeList();
+                this.sizeFlag = false;
+                this.ruleForm.sizeName = '';
+                this.ruleForm.aliasName = '';
+                this.getSizeList();
               }else{
-                _this.$message({
+                this.$message({
                   message: res.data.head.msg,
                   type: 'warning'
                 });
@@ -462,7 +410,6 @@ export default {
     cancelSize(formName){
       // console.log("取消新增或编辑尺寸");
       this.sizeFlag = false;
-      // this.$refs[formName].resetFields();
       this.ruleForm.sizeName = '';
       this.ruleForm.aliasName = '';
     },
@@ -474,21 +421,19 @@ export default {
         type: 'warning'
       }).then(() => {
         let con = {
-          "id":item.id,
+          id:item.id,
           // "catergre":"裙裤",
-          "brandId": sessionStorage.brandId,
+          brandId: sessionStorage.brandId,
         }
-        let jsonParam = _this.GLOBAL.g_paramJson(con);
-        _this.$axios.post(_this.GLOBAL.goods_manager_server + "/size/delSizeInfo", jsonParam).then((res) => {
-          if(res.data.head.status == 0){
-            // console.log("删除尺码成功-----",res.data.body);
-            _this.$message({
+        delSizeInfo(con).then((res) => {
+          if(res.head.status === 0){
+            this.$message({
               message: '删除尺码成功',
               type: 'success'
             });
-            _this.getSizeList();
+            this.getSizeList();
           }else{
-            _this.$message({
+            this.$message({
               message: res.data.head.msg,
               type: 'warning'
             });
@@ -502,7 +447,6 @@ export default {
           message: '已取消删除'
         });          
       });
-      let _this = this;
       
     }
 

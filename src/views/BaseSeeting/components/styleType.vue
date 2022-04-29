@@ -1,11 +1,18 @@
 <template>
   <div>
-    <div class="main container">
+    <!-- <div class="main container"> -->
       <!-- <div>商品中心</div> -->
-     <div class="table_height"> <TablePage v-bind="tablePageOption" ref="cateTable" auto /></div>
+     <div> <TablePage v-bind="tablePageOption" ref="cateTable" auto>
+            <template slot="content:imgUrl" slot-scope="{ row }">
+            <!-- 商品图片 -->
+            <template v-if="row.imgUrl">
+              <el-image class="file-res" :src="row.imgUrl" fit="cover" />
+            </template>
+          </template>
+       </TablePage></div>
       <!-- 出口 -->
       <router-view />
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 
@@ -82,7 +89,6 @@ export default {
        userId:sessionStorage.userId,
        type:'ACTEGORY'
       }).then((res) => {
-        console.log(res);
         if(res.head.status === 0) {
           this.data = res.body
           res.body.resultList.forEach(item => {
@@ -114,7 +120,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table_height {
-  height: 500px;
+/deep/ .el-table__body-wrapper {
+    height: 600px;
 }
 </style>

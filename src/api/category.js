@@ -41,3 +41,45 @@ export function sortList(params) {
     cmd: 100006,
   })
 }
+// 类别尺码
+export function getSizeInfoAll(params) {
+  return post('/goods/size/getSizeInfoAll', params, {
+    mod: 'home',
+    cmd: 100008,
+  })
+}
+// 相关类别
+export function clothingSizeInfo(params) {
+  return post('/goods/size/clothingSizeInfo', params, {
+    mod: 'home',
+    cmd: 100008,
+  })
+}
+// 删除尺码
+export function delSizeInfo(params) {
+  return post('/goods/size/delSizeInfo', params, {
+    mod: 'home',
+    cmd: 100008,
+  })
+}
+// 修改尺码
+export function updateSizeInfo(params) {
+  return post('/goods/size/updateSizeInfo', params, {
+    mod: 'home',
+    cmd: 100008,
+  })
+}
+// 新增尺码
+export function insertSizeInfo(params) {
+  return post('/goods/size/insertSizeInfo', params, {
+    mod: 'home',
+    cmd: 100008,
+  })
+}
+// 新增类别相关配置
+export function updateSizeConfInfo(params) {
+  return post('/goods/size/updateOrAddSizeConfInfo', params, {
+    mod: 'home',
+    cmd: 100008,
+  })
+}

@@ -1,12 +1,8 @@
 <template>
   <div>
-    <!-- 菜单管理 -->
-    <div class="main container">
-      <!-- <div>商品中心</div> -->
-      <div class="table_height"> <TablePage v-bind="tablePageOption" auto /></div>
+      <div> <TablePage v-bind="tablePageOption" auto /></div>
       <!-- 出口 -->
       <router-view />
-    </div>
   </div>
 </template>
 
@@ -133,8 +129,8 @@ export default {
 }
 </script>
 
-<style>
-.table_height {
-  height: 500px;
+<style lang="less" scoped>
+/deep/ .el-table__body-wrapper {
+    height: 600px;
 }
 </style>

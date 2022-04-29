@@ -50,3 +50,9 @@ export function addUserAndRole(params) {
     cmd: 10008,
   })
 }
+// 修改密码
+export function updatePassWord(params) {
+  return post('/system/user/updatePassWord', params, {
+    mod: 'home',
+  })
+}

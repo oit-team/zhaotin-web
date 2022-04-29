@@ -23,7 +23,7 @@
               <div class="flex container flex-wrap ml-4">
                 <div v-for="item in props.row.style" :key="item.id" label-position="left" inline class="flex items-center justify-center">
                   <div>
-                    <div class="w-36 h-44 border border-solid border-gray-300 flex items-center"><img :src="item.imgUrl" alt="" /></div>
+                    <div class="border border-solid border-gray-300 flex items-center"><img class="w-32 h-44" :src="item.imgUrl" alt="" /></div>
                   </div>
                   <div class="flex flex-col items-center">
                     <div>
