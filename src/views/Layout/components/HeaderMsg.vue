@@ -29,7 +29,7 @@
         <span class="order-num">0</span>
       </el-button> -->
       <el-badge :value="12" class="item">
-        <el-button icon="el-icon-s-order" plain round>订货清单</el-button>
+        <el-button icon="el-icon-s-order" @click="toCart" plain round>订货清单</el-button>
       </el-badge>
     </div>
   </div>
@@ -49,6 +49,9 @@ export default {
     cgVal(val) {
       console.log(val)
       this.$emit('searchVal', val)
+    },
+    toCart() {
+      this.$router.push('/styleCenter/shopCart')
     },
   },
 }

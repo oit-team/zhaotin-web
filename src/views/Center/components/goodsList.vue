@@ -1,8 +1,17 @@
 <template>
   <div>
+    <div class="zt-tabs__top">
+      <!-- <div class="container"> -->
+      <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
+      <!-- </div> -->
+    </div>
     <div class="zt-tabs">
       <div class="zt-tabs__center">
-        <Tabs :tab-list="tabList1" :label-text="labelText1" @checkTab="checkTab" />
+        <Tabs
+          :tab-list="tabList"
+          :label-text="labelText1"
+          @checkTab="checkTab"
+        />
       </div>
       <el-divider />
       <div class="zt-tabs__bottom">
@@ -53,6 +62,9 @@
           :src="item.resUrl"
           fit="contain"
         />
+        <div class="zt-video__b" v-if="item.styleVideo">
+          <i class="el-icon-video-camera-solid"></i>
+        </div>
         <div class="zt-item__line">{{ item.styleName }}</div>
         <div class="zt-item__line">
           <div class="zt-price__l">{{ item.styleNo }}</div>
@@ -67,6 +79,7 @@
 
 <script>
 import { getProductList } from '@/api/product'
+import { getGoodsSizeInfo } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
 
 export default {
@@ -76,7 +89,7 @@ export default {
   },
   props: {
     inputVal: String,
-    styleLength: String,
+    // styleLength: String,
   },
   data() {
     return {
@@ -116,6 +129,9 @@ export default {
       showEmp: false,
       shouDjiantou: true,
       priceTF: true,
+      // -----
+      tabList: [],
+      styleLength: '',
     }
   },
   computed: {
@@ -130,6 +146,7 @@ export default {
   },
   created() {
     this.loadData()
+    this.classData()
   },
   mounted() {
   },
@@ -154,7 +171,36 @@ export default {
       this.tabList1.unshift(all)
       that.goodsLength = res.body.resultList.length
     },
+    // 顶部分类
+    async classData() {
+      const res = await getGoodsSizeInfo({
+        brandId: this.bran,
+        userId: this.Uid,
+        type: 'STYLE_LENGTH',
+      })
+      this.tabList = res.body.result
+      const all = {
+        dicttimeDisplayName: '综合推荐',
+        dictitemCode: '',
+      }
+      this.tabList.unshift(all)
+      // const styleL = this.tabList[0].dicttimeDisplayName
+      // this.styleLength = styleL
+    },
     checkTab(index) {
+      const that = this
+      let styleL = ''
+      if (index !== 0) {
+        styleL = that.tabList[index].dicttimeDisplayName
+      }
+      that.styleLength = styleL
+      that.$nextTick(() => {
+        // that.$refs.child.loadData()
+        this.loadData()
+        that.$forceUpdate()
+      })
+    },
+    checkTab1(index) {
       const that = this
       let cla = ''
       if (index !== 0) {
@@ -169,7 +215,6 @@ export default {
     selectItem(id) {
       const that = this
       that.selectB = id
-      console.log(id)
       if (id === 0) {
         that.$nextTick(() => {
           that.formData.styleCategory = ''
@@ -217,7 +262,12 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-
+.zt-tabs__top{
+  width: 100%;
+  font-size: 18px;
+  background-color: #ECE8E5;
+  box-sizing: border-box;
+}
 .zt-tabs{
   width: 100%;
   font-size: 16px;
@@ -254,6 +304,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   .zt-content__item{
+    position: relative;
     width: 230px;
     color: #333333;
     font-size: 14px;
@@ -264,6 +315,19 @@ export default {
       height: 300px;
       border-radius: 10px;
       border: 1px solid #F2F2F2;
+    }
+    .zt-video__b{
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 7px;
+      background-color: #FF9606;
+      border-radius: 5px;
+      box-sizing: border-box;
+      .el-icon-video-camera-solid{
+        font-size: 20px;
+        color: #fff;
+      }
     }
     .zt-item__line{
       display: flex;

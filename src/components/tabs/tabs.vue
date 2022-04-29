@@ -8,14 +8,14 @@
           :class="selectItem===index?'zt-tabs-select':'zt-tabs__item'"
           @click="checkItem(index)"
         >
-          {{ item.styleType || item.dicttimeDisplayName }}
+          {{ item.dicttimeDisplayName }}
         </div>
         <div
           v-else
           :class="selectItem===index?'zt-tabs__homeSelect':'zt-tabs__homeItem'"
           @click="checkItem(index)"
         >
-          {{ item.dicttimeDisplayName }}
+          {{ item.styleType || item.dicttimeDisplayName }}
         </div>
       </div>
     </div>
@@ -41,9 +41,9 @@ export default {
   methods: {
     checkItem(index) {
       this.selectItem = index
-      // if (this.ishome) {
-      //   this.$emit('checkTab', index)
-      // }
+      if (this.ishome) {
+        this.$emit('checkTab1', index)
+      }
       this.$emit('checkTab', index)
     },
   },

@@ -16,11 +16,25 @@
             ref="carousel"
             :autoplay="false"
           >
+            <el-carousel-item v-if="infoData.styleVideo">
+              <div class="zt-swiper__item">
+                <video
+                  width="500px"
+                  height="500px"
+                  id="player"
+                  playsinline
+                  controls
+                  :poster="infoData.styleVideoPatch"
+                >
+                  <source :src="infoData.styleVideo" type="video/mp4" />
+                  <track kind="captions" label="English captions" src="/path/to/captions.vtt" srclang="en" default />
+                </video>
+              </div>
+            </el-carousel-item>
             <el-carousel-item
               v-for="(item, index) in infoData.imgDetailUrlList"
               :key="index"
             >
-              <!-- <h3 class="small">{{ item.resUrl }}</h3> -->
               <el-image
                 class="zt-swiper__item"
                 :src="item.resUrl"
@@ -42,6 +56,7 @@
                   :src="item.resUrl"
                   @click="imageIndex=index,setCarouselItem(index)"
                 />
+                <i v-if="index===0&&infoData.styleVideo" class="el-icon-video-play"></i>
               </div>
             </div>
             <div class="zt-images__right">
@@ -81,7 +96,7 @@
             <div class="zt-price">
               服务
               <div class="zt-price__data zt-hei">
-                售后服务 / 满100000元免物流费 / 无忧售后退换货
+                {{ infoData.service }}
               </div>
             </div>
           </div>
@@ -109,7 +124,7 @@
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">尺码</div>
-              <div v-if="infoData.styleColorList">
+              <div v-if="infoData.styleColorList" class="zt-data__info">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
                   <el-badge :value="item.num" class="item" type="warning">
                     <div class="zt-size__item" :class="sizeIndex===index?'zt-size__select':''" @click="sizeIndex = index,checkSize(index)">
@@ -122,7 +137,7 @@
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">数量</div>
-              <el-input-number size="small" v-model="num" @change="handleChange" :min="1" :max="99" />
+              <el-input-number size="small" v-model="num" @change="handleChange" :min="1" />
               <!-- <div v-if="infoData.styleColorList">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
                   <el-input-number size="small" v-model="item.num" @change="handleChange" :min="1" :max="99" />
@@ -147,25 +162,14 @@
           <div class="zt-data1__flex">
             <div class="zt-content__label">售后服务</div>
             <div class="zt-content__info">
-              <p>售后服务</p>
-              <p>满100000元面物流费</p>
-              <p>无忧售后退换货</p>
+              <p style="white-space:pre-wrap">{{ infoData.service }}</p>
             </div>
           </div>
           <div class="zt-data1__flex">
             <div class="zt-content__label">属性</div>
             <div class="zt-content__info">
-              <div class="zt-info__flex">
-                <div class="zt-info__label">销售单位:</div>
-                <div class="zt-info__info">单品</div>
-              </div>
-              <div class="zt-info__flex">
-                <div class="zt-info__label">单个包装尺寸:</div>
-                <div class="zt-info__info">500 x 20 x 30 厘米</div>
-              </div>
-              <div class="zt-info__flex">
-                <div class="zt-info__label">单件毛重:</div>
-                <div class="zt-info__info">5.5公斤</div>
+              <div class="zt-info__flex" style="white-space:pre-wrap">
+                {{ infoData.styleAttribute }}
               </div>
             </div>
           </div>
@@ -208,12 +212,13 @@
         <!-- <el-divider /> -->
         <!-- <div class="zt-content__data3">
           <div class="zt-content__label">尺码信息</div>
-          <div class="zt-content__info"> -->
-            <!-- <el-table
+          <div class="zt-content__info">
+            <el-table
               :data="infoData.styleSizeList"
               height="250"
               border
-              style="width: 100%">
+              style="width: 100%"
+            >
               <el-table-column
                 prop="date"
                 label="尺寸"
@@ -244,11 +249,11 @@
                 width="120"
                 align="center"
               />
-            </el-table> -->
-            <!-- </div>
-        </div> -->
-        <!-- <el-divider /> -->
-        <!-- <div class="zt-content__data4">
+            </el-table>
+          </div>
+        </div>
+        <el-divider />
+        <div class="zt-content__data4">
           <div class="zt-content__label">服装信息</div>
           <div class="zt-content__info">
             <div class="zt-info__item">
@@ -312,6 +317,11 @@
         </div>
       </div>
     </div>
+    <!-- <el-result v-if="successtip" icon="success" title="成功加入清单" sub-title="点击继续浏览">
+      <template slot="extra">
+        <el-button type="primary" size="medium">返回</el-button>
+      </template>
+    </el-result> -->
   </div>
 </template>
 
@@ -357,6 +367,8 @@ export default {
       sizeIndex: 0, // 选择大小
       orderData: {},
       beforeOrder: {},
+      successtip: false,
+      service1: [],
     }
   },
   created() {
@@ -365,6 +377,13 @@ export default {
     this.loadData()
   },
   mounted() {
+  },
+  beforeDestroy() {
+    console.log(this.orderData)
+    // console.log(sessionStorage.getItem('orderData'))
+    if (this.orderData.goodsList.length !== 0) {
+      this.$store.commit('order/addOrderStorage', JSON.stringify(this.orderData))
+    }
   },
   methods: {
     async getData() {
@@ -384,25 +403,29 @@ export default {
         })
         e.num = n
       })
-      const data = {
-        imageUrl: this.infoData.styleColorList[this.colorIndex].colorImg,
-        color: this.infoData.styleColorList[this.colorIndex].styleColor,
-        goodsName: this.infoData.styleName,
-        goodsCode: this.infoData.styleNo,
-        goodscostPrice: this.infoData.costPrice,
-        goodsNum: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num,
-        goodsSizeName: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].sizeName,
-        totailPrice: this.infoData.costPrice * this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num,
-        checked: false,
+      that.infoData.styleAttribute = that.infoData.styleAttribute.trim()
+      // this.service1 = this.infoData.service
+      // console.log(this.infoData.service)
+      // console.log(this.service1)
+      // 将 视频封面 加到切换轮播的images中
+      if (this.infoData.styleVideoPatch) {
+        const url = {
+          resUrl: this.infoData.styleVideoPatch,
+        }
+        this.infoData.imgUrlList.unshift(url)
       }
-      this.beforeOrder = data
+      // 生成  当前视频的部分信息对象
+      // this.beforeOrder = data
       this.orderData = {
         goodsId: this.goodsId,
         goodsName: this.infoData.styleName,
-        addOrder: [],
+        goodsCode: this.infoData.styleNo,
+        goodscostPrice: this.infoData.costPrice,
+        goodsList: [],
+        goodsCheck: false,
       }
-      console.log(this.orderData)
-      console.log(this.beforeOrder)
+      // console.log(this.orderData)
+      // console.log(this.beforeOrder)
     },
     async loadData() {
       const that = this
@@ -420,7 +443,7 @@ export default {
     handleChange(value) {
       if (value <= 99 && value >= 1) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
-        this.beforeOrder.goodsNum = value
+        // this.beforeOrder.goodsNum = value
         this.infoData.styleColorList.forEach(e => {
           let n = 0
           e.styleSize.forEach(i => {
@@ -439,7 +462,7 @@ export default {
     checkSize(id) {
       // this.num = 1
       this.num = this.infoData.styleColorList[this.colorIndex].styleSize[id].num
-      this.beforeOrder.goodsSizeName = this.infoData.styleColorList[this.colorIndex].styleSize[id].sizeName
+      // this.beforeOrder.goodsSizeName = this.infoData.styleColorList[this.colorIndex].styleSize[id].sizeName
       this.$forceUpdate
     },
     // 切换颜色
@@ -447,27 +470,50 @@ export default {
       this.sizeIndex = 0
       // this.num = 1
       this.num = this.infoData.styleColorList[id].styleSize[this.sizeIndex].num
-      this.orderData.addOrder.push(this.beforeOrder)
-      this.$store.commit('order/addOrder', this.orderData)
+      // this.orderData.addOrder.push(this.beforeOrder)
+      // this.$store.commit('order/addOrder', this.orderData)
       this.$forceUpdate()
     },
+    // 推荐区  图片点击事件
     todetails(id) {
       this.goodsId = id
       this.getData()
       this.$forceUpdate()
     },
+    // 点击订购
     toshoping() {
       // this.num = 1
       this.$store.commit('order/addOrder', this.orderData)
       this.orderData.addOrder = {}
       this.$forceUpdate()
     },
+    // 加入购物车
     toorder() {
-      this.orderData.addOrder.push(this.beforeOrder)
-      sessionStorage.setItem('orderData', JSON.stringify(this.orderData))
-      this.$store.commit('order/addOrder', this.orderData)
+      const data = {
+        imageUrl: this.infoData.styleColorList[this.colorIndex].colorImg, // 购物车 line 图片
+        color: this.infoData.styleColorList[this.colorIndex].styleColor, // 颜色
+        sizeList: [],
+        checked: false,
+        openSize: false,
+      }
+      const listData = {
+        goodsSizeName: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].sizeName,
+        goodsPrice: this.infoData.costPrice,
+        goodsNum: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num - 0,
+        totailPrice: this.infoData.costPrice * this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num,
+      }
+      data.sizeList.unshift(listData)
+      this.orderData.goodsList.unshift(data)
+      // sessionStorage.setItem('orderData', JSON.stringify(this.orderData))
+      // 点击加入购物车 将形成的订单信息 存到购物车订单集合
+      // this.$store.commit('order/addOrderStorage', this.orderData)
+      this.$message({
+        message: '成功加入购物清单',
+        type: 'success',
+      })
+      // this.successtip = true
       // this.$store.commit('order/addOrder', this.infoData)
-      this.$router.push('/styleCenter/shopCart')
+      // this.$router.push('/styleCenter/shopCart')
     },
   },
 }
@@ -476,6 +522,15 @@ export default {
 <style lang='scss' scoped>
 .zt-head{
   margin: 20px 0;
+}
+video::-webkit-media-controls-play-button {
+  display: block;
+}
+video::-webkit-media-controls-timeline {
+  display: block;
+}
+--deep video{
+  height: 500px !important;
 }
 .zt-content{
   .zt-content__head{
@@ -489,6 +544,10 @@ export default {
       .zt-swiper__item{
         width: 500px;
         height: 500px;
+        video{
+          width: 100%;
+          height: 100% !important;
+        }
       }
       .zt-head__images{
         display: flex;
@@ -499,12 +558,22 @@ export default {
           width: 95%;
           display: flex;
           .zt-images__item{
+            position: relative;
             margin: 0 10px;
             border: 1px solid #ECE8E5;
             border-radius: 5px;
             .zt-images__image{
               width: 80px;
               height: 80px;
+            }
+            .el-icon-video-play{
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%,-50%);
+              color: #999;
+              font-size: 20px;
+              z-index: 1;
             }
           }
           .zt-images__select{
@@ -607,12 +676,18 @@ export default {
           display: flex;
           align-items: center;
           margin-top: 20px;
+          .zt-data__info{
+            display: flex;
+          }
           .zt-size__item{
             padding: 5px 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
             margin-left: 20px;
+          }
+          .zt-size__item:hover{
+            cursor:pointer;
           }
           .zt-size__select{
             border: 1px solid #CDA46C;
@@ -633,6 +708,12 @@ export default {
           border-radius: 25px;
           color: #fff;
           box-sizing: border-box;
+        }
+        .zt-btn__hei:hover{
+          cursor:pointer;
+        }
+        .zt-btn__jin:hover{
+          cursor:pointer;
         }
         .zt-btn__jin{
           padding: 8px 0;
