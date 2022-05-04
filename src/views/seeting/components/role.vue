@@ -1,7 +1,7 @@
 <template>
   <div>
       <!-- <div>商品中心</div> -->
-      <div> <TablePage v-bind="tablePageOption" auto /></div>
+      <div><TablePage v-bind="tablePageOption" auto /></div>
       <!-- 出口 -->
       <router-view />
   </div>

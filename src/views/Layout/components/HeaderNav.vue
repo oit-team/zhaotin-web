@@ -76,12 +76,6 @@
             <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPwd">
               <el-input v-model="pwdForm.newPwd" autocomplete="off" type="password" maxlength="32" placeholder="请输入新密码" />
             </el-form-item>
-            <!-- 小眼睛可查看密码 -->
-            <!-- <el-form-item label="新密码" :label-width="formLabelWidth" prop="newPwd">
-            <el-input v-model="pwdForm.newPwd" autocomplete="off" :type="passw"  maxlength="32" placeholder="请输入新密码">
-              <i slot="suffix" :class="icon" @click="showPass"></i>
-            </el-input>
-          </el-form-item> -->
             <el-form-item label="确认密码" :label-width="formLabelWidth" prop="conNewPwd">
               <el-input v-model="pwdForm.conNewPwd" autocomplete="off" type="password" placeholder="请确认新密码" />
             </el-form-item>
@@ -163,7 +157,9 @@ export default {
     skip(item) {
       sessionStorage.setItem('headTitString', item.fieldDes)
       if (sessionStorage.getItem('headTitString')) {
-        this.$router.push(item.menuUrl)
+        if (!item.childrenMenu) {
+          this.$router.push(item.menuUrl)
+        }
       }
     },
     skipSecond(items) {
@@ -173,11 +169,8 @@ export default {
       }
     },
     quit() {
-      localStorage.removeItem('token')
-      sessionStorage.removeItem('userinfo')
-      sessionStorage.removeItem('brandId')
-      sessionStorage.removeItem('userName')
-      sessionStorage.removeItem('userId')
+      localStorage.clear()
+      sessionStorage.clear()
       this.$router.push('/login')
     },
     updatePwd() {

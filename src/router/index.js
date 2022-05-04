@@ -109,10 +109,6 @@ const routes = [
         path: '/basls/customerAccount',
         component: () => import('@/views/BaseSeeting/components/customerAccount'),
       },
-      // {
-      //   path: '/basls/customerAccount',
-      //   component: CustomerAccount,
-      // },
       {
         path: '/basls/customerAccount/addCustomer',
         component: () => import('@/views/BaseSeeting/components/addCustomer'),
