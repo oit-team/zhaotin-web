@@ -1,5 +1,4 @@
 // import Axios from 'axios'
-import router from '@/router'
 import { Message } from 'element-ui'
 // const AxiosInstance = Axios.create({
 //   baseURL: '',
@@ -71,7 +70,7 @@ axios.interceptors.response.use(response => {
     })
     sessionStorage.clear()
     localStorage.clear()
-    router.push('/login')
+    window.location.href = '/login'
   }
   return Promise.reject(error)
 })
