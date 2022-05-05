@@ -70,7 +70,7 @@ axios.interceptors.response.use(response => {
     })
     sessionStorage.clear()
     localStorage.clear()
-    window.location.href = '/login'
+    window.location.href = 'http://localhost:8080/#/login'
   }
   return Promise.reject(error)
 })
