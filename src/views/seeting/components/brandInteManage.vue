@@ -52,8 +52,7 @@
           @node-contextmenu="nodeRightClick"
           :filter-node-method="filterNode"
           ref="tree"
-        >
-        </el-tree>
+        />
         <div v-else>
           <div v-if="!orgListLoading" style="line-height:200px;">加载中...</div>
           <div v-if="orgListLoading" style="line-height:100px;">暂无数据</div>
@@ -64,11 +63,13 @@
     <div style="width:0.5px;background-color:#ddd;margin-left:6px;"></div>
     <!-- 组件 -->
     <div class="rightListCon" ref="brandRightCon">
-      <div><TablePage v-bind="tablePageOption" auto ref="table">
-         <template slot="content:accountTypeMsg" slot-scope="{ row }">
+      <div class="table-height">
+        <TablePage v-bind="tablePageOption" auto ref="table">
+          <template slot="content:accountTypeMsg" slot-scope="{ row }">
             {{ ACCOUNT_TYPE_MSG_TEXT[row.accountType] }}
           </template>
-        </TablePage></div>
+        </TablePage>
+      </div>
     </div>
     <!-- 新增区域 -->
     <el-drawer
@@ -146,10 +147,10 @@
     <el-drawer
       title="角色授权"
       :visible.sync="batchPowerFlag"
-      :wrapperClosable='false'
+      :wrapper-closable="false"
       direction="rtl"
       size="30%"
-      >
+    >
       <div class="p-8">
         <el-table
           ref="roleMultipleTable"
@@ -158,35 +159,36 @@
           style="width: 100%"
           @selection-change="roleSelection"
           @select="changeSelectRole"
-	        @select-all="selectAllRole">
+          @select-all="selectAllRole"
+        >
           <el-table-column
-            prop="id" align="center"
+            prop="id"
+            align="center"
             type="selection"
-            width="50">
-          </el-table-column>
+            width="50"
+          />
           <el-table-column
             prop="roleName"
             label="角色名"
-            show-overflow-tooltip>
-          </el-table-column>
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="roleRemark"
             label="角色描述"
-            show-overflow-tooltip>
-          </el-table-column>
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="roleCode"
             label="角色编码"
-            show-overflow-tooltip>
-          </el-table-column>
+            show-overflow-tooltip
+          />
         </el-table>
         <div class="roleTips"> <i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;"></i>选择单用户时，可查看该用户已授权的角色。</div>
 
-        <div class="text-center">
+        <div class="text-center mt-0">
           <el-button size="small" type="primary" @click="confirmBatch()">确 认</el-button>
           <el-button size="small" @click="cancelBatch()">取 消</el-button>
         </div>
-
       </div>
     </el-drawer>
 
@@ -227,15 +229,16 @@
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getTreeOrgList } from '@/api/brand'
-import { getCustomer, delUserById, getExportCustomer,getExportinfo,changeCustomer } from '@/api/customer'
-import {reqRole} from '@/api/user'
+import {
+  getCustomer, delUserById, getExportCustomer, getExportinfo, changeCustomer,
+} from '@/api/customer'
+import { reqRole, addUserAndRole } from '@/api/user'
 import { insertOrg, delOrgById, updateShopOrOrgById } from '@/api/org'
-import {addUserAndRole} from '@/api/user'
 
 const ACCOUNT_TYPE_MSG_TEXT = {
-  0:'APP用户',
-  1:'管家用户',
-  2:'APP及管家用户'
+  0: 'APP用户',
+  1: '管家用户',
+  2: 'APP及管家用户',
 }
 
 export default {
@@ -247,12 +250,13 @@ export default {
     return {
       formLabelWidth: '100px',
       ACCOUNT_TYPE_MSG_TEXT,
-      params:{},
+      params: {},
       // 角色授权
-      batchPowerFlag:false,
-      powerList:[], // 角色列表
-      userIds:[], // 选中的用户列表
-      roleId:[], // 选中的授权角色id
+      batchPowerFlag: false,
+      powerList: [], // 角色列表
+      userIds: [], // 选中的用户列表
+      roleId: [], // 选中的授权角色id
+      checkedRoleArr:[],   // 被选中角色列表
 
       // 导出用户
       exportModelFlag: false, // 导出客户显示隐藏
@@ -351,7 +355,7 @@ export default {
                 click: this.deleteUser,
               },
               {
-               tip: ({ row }) => ['禁用', '启用'][row.status],
+                tip: ({ row }) => ['禁用', '启用'][row.status],
                 type: ({ row }) => ['success'][row.status] || 'info',
                 icon: ({ row }) => ['el-icon-open'][row.status] || 'el-icon-turn-off',
                 click: this.ban,
@@ -385,7 +389,7 @@ export default {
         code: '2',
         brandId: sessionStorage.brandId,
         idDuty: '0',
-        ...params
+        ...params,
       }
       await getCustomer(con).then((res) => {
         this.data = res.body
@@ -616,7 +620,7 @@ export default {
         const con = {
           userId: item.row.id,
           code: '2',
-          loginId:item.row.loginId
+          loginId: item.row.loginId,
         }
         delUserById(con).then(() => {
           getCustomer({
@@ -637,7 +641,7 @@ export default {
         })
       })
     },
-        // 导出客户字段
+    // 导出客户字段
     exportCustomer() {
       this.exportModelFlag = true
       const con = {
@@ -652,11 +656,11 @@ export default {
             // console.log(this.exportInfoList[i]);
             this.tempCheckList.push(this.exportInfoList[i].columnDesc)
           }
-            this.checkList = this.tempCheckList
+          this.checkList = this.tempCheckList
         }
       })
     },
-        // 导出关闭提示
+    // 导出关闭提示
     handleExportClose() {
       this.$confirm('确认关闭？').then(() => {
         this.exportModelFlag = false
@@ -672,14 +676,14 @@ export default {
       this.exportModelFlag = false
       this.checkList = this.tempCheckList
     },
-        // 确认导出
+    // 确认导出
     confirmExportUser() {
       this.rowList = {}
       if (this.checkList.length > 0) {
-        for(let i=0;i<this.checkList.length;i++){
-          for(let j=0;j<this.exportInfoList.length;j++){
-            if(this.checkList[i]==this.exportInfoList[j].columnDesc){
-              this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc;
+        for (let i = 0; i < this.checkList.length; i++) {
+          for (let j = 0; j < this.exportInfoList.length; j++) {
+            if (this.checkList[i] === this.exportInfoList[j].columnDesc) {
+              this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc
             }
           }
         }
@@ -688,26 +692,26 @@ export default {
         this.exportModelFlag = false
         const con = {
           // code: "1",
-          pageNum: "1",
-          pageSize: "999",
-          rowList:this.rowList
+          pageNum: '1',
+          pageSize: '999',
+          rowList: this.rowList,
         }
-        getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
-            var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
-            var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
-            var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
-            var result = patt.exec(contentDisposition);
-            var filename = result[1];
-            var downloadElement = document.createElement('a');
-            var href = window.URL.createObjectURL(blob); //创建下载的链接
-            downloadElement.style.display = 'none';
-            downloadElement.href = href;
-            downloadElement.download = `${filename}-用户列表-${filename}` ; //下载后文件名
-            document.body.appendChild(downloadElement);
-            downloadElement.click(); //点击下载
-            document.body.removeChild(downloadElement); //下载完成移除元素
-            window.URL.revokeObjectURL(href); //释放掉blob对象
-          })
+        getExportCustomer(con, { responseType: 'arraybuffer' }).then((res) => {
+          const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8' }) // application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
+          const contentDisposition = res.headers['content-disposition'] // 从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
+          const patt = new RegExp('Filename=([^;]+\\.[^\\.;]+);*')
+          const result = patt.exec(contentDisposition)
+          const filename = result[1]
+          const downloadElement = document.createElement('a')
+          const href = window.URL.createObjectURL(blob) // 创建下载的链接
+          downloadElement.style.display = 'none'
+          downloadElement.href = href
+          downloadElement.download = `${filename}-用户列表-${filename}` // 下载后文件名
+          document.body.appendChild(downloadElement)
+          downloadElement.click() // 点击下载
+          document.body.removeChild(downloadElement) // 下载完成移除元素
+          window.URL.revokeObjectURL(href) // 释放掉blob对象
+        })
       } else {
         this.$message({
           type: 'warning',
@@ -717,87 +721,125 @@ export default {
     },
     // 授权
     showPower() {
-      if(this.$refs.table.selected.length) {
-          this.batchPowerFlag = true
-          reqRole({
-            ...this.params,
-            brandId:sessionStorage.brandId
-          }).then((res) => {
-            this.powerList = res.body.resultList
-          })
-          this.$refs.table.selected.forEach(item => {
+      if(this.$refs.table.selected.length === 0) {
+          this.$message({
+          message: '请先选择要批量授权的用户',
+          type: 'warning',
+        })
+      } else if (this.$refs.table.selected.length === 1) {
+        this.batchPowerFlag = true
+        const con = {
+          id:this.$refs.table.selected[0].id,
+          pageNum:this.params.pageNum,
+          pageSize:this.params.pageSize,
+          brandId: sessionStorage.brandId,
+        }
+         this.getRoleList(con)
+      } else {
+        this.batchPowerFlag = true
+        const con = {
+          id:null,
+          pageNum:this.params.pageNum,
+          pageSize:this.params.pageSize,
+          brandId: sessionStorage.brandId,
+        }
+         this.getRoleList(con)
+      }
+    },
+    getRoleList(con) {
+        reqRole(con).then((res) => {
+          this.powerList = res.body.resultList
+            this.$refs.table.selected.forEach(item => {
              this.userIds.push(item.id)
           })
-      } else {
-        this.$message({
-          message:'请先选择要批量授权的用户',
-          type:'warning'
+          const result = res.body.isAssociatedRole
+          if(result) {
+            this.checkedRoleArr = result
+           let checkedArr = [];
+            for(let i=0;i<this.checkedRoleArr.length;i++){
+              for(let j=0;j<this.powerList.length;j++){
+                if(this.checkedRoleArr[i]==this.powerList[j].roleId){
+                  checkedArr.push(this.powerList[j])
+                }
+              }
+            }
+            setTimeout(()=>{
+              this.toggleSelection(checkedArr)
+            },100)
+          }
         })
-      }
-    
     },
-        // 角色选项有变化时
-    roleSelection(val){
+    // 角色选项有变化时
+    roleSelection(val) {
     },
-        // 当页勾选以及取消
+    // 当页勾选以及取消
     changeSelectRole(selection, row) {
-      // 从保存项saveCheckList里面寻找,如果找到了row则删除，如果没找到则添加
-      let fitemIndex = this.roleId.findIndex((item) => {
+      console.log(row);
+     let fitemIndex = this.roleId.findIndex((item) => {
         return item == row.roleId;
-      })
+      });
       if (fitemIndex < 0) {
         this.roleId.push(row.roleId);
       } else {
         this.roleId.splice(fitemIndex, 1);
       }
     },
-        // 表格全选内容
+    // 表格全选内容
     selectAllRole(val) {
-      if(val.length) {
+      if (val.length) {
         val.forEach(item => {
           this.roleId.push(item.roleId)
         })
       } else {
-        this.roleId = []
       }
     },
     // 取消授权
     cancelBatch() {
       this.batchPowerFlag = false
+      this.roleId = []
       this.$refs.roleMultipleTable.clearSelection()
     },
     // 确认授权
     confirmBatch() {
       addUserAndRole({
-        roleIds:this.roleId.toString(),
-        userIds:this.userIds.toString()
-      }).then((res) =>{
-        if(res.head.status === 0) {
+        roleIds: this.roleId.toString(),
+        userIds: this.userIds.toString(),
+      }).then((res) => {
+        if (res.head.status === 0) {
           this.$message({
-            message:'用户授权成功',
-            type:'success',
+            message: '用户授权成功',
+            type: 'success',
           })
           this.batchPowerFlag = false
         } else {
-           this.$message({
-              message: res.head.msg,
-              type: 'warning',
-            })
+          this.$message({
+            message: res.head.msg,
+            type: 'warning',
+          })
         }
       })
     },
+        toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.roleMultipleTable.toggleRowSelection(row);
+        });
+      } else {
+        this.$refs.roleMultipleTable.clearSelection();
+      }
+    },
     // 禁用
     ban(item) {
-        const con = {
-        id:item.row.id,
-        status:item.row.status === '1' ? '0' :'1',
-        loginId:item.row.loginId,
-        code:'2'
+      const con = {
+        id: item.row.id,
+        status: item.row.status === '1' ? '0' : '1',
+        loginId: item.row.loginId,
+        code: '2',
       }
-      changeCustomer(con).then(()=> {
-      this.$refs.table.loadData()
+      changeCustomer(con).then(() => {
+        this.$refs.table.loadData()
       })
-    }
+    },
   },
 
 }
@@ -954,7 +996,7 @@ export default {
 /deep/.el-select {
   width: 100%;
 }
-/deep/ .el-table__body-wrapper {
-    height: 600px;
+.table-height {
+  height: 100%;
 }
 </style>

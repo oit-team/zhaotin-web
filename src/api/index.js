@@ -55,14 +55,12 @@ axios.interceptors.request.use(config => {
 }, error => {
   return Promise.reject(error)
 })
-
 /**
  * 响应拦截器
  */
 axios.interceptors.response.use(response => {
   return response
 }, error => {
-  // console.dir(error)
   if (error.response.status === 403) {
     Message({
       message: '由于您长时间未操作，需要重新登录',
@@ -70,7 +68,7 @@ axios.interceptors.response.use(response => {
     })
     sessionStorage.clear()
     localStorage.clear()
-    window.location.href = 'http://localhost:8080/#/login'
+    window.location.href = `${location.origin}/#/login`
   }
   return Promise.reject(error)
 })
