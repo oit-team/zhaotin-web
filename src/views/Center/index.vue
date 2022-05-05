@@ -1,30 +1,107 @@
 <template>
   <div>
     <HeaderNav class="mb-4" />
-    <div class="main container">
-      <!-- <div>商品中心</div> -->
-      <!-- 出口 -->
-      <router-view />
+    <HeaderMsg @searchVal="searchVal" />
+    <div class="zt-tabs__top">
+      <div class="container">
+        <Tabs
+          :tab-list="tabList"
+          :ishome="ishome"
+          @checkTab="checkTab"
+        />
+      </div>
     </div>
+    <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
+import { getGoodsSizeInfo } from '@/api/goods'
+import HeaderMsg from '../Layout/components/HeaderMsg'
+import Tabs from '../../components/tabs/tabs'
 
 export default {
   components: {
     HeaderNav,
+    HeaderMsg,
+    Tabs,
   },
   data() {
     return {
-      data: {},
+      tabList: [],
+      ishome: true,
+      bran: sessionStorage.getItem('brandId'),
+      Uid: sessionStorage.getItem('userId'),
+      VAL: '',
+      styleLength: '',
     }
   },
-
+  computed: {
+    tablePageOption() {
+      return {
+        promise: this.loadData,
+        // ({
+        //   // token: JSON.parse(localStorage.getItem('token')),
+        //   userId: sessionStorage.getItem('userId'),
+        // }),
+        // actions: [
+        //   {
+        //     name: '导出数据',
+        //     type: 'primary',
+        //     click: () => this.$refs.export.open(),
+        //   },
+        // ],
+        table: {
+          // data: this.data.resultList,
+        },
+        pager: {
+          // total: this.data.totalCount,
+        },
+      }
+    },
+  },
+  created() {
+    this.classData()
+  },
+  methods: {
+    // 顶部分类
+    async classData() {
+      const res = await getGoodsSizeInfo({
+        brandId: this.bran,
+        userId: this.Uid,
+        type: 'STYLE_LENGTH',
+      })
+      this.tabList = res.body.result
+      // const styleL = this.tabList[0].dicttimeDisplayName
+      // this.styleLength = styleL
+    },
+    checkTab(index) {
+      const that = this
+      const styleL = that.tabList[index].dicttimeDisplayName
+      that.styleLength = styleL
+      that.$nextTick(() => {
+        that.$refs.child.loadData()
+        that.$forceUpdate()
+      })
+    },
+    searchVal(val) {
+      const that = this
+      that.VAL = val.trim()
+      that.$nextTick(() => {
+        that.$refs.child.loadData()
+        that.$forceUpdate()
+      })
+    },
+  },
 }
 </script>
 
-<style>
-
+<style lang="less" scoped>
+.zt-tabs__top{
+  width: 100%;
+  font-size: 18px;
+  background-color: #ECE8E5;
+  box-sizing: border-box;
+}
 </style>
