@@ -94,7 +94,6 @@ export default {
         orderId: this.orderId,
       }
       await getOrderById(con).then((res) => {
-        // console.log(res)
         if (res.head.status === 0) {
           this.orderNo = res.body.resultList.orderNo
           this.orderTypeName = res.body.resultList.orderTypeName

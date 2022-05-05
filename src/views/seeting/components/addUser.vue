@@ -265,7 +265,6 @@ export default ({
               }
             })
           } else { // 编辑
-          console.log(this.ruleForm);
           const con = {
             ...this.ruleForm
           }

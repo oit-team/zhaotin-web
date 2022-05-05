@@ -528,7 +528,6 @@ export default {
       // this.administration.id = object.data.id
       // this.administration.isShop = object.data.isShop
       // object里有被点击区域的区域信息
-      console.log(MouseEvent.id)
       this.orgStId = MouseEvent.id // 区域id
       this.nodeInfo = object.data // 将被点击的区域信息存起来
       // if (!object.data.isShop) {
@@ -542,7 +541,6 @@ export default {
         code: '2',
       }
       getCustomer(con).then((res) => {
-        // console.log(res)
         this.data = res.body
         this.chargeList = res.body.resultList
       })
@@ -774,7 +772,6 @@ export default {
     },
     // 当页勾选以及取消
     changeSelectRole(selection, row) {
-      console.log(row);
      let fitemIndex = this.roleId.findIndex((item) => {
         return item == row.roleId;
       });

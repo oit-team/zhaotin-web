@@ -87,7 +87,6 @@ export default {
         brandId: sessionStorage.brandId
       }
         sortList(con).then((res) => {
-            console.log(res);
             if(res.head.status === 0) {
              this.sortList = res.body.result
             }

@@ -40,7 +40,6 @@ export default {
       // console.log(1)
     },
     cgVal(val) {
-      console.log(val)
       this.$emit('searchVal', val)
     },
   },

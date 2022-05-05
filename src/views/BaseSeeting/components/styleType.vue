@@ -99,7 +99,6 @@ export default {
       })
     },
     deleteCateGory(item) {
-      console.log(item);
       this.$confirm('确订删除该商品类别吗？','提示',{
         confirmButtonText:'确定',
         cancelButtonText:'取消',
