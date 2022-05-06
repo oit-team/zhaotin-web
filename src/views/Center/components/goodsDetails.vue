@@ -105,39 +105,55 @@
             <div class="zt-data__color">
               <div class="zt-data__label">颜色</div>
               <div v-for="(item, index) in infoData.styleColorList" :key="index">
-                <el-badge :value="item.num" class="item" type="warning">
-                  <div
-                    class="zt-color__item"
-                    @click="colorIndex = index,colorcgId(index)"
-                    :class="colorIndex===index?'zt-color__select':''"
-                  >
-                    <div v-if="item.styleImg">
+                <div
+                  class="zt-color__item"
+                  @click="colorIndex = index,colorcgId(index)"
+                  :class="colorIndex===index?'zt-color__select':''"
+                >
+                  <div v-if="item.styleImg">
+                    <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
                       <el-image
                         :src="item.colorImg"
                         fit="contain"
                       />
-                      <div class="zt-color__name">{{ item.styleColor }}</div>
-                    </div>
+                    </el-badge>
+                    <el-image
+                      v-show="item.num === 0"
+                      :src="item.colorImg"
+                      fit="contain"
+                    />
+                    <div class="zt-color__name">{{ item.styleColor }}</div>
                   </div>
-                </el-badge>
+                </div>
               </div>
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">尺码</div>
               <div v-if="infoData.styleColorList" class="zt-data__info">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
-                  <el-badge :value="item.num" class="item" type="warning">
-                    <div class="zt-size__item" :class="sizeIndex===index?'zt-size__select':''" @click="sizeIndex = index,checkSize(index)">
-                      <!-- <el-button plain @click="sizeIndex = index,checkSize(index)">{{ item.sizeName }}</el-button> -->
+                  <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
+                    <div
+                      class="zt-size__item"
+                      :class="sizeIndex===index?'zt-size__select':''"
+                      @click="sizeIndex = index,checkSize(index)"
+                    >
                       {{ item.sizeName }}
                     </div>
                   </el-badge>
+                  <div
+                    v-show="item.num === 0"
+                    class="zt-size__item"
+                    :class="sizeIndex===index?'zt-size__select':''"
+                    @click="sizeIndex = index,checkSize(index)"
+                  >
+                    {{ item.sizeName }}
+                  </div>
                 </div>
               </div>
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">数量</div>
-              <el-input-number size="small" v-model="num" @change="handleChange" :min="1" />
+              <el-input-number size="small" v-model="num" @change="handleChange" :min="0" />
               <!-- <div v-if="infoData.styleColorList">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
                   <el-input-number size="small" v-model="item.num" @change="handleChange" :min="1" :max="99" />
@@ -306,6 +322,9 @@
               :src="item.resUrl"
               fit="contain"
             />
+            <div class="zt-video__b" v-if="item.styleVideo">
+              <i class="el-icon-video-camera-solid"></i>
+            </div>
             <div class="zt-item__line">{{ item.styleName }}</div>
             <div class="zt-item__line">
               <div class="zt-price__l">{{ item.styleNo }}</div>
@@ -328,6 +347,7 @@
 <script>
 // import Tabs from '@/components/tabs/tabs'
 import { getGoodsDetailes, getProductList } from '@/api/product'
+import { addCart } from '@/api/orderCart'
 
 export default {
   name: 'GoodsDetails',
@@ -340,7 +360,7 @@ export default {
       infoData: {},
       value2: 3,
       colors: ['#CDA46C', '#CDA46C', '#CDA46C'],
-      num: 1,
+      num: 0,
       ishome: false,
       tabList: [],
       dataList: [],
@@ -369,6 +389,9 @@ export default {
       beforeOrder: {},
       successtip: false,
       service1: [],
+      allList: [],
+      styleData: {},
+      sizeData: {},
     }
   },
   created() {
@@ -379,11 +402,10 @@ export default {
   mounted() {
   },
   beforeDestroy() {
-    console.log(this.orderData)
-    // console.log(sessionStorage.getItem('orderData'))
-    if (this.orderData.goodsList.length !== 0) {
-      this.$store.commit('order/addOrderStorage', JSON.stringify(this.orderData))
-    }
+    // console.log(this.orderData)
+    // if (this.orderData.goodsList && this.orderData.goodsList.length !== 0) {
+    //   this.$store.commit('order/addOrderStorage', JSON.stringify(this.orderData))
+    // }
   },
   methods: {
     async getData() {
@@ -392,21 +414,25 @@ export default {
         styleId: that.goodsId,
       })
       that.infoData = res.body.resultList
+      // recommendationLevel : 推荐指数
       that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
       // 给数据中  加入数量
       this.infoData.styleColorList.forEach(e => {
         let n = 0
         e.styleSize.forEach(i => {
-          i.num = 1
+          i.num = 0
           n += i.num
           return n
         })
         e.num = n
       })
+      that.styleData = {
+        styleId: 0,
+        styleColor: '', // 颜色
+        styleNo: that.infoData.styleNo,
+        styleSize: [],
+      }
       that.infoData.styleAttribute = that.infoData.styleAttribute.trim()
-      // this.service1 = this.infoData.service
-      // console.log(this.infoData.service)
-      // console.log(this.service1)
       // 将 视频封面 加到切换轮播的images中
       if (this.infoData.styleVideoPatch) {
         const url = {
@@ -414,18 +440,6 @@ export default {
         }
         this.infoData.imgUrlList.unshift(url)
       }
-      // 生成  当前视频的部分信息对象
-      // this.beforeOrder = data
-      this.orderData = {
-        goodsId: this.goodsId,
-        goodsName: this.infoData.styleName,
-        goodsCode: this.infoData.styleNo,
-        goodscostPrice: this.infoData.costPrice,
-        goodsList: [],
-        goodsCheck: false,
-      }
-      // console.log(this.orderData)
-      // console.log(this.beforeOrder)
     },
     async loadData() {
       const that = this
@@ -441,9 +455,8 @@ export default {
     },
     // 商品数量
     handleChange(value) {
-      if (value <= 99 && value >= 1) {
+      if (value <= 99 && value >= 0) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
-        // this.beforeOrder.goodsNum = value
         this.infoData.styleColorList.forEach(e => {
           let n = 0
           e.styleSize.forEach(i => {
@@ -456,22 +469,16 @@ export default {
       } else {
         this.$message('请填写正确数字')
       }
-      // this.beforeOrder.goodsNum = value
     },
     // 切换大小
     checkSize(id) {
-      // this.num = 1
       this.num = this.infoData.styleColorList[this.colorIndex].styleSize[id].num
-      // this.beforeOrder.goodsSizeName = this.infoData.styleColorList[this.colorIndex].styleSize[id].sizeName
       this.$forceUpdate
     },
     // 切换颜色
     colorcgId(id) {
       this.sizeIndex = 0
-      // this.num = 1
       this.num = this.infoData.styleColorList[id].styleSize[this.sizeIndex].num
-      // this.orderData.addOrder.push(this.beforeOrder)
-      // this.$store.commit('order/addOrder', this.orderData)
       this.$forceUpdate()
     },
     // 推荐区  图片点击事件
@@ -479,41 +486,50 @@ export default {
       this.goodsId = id
       this.getData()
       this.$forceUpdate()
+      window.scrollTo('0', '0')
     },
     // 点击订购
     toshoping() {
-      // this.num = 1
-      this.$store.commit('order/addOrder', this.orderData)
-      this.orderData.addOrder = {}
-      this.$forceUpdate()
+      // const that = this
+      this.$router.push('/styleCenter/orderGoods')
     },
     // 加入购物车
-    toorder() {
-      const data = {
-        imageUrl: this.infoData.styleColorList[this.colorIndex].colorImg, // 购物车 line 图片
-        color: this.infoData.styleColorList[this.colorIndex].styleColor, // 颜色
-        sizeList: [],
-        checked: false,
-        openSize: false,
-      }
-      const listData = {
-        goodsSizeName: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].sizeName,
-        goodsPrice: this.infoData.costPrice,
-        goodsNum: this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num - 0,
-        totailPrice: this.infoData.costPrice * this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num,
-      }
-      data.sizeList.unshift(listData)
-      this.orderData.goodsList.unshift(data)
-      // sessionStorage.setItem('orderData', JSON.stringify(this.orderData))
-      // 点击加入购物车 将形成的订单信息 存到购物车订单集合
-      // this.$store.commit('order/addOrderStorage', this.orderData)
-      this.$message({
-        message: '成功加入购物清单',
-        type: 'success',
+    async toorder() {
+      const that = this
+      // that.infoData 返回的商品详情
+      that.infoData.styleColorList.forEach(e => {
+        // 如果 当前商品的数量 > 0 则说明有商品
+        if (e.num > 0) {
+          const styleData = {
+            styleId: that.goodsId,
+            styleColor: e.id, // 当前颜色id
+            styleNo: that.infoData.styleNo,
+            styleSize: [],
+          }
+          // 然后遍历当前颜色的尺码 如果L码有 num 则生成对象添加到当前的StyleSize 中
+          e.styleSize.forEach(i => {
+            if (i.num > 0) {
+              const sizeData = {
+                sizeName: i.sizeName,
+                sizeNumber: i.num,
+              }
+              styleData.styleSize.unshift(sizeData)
+            }
+          })
+          console.log(styleData)
+          that.allList.unshift(styleData)
+          console.log(that.allList)
+        }
       })
-      // this.successtip = true
-      // this.$store.commit('order/addOrder', this.infoData)
-      // this.$router.push('/styleCenter/shopCart')
+      const res = await addCart({
+        styleList: that.allList,
+      })
+      if (res.head.status === 0) {
+        that.$message({
+          message: '成功加入购物清单',
+          type: 'success',
+        })
+      }
     },
   },
 }
@@ -562,9 +578,11 @@ video::-webkit-media-controls-timeline {
             margin: 0 10px;
             border: 1px solid #ECE8E5;
             border-radius: 5px;
+            box-sizing: border-box;
             .zt-images__image{
               width: 80px;
               height: 80px;
+              border-radius: 5px;
             }
             .el-icon-video-play{
               position: absolute;
@@ -690,7 +708,9 @@ video::-webkit-media-controls-timeline {
             cursor:pointer;
           }
           .zt-size__select{
-            border: 1px solid #CDA46C;
+            // border: 1px solid #CDA46C;
+            background-color: #CDA46C;
+            color: #fff;
           }
         }
       }
@@ -848,6 +868,7 @@ video::-webkit-media-controls-timeline {
       display: flex;
       flex-wrap: wrap;
       .zt-content__item{
+        position: relative;
         width: 230px;
         color: #333333;
         font-size: 14px;
@@ -858,6 +879,19 @@ video::-webkit-media-controls-timeline {
           height: 300px;
           border-radius: 10px;
           border: 1px solid #F2F2F2;
+        }
+        .zt-video__b{
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          padding: 5px 7px;
+          background-color: #FF9606;
+          border-radius: 5px;
+          box-sizing: border-box;
+          .el-icon-video-camera-solid{
+            font-size: 20px;
+            color: #fff;
+          }
         }
         .zt-item__line{
           display: flex;

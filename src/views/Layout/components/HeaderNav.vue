@@ -96,7 +96,7 @@ export default {
   methods: {
     async getTreeMenuList() {
       const res = await getTreeMenuList({
-        userId: JSON.parse(sessionStorage.getItem('userinfo')).logId,
+        userId: JSON.parse(sessionStorage.getItem('userinfo')).id,
         brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
       })
       this.list = res.body.resultList

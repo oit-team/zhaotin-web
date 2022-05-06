@@ -9,6 +9,7 @@ import Center from '@/views/Center/index'
 import GoodsDetails from '@/views/Center/components/goodsDetails'
 import GoodsList from '@/views/Center/components/goodsList'
 import ShopCart from '@/views/Center/components/shopCart'
+import OrderGoods from '@/views/Center/components/orderGoods'
 import Nullpage from '@/views/Center/components/nullpage'
 import BaseSeeting from '@/views/BaseSeeting/index'
 import SystemRole from '@/views/seeting/components/role'
@@ -54,6 +55,10 @@ const routes = [
       {
         path: '/styleCenter/shopCart',
         component: ShopCart,
+      },
+      {
+        path: '/styleCenter/orderGoods',
+        component: OrderGoods,
       },
       {
         path: '/styleCenter/nullpage',

@@ -13,3 +13,10 @@ export function getOrderById(params) {
     cmd: 10008,
   })
 }
+// 订单详情
+export function getOrdersite(params) {
+  return post('/order/orderInfo/getOrderById', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
