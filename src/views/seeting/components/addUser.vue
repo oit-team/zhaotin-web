@@ -114,11 +114,13 @@ export default ({
     }
 
     return {
+      areaId:'',
         orgList: [], // 级联数据源
         osName:[],
+        orgId:'',
         editFlag: false,
         ruleForm: {
-        orgStId: '',
+        // orgStId: '',
         userName: '',
         nickName: '',
         telephone: '',
@@ -185,10 +187,12 @@ export default ({
   created() {
     // 编辑
     if (this.$route.query.item) {
+      console.log(this.$route.query.item);
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
       this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substr(0,10)
       this.osName = this.$route.query.item.row.nodeName
+      this.orgId = this.$route.query.item.row.id
     }
     // 新增
     if (this.$route.query) {
@@ -214,6 +218,11 @@ export default ({
     },
     // 修改所属店铺或者区域
     changeArea(val) {
+      let checkedNodeList = this.$refs.chooseOption.getCheckedNodes();
+       if(checkedNodeList[0]) {
+        console.log(checkedNodeList);
+        this.areaId = checkedNodeList[0].data.id
+       }
     },
     isCellPhone(val) {
       if (!/^1(3|4|5|6|7|8)\d{9}$/.test(val)) {
@@ -222,8 +231,7 @@ export default ({
       return true
     },
 
-     submitForm(formName) {
-      //  console.log(formName);
+     submitForm() {
       this.$refs.ruleForm.validate((valid) => {
         if(valid) {
           // 新增
@@ -251,7 +259,15 @@ export default ({
             })
           } else { // 编辑
           const con = {
-            ...this.ruleForm
+             brandId: sessionStorage.brandId,
+              userId: sessionStorage.userId,
+              ...this.ruleForm,
+              // orgStId:this.ruleForm.orgStId,
+              code: '2',
+              orgStId:this.areaId,
+            // ...this.ruleForm,
+            // osName:this.osName,
+            id:this.orgId
           }
            changeCustomer(con).then((res) => {
               if (res.head.status === 0) {
