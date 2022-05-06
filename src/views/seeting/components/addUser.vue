@@ -95,8 +95,6 @@
 </template>
 
 <script>
-// import bus from '@/assets/js/js/eventBus'
-// import CryptoJS from '@/assets/js/js/CryptoJS'
 import { addCustomer, changeCustomer } from '@/api/customer'
 import { getTreeOrgList } from '@/api/brand'
 
@@ -116,7 +114,6 @@ export default ({
     }
 
     return {
-        orgNum:'', // 级联选中的值
         orgList: [], // 级联数据源
         osName:[],
         editFlag: false,
@@ -192,7 +189,6 @@ export default ({
       this.ruleForm = this.$route.query.item.row
       this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substr(0,10)
       this.osName = this.$route.query.item.row.nodeName
-      // this.orgNum = 
     }
     // 新增
     if (this.$route.query) {
