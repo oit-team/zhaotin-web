@@ -120,7 +120,6 @@ export default ({
         orgId:'',
         editFlag: false,
         ruleForm: {
-        // orgStId: '',
         userName: '',
         nickName: '',
         telephone: '',
@@ -262,11 +261,8 @@ export default ({
              brandId: sessionStorage.brandId,
               userId: sessionStorage.userId,
               ...this.ruleForm,
-              // orgStId:this.ruleForm.orgStId,
               code: '2',
               orgStId:this.areaId,
-            // ...this.ruleForm,
-            // osName:this.osName,
             id:this.orgId
           }
            changeCustomer(con).then((res) => {
