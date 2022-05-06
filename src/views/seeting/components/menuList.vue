@@ -9,7 +9,6 @@
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getAllMenuList, delMenuById } from '@/api/menu'
-import { getTreeMenuList } from '@/api/product'
 
 export default {
   name: 'MenuList',

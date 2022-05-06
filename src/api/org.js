@@ -21,7 +21,7 @@ export function updateShopOrOrgById(params) {
   })
 }
 // 查询区域列表
-export function getTreeOrgList(params) {
+export function getTreeOrgListAll(params) {
   return post('system/org/getOrgAll', params, {
     mod: 'home',
     cmd: 10008,

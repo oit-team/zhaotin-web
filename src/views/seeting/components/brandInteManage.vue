@@ -689,7 +689,7 @@ export default {
       if (this.rowList) {
         this.exportModelFlag = false
         const con = {
-          // code: "1",
+          code: "1",
           // pageNum: '1',
           // pageSize: '999',
           ...this.params,

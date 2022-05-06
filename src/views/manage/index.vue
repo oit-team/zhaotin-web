@@ -2,7 +2,6 @@
   <div>
     <HeaderNav />
     <div class="main container">
-      <div>商品管理</div>
       <!-- 出口 -->
       <router-view />
     </div>

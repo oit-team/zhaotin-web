@@ -2,7 +2,6 @@
   <div>
     <HeaderNav class="mb-4" />
     <div class="main container">
-      <div>订单管理</div>
       <!-- 出口 -->
       <router-view />
     </div>

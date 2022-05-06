@@ -42,11 +42,11 @@
         <el-cascader
           style="width:60%;"
           ref="chooseOption"
-          :data="osName"  
+          :value="osName"  
           :options="orgList"
           filterable
           :show-all-levels="false"
-          :props="{ checkStrictly: true, children:'childrenList',value:'id',label:'osName'}"
+          :props="{ checkStrictly: true, children:'childrenList',value:'osName',label:'osName'}"
           @change="changeArea"
         />
       </el-form-item>
@@ -98,7 +98,7 @@
 // import bus from '@/assets/js/js/eventBus'
 // import CryptoJS from '@/assets/js/js/CryptoJS'
 import { addCustomer, changeCustomer } from '@/api/customer'
-import { getTreeOrgList } from '@/api/org'
+import { getTreeOrgList } from '@/api/brand'
 
 export default ({
   name: 'AddUser',
@@ -116,10 +116,9 @@ export default ({
     }
 
     return {
-        value: [],
         orgNum:'', // 级联选中的值
         orgList: [], // 级联数据源
-        osName:null,
+        osName:[],
         editFlag: false,
         ruleForm: {
         orgStId: '',
@@ -133,7 +132,8 @@ export default ({
         // birthDate: '',
         address: '',
         autograph: '',
-        loginId:''
+        loginId:'',
+        hireDate:''
       },
       rules: {
         userName: [
@@ -212,23 +212,12 @@ export default ({
         brandId: sessionStorage.brandId,
       }).then((res) => {
       if(res.head.status === 0) {
-        this.orgList = res.body.resultMap
-        // this.orgNum = 
+        this.orgList = res.body.orgList[0].childrenList
       }
       })
     },
     // 修改所属店铺或者区域
     changeArea(val) {
-      // console.log("val=====",val);
-      const checkedNodeList = this.$refs.chooseOption.getCheckedNodes()
-      if (checkedNodeList[0]) {
-        // this.checkedNode = checkedNodeList[0]
-        this.nodeId = this.checkedNode.data.id
-        this.nodeType = this.checkedNode.data.isShop ? this.checkedNode.data.isShop : '0'
-      }
-
-      // this.checkedNode = this.$refs.chooseOption.getCheckedNodes();
-      // console.log("选中的节点=======",this.checkedNode)
     },
     isCellPhone(val) {
       if (!/^1(3|4|5|6|7|8)\d{9}$/.test(val)) {

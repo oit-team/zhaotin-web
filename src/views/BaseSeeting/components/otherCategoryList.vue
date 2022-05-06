@@ -2,7 +2,9 @@
   <div>
     <div class="main container">
       <!-- <div>商品中心</div> -->
-      <div class="h-96"> <TablePage v-bind="tablePageOption" auto /></div>
+      <div class="h-96"><el-cascader
+    v-model="value"
+    :options="options"></el-cascader></div>
       <!-- 出口 -->
       <router-view />
     </div>
@@ -10,58 +12,33 @@
 </template>
 
 <script>
-import TablePage from '@/components/business/TablePage'
+// import TablePage from '@/components/business/TablePage'
 import { getProductList } from '@/api/product'
 
 export default {
   name: 'Style',
   components: {
-    TablePage,
+    // TablePage,
   },
   data() {
     return {
       data: {},
+       value: [],
+       options:[
+         {
+          value: 'zhinan',
+          label: '指南',
+          children:[{
+            value: 'shejiyuanze',
+            label: '设计原则',
+          }]
+         }
+       ]
     }
   },
 
-  computed: {
-    tablePageOption() {
-      return {
-        promise: this.loadData,
-        // ({
-        //   // token: JSON.parse(localStorage.getItem('token')),
-        //   userId: sessionStorage.getItem('userId'),
-        // }),
-        // actions: [
-        //   {
-        //     name: '导出数据',
-        //     type: 'primary',
-        //     click: () => this.$refs.export.open(),
-        //   },
-        // ],
-        table: {
-          data: this.data.resultList,
-        },
-        pager: {
-          total: this.data.totalCount,
-        },
-      }
-    },
-  },
-  created() {
-    this.loadData()
-    // console.log(localStorage.getItem('token'))
-    // getUser()
-  },
   methods: {
-    async loadData(params) {
-      const res = await getProductList({
-        styleNo: '',
-        ...params
-      })
-      //   console.log(res.body)
-      this.data = res.body
-    },
+
   },
 
 }

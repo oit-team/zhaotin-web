@@ -318,7 +318,7 @@
 import { getCustomer, addCustomer, changeCustomer } from "@/api/customer";
 import quill from "@/views/common/quillEditor";
 import VcUpload from "@/views/common/Upload";
-import { getTreeOrgList } from "@/api/org";
+import { getTreeOrgListAll } from "@/api/org";
 import axios from "axios";
 export default {
   name: "AddMenu",
