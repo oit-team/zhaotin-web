@@ -690,8 +690,9 @@ export default {
         this.exportModelFlag = false
         const con = {
           // code: "1",
-          pageNum: '1',
-          pageSize: '999',
+          // pageNum: '1',
+          // pageSize: '999',
+          ...this.params,
           rowList: this.rowList,
         }
         getExportCustomer(con, { responseType: 'arraybuffer' }).then((res) => {
