@@ -136,10 +136,6 @@ export default {
     return {
       CUSTOMER_TYPE_TEXT,
       CUSTOMER_STATE_TEXT,
-      // PUBLISHED_STATE,
-      // DEFAULT_STATE,
-      // selectedItem: {}, 
-      // dialogVisible: false,
 
 
       data: {},
@@ -199,7 +195,7 @@ export default {
               },
               {
                 tip: '删除',
-                type: 'primary',
+                type: 'danger',
                 icon: 'el-icon-delete',
                 click: this.deleteCustomer,
               },
@@ -208,30 +204,6 @@ export default {
                 type: ({ row }) => ['success'][row.customerState] || 'info',
                 icon: ({ row }) => ['el-icon-open'][row.customerState] || 'el-icon-turn-off',
                 click: this.changeState
-                // async ({ row }) => {
-                //   console.log(row);
-                  
-                //   // if(row.customerState === 0) {
-                //   //   // await this.changeCustomer({
-                //   //   //    id:item.row.id,
-                //   //   //    customerState:row.customerState === 1 ? '0' :'1',
-                //   //   //    loginId:row.logId,
-                //   //   //    code:'1'
-                //   //   // })
-                //   //   await this.changeState(con)
-                //   // }else {
-                //   //   await this.$confirm('启用')
-                //   // }
-                //   // this.selectedItem = row
-                //   // if (row.state === PUBLISHED_STATE.PUBLISHED) {
-                //   //   await this.$confirm('确定要撤销已发布的广告吗？', '提示', { type: 'warning' })
-                //   //   await this.updateAdvertsState(PUBLISHED_STATE.UNPUBLISHED)
-                //   //   this.$message.success('撤销成功！')
-                //   //   this.$refs.table.loadData()
-                //   // } else {
-                //   //   this.dialogVisible = true
-                //   // }
-                // },
               },
             ],
           },
@@ -250,7 +222,6 @@ export default {
         code:'1'
       }
       const res = await getCustomer(con)
-      console.log(res)
       this.data = res.body
     },
     // 删除角色
@@ -383,7 +354,6 @@ export default {
           // console.log(res)
           this.$refs.upload.clearFiles()
           if (res.status === 200) {
-            console.log(formData);
             this.importResult = res.data.body
             this.addCount = res.data.body.addCount
             this.upDateCount = res.data.body.upDateCount
@@ -459,12 +429,11 @@ export default {
           rowList:this.rowList
         }
         getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
-            console.log(res.data);
+            // console.log(res.data);
             var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
             var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
             var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
             var result = patt.exec(contentDisposition);
-            console.log(result)
             var filename = result[1];
             var downloadElement = document.createElement('a');
             var href = window.URL.createObjectURL(blob); //创建下载的链接

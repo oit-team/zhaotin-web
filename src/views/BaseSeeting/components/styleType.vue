@@ -1,17 +1,24 @@
 <template>
   <div>
-    <div class="main container">
+    <!-- <div class="main container"> -->
       <!-- <div>商品中心</div> -->
-      <TablePage v-bind="tablePageOption" />
+     <div> <TablePage v-bind="tablePageOption" ref="cateTable" auto>
+            <template slot="content:imgUrl" slot-scope="{ row }">
+            <!-- 商品图片 -->
+            <template v-if="row.imgUrl">
+              <el-image class="file-res" :src="row.imgUrl" fit="cover" />
+            </template>
+          </template>
+       </TablePage></div>
       <!-- 出口 -->
       <router-view />
-    </div>
+    <!-- </div> -->
   </div>
 </template>
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getProductList } from '@/api/product'
+import { cateGoryList,delCateGory } from '@/api/category'
 
 export default {
   name: 'Style',
@@ -21,6 +28,7 @@ export default {
   data() {
     return {
       data: {},
+      keyList:[] // 类别排序集合
     }
   },
 
@@ -28,45 +36,90 @@ export default {
     tablePageOption() {
       return {
         promise: this.loadData,
-        // ({
-        //   // token: JSON.parse(localStorage.getItem('token')),
-        //   userId: sessionStorage.getItem('userId'),
-        // }),
-        // actions: [
-        //   {
-        //     name: '导出数据',
-        //     type: 'primary',
-        //     click: () => this.$refs.export.open(),
-        //   },
-        // ],
+         actions: [
+          {
+            name: '新增类别',
+            type: 'success',
+            icon: 'el-icon-plus',
+            click: () => this.$router.push('/basls/styleType/addCateGory'),
+          },
+        ],
         table: {
           data: this.data.resultList,
+           actions: {
+            width: 180,
+            buttons: [
+              {
+                tip: '编辑',
+                type: 'success',
+                icon: 'el-icon-edit',
+                click: (scope) => this.$router.push({
+                  path: '/basls/styleType/addCateGory',
+                  query: { item: scope },
+                }),
+              },
+              {
+                tip: '删除',
+                type: 'danger',
+                icon: 'el-icon-delete',
+                click: this.deleteCateGory,
+              },
+               {
+                tip: '尺码配置',
+                type: 'warning',
+                icon: 'el-icon-s-data',
+                click: (scope) => this.$router.push({
+                  path: '/basls/styleType/sizeInfo',
+                  query: { item: scope },
+                }),
+              },
+            ],
+          },
         },
         pager: {
-          total: this.data.totalCount,
+          total: this.data.count,
         },
       }
     },
   },
-  created() {
-    this.loadData()
-    // console.log(localStorage.getItem('token'))
-    // getUser()
-  },
   methods: {
     async loadData(params) {
-      const res = await getProductList({
-        styleNo: '',
-        ...params
+      await cateGoryList({
+        ...params,
+       userId:sessionStorage.userId,
+       type:'ACTEGORY'
+      }).then((res) => {
+        if(res.head.status === 0) {
+          this.data = res.body
+          res.body.resultList.forEach(item => {
+            this.keyList.push(item.dictitemOrderkey)
+          })
+          sessionStorage.setItem('keyList',this.keyList)
+        }
       })
-      //   console.log(res.body)
-      this.data = res.body
     },
+    deleteCateGory(item) {
+      this.$confirm('确订删除该商品类别吗？','提示',{
+        confirmButtonText:'确定',
+        cancelButtonText:'取消',
+        type:'warning',
+      }).then(() => {
+        const con = {
+          dictCode:'ACTEGORY',
+          dictitemCode:item.row.dictitemCode
+        }
+        delCateGory(con).then((res) => {
+          this.$refs.cateTable.loadData()
+        })
+      })
+    }
   },
 
 }
 </script>
 
-<style>
-
+<style lang="less" scoped>
+/deep/ .el-table__body-wrapper {
+    height: 600px;
+}
 </style>

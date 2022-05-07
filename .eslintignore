@@ -5,6 +5,5 @@ node_modules
 !src/**/*.vue
 src/components/business
 src/views/common
-src/views/BaseSeeting/components/addGoods
-src/views/BaseSeeting/components
+src/views/BaseSeeting
 src/views/seeting

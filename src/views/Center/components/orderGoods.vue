@@ -1,7 +1,19 @@
 <template>
   <div>
     <el-page-header @back="goBack" content="确认下单" />
-    <div class="zt-site">
+    <div class="zt-site__line">
+      <div class="zt-site__title">确认收货地址</div>
+      <div class="zt-site__add" @click="addSite">新增收货地址</div>
+    </div>
+    <div class="zt-site" v-if="showEmp">
+      <el-empty :image-size="100" description="暂无地址信息" />
+    </div>
+    <div class="zt-site" v-else>
+      <div class="zt-site__item">
+        <div class="zt-site__check">
+          <el-checkbox v-model="checked" @change="cggoodsCheck(index)" />
+        </div>
+      </div>
     </div>
     <div class="zt-order__title">确认订单信息</div>
     <div class="zt-content">
@@ -54,7 +66,7 @@
               <div class="zt-size__size">单价：￥{{ itemN.stylePrice }}</div>
               <div class="zt-size__size"><el-input-number disabled size="mini" :min="1" v-model="itemM.sizeNumber" /></div>
               <div class="zt-size__size">小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}</div>
-              <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div>
+              <!-- <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div> -->
             </div>
           </div>
         </div>
@@ -71,18 +83,47 @@
       <div class="zt-footer__right">
         <div class="zt-footer__price">
           应付总额: <span class="zt-red">￥{{ priceAll }}</span>
-          <p class="zt-hui">本次共选：商品样式(2) 商品尺寸(7)</p>
+          <!-- <p class="zt-hui">本次共选：商品样式(2) 商品尺寸(7)</p> -->
         </div>
         <div class="zt-footer__button">
           提交订单
         </div>
       </div>
     </div>
+    <el-drawer
+      title="新增收货地址"
+      :before-close="handleClose"
+      :visible.sync="dialog"
+      direction="rtl"
+      custom-class="demo-drawer"
+      ref="drawer"
+    >
+      <div class="demo-drawer__content">
+        <el-form :model="ruleForm">
+          <el-form-item label="收货人" :label-width="formLabelWidth">
+            <el-input v-model="ruleForm.name" autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="手机号" :label-width="formLabelWidth">
+            <el-input v-model="ruleForm.phone" />
+          </el-form-item>
+          <el-form-item label="详细地址" :label-width="formLabelWidth">
+            <el-input v-model="ruleForm.siteInfo" />
+          </el-form-item>
+          <el-form-item label="设为默认收货地址" prop="delivery"  :label-width="formLabelWidth">
+            <el-switch v-model="ruleForm.delivery" />
+          </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer">
+          <el-button @click="cancelForm">取 消</el-button>
+          <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
-import { getShoppingCart, deleteShoppingCart, changeShoppingCart } from '@/api/orderCart'
+import { getOrderSite, changeShoppingCart } from '@/api/orderCart'
 
 export default {
   name: 'ShopCart',
@@ -94,73 +135,54 @@ export default {
       priceAll: 0,
       checked: false,
       checkOrders: [],
+      siteList: {},
+      showEmp: false,
+      showDr: false,
+      dialog: false,
+      timer: null,
+      loading: false,
+      formLabelWidth: '150px',
+      ruleForm: {
+        name: '',
+        phone: '',
+        siteInfo: '',
+        isdef: false, // s是否设为默认地址
+      },
+      rules: {
+        name: [
+          { required: true, message: '名字', trigger: 'blur' },
+        ],
+        phone: { required: true, message: '手机号', trigger: 'blur' },
+        siteInfo: { required: true, message: '详细乡村/街道地址', trigger: 'blur' },
+      },
     }
   },
   created() {
-    // this.getData()
+    this.getData()
     this.formData = this.$store.state.order.orderStorage
-    if (this.checkedAll) {
-      this.priceAll = this.formData.styleTotalPrice
-    } else {
-      this.priceAll = 0
-    }
-    console.log(this.formData)
+    // if (this.checkedAll) {
+    //   this.priceAll = this.formData.styleTotalPrice
+    // } else {
+    //   this.priceAll = 0
+    // }
+    // console.log(this.formData)
   },
   methods: {
-    // 下面  的 全选
-    toggleSelection(val) {
+    async getData() {
       const that = this
-      console.log(that.checkedAll)
-      if (val) {
-        that.formData.styleList.forEach(e => {
-          e.goodsCheck = true
-          e.style.forEach(i => {
-            i.checked = true
-          })
-        })
-        that.priceAll = that.formData.styleTotalPrice
+      const res = await getOrderSite({
+        customerId: sessionStorage.getItem('userId'),
+      })
+      that.siteList = res.body.resultList
+      if (that.siteList && that.siteList.length === 0) {
+        that.showEmp = true
       } else {
-        that.formData.styleList.forEach(e => {
-          e.goodsCheck = false
-          e.style.forEach(i => {
-            i.checked = false
-          })
-        })
-        that.priceAll = 0
+        that.showEmp = false
       }
+      console.log(res)
     },
     goBack() {
       this.$router.go(-1)
-    },
-    // 一级选择框 改变
-    cggoodsCheck(id) {
-      const that = this
-      // 改变对应商品 的状态，以及计算总价
-      if (that.formData.styleList[id].goodsCheck) {
-        that.formData.styleList[id].style.forEach(e => {
-          that.$set(e, 'checked', true)
-        })
-      } else {
-        that.formData.styleList[id].style.forEach(e => {
-          that.$set(e, 'checked', false)
-        })
-      }
-      let nm = 0
-      that.formData.styleList.forEach(e => {
-        if (e.goodsCheck) {
-          return nm++
-        }
-      })
-      if (nm === that.formData.styleList.length) {
-        that.$nextTick(() => {
-          that.checkedAll = true
-        })
-      } else {
-        that.$nextTick(() => {
-          that.checkedAll = false
-        })
-      }
-      that.chPrice()
     },
     chPrice() {
       const that = this
@@ -176,137 +198,70 @@ export default {
         })
       }
     },
-    //  颜色 check   二级选择框
-    itemChecked(id, idn) {
+    addSite() {
       const that = this
-      let num = 0
-      if (that.formData.styleList[id].style[idn].checked) {
-        that.priceAll += that.formData.styleList[id].style[idn].styleNumber * that.formData.styleList[id].style[idn].stylePrice
-        console.log(that.priceAll)
-      } else {
-        that.priceAll -= that.formData.styleList[id].style[idn].styleNumber * that.formData.styleList[id].style[idn].stylePrice
-        console.log(that.priceAll)
-      }
-      // 获取 当前商品 下的 颜色是不是都选中了
-      that.formData.styleList[id].style.forEach(e => {
-        if (e.checked) {
-          return num++
-        }
-      })
-      if (that.formData.styleList[id].style && num === that.formData.styleList[id].style.length) {
-        that.$set(that.formData.styleList[id], 'goodsCheck', true)
-      } else {
-        that.$set(that.formData.styleList[id], 'goodsCheck', false)
-      }
-      let n = 0
-      that.formData.styleList.forEach(e => {
-        if (e.goodsCheck) {
-          return n++
-        }
-      })
-      if (that.formData.styleList && n === that.formData.styleList.length) {
-        that.checkedAll = true
-      } else {
-        that.checkedAll = false
-      }
+      that.showDr = true
+      that.dialog = true
     },
-    // 删除 尺码
-    deleteSize(id, idn, idm) {
-      const that = this
-      this.$confirm('此操作将删除该商品, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(async () => {
-        that.formData.styleList[id].style[idn].styleSize.splice(idm, 1)
-        if (that.formData.styleList[id].style[idn].styleSize && that.formData.styleList[id].style[idn].styleSize.length === 0) {
-          that.formData.styleList[id].style.splice(idn, 1)
-          that.$forceUpdate
-        }
-        if (that.formData.styleList[id].style && that.formData.styleList[id].style.length === 0) {
-          that.formData.styleList.splice(id, 1)
-          that.$forceUpdate
-        }
-        const list = []
-        let dataL = {}
-        that.formData.styleList.forEach(e => {
-          e.style.forEach(i => {
-            dataL = {
-              styleId: i.styleId,
-              styleNo: e.styleNo,
-              styleColor: i.id,
-              styleSize: [],
-            }
-            i.styleSize.forEach(n => {
-              dataL.styleSize.unshift(n)
-              console.log(dataL)
-            })
-          })
-          if (dataL.styleSize && dataL.styleSize.length !== 0) {
-            list.unshift(dataL)
-          } else {
-            []
-          }
+    handleClose(done) {
+      if (this.loading) {
+        return
+      }
+      this.$confirm('确定要提交表单吗？')
+        .then(_ => {
+          this.loading = true
+          this.timer = setTimeout(() => {
+            done()
+            // 动画关闭需要一定的时间
+            setTimeout(() => {
+              this.loading = false
+            }, 400)
+          }, 2000)
         })
-        const res = await changeShoppingCart({
-          styleList: list,
-        })
-        console.log(res)
-        if (res.head.status === 0) {
-          this.$message({
-            type: 'success',
-            message: '删除成功!',
-          })
-          this.getData()
-        }
-        this.$message({
-          type: 'success',
-          message: '删除成功!',
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除',
-        })
-      })
+        .catch(_ => {})
     },
-    toOrder() {
-      const that = this
-      // let num = 0
-      that.formData.styleList.forEach((e, ide) => {
-        e.style.forEach((i, idi) => {
-          if (i.checked === false) {
-            that.formData2.styleList[ide].style.splice(idi, 1)
-            if (that.formData2.styleList[ide].style && that.formData2.styleList[ide].style.length === 0) {
-              that.formData2.styleList.splice(ide, 1)
-            }
-          }
-          if (e.goodsCheck || i.checked) {
-            // 如果有一个选中
-            // that.$router.push('/styleCenter/orderGoods')
-          } else {
-            this.$message({
-              message: '请选择下单商品',
-              type: 'warning',
-            })
-          }
-        })
-      })
-      console.log(that.formData2)
-      that.$store.commit('order/orderStorage', that.formData2)
-      // if (that.formData2.styleList && that.formData2.styleList.length > 0) {
-      // }
+    cancelForm() {
+      this.loading = false
+      this.dialog = false
+      clearTimeout(this.timer)
     },
   },
 }
 </script>
 
 <style lang='scss' scoped>
+.zt-site__line{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .zt-site__title{
+    padding: 20px;
+    color: #c9a76e;
+    font-weight: 800;
+    box-sizing: border-box;
+  }
+  .zt-site__add{
+    padding: 20px;
+    color: #0078d7;
+    box-sizing: border-box;
+  }
+}
 .zt-order__title{
   padding: 20px;
   color: #c9a76e;
   font-weight: 800;
   box-sizing: border-box;
+}
+.zt-site{
+  margin: 10px 0;
+  font-size: 16px;
+  .zt-site__item{
+    padding: 5px 40px;
+    box-sizing: border-box;
+  }
+  .zt-site__item:hover{
+    cursor: pointer;
+  }
 }
 .zt-content{
   background-color: #f5f5f5;

@@ -1,19 +1,14 @@
 <template>
   <div>
-    <!-- 菜单管理 -->
-    <div class="main container">
-      <!-- <div>商品中心</div> -->
-      <div class="table_height"> <TablePage v-bind="tablePageOption" auto /></div>
+      <div> <TablePage v-bind="tablePageOption" auto /></div>
       <!-- 出口 -->
       <router-view />
-    </div>
   </div>
 </template>
 
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getAllMenuList, delMenuById } from '@/api/menu'
-import { getTreeMenuList } from '@/api/product'
 
 export default {
   name: 'MenuList',
@@ -54,7 +49,7 @@ export default {
               },
               {
                 tip: '删除',
-                type: 'primary',
+                type: 'danger',
                 icon: 'el-icon-delete',
                 click: this.deleteMenu,
               },
@@ -133,8 +128,8 @@ export default {
 }
 </script>
 
-<style>
-.table_height {
-  height: 500px;
+<style lang="less" scoped>
+/deep/ .el-table__body-wrapper {
+    height: 600px;
 }
 </style>

@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import { reqLogin } from '@/api/user'
 import CryptoJS from '@/assets/js/js/CryptoJS'
+import { reqLogin } from '@/api/user'
 
 export default {
   data: () => ({
@@ -44,15 +44,13 @@ export default {
         userName: this.formData.userName,
         password: encryPwd,
       }).then((res) => {
-        // console.log(res)
         sessionStorage.userId = res.body.resultList.id
         sessionStorage.brandId = res.body.resultList.brandId
         sessionStorage.userName = res.body.resultList.userName
         sessionStorage.accessToken = res.body.accessToken
         this.$store.commit('getUserinfo', res.body)
-        this.$router.push('/')
+        this.$router.push('/styleCenter')
       }).catch(() => {
-
       })
     },
   },

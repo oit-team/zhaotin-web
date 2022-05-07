@@ -402,10 +402,6 @@ export default {
   mounted() {
   },
   beforeDestroy() {
-    // console.log(this.orderData)
-    // if (this.orderData.goodsList && this.orderData.goodsList.length !== 0) {
-    //   this.$store.commit('order/addOrderStorage', JSON.stringify(this.orderData))
-    // }
   },
   methods: {
     async getData() {

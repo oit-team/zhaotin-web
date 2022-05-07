@@ -1,5 +1,5 @@
 // import Axios from 'axios'
-
+import { Message } from 'element-ui'
 // const AxiosInstance = Axios.create({
 //   baseURL: '',
 //   timeout: 5000,
@@ -27,7 +27,7 @@
 
 // export default AxiosInstance
 import Axios from 'axios'
-import { Message } from 'element-ui'
+
 import API_STATUS from '@/api/API_STATUS'
 // import store from '@/store'
 // import userstore from '@/store/modules/user'
@@ -51,18 +51,25 @@ axios.interceptors.request.use(config => {
   // 每次发送请求时统一携带token
   // console.log(localStorage.getItem('token'))
   config.headers.token = localStorage.getItem('token')
-
   return config
 }, error => {
   return Promise.reject(error)
 })
-
 /**
  * 响应拦截器
  */
 axios.interceptors.response.use(response => {
   return response
 }, error => {
+  if (error.response.status === 403) {
+    Message({
+      message: '由于您长时间未操作，需要重新登录',
+      type: 'warning',
+    })
+    sessionStorage.clear()
+    localStorage.clear()
+    window.location.href = `${location.origin}/#/login`
+  }
   return Promise.reject(error)
 })
 

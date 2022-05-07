@@ -6,7 +6,7 @@
         <TablePage v-bind="tablePageOption" auto />
       </div>
       <!-- 出口 -->
-      <router-view />
+      <!-- <router-view /> -->
     </div>
   </div>
 </template>
@@ -34,6 +34,12 @@ export default {
         promise: this.loadData,
         // 搜索表单内的按钮
         actions: [
+          {
+            name: '新增角色',
+            type: 'success',
+            icon: 'el-icon-plus',
+            click: this.addRole,
+          },
         ],
         table: {
           data: this.data.resultList,

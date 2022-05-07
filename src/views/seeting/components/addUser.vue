@@ -27,7 +27,7 @@
       <el-form-item label="账号类型" prop="accountType">
         <el-select v-model="ruleForm.accountType" placeholder="请选择">
           <el-option label="APP用户" value="0" />
-          <el-option label="高单易管家用户" value="1" />
+          <el-option label="管家用户" value="1" />
           <el-option label="APP及管家用户" value="3" />
         </el-select>
       </el-form-item>
@@ -42,12 +42,12 @@
         <el-cascader
           style="width:60%;"
           ref="chooseOption"
-          :data="osName"  
+          :value="osName"  
           :options="orgList"
           filterable
           :show-all-levels="false"
-          :props="{ checkStrictly: true, children:'childrenList',value:'id',label:'osName'}"
-          @change="changeShop"
+          :props="{ checkStrictly: true, children:'childrenList',value:'osName',label:'osName'}"
+          @change="changeArea"
         />
       </el-form-item>
 
@@ -95,10 +95,8 @@
 </template>
 
 <script>
-// import bus from '@/assets/js/js/eventBus'
-// import CryptoJS from '@/assets/js/js/CryptoJS'
 import { addCustomer, changeCustomer } from '@/api/customer'
-import { getTreeOrgList } from '@/api/org'
+import { getTreeOrgList } from '@/api/brand'
 
 export default ({
   name: 'AddUser',
@@ -116,12 +114,12 @@ export default ({
     }
 
     return {
-        orgNum:'', // 级联选中的值
+      areaId:'',
         orgList: [], // 级联数据源
         osName:[],
+        orgId:'',
         editFlag: false,
         ruleForm: {
-        orgStId: '',
         userName: '',
         nickName: '',
         telephone: '',
@@ -132,7 +130,8 @@ export default ({
         // birthDate: '',
         address: '',
         autograph: '',
-        loginId:''
+        loginId:'',
+        hireDate:''
       },
       rules: {
         userName: [
@@ -187,11 +186,12 @@ export default ({
   created() {
     // 编辑
     if (this.$route.query.item) {
-      console.log(this.$route.query)
+      console.log(this.$route.query.item);
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
-      this.ruleForm.passWord = ''
-      // this.orgNum = 
+      this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substr(0,10)
+      this.osName = this.$route.query.item.row.nodeName
+      this.orgId = this.$route.query.item.row.id
     }
     // 新增
     if (this.$route.query) {
@@ -210,25 +210,18 @@ export default ({
       await getTreeOrgList({
         brandId: sessionStorage.brandId,
       }).then((res) => {
-        console.log(res);
       if(res.head.status === 0) {
-        this.orgList = res.body.resultMap
-        // this.orgNum = 
+        this.orgList = res.body.orgList[0].childrenList
       }
       })
     },
     // 修改所属店铺或者区域
-    changeShop(val) {
-      // console.log("val=====",val);
-      const checkedNodeList = this.$refs.chooseOption.getCheckedNodes()
-      if (checkedNodeList[0]) {
-        // this.checkedNode = checkedNodeList[0]
-        this.nodeId = this.checkedNode.data.id
-        this.nodeType = this.checkedNode.data.isShop ? this.checkedNode.data.isShop : '0'
-      }
-
-      // this.checkedNode = this.$refs.chooseOption.getCheckedNodes();
-      // console.log("选中的节点=======",this.checkedNode)
+    changeArea(val) {
+      let checkedNodeList = this.$refs.chooseOption.getCheckedNodes();
+       if(checkedNodeList[0]) {
+        console.log(checkedNodeList);
+        this.areaId = checkedNodeList[0].data.id
+       }
     },
     isCellPhone(val) {
       if (!/^1(3|4|5|6|7|8)\d{9}$/.test(val)) {
@@ -237,8 +230,7 @@ export default ({
       return true
     },
 
-     submitForm(formName) {
-      //  console.log(formName);
+     submitForm() {
       this.$refs.ruleForm.validate((valid) => {
         if(valid) {
           // 新增
@@ -265,9 +257,13 @@ export default ({
               }
             })
           } else { // 编辑
-          console.log(this.ruleForm);
           const con = {
-            ...this.ruleForm
+             brandId: sessionStorage.brandId,
+              userId: sessionStorage.userId,
+              ...this.ruleForm,
+              code: '2',
+              orgStId:this.areaId,
+            id:this.orgId
           }
            changeCustomer(con).then((res) => {
               if (res.head.status === 0) {

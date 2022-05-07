@@ -318,7 +318,7 @@
 import { getCustomer, addCustomer, changeCustomer } from "@/api/customer";
 import quill from "@/views/common/quillEditor";
 import VcUpload from "@/views/common/Upload";
-import { getTreeOrgList } from "@/api/org";
+import { getTreeOrgListAll } from "@/api/org";
 import axios from "axios";
 export default {
   name: "AddMenu",
@@ -438,7 +438,7 @@ export default {
         check: true,
         accept: "image/*",
         onSuccess: (file, fileList) => {
-          console.log(fileList);
+          // console.log(fileList);
           sessionStorage.setItem('imgUrl',fileList.response.data.fileUrl)
         },
       };
@@ -504,7 +504,7 @@ export default {
     },
     // 选中推荐人
     changeRefereesName(val) {
-      console.log(val);
+      // console.log(val);
       this.customerForm.refereesName = val.realName
       this.customerForm.refereesId = val.id
     },
@@ -529,7 +529,7 @@ export default {
     },
     // 修改入参的区域数据
     changeOrg(val) {
-      console.log(val);
+      // console.log(val);
       this.customerForm.orgName = val.osName;
       this.customerForm.orgStId = val.id;
     },
@@ -576,7 +576,7 @@ export default {
               })
               .catch(() => {});
           } else {
-            //   // 新增
+            // 新增
             addCustomer({
               code: "1",
               customerState: 0,
@@ -616,7 +616,7 @@ export default {
     },
     // 装箱
     changeWashMatters(val) {
-      console.log(val);
+      // console.log(val);
       this.customerForm.matters = val
     },
     // 发货注意事项

@@ -1,13 +1,11 @@
 <template>
   <div>
-    <div class="main container">
       <!-- <div>商品中心</div> -->
-      <div class="table-h">
+      <div>
         <TablePage v-bind="tablePageOption" auto ref="page">
-          <!-- <el-drawer :visible.sync="drawerVisible" size="40%"> -->
           <template slot="content:resUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
-            <template v-if="true">
+            <template v-if="row.resUrl">
               <el-image class="file-res" :src="row.resUrl" fit="cover" />
             </template>
             <!-- 商品视频 -->
@@ -15,12 +13,10 @@
               <el-image class="file-res" :src="row.videoImg" fit="cover" />
             </template> -->
           </template>
-          <!-- </el-drawer> -->
         </TablePage>
       </div>
       <!-- 出口 -->
       <router-view />
-    </div>
     <!-- 导入导出操作 -->
 
     <!-- 导入商品 -->
@@ -208,7 +204,7 @@ export default {
               },
               {
                 tip: '删除',
-                type: 'primary',
+                type: 'danger',
                 icon: 'el-icon-delete',
                 click: this.deleteGoods,
               },
@@ -516,8 +512,8 @@ export default {
 }
 </script>
 
-<style>
-.table-h {
-  height: 600px;
+<style lang="less" scoped>
+/deep/ .el-table__body-wrapper {
+    height: 600px;
 }
 </style>

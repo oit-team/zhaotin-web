@@ -27,3 +27,10 @@ export function changeShoppingCart(params) {
     // cmd: 40007,
   })
 }
+// 用户下单  收货地址
+export function getOrderSite(params) {
+  return post('/order/customerReceiving/getReceiving', params, {
+    mod: 'home',
+    cmd: 40007,
+  })
+}

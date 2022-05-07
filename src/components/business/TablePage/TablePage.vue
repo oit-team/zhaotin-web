@@ -338,7 +338,7 @@ export default {
       } else if (this.fields) {
         this.innerFields = this.fields
       } else if (sessionStorage.headTitString) {
-        console.log(JSON.parse(sessionStorage.headTitString))
+        // console.log(JSON.parse(sessionStorage.headTitString))
         this.innerFields = JSON.parse(sessionStorage.headTitString)
       }
     },
