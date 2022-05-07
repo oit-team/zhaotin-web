@@ -170,17 +170,11 @@
         </vc-upload>
        </el-form-item>
         <el-form-item v-if="cateGoryVisibilty" label="客户商标">
-          <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
+          <span class="flex text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上 &nbsp; 传即可</span>
           <div class="w-24 h-24 mb-12">
             <el-image :src="customerForm.trademark" fit="cover" />
           </div>
        </el-form-item>
-
-          <!-- <el-form-item label="客户商标" prop="trademark">
-            <vc-upload v-if="!editFlag" v-bind="uploadOptionimg" ref="uploadImage">
-              <i class="el-icon-plus"></i>
-            </vc-upload>
-          </el-form-item> -->
 
           <el-form-item label="客户洗唛车法" prop="washingLabel">
             <el-input
@@ -423,7 +417,6 @@ export default {
      this.customerForm.passWord = ''
       this.customerForm.loginName = ''
     if (this.$route.query.item) {
-      console.log(this.$route.query.item);
       this.imgVisible = true
       this.editFlag = true;
       this.cateGoryVisibilty = true

@@ -12,16 +12,16 @@
       <el-form-item label="类别排序" prop="dictitemOrderkey">
         <el-input v-model.trim="cateGoryForm.dictitemOrderkey" style="width:60%;"  placeholder="请输入类别排序"></el-input>
       </el-form-item>
-       <el-form-item label="类别图片">
-        <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
-          <i class="el-icon-plus"></i>
-        </vc-upload>
-       </el-form-item>
-        <el-form-item v-if="cateGoryVisibilty" label="类别图片">
+       <el-form-item v-if="cateGoryVisibilty" label="类别图片">
           <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
           <div class="w-24 h-24 mb-12">
             <el-image :src="imgUrl" fit="cover" />
           </div>
+       </el-form-item>
+       <el-form-item label="点击上传更新类别图片">
+        <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
+          <i class="el-icon-plus"></i>
+        </vc-upload>
        </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>

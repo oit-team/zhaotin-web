@@ -157,10 +157,6 @@ export default {
     tablePageOption() {
       return {
         promise: this.loadData,
-        // ({
-        //   // token: JSON.parse(localStorage.getItem('token')),
-        //   userId: sessionStorage.getItem('userId'),
-        // }),
         actions: [
           {
             name: '新增商品',

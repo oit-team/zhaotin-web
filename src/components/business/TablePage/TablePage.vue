@@ -309,7 +309,7 @@ export default {
             this.loading = false
           })
         // 自动更新布局
-        this.autoLayout && this.$nextTick(this.$refs.table.doLayout)
+        this.autoLayout && this.doLayout()
       } else {
         this.loading = false
         console.error('[table-page] promise 必须返回一个Promise对象!')
@@ -342,6 +342,13 @@ export default {
         this.innerFields = JSON.parse(sessionStorage.headTitString)
       }
     },
+    /**
+     * 更新布局
+     * @public
+     */
+    doLayout() {
+      this.$nextTick(this.$refs.table.doLayout)
+    }
   },
 }
 </script>
