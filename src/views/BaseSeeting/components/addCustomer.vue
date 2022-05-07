@@ -164,13 +164,23 @@
             />
           </el-form-item>
 
-          <el-form-item label="客户商标" prop="trademark">
+            <el-form-item label="客户商标">
+        <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
+          <i class="el-icon-plus"></i>
+        </vc-upload>
+       </el-form-item>
+        <el-form-item v-if="cateGoryVisibilty" label="客户商标">
+          <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
+          <div class="w-24 h-24 mb-12">
+            <el-image :src="customerForm.trademark" fit="cover" />
+          </div>
+       </el-form-item>
+
+          <!-- <el-form-item label="客户商标" prop="trademark">
             <vc-upload v-if="!editFlag" v-bind="uploadOptionimg" ref="uploadImage">
               <i class="el-icon-plus"></i>
             </vc-upload>
-           <div v-else><img class="w-24 h-24" :src="uploadList" alt=""></div>
-           <!-- <div v-else> 1</div> -->
-          </el-form-item>
+          </el-form-item> -->
 
           <el-form-item label="客户洗唛车法" prop="washingLabel">
             <el-input
@@ -316,15 +326,17 @@
 
 <script>
 import { getCustomer, addCustomer, changeCustomer } from "@/api/customer";
+import {getTreeOrgListAll} from '@/api/org'
 import quill from "@/views/common/quillEditor";
 import VcUpload from "@/views/common/Upload";
-import { getTreeOrgListAll } from "@/api/org";
 import axios from "axios";
 export default {
   name: "AddMenu",
   components: { quill, VcUpload },
   data() {
     return {
+      cateGoryVisibilty:false,
+      // imgUrl:'',
       activeNames:['1'],
       uploadList: '',
       peopleList: [],
@@ -411,11 +423,13 @@ export default {
      this.customerForm.passWord = ''
       this.customerForm.loginName = ''
     if (this.$route.query.item) {
+      console.log(this.$route.query.item);
       this.imgVisible = true
       this.editFlag = true;
+      this.cateGoryVisibilty = true
       this.customerForm = this.$route.query.item.row;
+      this.customerForm.trademark = this.$route.query.item.row.trademark
       this.customerForm.passWord = ''
-      this.uploadList = sessionStorage.imgUrl
     }
   },
   computed: {
@@ -438,8 +452,8 @@ export default {
         check: true,
         accept: "image/*",
         onSuccess: (file, fileList) => {
-          // console.log(fileList);
-          sessionStorage.setItem('imgUrl',fileList.response.data.fileUrl)
+          this.uploadList = fileList
+          this.customerForm.trademark = this.uploadList.response.data.fileUrl
         },
       };
     },
@@ -523,7 +537,7 @@ export default {
     },
     // 获取区域下拉列表数据
     async getTreeOrgList() {
-      await getTreeOrgList({ brandId: sessionStorage.brandId }).then((res) => {
+      await getTreeOrgListAll({ brandId: sessionStorage.brandId }).then((res) => {
         this.OrgList = res.body.resultMap;
       });
     },
@@ -559,6 +573,7 @@ export default {
               refereesType: null,
               ...this.customerForm,
               loginId: this.customerForm.logId,
+              trademark:this.customerForm.trademark
             })
               .then((res) => {
                 if (res.head.status === 0) {
@@ -583,6 +598,7 @@ export default {
               customerIntegral: 0,
               refereesType: null,
               ...this.customerForm,
+              trademark:this.customerForm.trademark
             })
               .then((res) => {
                 this.editFlag = false;
