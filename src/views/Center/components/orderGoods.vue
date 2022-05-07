@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="zt-page__order">
     <el-page-header @back="goBack" content="确认下单" />
     <div class="zt-site__line">
       <div class="zt-site__title">确认收货地址</div>
@@ -9,9 +9,23 @@
       <el-empty :image-size="100" description="暂无地址信息" />
     </div>
     <div class="zt-site" v-else>
-      <div class="zt-site__item">
+      <div
+        class="zt-site__item"
+        :class="radio === index?'site-item__select':''"
+        v-for="(item, index) in siteList"
+        :key="index"
+      >
+        <div class="site-item__l" v-if="radio === index">
+          <i class="el-icon-location">寄送至</i>
+        </div>
         <div class="zt-site__check">
-          <el-checkbox v-model="checked" @change="cggoodsCheck(index)" />
+          <el-radio v-model="radio" :label="index">
+            <span class="site-radio">{{ item.address }} {{ ' ' }}({{ item.consignee }} 收){{ ' ' }}{{ item.contactNum }}</span>
+          </el-radio>
+          <span v-if="item.defaultNum === 1" class="defoSite">默认地址</span>
+        </div>
+        <div class="site-item__r" v-if="radio === index" @click="setSite">
+          修改本地址
         </div>
       </div>
     </div>
@@ -20,17 +34,11 @@
       <div class="zt-content__item" v-for="(item, index) in formData.styleList" :key="index">
         <!-- 一级选择框 -->
         <div class="zt-cart__title">
-          <!-- <el-checkbox v-model="item.goodsCheck" @change="cggoodsCheck(index)" /> -->
           <div class="zt-title__title">{{ item.styleName }}</div>
         </div>
         <div class="zt-cart__line" v-for="(itemN, indexN) in item.style" :key="indexN">
           <el-row :gutter="20">
-            <!-- 二级选择框 -->
-            <!-- <el-col :span="2">
-              <el-checkbox v-model="itemN.checked" :span="2" @change="itemChecked(index, indexN)" />
-            </el-col> -->
             <el-col :span="3">
-            <!-- <div class="zt-cart__image"> -->
               <el-image
                 style="width: 100px; height: 100px"
                 :src="itemN.imgUrl"
@@ -45,12 +53,7 @@
               </div>
             </el-col>
             <el-col :span="6"><div class="zt-cart__color">颜色分类：{{ itemN.styleColor }}</div></el-col>
-            <!-- <el-col :span="5"><div class="zt-cart__color"></div></el-col> -->
-            <!-- <el-col :span="4">
-              <div class="zt-cart__color">总计：￥{{ itemN.stylePrice * itemN.styleNumber }}</div>
-            </el-col> -->
             <el-col :span="3">
-              <!-- <el-button type="primary">收起</el-button> -->
               <el-button type="primary" @click="itemN.openList = !itemN.openList">
                 {{ itemN.openList?'收起':'展开' }}
                 <i v-if="itemN.openList" class="el-icon-caret-bottom el-icon--right"></i>
@@ -74,18 +77,13 @@
     </div>
     <div class="zt-footer">
       <div class="zt-footer__left">
-        <!-- <el-checkbox
-          v-model="checkedAll"
-          @change="toggleSelection"
-        >已选</el-checkbox> -->
-        <!-- <div class="zt-left__btn" @click="deleteAll"><i class="el-icon-delete"></i>批量删除</div> -->
       </div>
       <div class="zt-footer__right">
         <div class="zt-footer__price">
           应付总额: <span class="zt-red">￥{{ priceAll }}</span>
           <!-- <p class="zt-hui">本次共选：商品样式(2) 商品尺寸(7)</p> -->
         </div>
-        <div class="zt-footer__button">
+        <div class="zt-footer__button" @click="subOrder">
           提交订单
         </div>
       </div>
@@ -95,27 +93,72 @@
       :before-close="handleClose"
       :visible.sync="dialog"
       direction="rtl"
-      custom-class="demo-drawer"
+      size="30%"
+      custom-class="zt-demo__drawer"
       ref="drawer"
     >
       <div class="demo-drawer__content">
-        <el-form :model="ruleForm">
-          <el-form-item label="收货人" :label-width="formLabelWidth">
-            <el-input v-model="ruleForm.name" autocomplete="off" />
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          :label-position="labelPosition"
+          :label-width="formLabelWidth"
+          :hide-required-asterisk="false"
+          ref="ruleForm"
+        >
+          <el-form-item label="收货人" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="名字" autocomplete="off" />
           </el-form-item>
-          <el-form-item label="手机号" :label-width="formLabelWidth">
-            <el-input v-model="ruleForm.phone" />
+          <el-form-item label="手机号" prop="phone">
+            <el-input maxlength="11" v-model.number="ruleForm.phone" placeholder="手机号 " />
           </el-form-item>
-          <el-form-item label="详细地址" :label-width="formLabelWidth">
-            <el-input v-model="ruleForm.siteInfo" />
+          <el-form-item label="详细地址" prop="siteInfo">
+            <el-input v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
           </el-form-item>
-          <el-form-item label="设为默认收货地址" prop="delivery"  :label-width="formLabelWidth">
-            <el-switch v-model="ruleForm.delivery" />
+          <el-form-item label="设为默认收货地址" prop="isdef">
+            <el-switch v-model="ruleForm.isdef" />
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
           <el-button @click="cancelForm">取 消</el-button>
-          <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+          <el-button type="primary" @click="subForm('ruleForm')" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+        </div>
+      </div>
+    </el-drawer>
+    <el-drawer
+      title="修改收货地址"
+      :before-close="handleClose"
+      :visible.sync="dialog2"
+      direction="rtl"
+      size="30%"
+      custom-class="zt-demo__drawer"
+      ref="drawer2"
+    >
+      <div class="demo-drawer__content">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          :label-position="labelPosition"
+          :label-width="formLabelWidth"
+          :hide-required-asterisk="false"
+          ref="ruleForm"
+        >
+          <el-form-item label="收货人" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="名字" autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="手机号" prop="phone">
+            <el-input maxlength="11" v-model.number="ruleForm.phone" placeholder="手机号 " />
+          </el-form-item>
+          <el-form-item label="详细地址" prop="siteInfo">
+            <el-input v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
+          </el-form-item>
+          <el-form-item label="设为默认收货地址" prop="isdef">
+            <el-switch v-model="ruleForm.isdef" />
+          </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer">
+          <el-button @click="cancelForm2">取 消</el-button>
+          <el-button type="primary" @click="subForm2('ruleForm')" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
         </div>
       </div>
     </el-drawer>
@@ -123,7 +166,13 @@
 </template>
 
 <script>
-import { getOrderSite, changeShoppingCart } from '@/api/orderCart'
+import {
+  getOrderSite,
+  addOrderSite,
+  setOrderSite,
+  CalculatePrice,
+  addOrder,
+} from '@/api/orderCart'
 
 export default {
   name: 'ShopCart',
@@ -137,12 +186,21 @@ export default {
       checkOrders: [],
       siteList: {},
       showEmp: false,
+      radio: 0,
+      styleList: [],
+      // --  添加地址表单  --
       showDr: false,
+      showDr2: false,
+      labelPosition: 'left',
       dialog: false,
+      dialog2: false,
       timer: null,
+      timer2: null,
       loading: false,
+      loading2: false,
       formLabelWidth: '150px',
       ruleForm: {
+        id: '',
         name: '',
         phone: '',
         siteInfo: '',
@@ -150,22 +208,22 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '名字', trigger: 'blur' },
+          { required: true, message: '请输入名字', trigger: 'blur' },
         ],
-        phone: { required: true, message: '手机号', trigger: 'blur' },
-        siteInfo: { required: true, message: '详细乡村/街道地址', trigger: 'blur' },
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          // {
+          //   min: 8, max: 12, message: '长度为 11 个字符', trigger: 'blur',
+          // },
+        ],
+        siteInfo: { required: true, message: '地址不能为空', trigger: 'blur' },
       },
     }
   },
   created() {
     this.getData()
     this.formData = this.$store.state.order.orderStorage
-    // if (this.checkedAll) {
-    //   this.priceAll = this.formData.styleTotalPrice
-    // } else {
-    //   this.priceAll = 0
-    // }
-    // console.log(this.formData)
+    console.log(this.formData)
   },
   methods: {
     async getData() {
@@ -179,36 +237,71 @@ export default {
       } else {
         that.showEmp = false
       }
-      console.log(res)
+      that.priceA()
+    },
+    // 总价
+    async priceA() {
+      const that = this
+      const list = []
+      let dataL = {}
+      that.formData.styleList.forEach(e => {
+        e.style.forEach(i => {
+          dataL = {
+            styleId: i.styleId,
+            styleNo: e.styleNo,
+            styleColor: i.id,
+            styleSize: [],
+          }
+          i.styleSize.forEach(n => {
+            dataL.styleSize.unshift(n)
+          })
+        })
+        if (dataL.styleSize && dataL.styleSize.length !== 0) {
+          list.unshift(dataL)
+        } else {
+          []
+        }
+      })
+      that.styleList = list
+      console.log(that.styleList)
+      const res = await CalculatePrice({
+        styleList: list,
+      })
+      if (res.head.status === 0) {
+        that.priceAll = res.body.styleTotalPrice
+      }
     },
     goBack() {
       this.$router.go(-1)
-    },
-    chPrice() {
-      const that = this
-      if (that.checkedAll === true) {
-        that.priceAll = that.formData.styleTotalPrice
-      } else {
-        that.formData.styleList.forEach(e => {
-          e.style.forEach(i => {
-            if (i.checked === true) {
-              that.priceAll += i.styleNumber * i.stylePrice
-            }
-          })
-        })
-      }
     },
     addSite() {
       const that = this
       that.showDr = true
       that.dialog = true
     },
+    // 修改地址
+    setSite() {
+      const that = this
+      console.log(that.radio)
+      that.ruleForm = {
+        id: this.siteList[that.radio].id,
+        name: this.siteList[that.radio].consignee,
+        phone: this.siteList[that.radio].contactNum,
+        siteInfo: this.siteList[that.radio].address,
+        isdef: this.siteList[that.radio].defaultNum === 1, // s是否设为默认地址
+      }
+      that.showDr2 = true
+      that.dialog2 = true
+    },
+    cgradio(val) {
+      console.log(val)
+    },
     handleClose(done) {
       if (this.loading) {
         return
       }
       this.$confirm('确定要提交表单吗？')
-        .then(_ => {
+        .then(() => {
           this.loading = true
           this.timer = setTimeout(() => {
             done()
@@ -218,18 +311,113 @@ export default {
             }, 400)
           }, 2000)
         })
-        .catch(_ => {})
+        .catch(() => {})
     },
+    // 关闭 add  抽屉
     cancelForm() {
       this.loading = false
       this.dialog = false
       clearTimeout(this.timer)
+    },
+    // 关闭  set  抽屉
+    cancelForm2() {
+      this.loading2 = false
+      this.dialog2 = false
+      clearTimeout(this.timer)
+    },
+    // 点击提交
+    subForm(formName) {
+      const that = this
+      const isf = that.ruleForm.isdef ? 1 : 0
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await addOrderSite({
+            consignee: that.ruleForm.name,
+            contactNum: that.ruleForm.phone,
+            address: that.ruleForm.siteInfo,
+            customerId: sessionStorage.getItem('userId'),
+            defaultNum: isf,
+          })
+          if (res.head.status === 0) {
+            this.$message({
+              message: '添加成功',
+              type: 'success',
+            })
+            that.getData()
+            that.$forceUpdate
+          } else {
+            this.$message.error(res.head.msg)
+          }
+          that.loading = false
+          that.dialog = false
+          clearTimeout(that.timer)
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    subForm2(formName) {
+      const that = this
+      const isf = that.ruleForm.isdef ? 1 : 0
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          const res = await setOrderSite({
+            receivingId: that.ruleForm.id,
+            consignee: that.ruleForm.name,
+            contactNum: that.ruleForm.phone,
+            address: that.ruleForm.siteInfo,
+            customerId: sessionStorage.getItem('userId'),
+            defaultNum: isf,
+          })
+          if (res.head.status === 0) {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+            })
+            that.getData()
+            that.$forceUpdate
+          } else {
+            this.$message.error(res.head.msg)
+          }
+          that.loading2 = false
+          that.dialog2 = false
+          clearTimeout(that.timer)
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    async subOrder() {
+      const that = this
+      const res = await addOrder({
+        receivingId: that.siteList[that.radio].id,
+        orderType: 1,
+        styleList: that.styleList,
+      })
+      console.log(res)
+      if (res.head.status === 0) {
+        that.$message({
+          type: 'success',
+          message: '提交成功',
+        })
+      } else {
+        that.$message({
+          type: 'error',
+          message: `提交失败,${res.head.msg}`,
+        })
+      }
     },
   },
 }
 </script>
 
 <style lang='scss' scoped>
+.zt-page__order{
+  padding: 20px 0;
+  box-sizing: border-box;
+}
 .zt-site__line{
   display: flex;
   align-items: center;
@@ -246,6 +434,21 @@ export default {
     box-sizing: border-box;
   }
 }
+.zt-demo__drawer{
+  padding: 0 20px;
+}
+.demo-drawer__content{
+  padding: 0 40px;
+  .demo-drawer__footer{
+    justify-content: space-around;
+  }
+  .el-button--default{
+    width: 40%;
+  }
+  .el-button--primary{
+    width: 40%;
+  }
+}
 .zt-order__title{
   padding: 20px;
   color: #c9a76e;
@@ -256,8 +459,52 @@ export default {
   margin: 10px 0;
   font-size: 16px;
   .zt-site__item{
-    padding: 5px 40px;
+    display: flex;
+    align-items: center;
+    padding: 10px 100px;
     box-sizing: border-box;
+    .site-item__l{
+      width: 100px;
+      color: #FF0000;
+      padding-left: 10px;
+      box-sizing: border-box;
+    }
+    .zt-site__check{
+      .site-radio{
+        color: #16222b;
+        font-size: 16px;
+      }
+      .defoSite{
+        color: #000;
+        font-weight: 800;
+        font-size: 16px;
+      }
+    }
+    .el-radio__label{
+      font-size: 16px !important;
+    }
+    .site-item__r{
+      position: absolute;
+      right: 10px;
+      color: #0078d7;
+    }
+    .zt-siteInfo{
+      display: flex;
+      align-items: center;
+      p{
+        padding: 0 10px;
+      }
+    }
+  }
+  .site-item__select{
+    position: relative;
+    background-color: #fff0e8;
+    padding: 10px 0;
+    .site-radio{
+      color: #000;
+      font-size: 16px;
+      font-weight: 800;
+    }
   }
   .zt-site__item:hover{
     cursor: pointer;
@@ -292,7 +539,7 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 20px 0;
+  padding: 15px 0;
   border-top: 1px solid #ccc;
   box-sizing: border-box;
 }
@@ -301,6 +548,7 @@ export default {
 }
 .zt-cart__line{
   padding: 10px 30px;
+  padding-bottom: 0;
   width: 100%;
   background: #fff;
   margin: 10px 0;

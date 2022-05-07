@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="zt-page__cart">
     <el-page-header @back="goBack" content="订货清单" />
     <div class="zt-order__title">订货清单</div>
     <div class="zt-content">
@@ -50,7 +50,7 @@
             <div class="zt-size__item" v-for="(itemM, indexM) in itemN.styleSize" :key="indexM">
               <div class="zt-size__size">所选尺码：{{ itemM.sizeName }}</div>
               <div class="zt-size__size">单价：￥{{ itemN.stylePrice }}</div>
-              <div class="zt-size__size"><el-input-number size="mini" :min="1" v-model="itemM.sizeNumber" /></div>
+              <div class="zt-size__size"><el-input-number @change="handleChange(index,indexN,indexM)" size="mini" :min="1" v-model="itemM.sizeNumber" /></div>
               <div class="zt-size__size">小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}</div>
               <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div>
             </div>
@@ -80,7 +80,12 @@
 </template>
 
 <script>
-import { getShoppingCart, deleteShoppingCart, changeShoppingCart } from '@/api/orderCart'
+import {
+  getShoppingCart,
+  deleteShoppingCart,
+  changeShoppingCart,
+  CalculatePrice,
+} from '@/api/orderCart'
 
 export default {
   name: 'ShopCart',
@@ -92,6 +97,7 @@ export default {
       priceAll: 0,
       checked: false,
       checkOrders: [],
+      priceList: [],
     }
   },
   created() {
@@ -119,7 +125,6 @@ export default {
     // 下面  的 全选
     toggleSelection(val) {
       const that = this
-      console.log(that.checkedAll)
       if (val) {
         that.formData.styleList.forEach(e => {
           e.goodsCheck = true
@@ -182,6 +187,10 @@ export default {
     goBack() {
       this.$router.go(-1)
     },
+    handleChange() {
+      const that = this
+      that.chPrice()
+    },
     // 一级选择框 改变
     cggoodsCheck(id) {
       const that = this
@@ -210,9 +219,57 @@ export default {
           that.checkedAll = false
         })
       }
-      that.chPrice()
+      that.cgpriceAll()
     },
-    chPrice() {
+    async chPrice() {
+      const that = this
+      const list = []
+      let dataL = {}
+      that.formData.styleList.forEach(e => {
+        e.style.forEach(i => {
+          dataL = {
+            styleId: i.styleId,
+            styleNo: e.styleNo,
+            styleColor: i.id,
+            styleSize: [],
+          }
+          i.styleSize.forEach(n => {
+            dataL.styleSize.unshift(n)
+            console.log(dataL)
+          })
+        })
+        if (dataL.styleSize && dataL.styleSize.length !== 0) {
+          list.unshift(dataL)
+        } else {
+          []
+        }
+      })
+      const res = await CalculatePrice({
+        styleList: list,
+      })
+      console.log(res)
+      if (res.head.status === 0) {
+        that.priceAll = res.body.styleList.styleTotalPrice
+      }
+      that.priceList = list
+      const data = await changeShoppingCart({
+        styleList: list,
+      })
+      if (res.head.status === 0) {
+        that.$message({
+          type: 'success',
+          message: '修改成功!',
+        })
+        that.getData()
+      } else {
+        that.$message({
+          type: 'error',
+          message: '修改失败!',
+        })
+      }
+      that.getData()
+    },
+    cgpriceAll() {
       const that = this
       if (that.checkedAll === true) {
         that.priceAll = that.formData.styleTotalPrice
@@ -298,6 +355,8 @@ export default {
             []
           }
         })
+        console.log(list)
+        that.priceList = list
         const res = await changeShoppingCart({
           styleList: list,
         })
@@ -310,8 +369,8 @@ export default {
           this.getData()
         }
         this.$message({
-          type: 'success',
-          message: '删除成功!',
+          type: 'error',
+          message: '删除失败!',
         })
       }).catch(() => {
         this.$message({
@@ -322,26 +381,26 @@ export default {
     },
     toOrder() {
       const that = this
-      // let num = 0
       that.formData.styleList.forEach((e, ide) => {
         e.style.forEach((i, idi) => {
-          if (i.checked === false) {
+          console.log(that.formData2.styleList[ide])
+          if (i.checked === false && that.formData2.styleList) {
             that.formData2.styleList[ide].style.splice(idi, 1)
             if (that.formData2.styleList[ide].style && that.formData2.styleList[ide].style.length === 0) {
               that.formData2.styleList.splice(ide, 1)
             }
           }
-          if (e.goodsCheck || i.checked) {
-            // 如果有一个选中
-            that.$router.push('/styleCenter/orderGoods')
-          } else {
-            this.$message({
-              message: '请选择下单商品',
-              type: 'warning',
-            })
-          }
         })
       })
+      if (that.formData2.styleList && that.formData2.styleList.length !== 0) {
+        // 如果有一个选中
+        that.$router.push('/styleCenter/orderGoods')
+      } else {
+        this.$message({
+          message: '请选择下单商品',
+          type: 'warning',
+        })
+      }
       console.log(that.formData2)
       that.$store.commit('order/addOrderStorage', that.formData2)
     //   this.$store.commit('order/addOrderStorage', JSON.stringify(this.orderData))
@@ -351,6 +410,10 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.zt-page__cart{
+  padding: 20px 0;
+  box-sizing: border-box;
+}
 .zt-order__title{
   padding: 20px;
   color: #c9a76e;
@@ -386,7 +449,7 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 20px 0;
+  padding: 15px 0;
   border-top: 1px solid #ccc;
   box-sizing: border-box;
 }
@@ -395,6 +458,7 @@ export default {
 }
 .zt-cart__line{
   padding: 10px 30px;
+  padding-bottom: 0;
   width: 100%;
   background: #fff;
   margin: 10px 0;

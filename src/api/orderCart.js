@@ -27,9 +27,37 @@ export function changeShoppingCart(params) {
     // cmd: 40007,
   })
 }
-// 用户下单  收货地址
+// 用户下单  get收货地址
 export function getOrderSite(params) {
   return post('/order/customerReceiving/getReceiving', params, {
+    mod: 'home',
+    cmd: 40007,
+  })
+}
+// 用户下单  add收货地址
+export function addOrderSite(params) {
+  return post('/order/customerReceiving/addReceiving', params, {
+    mod: 'home',
+    cmd: 40007,
+  })
+}
+// 用户下单  set 修改收货地址
+export function setOrderSite(params) {
+  return post('/order/customerReceiving/updateReceiving', params, {
+    mod: 'home',
+    cmd: 40007,
+  })
+}
+// 用户下单 下单
+export function addOrder(params) {
+  return post('/order/orderInfo/addOrder', params, {
+    mod: 'home',
+  })
+}
+
+// 计算价格
+export function CalculatePrice(params) {
+  return post('/order/orderInfo/getStylePrice', params, {
     mod: 'home',
     cmd: 40007,
   })
