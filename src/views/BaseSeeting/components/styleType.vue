@@ -5,8 +5,8 @@
      <div> <TablePage v-bind="tablePageOption" ref="cateTable" auto>
             <template slot="content:imgUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
-            <template v-if="row.imgUrl">
-              <el-image class="file-res" :src="row.imgUrl" fit="cover" />
+            <template v-if="row.imgUrl" class="flex items-center">
+            <div class="imgBox"><el-image class="w-full h-full" :src="row.imgUrl" fit="cover" @load="onImageLoad"/></div>
             </template>
           </template>
        </TablePage></div>
@@ -84,11 +84,13 @@ export default {
   },
   methods: {
     async loadData(params) {
-      await cateGoryList({
-        ...params,
+      console.log(params);
+      const con = {
+         ...params,
        userId:sessionStorage.userId,
        type:'ACTEGORY'
-      }).then((res) => {
+      }
+      await cateGoryList(con).then((res) => {
         if(res.head.status === 0) {
           this.data = res.body
           res.body.resultList.forEach(item => {
@@ -112,6 +114,9 @@ export default {
           this.$refs.cateTable.loadData()
         })
       })
+    },
+    onImageLoad() {
+      this.$refs.cateTable.doLayout()
     }
   },
 
@@ -122,9 +127,8 @@ export default {
 /deep/ .el-table__body-wrapper {
     height: 600px;
 }
-/deep/.el-image__inner {
-  width: auto;
-  height: 160px;
-  margin-left: 35px;
+.imgBox {
+  width: 118px;
+  height: 150px;
 }
 </style>
