@@ -108,7 +108,6 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
-          console.log(file);
           this.uploadList = fileList
           this.imgUrl = this.uploadList.response.data.fileUrl
         },
