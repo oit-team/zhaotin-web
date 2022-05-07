@@ -122,4 +122,9 @@ export default {
 /deep/ .el-table__body-wrapper {
     height: 600px;
 }
+/deep/.el-image__inner {
+  width: auto;
+  height: 160px;
+  margin-left: 35px;
+}
 </style>

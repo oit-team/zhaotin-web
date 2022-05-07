@@ -12,6 +12,17 @@
       <el-form-item label="类别排序" prop="dictitemOrderkey">
         <el-input v-model.trim="cateGoryForm.dictitemOrderkey" style="width:60%;"  placeholder="请输入类别排序"></el-input>
       </el-form-item>
+       <el-form-item label="类别图片">
+        <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
+          <i class="el-icon-plus"></i>
+        </vc-upload>
+       </el-form-item>
+        <el-form-item v-if="cateGoryVisibilty" label="类别图片">
+          <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
+          <div class="w-24 h-24 mb-12">
+            <el-image :src="imgUrl" fit="cover" />
+          </div>
+       </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
         <span v-for="(item,index) in sortList" :key='index'>{{item.dictitemOrderkey}},</span>
@@ -26,10 +37,11 @@
 </template>
 
 <script>
+import VcUpload from '@/views/common/Upload'
 import {addCateGory,sortList,updateCateGory,sort} from '@/api/category'
 export default {
   name:'addCategory',
-  components:{},
+  components:{VcUpload},
   data(){
     const validOrder = (rule, value, callback) => {
       if (/^(?:[1-9]\d*|0)$/.test(value) == false) {
@@ -39,6 +51,8 @@ export default {
       }
     }
     return {
+      cateGoryVisibilty:false,
+      imgUrl:'',
       editFlag:false,
       dictitemCode:null,
       cateGoryForm: {
@@ -60,11 +74,12 @@ export default {
     }
   },
   created(){
-    // console.log(this.$route.query.item);
+    console.log(this.$route.query.item.row.imgUrl);
     if(this.$route.query.item){
       this.editFlag = false;
+      this.cateGoryVisibilty = true
       this.cateGoryForm = this.$route.query.item.row;
-    //   this.dictitemCode = this.$route.query.item.dictitemCode;
+      this.imgUrl = this.$route.query.item.row.imgUrl
     }else{
       this.editFlag = true;
     }
@@ -72,6 +87,33 @@ export default {
   mounted(){
     this.querySortList();
     
+  },
+  computed:{
+    // 上传图片
+    uploadOptionCateGory() {
+      return {
+        showFileList: true,
+        multiple: true,
+        typeOption: {
+          'image/*': {
+            data: {
+              fileType: 0,
+            },
+          },
+        },
+        listType: 'picture-card',
+        maxSize: 1024 * 20,
+        limit: 1,
+        chunkSize: 1024 * 5,
+        check: true,
+        accept: 'image/*',
+        onSuccess: (file, fileList) => {
+          console.log(file);
+          this.uploadList = fileList
+          this.imgUrl = this.uploadList.response.data.fileUrl
+        },
+      }
+    },
   },
   methods:{
     goBack(){
@@ -123,9 +165,7 @@ export default {
                 type: 'warning'
               });
             }
-            console.log(res);
           }).catch(err=>{
-            console.log(err)
           });
         } else {
           console.log('error submit!!');
@@ -138,8 +178,11 @@ export default {
              dictCode: "ACTEGORY",
              ...this.cateGoryForm,
              createId: sessionStorage.userId,
+             imgUrl:this.imgUrl
             }
       if(!this.editFlag){  // 编辑
+      console.log(this.$route.query.item.row.imgUrl);
+      
        updateCateGory(con).then((res) => {
            if(res.head.status === 0) {
                 this.$message({
