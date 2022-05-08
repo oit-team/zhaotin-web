@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="position: absolute;height: 100%;width: 100%;">
     <HeaderNav class="w-screen mb-4" />
-    <div class="main container">
+    <div class="main container" style="height: calc(100% - 88px);">
       <!-- <div>基础配置</div> -->
       <!-- 出口 -->
       <router-view />
@@ -23,5 +23,11 @@ export default {
 <style>
 .main {
   min-height: 600px;
+}
+.w-screen{
+  width: 100%!important;
+}
+.el-loading-spinner .circular{
+  margin:0 auto;
 }
 </style>
