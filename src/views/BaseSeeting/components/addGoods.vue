@@ -3,8 +3,8 @@
     <div class="flex justify-between items-center">
       <el-page-header :content="title" @back="goBack" />
       <div class="">
-        <el-button v-if="operateFlag!=&quot;view&quot;" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm')">保存</el-button>
-        <el-button v-if="operateFlag!=&quot;view&quot;" size="small" icon="el-icon-position" type="success" @click="releaseGood('ruleForm')">发布</el-button>
+        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm')">保存</el-button>
+        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-position" type="success" @click="releaseGood('ruleForm')">发布</el-button>
       </div>
     </div>
 
@@ -14,7 +14,7 @@
       <div class="goodsFormBox">
         <!-- 菜单栏 -->
         <div>
-          <el-tabs class="" v-model="activeNum">
+          <el-tabs v-model="activeNum">
             <!-- 基础信息面板 -->
             <el-tab-pane label="基础信息" name="message">
               <!-- <el-collapse-item title="" name="1"> -->
@@ -27,12 +27,12 @@
                     <el-input v-model.trim="ruleForm.styleNo" style="width:76%;" maxlength="32" placeholder="请输入商品编号" />
                   </el-form-item>
                   <el-form-item label="商品类别" prop="styleCategory">
-                    <el-select v-model="ruleForm.styleCategory" style="width:76%;" placeholder="请选择商品类别">
+                    <el-select v-model="ruleForm.styleCategory" @change="getClothingSizeInfo" style="width:76%;" placeholder="请选择商品类别">
                       <el-option
                         v-for="item in styleCategory"
-                        :key="item.styleType"
-                        :label="item.DICTITEM_DISPLAY_NAME"
-                        :value="item.DICTITEM_DISPLAY_NAME"
+                        :key="item.dictitemCode"
+                        :label="item.dicttimeDisplayName"
+                        :value="item.dicttimeDisplayName"
                       />
                     </el-select>
                   <!-- <el-input
@@ -48,37 +48,57 @@
                   <el-form-item label="商品材质" prop="styleFabric">
                     <el-input v-model.trim="ruleForm.styleFabric" style="width:76%;" maxlength="64" placeholder="请输入商品材质" />
                   </el-form-item>
+                  <el-collapse>
+                    <el-collapse-item title="价格配置" name="2">
+                      <el-form-item label="成本价格" prop="costPrice">
+                        <el-input v-model.trim="ruleForm.costPrice" style="width:76%;" maxlength="32" placeholder="请输入成本价格" />
+                      </el-form-item>
+                      <el-form-item label="吊牌价格" prop="tagPrice">
+                        <el-input v-model.trim="ruleForm.tagPrice" style="width:76%;" maxlength="32" placeholder="请输入品牌价格" />
+                      </el-form-item>
+                      <el-form-item label="零售价格" prop="retailPrice">
+                        <el-input v-model.trim="ruleForm.retailPrice" style="width:76%;" maxlength="32" placeholder="请输入零售价格" />
+                      </el-form-item>
+                    </el-collapse-item>
+                  </el-collapse>
+                  <el-collapse>
+                    <el-collapse-item title="批发价格" name="3">
+          <!--            <el-form-item label="起订数" prop="minimumOrderQuantity">
+                        <el-input v-model.trim="styleTradePrice[0].minimumOrderQuantity" style="width:76%;" maxlength="32" placeholder="请输入起订数" />
+                      </el-form-item>
+                      <el-form-item label="截止数" prop="maximumOrder">
+                        <el-input v-model.trim="styleTradePrice[0].maximumOrder" style="width:76%;" maxlength="32" placeholder="请输入截止数" />
+                      </el-form-item> -->
+                      <el-form-item label="批发价" prop="onePrice">
+                        <el-input :disabled="true" v-model.trim="onePrice" style="width:76%;" maxlength="32" placeholder="请输入批发价" />
+                      </el-form-item>
+                    </el-collapse-item>
+                  </el-collapse>
                   <!-- 基础配置折叠面板 -->
                   <el-collapse>
                     <el-collapse-item title="基础配置" name="1">
-                      <el-form-item label="所属季节" prop="bandName">
-                        <el-select v-model="ruleForm.bandName" style="width:76%;" placeholder="请选择所属季节">
+                      <el-form-item label="所属系列" prop="seriesId">
+                        <el-select v-model="ruleForm.seriesId" style="width:76%;" placeholder="请选择所属系列">
                           <el-option
                             v-for="item in seasoNameList"
                             :key="item.id"
                             :label="item.seasonName"
-                            :value="item.seasonName"
+                            :value="item.id"
                           />
                         </el-select>
                       </el-form-item>
                       <!-- recommendationLevel  '0' 非重点  ‘1’ 重点款 -->
                       <el-form-item label="是否重点款" prop="recommendationLevel">
-                        <!-- <el-input
-                v-model="ruleForm.recommendationLevel"
-                style="width:76%;"
-                maxlength="10"
-                placeholder="需要确认字段的详细代表含义"
-              /> -->
                         <el-select v-model="ruleForm.styleMajor" style="width:76%;" placeholder="请选择是否标记为重点款">
                           <el-option label="否" value="0" />
                           <el-option label="是" value="1" />
                         </el-select>
                       </el-form-item>
                       <el-form-item label="适用场合" prop="styleInfo">
-                        <el-input v-model.trim="ruleForm.remarks" style="width:76%;" placeholder="请输入适用场合" />
+                        <el-input v-model.trim="ruleForm.styleInfo" style="width:76%;" placeholder="请输入适用场合" />
                       </el-form-item>
                       <el-form-item label="商品标签">
-                        <el-input v-model.trim="addLabel" style="width:56%;" maxlength="32" placeholder="请添加商品标签" />
+                        <el-input v-model.trim="addLabel" style="width:calc(76% - 120px)" maxlength="32" placeholder="请添加商品标签" />
                         <el-button class="addGoods-addBtn" @click="addGoodLabel(addLabel)">新增</el-button>
                       </el-form-item>
                       <div v-if="labelList.length>0" class="labelList">
@@ -103,7 +123,7 @@
                       <el-collapse-item title="保养及卖点" name="sale">
                         <el-form-item label="洗涤保养">
                           <quill
-                            style="width:96%;"
+                            style="width:100%;"
 
                             :value="ruleForm.washMaintenance"
                             :editor-setting="editorSetting"
@@ -113,7 +133,7 @@
                         </el-form-item>
                         <el-form-item label="面料卖点">
                           <quill
-                            style="width:96%;"
+                            style="width:100%;"
                             :value="ruleForm.sellingPointFabric"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
@@ -122,7 +142,7 @@
                         </el-form-item>
                         <el-form-item label="设计卖点">
                           <quill
-                            style="width:96%;"
+                            style="width:100%;"
                             :value="ruleForm.designSellingPoint"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
@@ -131,7 +151,7 @@
                         </el-form-item>
                         <el-form-item label="穿着卖点">
                           <quill
-                            style="width:96%;"
+                            style="width:100%;"
                             :value="ruleForm.wearSellingPoint"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
@@ -172,17 +192,17 @@
                         :key="index"
                         :label="item.value"
                       >
-                      <!-- <template slot-scope="scope">
-              <input v-if="1" v-model="scope.row[item.key]" type="text" maxlength="8" />
-              <span v-else>{{ scope.row[item.key] }}</span>
-            </template> -->
+                      <template slot-scope="scope">
+                        <input v-if="editSizeFlag" v-model="scope.row[item.key]" type="text" maxlength="8" />
+                        <span v-else>{{ scope.row[item.key] }}</span>
+                      </template>
                       </el-table-column>
                     </el-table>
                     <div style="height:30px;"></div>
                   </div>
                   <div v-else>
                     <div style="margin-right:20px;">商品尺码</div>
-                    <p class="noSizeInfo">未发现<span style="color:#e60012;">{{ ruleForm.styleCategory }}</span>相关尺码配置，请前往信息预设中设置。</p>
+                    <p class="noSizeInfo">未发现<span style="color:#e60012;">{{ activeStyleCategory.dicttimeDisplayName }}</span>相关尺码配置，请前往信息预设中设置。</p>
                   </div>
                 </div>
               </div>
@@ -197,7 +217,7 @@
                       <ul class="flex direction-col" v-if="colorList.length">
                         <li
                           @click="deleteColor(item,index)"
-                          class="wordBorder"
+                          :class="{'active':colorNum == index,'wordBorder':true}"
                           v-for="(item,index) in colorList"
                           :key="item"
                         >
@@ -229,56 +249,64 @@
                   <!-- 上传图片 -->
                   <div class="flex flex-col" v-if="uploadImgFlag">
                     <el-form-item label="商品图片">
-                      <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
+                      <vc-upload v-bind="uploadOptionimg" @onRemove='onRemove' ref="uploadImage">
                         <i class="el-icon-plus"></i>
                       </vc-upload>
                     </el-form-item>
-                    <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
+                    <p class="tip">*最多可以上传6张图片，推荐格式jpg或png</p>
 
                     <el-form-item label="商品细节">
-                      <vc-upload v-bind="uploadOptionxijie" ref="uploadxijieImage">
+                      <vc-upload v-bind="uploadOptionxijie" @onRemove='onRemoveXj' ref="uploadxijieImage">
                         <i class="el-icon-plus"></i>
                       </vc-upload>
                     </el-form-item>
-                    <p class="tip">*最多可以上传6张图片(按住Ctrl或Alt键选择多张图片上传)，推荐格式jpg或png</p>
+                    <p class="tip">*最多可以上传6张图片，推荐格式jpg或png</p>
                   </div>
                 <!-- </page-container> -->
                 </div>
               </div>
-            </el-tab-pane>
-            <!-- 商品价格面板 -->
-            <el-tab-pane class="" label="价格" name="price">
-              <el-form-item label="成本价格" prop="costPrice">
-                <el-input v-model.trim="ruleForm.costPrice" style="width:100%;" maxlength="32" placeholder="请输入成本价格" />
-              </el-form-item>
-              <el-form-item label="吊牌价格" prop="tagPrice">
-                <el-input v-model.trim="ruleForm.tagPrice" style="width:100%;" maxlength="32" placeholder="请输入品牌价格" />
-              </el-form-item>
-              <el-form-item label="零售价格" prop="retailPrice">
-                <el-input v-model.trim="ruleForm.retailPrice" style="width:100%;" maxlength="32" placeholder="请输入零售价格" />
-              </el-form-item>
-              <!-- 批发价格面板 -->
-              <div class="">
-                <el-collapse label="批发价格" v-model="ruleForm.tradePrice" :accordion="true" name="tradePrice">
-                  <el-collapse-item title="批发价格">
-                    <div class="flex items-center justify-between mb-4">
-                      <el-input v-model="styleTradePrice[0].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
-                      <el-input v-model="styleTradePrice[0].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
-                      <el-input v-model="onePrice" style="width:20%;" placeholder="请输入批发价格" />
+              <el-divider />
+              <!-- 商品尺码 -->
+              <div>
+                <!-- 商品尺码 -->
+                <div v-if="activeGoodsShow" class="goodsSizeBox">
+                  <div v-if="sizeInfo">
+                    <div style="margin:20px 0px;">
+                      <span style="margin-right:20px;">商品库存</span>
                     </div>
-                    <!-- <div class="flex items-center justify-between mb-4">
-                      <el-input v-model="styleTradePrice[1].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
-                      <el-input v-model="styleTradePrice[1].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
-                      <el-input v-model="twoPrice" style="width:20%;" placeholder="请输入批发价格" />
-                    </div>
-                    <div class="flex items-center justify-between">
-                      <el-input v-model="styleTradePrice[2].minimumOrderQuantity" style="width:20%;" placeholder="请输入起订数" /><div>———</div>
-                      <el-input v-model="styleTradePrice[2].maximumOrder" style="width:20%;" placeholder="请输入截止数" /><div>———></div>
-                      <el-input v-model="threePrice" style="width:20%;" placeholder="请输入批发价格" />
-                    </div> -->
-                  <!-- <div><input type="text" /></div> -->
-                  </el-collapse-item>
-                </el-collapse>
+                    <el-table
+                      style="width: 100%"
+                      border
+                      :data="sizeInfo.resultMap"
+                      @current-change="changeRow"
+                      ref="goodsSizeRef"
+                    >
+                      <el-table-column type="selection" width="55" >
+                      </el-table-column>
+                      <el-table-column label="尺码\部位">
+                        <template slot-scope="scope">
+                          <span>
+                            {{ scope.row.SIZE_NAME }}
+                          </span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column
+                        v-for="(item, index) in sizeInfo.sizeInfoVO.upTitle"
+                        :key="index"
+                        :label="item.value"
+                      >
+                      <template slot-scope="scope">
+                        <span>{{ scope.row[item.key] }}</span>
+                      </template>
+                      </el-table-column>
+                    </el-table>
+                    <div style="height:30px;"></div>
+                  </div>
+                  <div v-else>
+                    <div style="margin-right:20px;">商品尺码</div>
+                    <p class="noSizeInfo">未发现<span style="color:#e60012;">{{ activeStyleCategory.dicttimeDisplayName }}</span>相关尺码配置，请前往信息预设中设置。</p>
+                  </div>
+                </div>
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -294,7 +322,7 @@
 <script>
 import quill from '@/views/common/quillEditor'
 import { addQuillTitle } from '@/assets/js/js/quill-title'
-import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo } from '@/api/goods'
+import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo } from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
 // import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
 // import axios from 'axios'
@@ -315,11 +343,19 @@ export default {
       callback()
     }
     return {
+      isEdit: false,
+      videoList: [],
+      videoUrl: '',
+      activeGoodsShow: false,
+      activeGoodsSize: [],
       uploadImgFlag: false, // 上传图片的显示隐藏
       colorNum: undefined,
       selectedColorName: [], //
+      selectedColorNameXiJie: [],
       styleCategory: [], // 商品类别渲染列表
+      activeStyleCategory:'', //选中的商品类别
       seasoNameList: [], // 所属季节渲染列表
+      seriesList: [], // 所属系列渲染列表
       startPrice: '', // 起订数
       colorList: [
         // {
@@ -353,7 +389,7 @@ export default {
       // sellPoint:"<p>销售买点说的是的空间发生口角发生口角的看法大哥大很好看交换空间</p><br/><p>dfkjgdfkghdfjkgjdk</p>",
       ruleForm: {
         recommendationLevel: '0',
-        status: 'NOTGROUNDING', // NOTGROUNDING  未上架  GROUNDING 已上架
+        status: '0', // NOTGROUNDING  未上架  GROUNDING 已上架
         styleId: '', // 款式id
         styleCategory: '', // 商品类别
         styleColor: '', // 商品颜色
@@ -364,8 +400,7 @@ export default {
         styleNo: '', // 商品编号
         stylePrice: '', // 商品价格
         remarks: '', // 备注
-        // seasonId: '', // 所属季节
-        bandName: '', // 所属季节
+        seriesId: '', // 所属系列
         retailPrice: '', // 零售价格
         tagPrice: '', // 品牌价格
         costPrice: '', // 成本价格
@@ -374,7 +409,6 @@ export default {
         wearSellingPoint: '', // 穿着卖点
         sellingPointFabric: '', // 面料卖点
         designSellingPoint: '', // 设计卖点
-        styleSize: [], // 商品尺码
         styleMajor: '', // 是否重点款
       },
       // 不同的批发价格
@@ -431,8 +465,8 @@ export default {
           },
           { validator: pricevalidate, trigger: 'blur' },
         ],
-        bandName: [
-          { required: true, message: '请选择所属季节', trigger: 'blur' },
+        seriesId: [
+          { required: true, message: '请选择所属系列', trigger: 'blur' },
         ],
         costPrice: [
           { required: true, message: '请选择成本价格', trigger: 'blur' },
@@ -480,7 +514,7 @@ export default {
 
       // goodSizeFlag: false, // 商品尺寸默认显示与否
       sizeInfo: null, // 商品尺码
-      // editSizeFlag: false,
+      editSizeFlag: false,
       // sizeTableList: [], // 修改商品尺寸传参值
     }
   },
@@ -497,6 +531,7 @@ export default {
             },
           },
         },
+        fileList: this.selectedColorName[this.colorNum],
         listType: 'picture-card',
         maxSize: 1024 * 20,
         limit: 6,
@@ -505,7 +540,8 @@ export default {
         accept: 'image/*',
         onSuccess: (file, fileList) => {
           this.uploadList = fileList
-          this.selectedColorName[this.colorNum].imgUrl = this.uploadList.response.data.fileUrl
+          // this.selectedColorName[this.colorNum].imgUrl = this.uploadList.response.data.fileUrl
+          this.selectedColorName[this.colorNum] = this.$refs.uploadImage.uploadFiles
           // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
         },
       }
@@ -522,6 +558,7 @@ export default {
             },
           },
         },
+        fileList: this.selectedColorNameXiJie[this.colorNum],
         listType: 'picture-card',
         maxSize: 1024 * 20,
         limit: 6,
@@ -531,7 +568,7 @@ export default {
         onSuccess: (file, fileList) => {
           // console.log(fileList)
           this.uploadList = fileList
-          this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.fileUrl
+          this.selectedColorNameXiJie[this.colorNum] = this.$refs.uploadxijieImage.uploadFiles
           // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
         },
       }
@@ -544,18 +581,22 @@ export default {
         data: {
           fileType: 1,
         },
+        fileList: this.videoList,
         listType: 'picture-card',
         maxSize: 1024 * 50,
-        limit: 6,
+        limit: 1,
         chunkSize: 1024 * 50,
         check: true,
         accept: 'video/*',
         onSuccess: (file, fileList) => {
-          // console.log(fileList)
           this.uploadList = fileList
-          this.selectedColorName[this.colorNum].videoUrl = this.uploadList.response.data.fileUrl
+          // console.log(this.selectedColorName)
+          // this.colorNum = this.colorNum  ? this.colorNum : 0;
+          // this.selectedColorName[this.colorNum] = {}
+          // this.selectedColorName[this.colorNum].videoUrl = this.uploadList.response.data.fileUrl
+          this.ruleForm.styleVideo = this.uploadList.response.data.fileUrl
           // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
-        },
+        }
       }
     },
     onePrice() {
@@ -578,9 +619,22 @@ export default {
   },
   created() {
     this.getSeasonId()
+    this.isEdit = this.$route.query.flag
+    if (this.$route.query.flag == 1) {
+      this.isEdit = false
+    } else {
+      this.isEdit = true
+    }
     if (this.$route.query.item) {
       this.title = '编辑'
       this.ruleForm = this.$route.query.item.row
+      this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
+      if (this.ruleForm.styleLabel) {
+        this.labelList = this.ruleForm.styleLabel.split(',')
+      }
+      if (this.ruleForm.styleVideo) {
+        this.videoList.push({url: this.ruleForm.styleVideo})
+      }
     //   this.menuIds = '1'
     } else {
       this.title = '新增'
@@ -592,6 +646,12 @@ export default {
     this.getGoodsCategory()
   },
   methods: {
+    onRemove(file) {
+      this.selectedColorName[this.colorNum] = this.selectedColorName[this.colorNum].filter( item => item.url != file.url)
+    },
+    onRemoveXj(file) {
+      this.selectedColorNameXiJie[this.colorNum] = this.selectedColorNameXiJie[this.colorNum].filter( item => item.url != file.url)
+    },
     //
     handlePictureCardPreview(file) {
       // console.log(file)
@@ -631,6 +691,7 @@ export default {
     },
     // 商品颜色
     addColor() {
+      console.log('添加颜色')
       this.drawer = true
       // 打开弹框时自动获取焦点
       this.$nextTick(() => {
@@ -639,12 +700,29 @@ export default {
     },
     // 点击删除已输入的商品颜色
     deleteColor(item, index) {
+      const _this = this
+      if (this.$refs.uploadImage) {
+        this.$refs['uploadImage'].clearFiles()
+        this.$refs['uploadxijieImage'].clearFiles()
+      }
+      const times = this.colorNum
+      if (this.activeGoodsShow&&this.$refs.goodsSizeRef) {
+        this.activeGoodsSize[times] = JSON.stringify(this.$refs.goodsSizeRef.selection) //记录选中的尺寸
+        this.$refs.goodsSizeRef.clearSelection()
+      }
       this.uploadImgFlag = true
       // this.colorList.splice(item, 1)
       this.colorNum = index
-      // console.log(item)
-      this.selectedColorName.push({ item })
-      // console.log(this.selectedColorName)
+      
+      if (_this.activeGoodsShow&&_this.activeGoodsSize[_this.colorNum]&&_this.activeGoodsSize[_this.colorNum].length > 0) {
+        JSON.parse(_this.activeGoodsSize[this.colorNum]).forEach(item => {
+          let res = _this.sizeInfo.resultMap.find(Item => {
+            return Item.SIZEID == item.SIZEID
+          })
+          _this.$refs.goodsSizeRef.toggleRowSelection(res,true);
+        })
+      }
+      _this.activeGoodsShow = true
     },
     close() {
       this.drawer = false
@@ -693,6 +771,9 @@ export default {
         // console.log(res)
         if (res.head.status === 0) {
           this.styleCategory = res.body.result
+          if (this.ruleForm.seriesId || this.ruleForm.seriesId === 0) {
+            this.getClothingSizeInfo()
+          }
         } else {
           this.$message({
             message: res.head.msg,
@@ -743,18 +824,22 @@ export default {
     // 尺码==========================
     // 获取商品尺码信息
     getClothingSizeInfo(val) {
+      console.log(this.styleCategory)
+      const label = this.styleCategory.find(item => item.dicttimeDisplayName == this.ruleForm.styleCategory)
+      console.log(this.ruleForm.styleCategory)
+      this.activeStyleCategory = label
       const con = {
         brandId: sessionStorage.brandId,
-        // styleNo:_this.ruleForm.styleNo,
-        catergre: val,
-        styleId: this.ruleForm.styleId,
+        catergre: label.dicttimeDisplayName,
+        styleId: null,
       }
       getClothingSizeInfo(con).then((res) => {
-        // console.log(res)
-        if (res.data.head.status === 0) {
-          if (res.data.body) {
-            this.sizeInfo = res.data.body
-            this.sizeTableList = res.data.body.resultMap
+        if (res.head.status === 0) {
+          if (res.body) {
+            this.sizeInfo = res.body
+            console.log('sizeInfo',this.sizeInfo)
+            this.sizeTableList = res.body.resultMap
+            console.log(this.sizeTableList)
             this.sizeTableList.forEach(el => {
               el.userId = sessionStorage.userId
               const temp = el.SIZE_NAME
@@ -764,7 +849,10 @@ export default {
                 el.id = tempId
               }
             })
-            // // console.log("this.sizeTableList,",this.sizeTableList)
+            if (this.ruleForm.styleSizeList.length > 0) {
+              this.setSizeInfo()
+            }
+            console.log("this.sizeTableList,",this.sizeTableList)
           } else {
             this.sizeInfo = null
             this.sizeTableList = []
@@ -772,10 +860,10 @@ export default {
         } else {
           this.sizeInfo = null
           this.sizeTableList = []
-          // _this.$message({
-          //   message: res.data.head.msg,
-          //   type: 'warning'
-          // });
+          _this.$message({
+            message: res.head.msg,
+            type: 'warning'
+          });
         }
       }).catch(err => {
         // console.log(err)
@@ -788,7 +876,7 @@ export default {
     // 商品尺码
     editSizeConfirm() {
       this.editSizeFlag = false
-      // // console.log("this.sizeTableList:",this.sizeTableList)
+      console.log("this.sizeTableList:",this.sizeTableList)
     },
     changeRow(currentRow, oldCurrentRow) {
       // // console.log("currentRow, ",currentRow,"oldCurrentRow:", oldCurrentRow);
@@ -809,37 +897,258 @@ export default {
 
     // 保存
     saveGood(formName) {
-      this.$confirm('确认保存该商品信息吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(() => {
-        this.saveGoodFun('NOTGROUNDING', formName, 'save')
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消',
-        })
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认保存该商品信息吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }).then(() => {
+            if (this.title == '编辑'){
+              this.editGoodFun('NOTGROUNDING', formName)
+            }else {
+              this.saveGoodFun('NOTGROUNDING', formName, 'save')
+            }
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            })
+          })
+        }
       })
     },
     // 发布
     releaseGood(formName) {
-      this.$confirm('您确定要发布商品至昭廷吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(() => {
+      // this.$confirm('您确定要发布商品至昭廷吗?', '提示', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning',
+      // }).then(() => {
         this.saveGoodFun('GROUNDING', formName, 'release')
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消',
+      // }).catch(() => {
+      //   this.$message({
+      //     type: 'info',
+      //     message: '已取消',
+      //   })
+      // })
+    },
+    getSizeList() {
+      let sizeList = [];
+      let styleColor = [];
+      const _this = this;
+      if (this.$refs.goodsSizeRef) {
+        let sizeConfig = [];
+        _this.sizeInfo.resultMap.forEach(item => {
+          _this.sizeInfo.sizeInfoVO.upTitle.forEach(Item => {
+            sizeConfig = []
+            if (item[Item.key]) {
+              sizeConfig.push(item[Item.key])
+            } else {
+              sizeConfig.push('')
+            }
+          })
+          sizeList.push({
+            sizeConfig: sizeConfig,
+            ID: item.SIZEID,
+            SIZE_NAME: item.SIZE_NAME,
+            userId: item.userId,
+            sort: 1,
+            sizeName: item.SIZE_NAME
+          })
         })
+      }
+      return sizeList
+    },
+    getStyleColor() {
+      if (this.activeGoodsShow&&this.$refs.goodsSizeRef) {
+        this.activeGoodsSize[this.colorNum] = JSON.stringify(this.$refs.goodsSizeRef.selection) //记录选中的尺寸
+      }
+      let styleColor = [];
+      const _this = this;
+      this.colorList.forEach((item,index) => {
+        let sizeList = [];
+        styleColor.push({
+          colourName: item
+        })
+        if (_this.selectedColorName[index] &&_this.selectedColorName[index].length > 0 ) {  //判断是否存在 商品图片
+          let imgArr = []
+          _this.selectedColorName[index].forEach(function(imgItem,imgIndex){
+            if (imgItem.response) {
+              imgArr.push(imgItem.response.data.fileUrl)
+            } else {
+              imgArr.push(imgItem.url)
+            }
+          })
+          styleColor[index].stylePicture = imgArr.toString();
+        } else {
+          styleColor[index].stylePicture = ''
+        }
+        if (_this.selectedColorNameXiJie[index]&&_this.selectedColorNameXiJie[index].length>0) {  //判断是否存在 商品图片
+          let imgArr = [];
+          _this.selectedColorNameXiJie[index].forEach(function(imgItem,imgIndex){
+            if (imgItem.response) {
+              imgArr.push(imgItem.response.data.fileUrl)
+            } else {
+              imgArr.push(imgItem.url)
+            }
+          })
+          styleColor[index].styleDetailPicture = imgArr.toString()
+        } else {
+          styleColor[index].styleDetailPicture = ''
+        }
+        if (this.activeGoodsSize[index]) {
+          let sizeConfig = [];
+          let sizeKey = [];
+          JSON.parse(_this.activeGoodsSize[index]).forEach(item => {
+            _this.sizeInfo.sizeInfoVO.upTitle.forEach(Item => {
+              sizeConfig = []
+              sizeKey = []
+              let goodsInfo = _this.sizeInfo.resultMap.find( goods => goods.SIZEID == item.SIZEID)
+              if (goodsInfo[Item.key]) {
+                sizeConfig.push(goodsInfo[Item.key])
+                sizeKey.push(Item.value)
+              } else {
+                sizeConfig.push('')
+              }
+            })
+            sizeList.push({
+              sizeValue: sizeConfig,
+              sort: 1,
+              sizeName: item.SIZE_NAME,
+              sizeKey: sizeKey,
+            })
+          })
+        }
+        styleColor[index].styleSize = sizeList
       })
+      return styleColor
+    },
+    saveGoodFun() {
+      
+      // console.log(this.labelList)  商品标签
+      const _this = this;
+      const con = this.ruleForm;
+      con.stylePicture = ''  //款式图片 url地址
+      con.brandId = sessionStorage.brandId //所属机构
+      con.tradePrice = this.onePrice //批发价
+      con.styleVideoPatch = '' //商品视频贴片
+      con.styleDetailPicture = '' // 暂无  应该是商品图片
+      con.accessories = ''// 暂无 商品辅料
+      con.filler = '' //暂无 无说明
+      con.profitIndex = '' // 暂无 无说明
+      con.efficiencyIndex = '' // 暂无 无说明
+      con.service = '' // 暂无 服务说明
+      con.styleLabel = this.labelList.toString(); //商品标签
+      con.sizeList = this.getSizeList();
+      con.styleColor = this.getStyleColor();
+      console.log(con)
+      // console.log(JSON.stringify(con))
+      // return;
+      addGoodsInfo(con).then((res) => {
+        console.log(res)
+        if (res.head.status == 0) {
+          _this.$message({
+            type: 'success',
+            message: res.head.msg,
+          })
+          _this.$router.back()
+        } else {
+          _this.$message({
+            type: 'error',
+            message: res.head.msg,
+          })
+        }
+      }).catch(err =>{
+        console.log(err)
+      })
+    },
+    editGoodFun() {
+      const _this = this;
+      const con = this.ruleForm;
+      con.stylePicture = ''  //款式图片 url地址
+      con.brandId = sessionStorage.brandId //所属机构
+      con.tradePrice = this.onePrice //批发价
+      con.styleVideoPatch = '' //商品视频贴片
+      con.styleDetailPicture = '' // 暂无  应该是商品图片
+      con.accessories = ''// 暂无 商品辅料
+      con.filler = '' //暂无 无说明
+      con.profitIndex = '' // 暂无 无说明
+      con.efficiencyIndex = '' // 暂无 无说明
+      con.service = '' // 暂无 服务说明
+      con.styleLabel = this.labelList.toString();
+      con.sizeList = this.getSizeList();
+      con.styleColor = this.getStyleColor();
+
+      updateStyleInfo(con).then((res) => {
+        if (res.head.status == 0) {
+          _this.$message({
+            type: 'success',
+            message: res.head.msg,
+          })
+          _this.$router.back()
+        } else {
+          _this.$message({
+            type: 'error',
+            message: res.head.msg,
+          })
+        }
+      }).catch((err) => {
+        
+      })
+      console.log(con)
+      console.log('edit')
     },
     // 重置
     resetForm(formName) {
       this.$refs[formName].resetFields()
+    },
+    setSizeInfo() {
+      const _this = this;
+      this.sizeInfo.resultMap.forEach((item,index) => {
+        _this.sizeInfo.sizeInfoVO.upTitle.forEach((Item,Index) => {
+          item[Item.key] = _this.ruleForm.styleSizeList.find(Goods => Goods.sizeName == item.sizeName).sizeConfig[Index]
+        })
+      })
+      this.setImgInfo() 
+    },
+    setImgInfo() {
+      const _this = this
+      let goodsSize = ''
+      let goodsSizeList = []
+      let imgList = []
+      let imgDetalList = []
+      this.ruleForm.styleColorList.forEach((item,index) => {
+        goodsSizeList = []
+        imgList = []
+        imgDetalList = []
+        _this.colorList.push(item.styleColor)
+        item.styleSize.forEach((Item,Index) => {
+          goodsSize = _this.sizeInfo.resultMap.find(GoodsItem => GoodsItem.sizeName == Item.sizeName)
+          goodsSizeList.push(goodsSize)
+        }) 
+        item.styleImg.forEach((Item,Index) => {
+          imgList.push({
+            url:Item.resUrl
+          })
+        })
+        item.styleImgDetail.forEach((Item,Index) => {
+          imgDetalList.push({
+            url:Item.resUrl
+          })
+        })
+        // goodsSize = _this.sizeInfo.resultMap.find(Item => Item.SIZEID == )
+        _this.activeGoodsSize.push(JSON.stringify(goodsSizeList))
+        _this.selectedColorName.push(imgList)
+        _this.selectedColorNameXiJie.push(imgDetalList)
+        
+      })
+      if (_this.colorList.length > 0) {
+        this.activeGoodsShow = true
+        this.$nextTick(() => {
+          this.deleteColor(this.colorList[0],0)
+        })
+      }
     },
   },
 }
@@ -859,12 +1168,12 @@ export default {
   .goodsFormBox{
     width:100%;
     line-height: 100%;
-    display: flex;
+    // display: flex;
     // justify-content: space-between;
     // border:2px solid red;
     .baseInfoBox{
       width: 46%;
-      // border:2px solid red;
+      border:2px solid red;
       .labelList{
         padding-left:90px;
         display: flex;
@@ -878,7 +1187,8 @@ export default {
       }
     }
     .fileInfoBox{
-      width: 54%;
+      width: 50%;
+      padding-left:20px;
       border-left:1px solid #DCDFE6;
       .avatar-uploader .el-upload {
         border: 1px dashed #d9d9d9;
@@ -984,7 +1294,8 @@ export default {
   margin-left: 200px!important;
 }
 .left-box {
-  width: 372px;
+  width: 50%;
+  padding-right:20px;
 }
 .wordBorder {
   width: 100px;
@@ -996,6 +1307,9 @@ export default {
   margin-left: 20px;
   margin-bottom: 15px;
   background-color: rgb(240, 238, 238);
+}
+li.active{
+  background:#bcbcbc
 }
 .addColor {
   width: 100px;
@@ -1025,10 +1339,22 @@ export default {
   font-size: 14px;
   font-weight: 800;
   color: #303133;
-  position: relative;
-    left: 300px;
+
 }
 /deep/ .el-tabs__active-bar {
   display: none;
 }
+.el-collapse{
+  border-bottom:0px;
+}
+/deep/ .el-tabs__nav-scroll{
+  display: flex;
+  justify-content: center;
+}
+
+</style>
+<style>
+  .el-upload-list__item {
+    transition: none !important;
+  }
 </style>

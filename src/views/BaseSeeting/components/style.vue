@@ -1,11 +1,13 @@
 <template>
-  <div>
+  <div style="height: 100%;">
+    <div class="main container" style="height: 100%;">
       <!-- <div>商品中心</div> -->
-      <div>
+      <div class="table-h" style="height: 100%;">
         <TablePage v-bind="tablePageOption" auto ref="page">
+          <!-- <el-drawer :visible.sync="drawerVisible" size="40%"> -->
           <template slot="content:resUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
-            <template v-if="row.resUrl">
+            <template v-if="true">
               <el-image class="file-res" :src="row.resUrl" fit="cover" />
             </template>
             <!-- 商品视频 -->
@@ -13,10 +15,12 @@
               <el-image class="file-res" :src="row.videoImg" fit="cover" />
             </template> -->
           </template>
+          <!-- </el-drawer> -->
         </TablePage>
       </div>
       <!-- 出口 -->
       <router-view />
+    </div>
     <!-- 导入导出操作 -->
 
     <!-- 导入商品 -->
@@ -122,7 +126,7 @@
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getProductList } from '@/api/product'
-import { getDeleteStyleInfo, getExportInfo, addimporStyleInfo } from '@/api/goods'
+import { getDeleteStyleInfo, getExportInfo, addimporStyleInfo, updateStyleStatusById } from '@/api/goods'
 import axios from 'axios'
 
 export default {
@@ -181,12 +185,12 @@ export default {
             type: 'primary',
             click: () => this.export(),
           },
-          {
-            name: '导入库存',
-            icon: 'el-icon-download',
-            type: 'primary',
-            click: () => this.importStock(),
-          },
+          // {
+          //   name: '导入库存',
+          //   icon: 'el-icon-download',
+          //   type: 'primary',
+          //   click: () => this.importStock(),
+          // },
         ],
         table: {
           data: this.data.resultList,
@@ -199,7 +203,7 @@ export default {
                 icon: 'el-icon-view',
                 click: (scope) => this.$router.push({
                   path: '/basls/style/addGoods',
-                  query: { item: scope },
+                  query: { item: scope , flag: 1},
                 }),
               },
               {
@@ -209,13 +213,50 @@ export default {
                 click: this.deleteGoods,
               },
               {
-                tip: '商品上架',
-                type: 'danger',
-                icon: 'el-icon-top',
-                click: ({ row }) => this.$router.push({
-                  // path: '/system/addRole',
-                  params: { item: row },
+                tip: '编辑商品',
+                type: 'success',
+                icon: 'el-icon-edit',
+                disabled: ({ row }) => {
+                  if (row.status == '1') {  //1 是已上架
+                    return true
+                  } else if (row.status == '0') {
+                    return false
+                  }
+                },
+                click: (scope) => this.$router.push({
+                  path: '/basls/style/addGoods',
+                  query: { item: scope , flag : 0},
                 }),
+              },
+              {
+                tip: '商品上架',
+                type: 'warning',
+                icon: 'el-icon-top',
+                disabled: ({ row }) => {
+                  if (row.status == '1') {
+                    return true
+                  } else if (row.status == '0') {
+                    return false
+                  }
+                },
+                click: ({ row }) => {
+                  this.updateStyleStatusById(row ,1)
+                }
+              },
+              {
+                tip: '商品下架',
+                type: 'warning',
+                icon: 'el-icon-bottom',
+                disabled: ({ row }) => {
+                  if (row.status == '0') {
+                    return true
+                  } else if (row.status == '1') {
+                    return false
+                  }
+                },
+                click: ({ row }) => {
+                  this.updateStyleStatusById(row ,0)
+                }
               },
               {
                 tip: '库存分布',
@@ -241,6 +282,9 @@ export default {
 
   },
   methods: {
+    isDisabled(row) {
+      console.log(row)
+    },
     addGoods() {
       this.$router.push('/basls/style/addGoods')
     },
@@ -507,13 +551,52 @@ export default {
     confirmExportGoods() {
 
     },
+    // 商品上下架
+    updateStyleStatusById(row,status) {
+      let msg = '';
+      if (status == 1) {
+        msg = '上架'
+      } else if (status == 0) {
+        msg = '下架'
+      }
+      this.$confirm(`确认${msg}该菜单?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        const con = {
+          sId: row.styleId,
+          status: status
+        }
+        updateStyleStatusById(con).then((res) => {
+          if (res.head.status == 0) {
+            this.$message({
+              type: 'success',
+              message: res.head.msg,
+            })
+            row.status = status
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.head.msg,
+            })
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+      }).catch(() => {
+        this.$message({
+          message: '已取消',
+        })
+      })
+    },
   },
 
 }
 </script>
 
-<style lang="less" scoped>
-/deep/ .el-table__body-wrapper {
-    height: 600px;
+<style>
+.table-h {
+  height: 600px;
 }
 </style>
