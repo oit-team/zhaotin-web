@@ -2,8 +2,8 @@
   <div class="zt-page">
     <!-- 顶部面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right" class="zt-head">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/styleCenter' }">商品中心</el-breadcrumb-item>
+      <el-breadcrumb-item>商品详情</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 主题内容 -->
     <div class="zt-content">
@@ -16,11 +16,25 @@
             ref="carousel"
             :autoplay="false"
           >
+            <el-carousel-item v-if="infoData.styleVideo">
+              <div class="zt-swiper__item">
+                <video
+                  width="500px"
+                  height="500px"
+                  id="player"
+                  playsinline
+                  controls
+                  :poster="infoData.styleVideoPatch"
+                >
+                  <source :src="infoData.styleVideo" type="video/mp4" />
+                  <track kind="captions" label="English captions" src="/path/to/captions.vtt" srclang="en" default />
+                </video>
+              </div>
+            </el-carousel-item>
             <el-carousel-item
               v-for="(item, index) in infoData.imgDetailUrlList"
               :key="index"
             >
-              <!-- <h3 class="small">{{ item.resUrl }}</h3> -->
               <el-image
                 class="zt-swiper__item"
                 :src="item.resUrl"
@@ -32,6 +46,7 @@
             <div class="zt-images__left">
               <div
                 class="zt-images__item"
+                :class="imageIndex===index?'zt-images__select':''"
                 v-for="(item, index) in infoData.imgUrlList"
                 :key="index"
               >
@@ -39,8 +54,9 @@
                   fit="contain"
                   class="zt-images__image"
                   :src="item.resUrl"
-                  @click="setCarouselItem(index)"
+                  @click="imageIndex=index,setCarouselItem(index)"
                 />
+                <i v-if="index===0&&infoData.styleVideo" class="el-icon-video-play"></i>
               </div>
             </div>
             <div class="zt-images__right">
@@ -74,13 +90,13 @@
               价格
               <div class="zt-price__data zt-red">
                 ￥<span class="zt-wt">{{ infoData.costPrice }}</span>
-                <div class="zt-hui">3件起订</div>
+                <!-- <div class="zt-hui">3件起订</div> -->
               </div>
             </div>
             <div class="zt-price">
               服务
               <div class="zt-price__data zt-hei">
-                售后服务 / 满100000元免物流费 / 无忧售后退换货
+                {{ infoData.service }}
               </div>
             </div>
           </div>
@@ -89,10 +105,21 @@
             <div class="zt-data__color">
               <div class="zt-data__label">颜色</div>
               <div v-for="(item, index) in infoData.styleColorList" :key="index">
-                <div class="zt-color__item" @click="colorcgId(index)">
+                <div
+                  class="zt-color__item"
+                  @click="colorIndex = index,colorcgId(index)"
+                  :class="colorIndex===index?'zt-color__select':''"
+                >
                   <div v-if="item.styleImg">
+                    <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
+                      <el-image
+                        :src="item.colorImg"
+                        fit="contain"
+                      />
+                    </el-badge>
                     <el-image
-                      :src="item.styleImg[0].resUrl"
+                      v-show="item.num === 0"
+                      :src="item.colorImg"
                       fit="contain"
                     />
                     <div class="zt-color__name">{{ item.styleColor }}</div>
@@ -102,24 +129,42 @@
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">尺码</div>
-              <div v-if="infoData.styleColorList">
-                <div v-for="(item, index) in infoData.styleColorList[sizeId].styleSize" :key="index">
-                  <div class="zt-size__item">
-                    <!-- {{ item.sizeName }} -->
-                    <el-button plain>{{ item.sizeName }}</el-button>
+              <div v-if="infoData.styleColorList" class="zt-data__info">
+                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
+                  <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
+                    <div
+                      class="zt-size__item"
+                      :class="sizeIndex===index?'zt-size__select':''"
+                      @click="sizeIndex = index,checkSize(index)"
+                    >
+                      {{ item.sizeName }}
+                    </div>
+                  </el-badge>
+                  <div
+                    v-show="item.num === 0"
+                    class="zt-size__item"
+                    :class="sizeIndex===index?'zt-size__select':''"
+                    @click="sizeIndex = index,checkSize(index)"
+                  >
+                    {{ item.sizeName }}
                   </div>
                 </div>
               </div>
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">数量</div>
-              <el-input-number size="small" v-model="num" @change="handleChange" :min="1" :max="99" />
+              <el-input-number size="small" v-model="num" @change="handleChange" :min="0" />
+              <!-- <div v-if="infoData.styleColorList">
+                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
+                  <el-input-number size="small" v-model="item.num" @change="handleChange" :min="1" :max="99" />
+                </div>
+              </div> -->
             </div>
           </div>
           <!-- 购买 -->
           <div class="zt-data__btn">
-            <div class="zt-btn__hei">立即订购</div>
-            <div class="zt-btn__jin"><i class="el-icon-plus"></i> 加入订货清单</div>
+            <div class="zt-btn__hei" @click="toshoping">立即订购</div>
+            <div class="zt-btn__jin" @click="toorder"><i class="el-icon-plus"></i> 加入订货清单</div>
           </div>
         </div>
       </div>
@@ -133,25 +178,14 @@
           <div class="zt-data1__flex">
             <div class="zt-content__label">售后服务</div>
             <div class="zt-content__info">
-              <p>售后服务</p>
-              <p>满100000元面物流费</p>
-              <p>无忧售后退换货</p>
+              <p style="white-space:pre-wrap">{{ infoData.service }}</p>
             </div>
           </div>
           <div class="zt-data1__flex">
             <div class="zt-content__label">属性</div>
             <div class="zt-content__info">
-              <div class="zt-info__flex">
-                <div class="zt-info__label">销售单位:</div>
-                <div class="zt-info__info">单品</div>
-              </div>
-              <div class="zt-info__flex">
-                <div class="zt-info__label">单个包装尺寸:</div>
-                <div class="zt-info__info">500 x 20 x 30 厘米</div>
-              </div>
-              <div class="zt-info__flex">
-                <div class="zt-info__label">单件毛重:</div>
-                <div class="zt-info__info">5.5公斤</div>
+              <div class="zt-info__flex" style="white-space:pre-wrap">
+                {{ infoData.styleAttribute }}
               </div>
             </div>
           </div>
@@ -194,12 +228,13 @@
         <!-- <el-divider /> -->
         <!-- <div class="zt-content__data3">
           <div class="zt-content__label">尺码信息</div>
-          <div class="zt-content__info"> -->
-            <!-- <el-table
+          <div class="zt-content__info">
+            <el-table
               :data="infoData.styleSizeList"
               height="250"
               border
-              style="width: 100%">
+              style="width: 100%"
+            >
               <el-table-column
                 prop="date"
                 label="尺寸"
@@ -230,11 +265,11 @@
                 width="120"
                 align="center"
               />
-            </el-table> -->
-            <!-- </div>
-        </div> -->
-        <!-- <el-divider /> -->
-        <!-- <div class="zt-content__data4">
+            </el-table>
+          </div>
+        </div>
+        <el-divider />
+        <div class="zt-content__data4">
           <div class="zt-content__label">服装信息</div>
           <div class="zt-content__info">
             <div class="zt-info__item">
@@ -287,6 +322,9 @@
               :src="item.resUrl"
               fit="contain"
             />
+            <div class="zt-video__b" v-if="item.styleVideo">
+              <i class="el-icon-video-camera-solid"></i>
+            </div>
             <div class="zt-item__line">{{ item.styleName }}</div>
             <div class="zt-item__line">
               <div class="zt-price__l">{{ item.styleNo }}</div>
@@ -298,17 +336,23 @@
         </div>
       </div>
     </div>
+    <!-- <el-result v-if="successtip" icon="success" title="成功加入清单" sub-title="点击继续浏览">
+      <template slot="extra">
+        <el-button type="primary" size="medium">返回</el-button>
+      </template>
+    </el-result> -->
   </div>
 </template>
 
 <script>
-import Tabs from '@/components/tabs/tabs'
+// import Tabs from '@/components/tabs/tabs'
 import { getGoodsDetailes, getProductList } from '@/api/product'
+import { addCart } from '@/api/orderCart'
 
 export default {
   name: 'GoodsDetails',
   components: {
-    Tabs,
+    // Tabs,
   },
   data() {
     return {
@@ -316,9 +360,7 @@ export default {
       infoData: {},
       value2: 3,
       colors: ['#CDA46C', '#CDA46C', '#CDA46C'],
-      num: 1,
-      colorId: 0,
-      sizeId: 0,
+      num: 0,
       ishome: false,
       tabList: [],
       dataList: [],
@@ -340,12 +382,26 @@ export default {
         tradePriceSort: 0, // 上架时间排序（0：从小到大 1是从大到小）
       },
       goodsLength: 0,
+      imageIndex: 0, // 选择图片
+      colorIndex: 0, // 选择颜色
+      sizeIndex: 0, // 选择大小
+      orderData: {},
+      beforeOrder: {},
+      successtip: false,
+      service1: [],
+      allList: [],
+      styleData: {},
+      sizeData: {},
     }
   },
   created() {
     this.goodsId = this.$route.query.id
     this.getData()
     this.loadData()
+  },
+  mounted() {
+  },
+  beforeDestroy() {
   },
   methods: {
     async getData() {
@@ -354,7 +410,32 @@ export default {
         styleId: that.goodsId,
       })
       that.infoData = res.body.resultList
+      // recommendationLevel : 推荐指数
       that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
+      // 给数据中  加入数量
+      this.infoData.styleColorList.forEach(e => {
+        let n = 0
+        e.styleSize.forEach(i => {
+          i.num = 0
+          n += i.num
+          return n
+        })
+        e.num = n
+      })
+      that.styleData = {
+        styleId: 0,
+        styleColor: '', // 颜色
+        styleNo: that.infoData.styleNo,
+        styleSize: [],
+      }
+      that.infoData.styleAttribute = that.infoData.styleAttribute.trim()
+      // 将 视频封面 加到切换轮播的images中
+      if (this.infoData.styleVideoPatch) {
+        const url = {
+          resUrl: this.infoData.styleVideoPatch,
+        }
+        this.infoData.imgUrlList.unshift(url)
+      }
     },
     async loadData() {
       const that = this
@@ -364,23 +445,87 @@ export default {
       that.dataList = res.body.resultList
       that.goodsLength = res.body.resultList.length
     },
+    // 轮播图 切换出控制
     setCarouselItem(index) {
       this.$refs.carousel.setActiveItem(index)
     },
+    // 商品数量
     handleChange(value) {
-      console.log(value)
+      if (value <= 99 && value >= 0) {
+        this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
+        this.infoData.styleColorList.forEach(e => {
+          let n = 0
+          e.styleSize.forEach(i => {
+            n += i.num
+            return n
+          })
+          e.num = n
+        })
+        this.$forceUpdate
+      } else {
+        this.$message('请填写正确数字')
+      }
     },
+    // 切换大小
+    checkSize(id) {
+      this.num = this.infoData.styleColorList[this.colorIndex].styleSize[id].num
+      this.$forceUpdate
+    },
+    // 切换颜色
     colorcgId(id) {
-      this.sizeId = id
+      this.sizeIndex = 0
+      this.num = this.infoData.styleColorList[id].styleSize[this.sizeIndex].num
       this.$forceUpdate()
     },
-    checkTab(index) {
-      console.log(index)
-    },
+    // 推荐区  图片点击事件
     todetails(id) {
       this.goodsId = id
       this.getData()
       this.$forceUpdate()
+      window.scrollTo('0', '0')
+    },
+    // 点击订购
+    toshoping() {
+      // const that = this
+      this.$router.push('/styleCenter/orderGoods')
+    },
+    // 加入购物车
+    async toorder() {
+      const that = this
+      // that.infoData 返回的商品详情
+      that.infoData.styleColorList.forEach(e => {
+        // 如果 当前商品的数量 > 0 则说明有商品
+        if (e.num > 0) {
+          const styleData = {
+            styleId: that.goodsId,
+            styleColor: e.id, // 当前颜色id
+            styleNo: that.infoData.styleNo,
+            styleSize: [],
+          }
+          // 然后遍历当前颜色的尺码 如果L码有 num 则生成对象添加到当前的StyleSize 中
+          e.styleSize.forEach(i => {
+            if (i.num > 0) {
+              const sizeData = {
+                sizeName: i.sizeName,
+                sizeNumber: i.num,
+              }
+              styleData.styleSize.unshift(sizeData)
+            }
+          })
+          console.log(styleData)
+          that.allList.unshift(styleData)
+          console.log(that.allList)
+        }
+      })
+      const res = await addCart({
+        styleList: that.allList,
+      })
+      if (res.head.status === 0) {
+        that.$message({
+          message: '成功加入购物清单',
+          type: 'success',
+        })
+      }
     },
   },
 }
@@ -389,6 +534,15 @@ export default {
 <style lang='scss' scoped>
 .zt-head{
   margin: 20px 0;
+}
+video::-webkit-media-controls-play-button {
+  display: block;
+}
+video::-webkit-media-controls-timeline {
+  display: block;
+}
+--deep video{
+  height: 500px !important;
 }
 .zt-content{
   .zt-content__head{
@@ -402,6 +556,10 @@ export default {
       .zt-swiper__item{
         width: 500px;
         height: 500px;
+        video{
+          width: 100%;
+          height: 100% !important;
+        }
       }
       .zt-head__images{
         display: flex;
@@ -412,13 +570,28 @@ export default {
           width: 95%;
           display: flex;
           .zt-images__item{
+            position: relative;
             margin: 0 10px;
             border: 1px solid #ECE8E5;
             border-radius: 5px;
+            box-sizing: border-box;
             .zt-images__image{
               width: 80px;
               height: 80px;
+              border-radius: 5px;
             }
+            .el-icon-video-play{
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%,-50%);
+              color: #999;
+              font-size: 20px;
+              z-index: 1;
+            }
+          }
+          .zt-images__select{
+            border: 1px solid #CDA46C;
           }
         }
         .zt-images__right{
@@ -489,7 +662,7 @@ export default {
           align-items: center;
           .zt-color__item{
             position: relative;
-            margin: 0 5px;
+            margin-left: 20px;
             border-radius: 10px;
             border: 1px solid #ECE8E5;
             .el-image{
@@ -509,17 +682,31 @@ export default {
               color: #fff;
             }
           }
+          .zt-color__select{
+            border: 1px solid #CDA46C;
+          }
         }
         .zt-data__size{
           display: flex;
           align-items: center;
           margin-top: 20px;
+          .zt-data__info{
+            display: flex;
+          }
           .zt-size__item{
-            // padding: 5px 20px;
-            // border: 1px solid #ccc;
-            // border-radius: 5px;
-            // box-sizing: border-box;
-            margin-right: 20px;
+            padding: 5px 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin-left: 20px;
+          }
+          .zt-size__item:hover{
+            cursor:pointer;
+          }
+          .zt-size__select{
+            // border: 1px solid #CDA46C;
+            background-color: #CDA46C;
+            color: #fff;
           }
         }
       }
@@ -537,6 +724,12 @@ export default {
           border-radius: 25px;
           color: #fff;
           box-sizing: border-box;
+        }
+        .zt-btn__hei:hover{
+          cursor:pointer;
+        }
+        .zt-btn__jin:hover{
+          cursor:pointer;
         }
         .zt-btn__jin{
           padding: 8px 0;
@@ -671,16 +864,30 @@ export default {
       display: flex;
       flex-wrap: wrap;
       .zt-content__item{
+        position: relative;
         width: 230px;
         color: #333333;
         font-size: 14px;
-        margin: 0 10px 10px 0;
+        margin: 0 0 10px 15px;
         border: 1px solid #ECE8E5;
         .zt-good__image{
           width: 230px;
           height: 300px;
           border-radius: 10px;
           border: 1px solid #F2F2F2;
+        }
+        .zt-video__b{
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          padding: 5px 7px;
+          background-color: #FF9606;
+          border-radius: 5px;
+          box-sizing: border-box;
+          .el-icon-video-camera-solid{
+            font-size: 20px;
+            color: #fff;
+          }
         }
         .zt-item__line{
           display: flex;

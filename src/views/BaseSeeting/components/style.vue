@@ -161,10 +161,6 @@ export default {
     tablePageOption() {
       return {
         promise: this.loadData,
-        // ({
-        //   // token: JSON.parse(localStorage.getItem('token')),
-        //   userId: sessionStorage.getItem('userId'),
-        // }),
         actions: [
           {
             name: '新增商品',
@@ -399,45 +395,45 @@ export default {
         // 向webapi发起请求，等待后台接收
         const _this = this
 
-        _this.$axios.post(`${_this.GLOBAL.data_manager_server}/dataStockInfo/importStockInfo`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }).then((res) => {
-          _this.importFlag = false
-          // console.log("-----------------",res.data);
-          _this.$refs.upload.clearFiles()
-          if (res.data.head.status === 0) {
-            // console.log("导入库存成功",res.data.body)
-            _this.importResult = res.data.body
-            _this.addCount = res.data.body.addCount
-            _this.upDateCount = res.data.body.upDateCount
-            _this.failureCount = res.data.body.failureCount
+        // _this.$axios.post(`${_this.GLOBAL.data_manager_server}/dataStockInfo/importStockInfo`, formData, {
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data',
+        //   },
+        // }).then((res) => {
+        //   _this.importFlag = false
+        //   // console.log("-----------------",res.data);
+        //   _this.$refs.upload.clearFiles()
+        //   if (res.data.head.status === 0) {
+        //     // console.log("导入库存成功",res.data.body)
+        //     _this.importResult = res.data.body
+        //     _this.addCount = res.data.body.addCount
+        //     _this.upDateCount = res.data.body.upDateCount
+        //     _this.failureCount = res.data.body.failureCount
 
-            _this.fileList = []
-            _this.fileData = ''
+        //     _this.fileList = []
+        //     _this.fileData = ''
 
-            if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
-              _this.importErrDataFlag = true
-              _this.importErrData = res.data.body.errorStr
-            } else {
-              this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
-                confirmButtonText: '确定',
-                callback: action => {},
-              })
-            }
-          } else {
-            this.$message({
-              type: 'error',
-              message: res.data.head.msg,
-            })
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'warning',
-            message: '导入商品失败',
-          })
-        })
+        //     if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
+        //       _this.importErrDataFlag = true
+        //       _this.importErrData = res.data.body.errorStr
+        //     } else {
+        //       this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
+        //         confirmButtonText: '确定',
+        //         callback: action => {},
+        //       })
+        //     }
+        //   } else {
+        //     this.$message({
+        //       type: 'error',
+        //       message: res.data.head.msg,
+        //     })
+        //   }
+        // }).catch(() => {
+        //   this.$message({
+        //     type: 'warning',
+        //     message: '导入商品失败',
+        //   })
+        // })
       }
     },
     handleImportClose() {
@@ -484,50 +480,6 @@ export default {
         // console.log("this.fileList====",this.fileList)
         formData.append('file', this.fileList[0].raw)
         formData.append('brandId', sessionStorage.brandId)
-
-        // console.log("formData====",formData)
-        // 向webapi发起请求，等待后台接收
-        const _this = this
-        // _this.$axios.post(`${_this.GLOBAL.goods_manager_server}/style/addimporStyleInfo`, formData, {
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data',
-        //   },
-        // }).then((res) => {
-        //   _this.importFlag = false
-        //   // console.log("-----------------",res.data);
-        //   _this.$refs.upload.clearFiles()
-        //   if (res.data.head.status === 0) {
-        //     _this.importResult = res.data.body
-
-        //     _this.addCount = res.data.body.addCount
-        //     _this.upDateCount = res.data.body.upDateCount
-        //     _this.failureCount = res.data.body.failureCount
-
-        //     _this.fileList = []
-        //     _this.fileData = ''
-        //     if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
-        //       _this.importErrDataFlag = true
-        //       _this.importErrData = res.data.body.errorStr
-        //     } else {
-        //       this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
-        //         confirmButtonText: '确定',
-        //         callback: action => {
-
-        //         },
-        //       })
-        //     }
-        //   } else {
-        //     this.$message({
-        //       type: 'error',
-        //       message: res.data.head.msg,
-        //     })
-        //   }
-        // }).catch(err => {
-        //   this.$message({
-        //     type: 'warning',
-        //     message: '导入商品失败',
-        //   })
-        // })
       }
     },
     // 导入错误数据的关闭操作
@@ -545,7 +497,6 @@ export default {
     changeChecked(val) {
       // console.log("复选框变化后的值===",val);
       this.checkList = val
-      // console.log("this.checkList===",this.checkList);
     },
     // 确认导出商品按钮
     confirmExportGoods() {
