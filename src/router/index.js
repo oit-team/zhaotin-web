@@ -28,7 +28,15 @@ import Nullpage from '@/views/Center/components/nullpage'
 // import OrderMsg from '@/views/order/components/orderMsg'
 
 Vue.use(VueRouter)
-
+// 重复点击路由刷新页面， 并阻止报错
+const VueRouterPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(to) {
+  const history = this.currentRoute && this.currentRoute.fullPath
+  if (to === history) {
+    window.location.reload()
+  }
+  return VueRouterPush.call(this, to).catch(err => err)
+}
 const routes = [
   {
     path: '/',

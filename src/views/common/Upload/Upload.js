@@ -27,7 +27,7 @@ export default {
   inheritAttrs: false,
 
   mixins: [mixin],
-
+  uploadUrl: BASE_URL +'/'+ getDefaultUploadUrlByFileType(),
   props: {
     headers: {
       type: Object,

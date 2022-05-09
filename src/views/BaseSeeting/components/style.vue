@@ -10,10 +10,15 @@
             <template v-if="true">
               <el-image class="file-res" :src="row.resUrl" fit="cover" />
             </template>
-            <!-- 商品视频 -->
-            <!-- <template v-if="row.resType === FILE_TYPE.VIDEO">
-              <el-image class="file-res" :src="row.videoImg" fit="cover" />
-            </template> -->
+          </template>
+          <template slot="content:status" slot-scope="{ row }">
+            <!-- 商品图片 -->
+            <template v-if="row.status == 1">
+              已上架
+            </template>
+            <template v-else-if="row.status == 0">
+              未上架
+            </template>
           </template>
           <!-- </el-drawer> -->
         </TablePage>
@@ -197,6 +202,7 @@ export default {
                 tip: '查看商品详情',
                 type: 'primary',
                 icon: 'el-icon-view',
+                isShow: true,
                 click: (scope) => this.$router.push({
                   path: '/basls/style/addGoods',
                   query: { item: scope , flag: 1},
@@ -207,11 +213,20 @@ export default {
                 type: 'danger',
                 icon: 'el-icon-delete',
                 click: this.deleteGoods,
+                isShow: true,
+                disabled: ({ row }) => {
+                  if (row.status == '1') {  //1 是已上架
+                    return true
+                  } else if (row.status == '0') {
+                    return false
+                  }
+                },
               },
               {
                 tip: '编辑商品',
                 type: 'success',
                 icon: 'el-icon-edit',
+                isShow: true,
                 disabled: ({ row }) => {
                   if (row.status == '1') {  //1 是已上架
                     return true
@@ -228,11 +243,11 @@ export default {
                 tip: '商品上架',
                 type: 'warning',
                 icon: 'el-icon-top',
-                disabled: ({ row }) => {
+                isShow: ({ row }) => {
                   if (row.status == '1') {
-                    return true
-                  } else if (row.status == '0') {
                     return false
+                  } else if (row.status == '0') {
+                    return true
                   }
                 },
                 click: ({ row }) => {
@@ -243,26 +258,27 @@ export default {
                 tip: '商品下架',
                 type: 'warning',
                 icon: 'el-icon-bottom',
-                disabled: ({ row }) => {
+                isShow: ({ row }) => {
                   if (row.status == '0') {
-                    return true
-                  } else if (row.status == '1') {
                     return false
+                  } else if (row.status == '1') {
+                    return true
                   }
                 },
                 click: ({ row }) => {
                   this.updateStyleStatusById(row ,0)
                 }
               },
-              {
-                tip: '库存分布',
-                // type: 'danger',
-                icon: 'el-icon-s-data',
-                click: ({ row }) => this.$router.push({
-                  // path: '/system/addRole',
-                  params: { item: row },
-                }),
-              },
+              // {
+              //   tip: '库存分布',
+              //   // type: 'danger',
+              //   icon: 'el-icon-s-data',
+              //   isShow: true,
+              //   click: ({ row }) => this.$router.push({
+              //     // path: '/system/addRole',
+              //     params: { item: row },
+              //   }),
+              // },
             ],
           },
         },
