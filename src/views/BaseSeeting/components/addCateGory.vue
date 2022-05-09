@@ -18,7 +18,7 @@
             <el-image :src="imgUrl" fit="cover" />
           </div>
        </el-form-item>
-       <el-form-item label="点击上传更新类别图片">
+       <el-form-item label="点击上传类别图片">
         <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
           <i class="el-icon-plus"></i>
         </vc-upload>
@@ -74,7 +74,6 @@ export default {
     }
   },
   created(){
-    console.log(this.$route.query.item.row.imgUrl);
     if(this.$route.query.item){
       this.editFlag = false;
       this.cateGoryVisibilty = true
