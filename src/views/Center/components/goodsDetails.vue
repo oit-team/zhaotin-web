@@ -347,7 +347,7 @@
 <script>
 // import Tabs from '@/components/tabs/tabs'
 import { getGoodsDetailes, getProductList } from '@/api/product'
-import { addCart } from '@/api/orderCart'
+import { addCart, getShoppingCart } from '@/api/orderCart'
 
 export default {
   name: 'GoodsDetails',
@@ -392,6 +392,7 @@ export default {
       allList: [],
       styleData: {},
       sizeData: {},
+      formData2: {},
     }
   },
   created() {
@@ -480,17 +481,60 @@ export default {
     // 推荐区  图片点击事件
     todetails(id) {
       this.goodsId = id
+      console.log(this.goodsId)
       this.getData()
       this.$forceUpdate()
       window.scrollTo('0', '0')
     },
     // 点击订购
-    toshoping() {
-      // const that = this
+    async toshoping() {
+      const that = this
+      that.toorder()
+      const data = await getShoppingCart({})
+      if (data.head.status === 0) {
+        that.formData2 = data.body.resultList
+        that.formData2.styleList.forEach(e => {
+          e.styleNumber = Number(e.styleNumber)
+          that.$set(e, 'goodsCheck', false)
+          e.style.forEach(i => {
+            that.$set(i, 'openList', true)
+            that.$set(i, 'checked', false)
+            i.styleNumber = Number(i.styleNumber)
+            i.styleSize.forEach(j => {
+              j.sizeNumber = Number(j.sizeNumber)
+            })
+          })
+        })
+        let data1 = {}
+        data1 = JSON.parse(JSON.stringify(that.formData2))
+        console.log(data1)
+        console.log(that.formData2)
+        data1.styleList = []
+        data1.styleList.length = 0
+        const item = that.formData2.styleList.filter(e => {
+          return e.styleId === Number(that.goodsId)
+        })
+        data1.styleList = item
+        console.log(data1)
+        that.$store.commit('order/addOrderStorage', data1)
+        console.log(that.$store.state.order.orderStorage)
+      }
       this.$router.push('/styleCenter/orderGoods')
     },
     // 加入购物车
     async toorder() {
+      this.cart()
+      const res = await addCart({
+        styleList: this.allList,
+      })
+      if (res.head.status === 0) {
+        this.$message({
+          message: '成功加入购物清单',
+          type: 'success',
+        })
+      }
+    },
+    cart() {
       const that = this
       // that.infoData 返回的商品详情
       that.infoData.styleColorList.forEach(e => {
@@ -512,20 +556,10 @@ export default {
               styleData.styleSize.unshift(sizeData)
             }
           })
-          console.log(styleData)
           that.allList.unshift(styleData)
           console.log(that.allList)
         }
       })
-      const res = await addCart({
-        styleList: that.allList,
-      })
-      if (res.head.status === 0) {
-        that.$message({
-          message: '成功加入购物清单',
-          type: 'success',
-        })
-      }
     },
   },
 }

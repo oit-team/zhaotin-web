@@ -402,6 +402,9 @@ export default {
           type: 'success',
           message: '提交成功',
         })
+        setTimeout(() => {
+          that.$router.go(-1)
+        }, 800)
       } else {
         that.$message({
           type: 'error',
@@ -643,6 +646,9 @@ export default {
       font-size: 18px;
       color: #fff;
       box-sizing: border-box;
+    }
+    .zt-footer__button:hover{
+      cursor: pointer;
     }
   }
 }
