@@ -22,7 +22,7 @@ export default {
 
 <style>
 .main {
-  min-height: 600px;
+  min-height: 500px;
 }
 .w-screen{
   width: 100%!important;
