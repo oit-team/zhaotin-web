@@ -381,17 +381,22 @@ export default {
     },
     toOrder() {
       const that = this
-      that.formData.styleList.forEach((e, ide) => {
-        e.style.forEach((i, idi) => {
-          console.log(that.formData2.styleList[ide])
-          if (i.checked === false && that.formData2.styleList) {
-            that.formData2.styleList[ide].style.splice(idi, 1)
-            if (that.formData2.styleList[ide].style && that.formData2.styleList[ide].style.length === 0) {
-              that.formData2.styleList.splice(ide, 1)
-            }
-          }
+      that.formData2 = JSON.parse(JSON.stringify(that.formData))
+      const data2 = JSON.parse(JSON.stringify(that.formData2))
+      data2.styleList = []
+      data2.styleList.length = 0
+      const data1 = []
+      that.formData2.styleList.forEach((item, index) => {
+        data1[index] = item
+        data1[index].style = item.style.filter(i => {
+          return i.checked === true
         })
       })
+      let data3 = {}
+      data3 = data1.filter(item => {
+        return item.style.length !== 0
+      })
+      data2.styleList.push(data3[0])
       if (that.formData2.styleList && that.formData2.styleList.length !== 0) {
         // 如果有一个选中
         that.$router.push('/styleCenter/orderGoods')
@@ -401,9 +406,7 @@ export default {
           type: 'warning',
         })
       }
-      console.log(that.formData2)
-      that.$store.commit('order/addOrderStorage', that.formData2)
-    //   this.$store.commit('order/addOrderStorage', JSON.stringify(this.orderData))
+      that.$store.commit('order/addOrderStorage', data2)
     },
   },
 }
