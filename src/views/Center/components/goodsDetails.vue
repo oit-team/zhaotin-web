@@ -184,8 +184,20 @@
           <div class="zt-data1__flex">
             <div class="zt-content__label">属性</div>
             <div class="zt-content__info">
-              <div class="zt-info__flex" style="white-space:pre-wrap">
+              <!-- <div class="zt-info__flex" style="white-space:pre-wrap">
                 {{ infoData.styleAttribute }}
+              </div> -->
+              <div class="zt-info__flex">
+                <div class="zt-info__label">材质</div>
+                <div class="zt-info__info">{{ infoData.styleFabric }}</div>
+              </div>
+              <div class="zt-info__flex">
+                <div class="zt-info__label">版型</div>
+                <div class="zt-info__info">{{ infoData.styleFlowerPattern }}</div>
+              </div>
+              <div class="zt-info__flex">
+                <div class="zt-info__label">类别</div>
+                <div class="zt-info__info">{{ infoData.styleCategory }}</div>
               </div>
             </div>
           </div>
@@ -198,18 +210,19 @@
             <div class="zt-content__info">
               <div class="zt-data2__flex">
                 <div class="zt-data2__label"><i class="iconfont icon-mianliaomaidian"></i>面料卖点</div>
-                <div class="zt-data2__info">荷兰貂皮大衣</div>
+                <!-- <div class="zt-data2__info">荷兰貂皮大衣</div> -->
+                <div class="zt-data2__info">{{ infoData.sellingPointFabric }}</div>
               </div>
               <div class="zt-data2__flex">
                 <div class="zt-data2__label"><i class="iconfont icon-shejimaidian"></i>设计卖点</div>
-                <div class="zt-data2__info">发送到发送到发</div>
+                <div class="zt-data2__info">{{ infoData.designSellingPoint }}</div>
               </div>
               <div class="zt-data2__flex">
                 <div class="zt-data2__label"><i class="iconfont icon-chuanzhuomaidian"></i>穿着卖点</div>
-                <div class="zt-data2__info">发送到发送到发</div>
+                <div class="zt-data2__info">{{ infoData.wearSellingPoint }}</div>
               </div>
             </div>
-            <div class="zt-content__info">
+            <!-- <div class="zt-content__info">
               <div class="zt-data2__flex">
                 <div class="zt-data2__label"><i class="iconfont icon-mianliaomaidian"></i>面料卖点</div>
                 <div class="zt-data2__info">荷兰貂皮大衣</div>
@@ -222,11 +235,11 @@
                 <div class="zt-data2__label"><i class="iconfont icon-chuanzhuomaidian"></i>穿着卖点</div>
                 <div class="zt-data2__info">发送到发送到发</div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
-        <!-- <el-divider /> -->
-        <!-- <div class="zt-content__data3">
+        <el-divider />
+        <div class="zt-content__data3">
           <div class="zt-content__label">尺码信息</div>
           <div class="zt-content__info">
             <el-table
@@ -272,37 +285,30 @@
         <div class="zt-content__data4">
           <div class="zt-content__label">服装信息</div>
           <div class="zt-content__info">
-            <div class="zt-info__item">
-              <div class="zt-item__label">厚薄程度</div>
-              <div class="zt-item__item">偏薄</div>
-              <div class="zt-item__item">适中</div>
-              <div class="zt-item__item">偏厚</div>
-            </div>
-            <div class="zt-info__item">
-              <div class="zt-item__label">版型指数</div>
-              <div class="zt-item__item">紧身</div>
-              <div class="zt-item__item">适中</div>
-              <div class="zt-item__item">宽松</div>
-            </div>
-            <div class="zt-info__item">
-              <div class="zt-item__label">弹力指数</div>
-              <div class="zt-item__item">无弹</div>
-              <div class="zt-item__item">适中</div>
-              <div class="zt-item__item">偏弹</div>
-            </div>
-            <div class="zt-info__item">
-              <div class="zt-item__label">柔软指数</div>
-              <div class="zt-item__item">偏柔</div>
-              <div class="zt-item__item">适中</div>
-              <div class="zt-item__item">柔软</div>
+            <div class="zt-info__item" v-for="(item, index) in infoData.styleData" :key="index">
+              <div class="zt-item__label">{{ item.name }}</div>
+              <div class="zt-item__item" v-for="(itemN, indexN) in item.options" :key="indexN">
+                <div :class="itemN.status === 1?'zt-item__select':'zt-item__item-item'">
+                  {{ itemN.option }}
+                </div>
+              </div>
             </div>
           </div>
-        </div> -->
-        <!-- <el-divider /> -->
-        <!-- <div class="zt-content__data5">
+        </div>
+        <el-divider />
+        <div class="zt-content__data5">
           <div class="zt-content__label">洗涤说明</div>
-          <div class="zt-content__info"></div>
-        </div> -->
+          <div class="zt-content__info" v-for="(item, index) in infoData.styleWashing" :key="index">
+            <div v-if="item.status === 1">
+              <el-image
+                style="width: 80px; height: 80px"
+                :src="item.resUrl"
+                fit="contain"
+              />
+              <div>{{ item.name }}</div>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 底部 推荐区 -->
       <div class="zt-content__footer">
@@ -312,7 +318,6 @@
         <div class="zt-content">
           <div
             class="zt-content__item"
-            :class="goodsLength>=5?'zt-content__item_margin':''"
             v-for="(item, index) in dataList"
             :key="index"
             @click="todetails(item.styleId)"
@@ -336,18 +341,13 @@
         </div>
       </div>
     </div>
-    <!-- <el-result v-if="successtip" icon="success" title="成功加入清单" sub-title="点击继续浏览">
-      <template slot="extra">
-        <el-button type="primary" size="medium">返回</el-button>
-      </template>
-    </el-result> -->
   </div>
 </template>
 
 <script>
 // import Tabs from '@/components/tabs/tabs'
 import { getGoodsDetailes, getProductList } from '@/api/product'
-import { addCart, getShoppingCart } from '@/api/orderCart'
+import { addCart, CalculatePrice } from '@/api/orderCart'
 
 export default {
   name: 'GoodsDetails',
@@ -393,6 +393,7 @@ export default {
       styleData: {},
       sizeData: {},
       formData2: {},
+      priceAll: 0,
     }
   },
   created() {
@@ -411,6 +412,15 @@ export default {
         styleId: that.goodsId,
       })
       that.infoData = res.body.resultList
+      that.infoData.styleData = JSON.parse(that.infoData.styleData)
+      that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
+      const list = []
+      that.infoData.styleWashing.forEach(e => {
+        if (e.status === 1) {
+          list.push(e)
+        }
+      })
+      that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
       // recommendationLevel : 推荐指数
       that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
       // 给数据中  加入数量
@@ -489,49 +499,75 @@ export default {
     // 点击订购
     async toshoping() {
       const that = this
-      that.toorder()
-      const data = await getShoppingCart({})
-      if (data.head.status === 0) {
-        that.formData2 = data.body.resultList
-        that.formData2.styleList.forEach(e => {
-          e.styleNumber = Number(e.styleNumber)
-          that.$set(e, 'goodsCheck', false)
-          e.style.forEach(i => {
-            that.$set(i, 'openList', true)
-            that.$set(i, 'checked', false)
-            i.styleNumber = Number(i.styleNumber)
-            i.styleSize.forEach(j => {
-              j.sizeNumber = Number(j.sizeNumber)
-            })
-          })
-        })
-        let data1 = {}
-        data1 = JSON.parse(JSON.stringify(that.formData2))
-        console.log(data1)
-        console.log(that.formData2)
-        data1.styleList = []
-        data1.styleList.length = 0
-        const item = that.formData2.styleList.filter(e => {
-          return e.styleId === Number(that.goodsId)
-        })
-        data1.styleList = item
-        console.log(data1)
-        that.$store.commit('order/addOrderStorage', data1)
-        console.log(that.$store.state.order.orderStorage)
+      console.log(that.infoData)
+      const data = JSON.parse(JSON.stringify(that.infoData))
+      // 新建  商品对象
+      const resultList = []
+      const resultListinfo = {
+        styleId: that.infoData.styleId,
+        styleNo: that.infoData.styleNo,
+        styleName: that.infoData.styleName,
+        userId: sessionStorage.getItem('userId'),
+        style: [], // 颜色集合
       }
-      this.$router.push('/styleCenter/orderGoods')
+      const data1 = []
+      data.styleColorList.forEach((item, index) => {
+        that.$set(item, 'openList', true)
+        that.$set(item, 'imgUrl', item.colorImg)
+        that.$set(item, 'styleNumber', item.num)
+        that.$set(item, 'styleId', that.infoData.styleId)
+        that.$set(item, 'stylePrice', that.infoData.costPrice)
+        data1[index] = item
+        item.styleSize.forEach(i => {
+          that.$set(i, 'sizeNumber', i.num)
+          // i.sort = undefined
+          // i.sizeKey = undefined
+          // i.sizeValue = undefined
+          // i.num = undefined
+          delete i.num
+          delete i.sort
+          delete i.sizeKey
+          delete i.sizeValue
+        })
+        data1[index].styleSize = item.styleSize.filter(i => {
+          return i.sizeNumber > 0
+        })
+      })
+      console.log(data)
+      console.log(data1)
+      let data3 = {}
+      data3 = data1.filter(item => {
+        return item.styleSize.length !== 0
+      })
+      if (data3[0]) {
+        resultListinfo.style.push(data3[0])
+      }
+      resultList.push(resultListinfo)
+      if (resultListinfo.style.length > 0) {
+        console.log('跳')
+        that.$set(that.infoData, 'styleList', resultList)
+        console.log(that.infoData)
+        that.$store.commit('order/addOrderStorage', that.infoData)
+        this.$router.push('/styleCenter/orderGoods')
+      } else {
+        that.$message.error('至少选择一件')
+      }
     },
     // 加入购物车
     async toorder() {
       this.cart()
-      const res = await addCart({
-        styleList: this.allList,
-      })
-      if (res.head.status === 0) {
-        this.$message({
-          message: '成功加入购物清单',
-          type: 'success',
+      if (this.allList && this.allList.length === 0) {
+        this.$message.error('至少选择一件')
+      } else {
+        const res = await addCart({
+          styleList: this.allList,
         })
+        if (res.head.status === 0) {
+          this.$message({
+            message: '成功加入购物清单',
+            type: 'success',
+          })
+        }
       }
     },
     cart() {
@@ -806,7 +842,7 @@ video::-webkit-media-controls-timeline {
             display: flex;
             color: #666;
             .zt-info__label{
-              width: 200px;
+              width: 100px;
               color: #333;
             }
             .zt-info__info{
@@ -825,16 +861,18 @@ video::-webkit-media-controls-timeline {
         width: 90%;
       }
       .zt-content__info{
-        width: 50%;
+        // width: 50%;
         line-height: 30px;
         .zt-data2__flex{
           display: flex;
           color: #666;
+          margin: 10px 0;
           .zt-data2__label{
-            width: 200px;
+            width: 120px;
             color: #333;
           }
           .zt-data2__info{
+            max-width: 80%;
             color: #666;
           }
         }
@@ -865,6 +903,16 @@ video::-webkit-media-controls-timeline {
           .zt-item__item{
             padding: 10px 50px;
           }
+          .zt-item__select{
+            padding: 2px 20px;
+            background: #CDA46C;
+            color: #fff;
+            border-radius: 5px;
+            box-sizing: border-box;
+          }
+          .zt-item__item-item{
+            padding: 2px 20px;
+          }
         }
       }
       .zt-info__item:nth-child(4){
@@ -873,8 +921,12 @@ video::-webkit-media-controls-timeline {
     }
     .zt-content__data5{
       display: flex;
-      align-items: baseline;
+      align-items: center;
       padding: 0 30px;
+      .zt-content__info{
+        text-align: center;
+        margin-right: 10px;
+      }
     }
   }
   .zt-content__footer{
