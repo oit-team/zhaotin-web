@@ -218,14 +218,12 @@ export default ({
       }
       })
     },
-    // 修改所属店铺或者区域
+    // 修改所属区域
     changeArea(val) {
-      let checkedNodeList = this.$refs.chooseOption.getCheckedNodes();
-      console.log(checkedNodeList);
-      //  if(checkedNodeList) {
-      //   console.log(checkedNodeList);
-      //   this.areaId = checkedNodeList[0].data.id
-      //  }
+      let checkedNodeList = this.$refs.chooseOption.getCheckedNodes()
+       if(checkedNodeList) {
+        this.areaId = checkedNodeList[0].data.id
+       }
     },
     isCellPhone(val) {
       if (!/^1(3|4|5|6|7|8)\d{9}$/.test(val)) {
@@ -272,7 +270,7 @@ export default ({
            changeCustomer(con).then((res) => {
               if (res.head.status === 0) {
                 this.$message({
-                  message: '修改用户信息成功',
+                  message: '编辑用户成功',
                   type: 'success',
                 })
                 this.$router.back()

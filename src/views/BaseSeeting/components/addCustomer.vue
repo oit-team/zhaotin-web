@@ -571,7 +571,7 @@ export default {
               .then((res) => {
                 if (res.head.status === 0) {
                   this.$message({
-                    message: "编辑菜单成功",
+                    message: "编辑客户成功",
                     type: "success",
                   });
                   this.$router.back();
@@ -597,7 +597,7 @@ export default {
                 this.editFlag = false;
                 if (res.head.status === 0) {
                   this.$message({
-                    message: "新增菜单成功",
+                    message: "新增客户成功",
                     type: "success",
                   });
                   this.$router.back();
