@@ -99,6 +99,19 @@
                       </div>
                     </el-collapse-item>
                   </el-collapse>
+                  <el-collapse  v-model="collapseVal4">
+                    <el-collapse-item title="服务说明" name="1">
+                      <el-form-item label="服务说明">
+                        <quill
+                      	style="width:100%;"
+                      	:value="ruleForm.service"
+                      	:editor-setting="editorSetting"
+                      	:height="&quot;150px&quot;"
+                      	@changeVal="changeWashMaintenance"
+                        />
+                      </el-form-item>
+                    </el-collapse-item>
+                  </el-collapse>
                 </div>
                 <div class="fileInfoBox right ml-8">
                   <!-- 商品视频 -->
@@ -138,17 +151,8 @@
                   </el-form-item>
                   <p class="tip">*最多可以上传1张图片，推荐格式jpg或png</p>
                   <div class="mt-12 ml-12">
-                    <el-collapse label="保养及卖点" name="sale" v-model="collapseVal3">
+                    <el-collapse label="保养及卖点" class="editBox" name="sale" v-model="collapseVal3">
                       <el-collapse-item title="保养及卖点" name="sale">
-                       <el-form-item label="服务说明">
-                          <quill
-                            style="width:100%;"
-                            :value="ruleForm.service"
-                            :editor-setting="editorSetting"
-                            :height="&quot;150px&quot;"
-                            @changeVal="changeWashMaintenance"
-                          />
-                        </el-form-item>
                         <el-form-item label="面料卖点">
                           <quill
                             style="width:100%;"
@@ -392,6 +396,7 @@ export default {
       callback()
     }
     return {
+      collapseVal4: ['1'],
       collapseVal1: ['1'],
       collapseVal2: ['2'],
       collapseVal3: ['sale'],
@@ -704,7 +709,11 @@ export default {
       this.isEdit = true
     }
     if (this.$route.query.item) {
-      this.title = '编辑'
+      if (this.isEdit == false) {
+        this.title = '查看'
+      }else {
+        this.title = '编辑'
+      }
       let res = this.$route.query.item.row;
       res.styleData = JSON.parse(res.styleData)
       if (res.styleData) {
@@ -777,7 +786,7 @@ export default {
     },
     //   点击返回
     goBack() {
-      if (this.operateFlag !== 'view') { // 编辑或新增提示一下
+      if (this.operateFlag !== 'view' && this.isEdit !== false) { // 编辑或新增提示一下
         this.$confirm('返回会丢失未保存的数据，确认吗?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1177,6 +1186,8 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
+      console.log(con)
+      return;
       addGoodsInfo(con).then((res) => {
         console.log(res)
         if (res.head.status == 0) {
@@ -1622,6 +1633,17 @@ li.active{
     padding-right:12px;
     text-align: right;
   }
+  /deep/.el-radio-button__orig-radio:checked + .el-radio-button__inner{
+    background-color:#cda46c;
+    border-color: #cda46c;
+    box-shadow:-1px 0 0 0 #cda46c;
+  }
+  /deep/.el-radio-button__inner:hover{
+    color:#cda46c
+  }
+  /deep/.is-active .el-radio-button__inner:hover{
+    color:#fff;
+  }
 } 
 .checkBox {
   .el-checkbox{
@@ -1644,6 +1666,16 @@ li.active{
     font-size:14px;
     padding-right:0px;
   }
+  /deep/.el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: #cda46c;
+    border-color: #cda46c;
+  }
+  /deep/.el-checkbox__input.is-checked + .el-checkbox__label{
+    color:#cda46c;
+  }
+  /deep/ .el-checkbox__inner:hover{
+    border-color:#cda46c;
+  }
 }
 /deep/.el-page-header__content{
   font-size:14px!important;
@@ -1652,9 +1684,29 @@ li.active{
 /deep/.el-radio-button__inner{
   padding: 12px 30px;
 }
+.text-4xl {
+  font-size:16px;
+  line-height: 24px;
+  text-align: center;
+}
+.editBox {
+  /deep/ .el-form-item{
+    padding-top: 40px;
+  }
+  /deep/ .el-form-item:nth-child(1){
+    padding-top: 0px;
+  }
+}
 </style>
 <style>
   .el-upload-list__item {
     transition: none !important;
   }
+  >>>.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate
+  .el-checkbox.is-bordered.is-checked{
+      border-color: #cda46c;
+     }
+  .el-checkbox__input.is-focus .el-checkbox__inner{
+      border-color:  #cda46c;
+     }
 </style>
