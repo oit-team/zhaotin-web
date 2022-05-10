@@ -2,9 +2,41 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '@/views/HomeView'
 import Layout from '@/views/Layout/index'
+// import Order from '@/views/order/index'
+// import customer from '@/views/customer/index'
+// import System from '@/views/seeting/index'
+import Center from '@/views/Center/index'
+import GoodsDetails from '@/views/Center/components/goodsDetails'
+import GoodsList from '@/views/Center/components/goodsList'
+import ShopCart from '@/views/Center/components/shopCart'
+import OrderGoods from '@/views/Center/components/orderGoods'
+import Nullpage from '@/views/Center/components/nullpage'
+// import BaseSeeting from '@/views/BaseSeeting/index'
+// import SystemRole from '@/views/seeting/components/role'
+// import MenuList from '@/views/seeting/components/menuList'
+// import BrandInteManage from '@/views/seeting/components/brandInteManage'
+// import Style from '@/views/BaseSeeting/components/style'
+// import StyleType from '@/views/BaseSeeting/components/styleType'
+// import OtherCategoryList from '@/views/BaseSeeting/components/otherCategoryList'
+// import AddRole from '@/views/seeting/components/addRole'
+// import AddGoods from '@/views/BaseSeeting/components/addGoods'
+// import AuthUsersByRoleId from '@/views/seeting/components/authUsersByRoleId'
+// import AddMenu from '@/views/seeting/components/addMenu'
+// import CustomerAccount from '@/views/BaseSeeting/components/customerAccount'
+// import AddCustomer from '@/views/BaseSeeting/components/addCustomer'
+// import AddUser from '@/views/seeting/components/addUser'
+// import OrderMsg from '@/views/order/components/orderMsg'
 
 Vue.use(VueRouter)
-
+// 重复点击路由刷新页面， 并阻止报错
+const VueRouterPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(to) {
+  const history = this.currentRoute && this.currentRoute.fullPath
+  if (to === history) {
+    window.location.reload()
+  }
+  return VueRouterPush.call(this, to).catch(err => err)
+}
 const routes = [
   {
     path: '/',
@@ -17,7 +49,32 @@ const routes = [
   {
     // 商品中心
     path: '/styleCenter',
-    component: () => import('@/views/Center/index'),
+    component: Center,
+    redirect: '/styleCenter/goodsList',
+    children: [
+      {
+        path: '/styleCenter/goodsDetails',
+        component: GoodsDetails,
+      },
+      {
+        path: '/styleCenter/goodsList',
+        component: GoodsList,
+      },
+      {
+        path: '/styleCenter/shopCart',
+        component: ShopCart,
+      },
+      {
+        path: '/styleCenter/orderGoods',
+        component: OrderGoods,
+      },
+      {
+        path: '/styleCenter/nullpage',
+        component: Nullpage,
+        name: 'Nullpage',
+      },
+    ],
+    // component: () => import('@/views/Center/index'),
   },
   {
     // 订单管理

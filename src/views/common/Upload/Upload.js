@@ -27,7 +27,7 @@ export default {
   inheritAttrs: false,
 
   mixins: [mixin],
-
+  uploadUrl: BASE_URL +'/'+ getDefaultUploadUrlByFileType(),
   props: {
     headers: {
       type: Object,
@@ -255,7 +255,11 @@ export default {
       }
       this.$refs.uploadCore.handleProgress(e, rawFile)
     },
+    clearFiles() {
+      this.$refs.uploadCore.clearFiles()
+    },
     handleRemove(file) {
+      this.$emit('onRemove', file);
       this.emitEvent('onRemove', file)
       this.abort(file)
     },
@@ -263,7 +267,7 @@ export default {
       if (this.$attrs.listType === 'picture-card') this.previewFile(file)
     },
     handleSuccess(...e) {
-      this.emitEvent('onSuccess', ...e)
+      // this.emitEvent('onSuccess', ...e)
     },
     handleError(...e) {
       this.emitEvent('onError', ...e)

@@ -4,6 +4,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import i18n from '@/locale'
+import Plyr from 'plyr'
 import ElementUI from 'element-ui'
 import 'tailwindcss/tailwind.css'
 import './plugins'
@@ -13,6 +14,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+const player = new Plyr('#player')
 // router.beforeEach((to, from, next) => {
 //   // 判断要去的路由有没有requiresAuth,为true表示必须要登录才可进入的页面
 //   if (to.meta.requiresAuth) {
@@ -53,12 +55,12 @@ import 'quill/dist/quill.bubble.css'
 // })
 
 Vue.use(VueQuillEditor)
-
 Vue.config.productionTip = false
 new Vue({
   router,
   store,
   i18n,
+  player,
   ElementUI,
   render: (h) => h(App),
 }).$mount('#app')

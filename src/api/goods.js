@@ -22,6 +22,13 @@ export function getClothingSizeInfo(params) {
     cmd: 10008,
   })
 }
+// 商品厚薄程度
+export function getStyleData(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+    mod: 'home',
+    cmd: 100009,
+  })
+}
 // 删除商品
 export function getDeleteStyleInfo(params) {
   return post('/goods/style/deleteStyleInfo', params, {
@@ -40,4 +47,32 @@ export function addimporStyleInfo(params) {
 // 导出商品
 export function getExportInfo(params) {
   return post('system/excelPublic/getExportInfo', params)
+}
+// 新增商品
+export function addGoodsInfo(params) {
+  return post('/goods/style/addStyleInfo', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 查询商品信息
+export function getStyleById(params) {
+  return post('/goods/style/getStyleById', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 编辑商品
+export function updateStyleInfo(params) {
+  return post('/goods/style/updateStyleInfo', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 商品上下架
+export function updateStyleStatusById(params) {
+  return post('/goods/style/updateStyleStatusById', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
 }
