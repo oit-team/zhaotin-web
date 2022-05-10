@@ -202,7 +202,7 @@ export default {
                 tip: '查看商品详情',
                 type: 'primary',
                 icon: 'el-icon-view',
-                isShow: true,
+
                 click: (scope) => this.$router.push({
                   path: '/basls/style/addGoods',
                   query: { item: scope , flag: 1},
@@ -213,7 +213,6 @@ export default {
                 type: 'danger',
                 icon: 'el-icon-delete',
                 click: this.deleteGoods,
-                isShow: true,
                 disabled: ({ row }) => {
                   if (row.status == '1') {  //1 是已上架
                     return true
@@ -226,7 +225,6 @@ export default {
                 tip: '编辑商品',
                 type: 'success',
                 icon: 'el-icon-edit',
-                isShow: true,
                 disabled: ({ row }) => {
                   if (row.status == '1') {  //1 是已上架
                     return true
@@ -243,30 +241,8 @@ export default {
                 tip: '商品上架',
                 type: 'warning',
                 icon: 'el-icon-top',
-                isShow: ({ row }) => {
-                  if (row.status == '1') {
-                    return false
-                  } else if (row.status == '0') {
-                    return true
-                  }
-                },
                 click: ({ row }) => {
-                  this.updateStyleStatusById(row ,1)
-                }
-              },
-              {
-                tip: '商品下架',
-                type: 'warning',
-                icon: 'el-icon-bottom',
-                isShow: ({ row }) => {
-                  if (row.status == '0') {
-                    return false
-                  } else if (row.status == '1') {
-                    return true
-                  }
-                },
-                click: ({ row }) => {
-                  this.updateStyleStatusById(row ,0)
+                  this.updateStyleStatusById(row)
                 }
               },
               // {

@@ -95,7 +95,6 @@
                 <el-button
                   :class="btn.class"
                   :disabled="getContent(btn.disabled, scope)"
-                  v-if="getContent(btn.isShow, scope)"
                   :icon="getContent(btn.icon, scope)"
                   :type="getContent(btn.type, scope)"
                   circle
