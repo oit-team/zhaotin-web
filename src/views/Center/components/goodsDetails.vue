@@ -101,7 +101,7 @@
             </div>
             <div class="zt-price">
               服务
-              <div class="zt-price__data zt-hei" v-text="infoData.service">
+              <div class="zt-price__data zt-hei" v-html="infoData.service">
                 <!-- {{ infoData.service }} -->
               </div>
             </div>
