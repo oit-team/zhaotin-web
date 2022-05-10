@@ -404,7 +404,7 @@ export default {
                 tip: ({ row }) => ["禁用", "启用"][row.status],
                 type: ({ row }) => ["success"][row.status] || "info",
                 icon: ({ row }) =>
-                  ["el-icon-open"][row.status] || "el-icon-turn-off",
+                ["el-icon-open"][row.status] || "el-icon-turn-off",
                 click: this.ban,
               },
             ],
@@ -455,7 +455,6 @@ export default {
     openDailog() {
       this.areadrawer = true;
       this.editFlag = false;
-      // console.log(this.nodeInfo)
       if (this.nodeInfo) {
         this.areaForm.deptName = this.nodeInfo.osName;
         this.areaForm.deptCode = this.nodeInfo.nodeCode;
@@ -496,7 +495,7 @@ export default {
       } else {
         let path = null;
         if (this.nodeInfo) {
-          path = `${this.nodeInfo.path}`;
+          path = `${this.nodeInfo.path}`
         } else {
           path = "0";
         }
@@ -587,9 +586,6 @@ export default {
       // object里有被点击区域的区域信息
       this.orgStId = MouseEvent.id; // 区域id
       this.nodeInfo = object.data; // 将被点击的区域信息存起来
-      // if (!object.data.isShop) {
-      //   this.tablePageOption.actions.splice(0, 1)
-      // }
       const con = {
         brandId: sessionStorage.brandId,
         orgStId: MouseEvent.id,
