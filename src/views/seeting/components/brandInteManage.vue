@@ -84,6 +84,9 @@
           <template slot="content:accountTypeMsg" slot-scope="{ row }">
             {{ ACCOUNT_TYPE_MSG_TEXT[row.accountType] }}
           </template>
+           <template slot="content:hireDate" slot-scope="{ row }">
+            {{ row.hireDate === null ? '未选择入职时间' : row.hireDate.substr(0,10) }}
+          </template>
         </TablePage>
       </div>
     </div>
