@@ -36,7 +36,7 @@ import API_STATUS from '@/api/API_STATUS'
 const axiosConfig = {
   // 请求超时时间
   timeout: 180000,
-  baseURL: process.env.NODE_ENV === 'production' ? './gdy' : '/api',
+  baseURL: process.env.NODE_ENV === 'production' ? './ztApi' : '/api',
 }
 
 // 创建axios实例
