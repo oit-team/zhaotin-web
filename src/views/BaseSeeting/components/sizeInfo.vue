@@ -82,7 +82,7 @@
             <el-input v-model="ruleForm.aliasName" autocomplete="off" maxlength="32" placeholder="请输入尺码别名"></el-input>
           </el-form-item>
         </el-form>
-        <div class="demo-drawer__footer">
+        <div class="text-center">
           <el-button size="small" @click="cancelSize('ruleForm')">取 消</el-button>
           <el-button size="small" type="primary" @click="confirmSize('ruleForm')">确 认</el-button>
         </div>
@@ -139,7 +139,7 @@ export default {
           { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
         ]
       },
-      formLabelWidth: '76px',
+      formLabelWidth: '100px',
       defaultCheckedKeys:[],
       cateId:null,
 
@@ -538,8 +538,11 @@ export default {
     text-align: center;
     margin:20px 0px;
   }
-
-  
-
+}
+/deep/.el-drawer__header > :first-child {
+  text-align: center;
+}
+/deep/.el-drawer__open .el-drawer.rtl {
+  padding: 0 20px;
 }
 </style>

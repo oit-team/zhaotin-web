@@ -2,7 +2,7 @@
   <div class="pageCommonStyle" id="brandInteManage">
     <div class="leftTreeCon">
       <!-- 操作按钮 -->
-      <div class="btnBox">
+      <div class="btnBox flex">
         <el-tooltip
           class="item"
           effect="dark"
@@ -183,7 +183,7 @@
       :visible.sync="batchPowerFlag"
       :wrapper-closable="false"
       direction="rtl"
-      size="30%"
+      size="40%"
     >
       <div class="p-8">
         <el-table
@@ -776,9 +776,10 @@ export default {
           type: "warning",
         });
       } else if (this.$refs.table.selected.length === 1) {
+        console.log(this.$refs.table.selected);
         this.batchPowerFlag = true;
         const con = {
-          id: this.$refs.table.selected[0].id,
+          id: this.$refs.table.selected[0].loginId,
           pageNum: this.params.pageNum,
           pageSize: this.params.pageSize,
           brandId: sessionStorage.brandId,
@@ -787,7 +788,7 @@ export default {
       } else {
         this.batchPowerFlag = true;
         const con = {
-          id: null,
+          id: this.$refs.table.selected[0].loginId,
           pageNum: this.params.pageNum,
           pageSize: this.params.pageSize,
           brandId: sessionStorage.brandId,
@@ -799,9 +800,11 @@ export default {
       reqRole(con).then((res) => {
         this.powerList = res.body.resultList;
         this.$refs.table.selected.forEach((item) => {
-          this.userIds.push(item.id);
+          // console.log(item);
+          this.userIds.push(item.loginId);
         });
         const result = res.body.isAssociatedRole;
+        console.log(result);
         if (result) {
           this.checkedRoleArr = result;
           let checkedArr = [];
@@ -819,7 +822,9 @@ export default {
       });
     },
     // 角色选项有变化时
-    roleSelection(val) {},
+    roleSelection(val) {
+      console.log(val);
+    },
     // 当页勾选以及取消
     changeSelectRole(selection, row) {
       let fitemIndex = this.roleId.findIndex((item) => {
@@ -906,8 +911,6 @@ export default {
   width: 150px;
 }
 #brandInteManage .leftTreeCon .btnBox {
-  display: flex;
-  justify-content: space-between;
   margin: 6px 0px 12px;
 }
 #brandInteManage .leftTreeCon .statisticsBox {

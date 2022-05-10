@@ -18,7 +18,7 @@
       :title="'导入商品'"
       :visible.sync="importFlag"
       direction="rtl"
-      size="30%"
+      size="40%"
       :before-close="handleImportClose"
     >
       <div class="text-center">
@@ -57,7 +57,7 @@
       :visible.sync="exportModelFlag"
       :before-close="handleExportClose"
       direction="rtl"
-      size="30%"
+      size="40%"
       ref="export"
     >
       <div class="text-center">

@@ -93,7 +93,7 @@
       :before-close="handleClose"
       :visible.sync="dialog"
       direction="rtl"
-      size="30%"
+      size="40%"
       custom-class="zt-demo__drawer"
       ref="drawer"
     >
@@ -130,7 +130,7 @@
       :before-close="handleClose"
       :visible.sync="dialog2"
       direction="rtl"
-      size="30%"
+      size="40%"
       custom-class="zt-demo__drawer"
       ref="drawer2"
     >
