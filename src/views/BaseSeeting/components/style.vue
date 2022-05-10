@@ -13,12 +13,12 @@
           </template>
           <template slot="content:status" slot-scope="{ row }">
             <!-- 商品图片 -->
-            <template v-if="row.status == 1">
+            <span v-if="row.status == 1" style="color:#67C23A">
               已上架
-            </template>
-            <template v-else-if="row.status == 0">
+            </span>
+            <span v-else-if="row.status == 0" style="color:red">
               未上架
-            </template>
+            </span>
           </template>
           <!-- </el-drawer> -->
         </TablePage>
@@ -173,19 +173,19 @@ export default {
             type: 'success',
             click: () => this.addGoods(),
           },
-          {
-            name: '导入商品',
-            icon: 'el-icon-download',
-            // style:style="background:#4FD5AC;border-color: #4FD5AC;color:#fff;"
-            type: 'primary',
-            click: () => this.importGoods(),
-          },
-          {
-            name: '导出商品',
-            icon: 'el-icon-upload2',
-            type: 'primary',
-            click: () => this.export(),
-          },
+          // {
+          //   name: '导入商品',
+          //   icon: 'el-icon-download',
+          //   // style:style="background:#4FD5AC;border-color: #4FD5AC;color:#fff;"
+          //   type: 'primary',
+          //   click: () => this.importGoods(),
+          // },
+          // {
+          //   name: '导出商品',
+          //   icon: 'el-icon-upload2',
+          //   type: 'primary',
+          //   click: () => this.export(),
+          // },
           // {
           //   name: '导入库存',
           //   icon: 'el-icon-download',
@@ -202,7 +202,6 @@ export default {
                 tip: '查看商品详情',
                 type: 'primary',
                 icon: 'el-icon-view',
-
                 click: (scope) => this.$router.push({
                   path: '/basls/style/addGoods',
                   query: { item: scope , flag: 1},
@@ -238,12 +237,12 @@ export default {
                 }),
               },
               {
-                tip: '商品上架',
-                type: 'warning',
-                icon: 'el-icon-top',
+                tip: ({ row }) => ["商品上架", "商品下架"][row.status],
+                type: ({ row }) => "warning",
+                icon: ({ row }) => ["el-icon-top"][row.status] || "el-icon-bottom",
                 click: ({ row }) => {
                   this.updateStyleStatusById(row)
-                }
+                },
               },
               // {
               //   tip: '库存分布',
@@ -495,12 +494,15 @@ export default {
 
     },
     // 商品上下架
-    updateStyleStatusById(row,status) {
+    updateStyleStatusById(row) {
+      let status = row.status
       let msg = '';
-      if (status == 1) {
-        msg = '上架'
-      } else if (status == 0) {
+      if (row.status == 1){
+        status = 0
         msg = '下架'
+      } else {
+        status = 1
+        msg = '上架'
       }
       this.$confirm(`确认${msg}该菜单?`, '提示', {
         confirmButtonText: '确定',

@@ -3,8 +3,8 @@
     <div class="flex justify-between items-center">
       <el-page-header :content="title" @back="goBack" />
       <div class="">
-        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm')">保存</el-button>
-        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-position" type="success" @click="releaseGood('ruleForm')">发布</el-button>
+        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm' , 0)">保存</el-button>
+        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-position" type="success" @click="saveGood('ruleForm', 1)">发布</el-button>
       </div>
     </div>
 
@@ -48,7 +48,7 @@
                   <el-form-item label="商品材质" prop="styleFabric">
                     <el-input v-model.trim="ruleForm.styleFabric" style="width:76%;" maxlength="64" placeholder="请输入商品材质" />
                   </el-form-item>
-                  <el-collapse>
+                  <el-collapse v-model="collapseVal2">
                     <el-collapse-item title="价格配置" name="2">
                       <el-form-item label="成本价格" prop="costPrice">
                         <el-input v-model.trim="ruleForm.costPrice" oninput="value=value.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.').replace('.', '$#$').replace(/\./g, '').replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3').replace(/^\./g, '')" style="width:76%;" maxlength="32" placeholder="请输入成本价格" />
@@ -65,10 +65,10 @@
                     </el-collapse-item>
                   </el-collapse>
                   <!-- 基础配置折叠面板 -->
-                  <el-collapse>
+                  <el-collapse v-model="collapseVal1">
                     <el-collapse-item title="基础配置" name="1">
-                      <el-form-item label="所属系列" prop="seriesId">
-                        <el-select v-model="ruleForm.seriesId" style="width:76%;" placeholder="请选择所属系列">
+                      <el-form-item label="所属季节" prop="seriesId">
+                        <el-select v-model="ruleForm.seriesId" style="width:76%;" placeholder="请选择所属季节">
                           <el-option
                             v-for="item in seasoNameList"
                             :key="item.id"
@@ -138,13 +138,12 @@
                   </el-form-item>
                   <p class="tip">*最多可以上传1张图片，推荐格式jpg或png</p>
                   <div class="mt-12 ml-12">
-                    <el-collapse label="保养及卖点" name="sale">
+                    <el-collapse label="保养及卖点" name="sale" v-model="collapseVal3">
                       <el-collapse-item title="保养及卖点" name="sale">
-                        <el-form-item label="洗涤保养">
+                       <el-form-item label="服务说明">
                           <quill
                             style="width:100%;"
-
-                            :value="ruleForm.washMaintenance"
+                            :value="ruleForm.service"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
                             @changeVal="changeWashMaintenance"
@@ -225,6 +224,7 @@
                   </div>
                 </div>
               </div>
+              <el-divider class="divider" />
               <div>
                 <!-- 厚薄程度 -->
                 <div style="width:40%;float:left">
@@ -392,6 +392,9 @@ export default {
       callback()
     }
     return {
+      collapseVal1: ['1'],
+      collapseVal2: ['2'],
+      collapseVal3: ['sale'],
       tabPosition: '',
       perValue: '', //上传进度
       uploadVideoFlag: false,
@@ -431,6 +434,7 @@ export default {
         //   chima: '',
         // },
       ], // 新增颜色的集合数组
+      
       newColor: '', // 新增的商品颜色个体
       uploadList: [],
       selectedItem: null,
@@ -454,6 +458,7 @@ export default {
       // imageUrl: '',
       // sellPoint:"<p>销售买点说的是的空间发生口角发生口角的看法大哥大很好看交换空间</p><br/><p>dfkjgdfkghdfjkgjdk</p>",
       ruleForm: {
+        service: '',
         styleData: [],
         styleWashing: [],
         recommendationLevel: '0',
@@ -536,7 +541,7 @@ export default {
           { validator: pricevalidate, trigger: 'blur' },
         ],
         seriesId: [
-          { required: true, message: '请选择所属系列', trigger: 'blur' },
+          { required: true, message: '请选择所属季节', trigger: 'blur' },
         ],
         costPrice: [
           { required: true, message: '请选择成本价格', trigger: 'blur' },
@@ -701,7 +706,6 @@ export default {
     if (this.$route.query.item) {
       this.title = '编辑'
       let res = this.$route.query.item.row;
-      console.log(res.styleData)
       res.styleData = JSON.parse(res.styleData)
       if (res.styleData) {
         res.styleData.forEach((item) => {
@@ -837,7 +841,7 @@ export default {
     },
     // 卖点去除html标签，多行文本框里使用v-html行不通
     changeWashMaintenance(val) {
-      this.ruleForm.washMaintenance = val
+      this.ruleForm.service = val
       // // console.log("洗涤卖点==",val)
     },
     changeSellingPointFabric(val) {
@@ -997,18 +1001,24 @@ export default {
     },
 
     // 保存
-    saveGood(formName) {
+    saveGood(formName,status) {
+      let msg = ''
+      if (status == 0) {
+        msg = '确认保存该商品信息吗?'
+      } else if(status == 1) {
+        msg = '您确定要发布商品至App与商品中心展示吗?'
+      }
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$confirm('确认保存该商品信息吗?', '提示', {
+          this.$confirm(msg , '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning',
           }).then(() => {
             if (this.title == '编辑'){
-              this.editGoodFun('NOTGROUNDING', formName)
+              this.editGoodFun(status)
             }else {
-              this.saveGoodFun('NOTGROUNDING', formName, 'save')
+              this.saveGoodFun(status)
             }
           }).catch(() => {
             this.$message({
@@ -1026,7 +1036,7 @@ export default {
       //   cancelButtonText: '取消',
       //   type: 'warning',
       // }).then(() => {
-        this.saveGoodFun('GROUNDING', formName, 'release')
+        // this.saveGoodFun('GROUNDING', formName, 'release')
       // }).catch(() => {
       //   this.$message({
       //     type: 'info',
@@ -1063,8 +1073,8 @@ export default {
       if (this.$refs.goodsSizeRef) {
         let sizeConfig = [];
         _this.sizeInfo.resultMap.forEach(item => {
+          sizeConfig = []
           _this.sizeInfo.sizeInfoVO.upTitle.forEach(Item => {
-            sizeConfig = []
             if (item[Item.key]) {
               sizeConfig.push(item[Item.key])
             } else {
@@ -1147,7 +1157,7 @@ export default {
       })
       return styleColor
     },
-    saveGoodFun() {
+    saveGoodFun(status) {
       const _this = this;
       const con = JSON.parse(JSON.stringify(this.ruleForm));
       con.stylePicture = ''  //款式图片 url地址
@@ -1159,13 +1169,14 @@ export default {
       con.filler = '' //暂无 无说明
       con.profitIndex = '' // 暂无 无说明
       con.efficiencyIndex = '' // 暂无 无说明
-      con.service = '' // 暂无 服务说明
       con.styleLabel = this.labelList.toString();
       con.sizeList = this.getSizeList();
       con.styleColor = this.getStyleColor();
       con.tatle = this.getSizeTitle()
       con.styleData = JSON.stringify(this.getStyleDataToSubmit())
       con.styleWashing = JSON.stringify(con.styleWashing)
+      con.styleSizeList = [];
+      con.status = status
       addGoodsInfo(con).then((res) => {
         console.log(res)
         if (res.head.status == 0) {
@@ -1184,7 +1195,7 @@ export default {
         console.log(err)
       })
     },
-    editGoodFun() {
+    editGoodFun(status) {
       const _this = this;
       const con = JSON.parse(JSON.stringify(this.ruleForm));
       con.stylePicture = ''  //款式图片 url地址
@@ -1196,13 +1207,16 @@ export default {
       con.filler = '' //暂无 无说明
       con.profitIndex = '' // 暂无 无说明
       con.efficiencyIndex = '' // 暂无 无说明
-      con.service = '' // 暂无 服务说明
       con.styleLabel = this.labelList.toString();
       con.sizeList = this.getSizeList();
       con.styleColor = this.getStyleColor();
       con.tatle = this.getSizeTitle()
       con.styleData = JSON.stringify(this.getStyleDataToSubmit())
       con.styleWashing = JSON.stringify(con.styleWashing)
+      con.styleSizeList = [];
+      con.status = status
+      console.log(con)
+      console.log(con.status)
       updateStyleInfo(con).then((res) => {
         if (res.head.status == 0) {
           _this.$message({
@@ -1630,6 +1644,13 @@ li.active{
     font-size:14px;
     padding-right:0px;
   }
+}
+/deep/.el-page-header__content{
+  font-size:14px!important;
+  font-weight: 500!important;
+}
+/deep/.el-radio-button__inner{
+  padding: 12px 30px;
 }
 </style>
 <style>
