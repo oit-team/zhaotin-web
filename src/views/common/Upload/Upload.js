@@ -2,11 +2,11 @@ import axios from 'axios'
 import { Upload, Image } from 'element-ui'
 import { createNamespace, genSlots } from '../utils'
 import {
-  mixin, getDefaultHeaders, getDefaultFormData, getFileItemDefault, getDefaultUploadUrlByFileType,
+  mixin, getDefaultHeaders, getDefaultFormData, getFileItemDefault,
 } from './options'
 import Vue from 'vue'
 
-const [name, bem] = createNamespace('upload')
+const [name] = createNamespace('upload')
 
 const closeViewer = Image.methods.closeViewer
 const ImageOverwrite = Vue.extend(Image).extend({
@@ -19,7 +19,7 @@ const ImageOverwrite = Vue.extend(Image).extend({
   },
 })
 
-const BASE_URL = process.env.NOOD_ENV === 'production' ? '' : '/api'
+const BASE_URL = process.env.VUE_APP_BASE_URL
 
 export default {
   name,
@@ -27,7 +27,7 @@ export default {
   inheritAttrs: false,
 
   mixins: [mixin],
-  uploadUrl: BASE_URL +'/'+ getDefaultUploadUrlByFileType(),
+
   props: {
     headers: {
       type: Object,
@@ -77,7 +77,7 @@ export default {
     handleHttpRequest(option) {
       // if (/^image\//.test(option.file.type)) {
       //   this.uploadImage(option)
-      // } 
+      // }
       if (this.isChunked) {
         this.uploadChunk(option)
       }

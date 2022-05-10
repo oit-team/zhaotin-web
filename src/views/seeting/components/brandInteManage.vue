@@ -800,7 +800,6 @@ export default {
       reqRole(con).then((res) => {
         this.powerList = res.body.resultList;
         this.$refs.table.selected.forEach((item) => {
-          // console.log(item);
           this.userIds.push(item.loginId);
         });
         const result = res.body.isAssociatedRole;

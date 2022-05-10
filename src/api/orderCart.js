@@ -48,6 +48,13 @@ export function setOrderSite(params) {
     cmd: 40007,
   })
 }
+// 用户下单  删除收货地址
+export function dltOrderSite(params) {
+  return post('/order/customerReceiving/delReceiving', params, {
+    mod: 'home',
+    cmd: 40007,
+  })
+}
 // 用户下单 下单
 export function addOrder(params) {
   return post('/order/orderInfo/addOrder', params, {

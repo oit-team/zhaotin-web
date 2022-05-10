@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {getSizeInfoAll,clothingSizeInfo,delSizeInfo,updateSizeInfo,updateSizeConfInfo} from '@/api/category'
+import {getSizeInfoAll,clothingSizeInfo,delSizeInfo,updateSizeInfo,updateSizeConfInfo,insertSizeInfo} from '@/api/category'
 export default {
   name:'cateRelatedInfo',
   components:{},
