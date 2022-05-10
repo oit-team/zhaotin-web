@@ -56,7 +56,7 @@
       infinite-scroll-delay="2000"
       infinite-scroll-distance="0"
     >
-    <!-- <div class="zt-content" v-else @scroll="scrollEvent"> -->
+      <!-- <div class="zt-content" v-else @scroll="scrollEvent"> -->
       <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
       <div
         class="zt-content__item"
