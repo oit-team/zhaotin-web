@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height:100%;">
     <div class="zt-tabs__top">
       <!-- <div class="container"> -->
       <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
@@ -49,7 +49,14 @@
       <el-divider />
     </div>
     <el-empty v-if="showEmp" description="暂无相关数据" />
-    <div class="zt-content" v-else>
+    <div
+      class="zt-content"
+      v-else
+      v-infinite-scroll="addData"
+      infinite-scroll-delay="2000"
+      infinite-scroll-distance="0"
+    >
+      <!-- <div class="zt-content" v-else @scroll="scrollEvent"> -->
       <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
       <div
         class="zt-content__item"
@@ -106,8 +113,8 @@ export default {
       goodsLength: 0,
       styleCategory: '',
       goodsId: '',
-      pageSize: '20',
-      pageNum: 1,
+      // pageSize: '20',
+      // pageNum: 1,
       // inputVal: '',
       formData: {
         styleNo: '', // 商品编号
@@ -132,6 +139,7 @@ export default {
       // -----
       tabList: [],
       styleLength: '',
+      isUpdate: true,
     }
   },
   computed: {
@@ -153,24 +161,60 @@ export default {
   methods: {
     async loadData() {
       const that = this
+      if (that.isUpdate === true) {
+        that.formData.styleName = that.inputVal || ''
+        that.formData.styleLength = that.styleLength || ''
+        const res = await getProductList({
+          ...that.formData,
+        })
+        if (res.body.resultList.length === 0) {
+          that.isUpdate = false
+          that.showEmp = true
+        } else {
+          that.isUpdate = true
+          that.showEmp = false
+        }
+        that.dataList = res.body.resultList
+        console.log(that.dataList)
+        that.tabList1 = res.body.styelTypeList
+        const all = {
+          styleType: '全部',
+        }
+        that.tabList1.unshift(all)
+        that.goodsLength = res.body.resultList.length
+      }
+    },
+    async addData() {
+      const that = this
+      that.formData.pageNum++
+      console.log(that.formData)
       that.formData.styleName = that.inputVal || ''
       that.formData.styleLength = that.styleLength || ''
       const res = await getProductList({
         ...that.formData,
       })
       if (res.body.resultList.length === 0) {
-        this.showEmp = true
+        that.isUpdate = false
+        that.$message.warning('已经到底了')
+        // that.$message('bu')
       } else {
-        this.showEmp = false
+        that.isUpdate = true
+        that.dataList.push(res.body.resultList)
+        console.log(that.dataList)
+        that.$forceUpdate
       }
-      that.dataList = res.body.resultList
-      that.tabList1 = res.body.styelTypeList
-      const all = {
-        styleType: '全部',
-      }
-      this.tabList1.unshift(all)
-      that.goodsLength = res.body.resultList.length
     },
+    // scrollEvent(e) {
+    //   console.log(e)
+    //   if ((e.srcElement.offsetHeight + e.srcElement.scrollTop) - e.srcElement.scrollHeight === 0) {
+    //     if (this.isUpdate) {
+    //       this.formData.pageNum++
+    //       this.addData()
+    //     } else {
+    //       this.$message.warning('到底了')
+    //     }
+    //   }
+    // },
     // 顶部分类
     async classData() {
       const res = await getGoodsSizeInfo({
@@ -302,7 +346,9 @@ export default {
 }
 .zt-content{
   display: flex;
+  height: 100%;
   flex-wrap: wrap;
+  overflow: auto;
   .zt-content__item{
     position: relative;
     width: 230px;
