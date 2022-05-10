@@ -3,8 +3,8 @@
     <div class="h-24 flex">
       <div class="inline-block mt-5 mr-2"><i class="iconfont icon-tongzhi"></i></div>
       <div class="h-24 flex flex-col justify-center text-yellow-600 leading-8 underline">
-        <div class="">公告：因疫情应，部分地区延迟配送</div>
-        <div>消息：本期新品将于2022年4月1日发售</div>
+        <div>公告：{{ configT[0] }}</div>
+        <div>消息：{{ configT[1] }}</div>
       </div>
     </div>
     <div class="flex-1 flex items-center px-32">
@@ -37,6 +37,7 @@
 
 <script>
 import { getShoppingCart } from '@/api/orderCart'
+import { getConfig } from '@/api/product'
 
 export default {
   data() {
@@ -44,14 +45,17 @@ export default {
       inputVal: '',
       listLength: 0,
       FormData: {},
+      configT: [],
     }
   },
   created() {
     this.getData()
+    this.config()
   },
   methods: {
-    show() {
-      // console.log(1)
+    async config() {
+      const res = await getConfig({})
+      this.configT = res.body.announceInfo
     },
     cgVal(val) {
       // 优化： 判断当前路由是否是goodsLIst，如果不是才跳转

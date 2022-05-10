@@ -16,3 +16,10 @@ export function getTreeMenuList(params) {
     lid: JSON.parse(sessionStorage.getItem('userinfo')).uuid,
   })
 }
+// 获取商品中心的公告
+export function getConfig(params) {
+  return post('/goods/dictitemInfo/getSystemConfig', params, {
+    mod: 'home',
+    cmd: 100001,
+  })
+}
