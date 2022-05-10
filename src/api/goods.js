@@ -22,6 +22,13 @@ export function getClothingSizeInfo(params) {
     cmd: 10008,
   })
 }
+// 商品厚薄程度
+export function getStyleData(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+    mod: 'home',
+    cmd: 100009,
+  })
+}
 // 删除商品
 export function getDeleteStyleInfo(params) {
   return post('/goods/style/deleteStyleInfo', params, {

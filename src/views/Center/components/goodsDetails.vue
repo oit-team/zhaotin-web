@@ -6,7 +6,13 @@
       <el-breadcrumb-item>商品详情</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 主题内容 -->
-    <div class="zt-content">
+    <!-- 返回内容为空 -->
+    <div v-if="showResult">
+      <el-empty :description="resultText">
+        <el-button type="primary" @click="$router.go(-1)">返回</el-button>
+      </el-empty>
+    </div>
+    <div class="zt-content" v-else>
       <!-- top  商品图片 信息区 -->
       <div class="zt-content__head">
         <div class="zt-head__swiper">
@@ -89,14 +95,14 @@
             <div class="zt-price">
               价格
               <div class="zt-price__data zt-red">
-                ￥<span class="zt-wt">{{ infoData.costPrice }}</span>
+                ￥<span class="zt-wt">{{ infoData.tradePrice }}</span>
                 <!-- <div class="zt-hui">3件起订</div> -->
               </div>
             </div>
             <div class="zt-price">
               服务
-              <div class="zt-price__data zt-hei">
-                {{ infoData.service }}
+              <div class="zt-price__data zt-hei" v-text="infoData.service">
+                <!-- {{ infoData.service }} -->
               </div>
             </div>
           </div>
@@ -178,7 +184,7 @@
           <div class="zt-data1__flex">
             <div class="zt-content__label">售后服务</div>
             <div class="zt-content__info">
-              <p style="white-space:pre-wrap">{{ infoData.service }}</p>
+              <p style="white-space:pre-wrap" v-html="infoData.service"></p>
             </div>
           </div>
           <div class="zt-data1__flex">
@@ -211,15 +217,18 @@
               <div class="zt-data2__flex">
                 <div class="zt-data2__label"><i class="iconfont icon-mianliaomaidian"></i>面料卖点</div>
                 <!-- <div class="zt-data2__info">荷兰貂皮大衣</div> -->
-                <div class="zt-data2__info">{{ infoData.sellingPointFabric }}</div>
+                <div class="zt-data2__info" v-html="infoData.sellingPointFabric">
+                </div>
               </div>
               <div class="zt-data2__flex">
                 <div class="zt-data2__label"><i class="iconfont icon-shejimaidian"></i>设计卖点</div>
-                <div class="zt-data2__info">{{ infoData.designSellingPoint }}</div>
+                <div class="zt-data2__info" v-html="infoData.designSellingPoint">
+                </div>
               </div>
               <div class="zt-data2__flex">
                 <div class="zt-data2__label"><i class="iconfont icon-chuanzhuomaidian"></i>穿着卖点</div>
-                <div class="zt-data2__info">{{ infoData.wearSellingPoint }}</div>
+                <div class="zt-data2__info" v-html="infoData.wearSellingPoint">
+                </div>
               </div>
             </div>
             <!-- <div class="zt-content__info">
@@ -239,6 +248,7 @@
           </div>
         </div>
         <el-divider />
+        <!-- 服装尺寸 -->
         <div class="zt-content__data3">
           <div class="zt-content__label">尺码信息</div>
           <div class="zt-content__info">
@@ -249,31 +259,31 @@
               style="width: 100%"
             >
               <el-table-column
-                prop="date"
+                prop="sizeName"
                 label="尺寸"
                 width="120"
                 align="center"
               />
               <el-table-column
-                prop="name"
+                prop="sizeConfig[0]"
                 label="肩宽"
                 width="120"
                 align="center"
               />
               <el-table-column
-                prop="address"
+                prop="sizeConfig[1]"
                 label="胸围"
                 width="120"
                 align="center"
               />
               <el-table-column
-                prop="address"
+                prop="sizeConfig[2]"
                 label="衣长"
                 width="120"
                 align="center"
               />
               <el-table-column
-                prop="address"
+                prop="sizeConfig[3]"
                 label="袖长"
                 width="120"
                 align="center"
@@ -282,6 +292,7 @@
           </div>
         </div>
         <el-divider />
+        <!-- 服装材料信息 -->
         <div class="zt-content__data4">
           <div class="zt-content__label">服装信息</div>
           <div class="zt-content__info">
@@ -298,14 +309,16 @@
         <el-divider />
         <div class="zt-content__data5">
           <div class="zt-content__label">洗涤说明</div>
-          <div class="zt-content__info" v-for="(item, index) in infoData.styleWashing" :key="index">
-            <div v-if="item.status === 1">
-              <el-image
-                style="width: 80px; height: 80px"
-                :src="item.resUrl"
-                fit="contain"
-              />
-              <div>{{ item.name }}</div>
+          <div class="zt-content__list">
+            <div class="zt-content__info" v-for="(item, index) in infoData.styleWashing" :key="index">
+              <div v-if="item.status === 1">
+                <el-image
+                  style="width: 80px; height: 80px"
+                  :src="item.resUrl"
+                  fit="contain"
+                />
+                <div>{{ item.name }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -347,7 +360,7 @@
 <script>
 // import Tabs from '@/components/tabs/tabs'
 import { getGoodsDetailes, getProductList } from '@/api/product'
-import { addCart, CalculatePrice } from '@/api/orderCart'
+import { addCart } from '@/api/orderCart'
 
 export default {
   name: 'GoodsDetails',
@@ -394,6 +407,8 @@ export default {
       sizeData: {},
       formData2: {},
       priceAll: 0,
+      showResult: false,
+      resultText: '',
     }
   },
   created() {
@@ -401,52 +416,55 @@ export default {
     this.getData()
     this.loadData()
   },
-  mounted() {
-  },
-  beforeDestroy() {
-  },
   methods: {
-    async getData() {
+    getData() {
       const that = this
-      const res = await getGoodsDetailes({
+      getGoodsDetailes({
         styleId: that.goodsId,
-      })
-      that.infoData = res.body.resultList
-      that.infoData.styleData = JSON.parse(that.infoData.styleData)
-      that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
-      const list = []
-      that.infoData.styleWashing.forEach(e => {
-        if (e.status === 1) {
-          list.push(e)
+      }).then((res) => {
+        if (res.head.status === 0) {
+          that.infoData = res.body.resultList
+          that.infoData.styleData = JSON.parse(that.infoData.styleData)
+          that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
+          const list = []
+          that.infoData.styleWashing.forEach(e => {
+            if (e.status === 1) {
+              list.push(e)
+            }
+          })
+          that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
+          // recommendationLevel : 推荐指数
+          that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
+          // 给数据中  加入数量
+          this.infoData.styleColorList.forEach(e => {
+            let n = 0
+            e.styleSize.forEach(i => {
+              i.num = 0
+              n += i.num
+              return n
+            })
+            e.num = n
+          })
+          that.styleData = {
+            styleId: 0,
+            styleColor: '', // 颜色
+            styleNo: that.infoData.styleNo,
+            styleSize: [],
+          }
+          // 将 视频封面 加到切换轮播的images中
+          if (this.infoData.styleVideoPatch) {
+            const url = {
+              resUrl: this.infoData.styleVideoPatch,
+            }
+            this.infoData.imgUrlList.unshift(url)
+          }
+        }
+      }).catch((ret) => {
+        if (ret.head.status !== 0) {
+          that.showResult = true
+          that.resultText = ret.head.msg
         }
       })
-      that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
-      // recommendationLevel : 推荐指数
-      that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
-      // 给数据中  加入数量
-      this.infoData.styleColorList.forEach(e => {
-        let n = 0
-        e.styleSize.forEach(i => {
-          i.num = 0
-          n += i.num
-          return n
-        })
-        e.num = n
-      })
-      that.styleData = {
-        styleId: 0,
-        styleColor: '', // 颜色
-        styleNo: that.infoData.styleNo,
-        styleSize: [],
-      }
-      that.infoData.styleAttribute = that.infoData.styleAttribute.trim()
-      // 将 视频封面 加到切换轮播的images中
-      if (this.infoData.styleVideoPatch) {
-        const url = {
-          resUrl: this.infoData.styleVideoPatch,
-        }
-        this.infoData.imgUrlList.unshift(url)
-      }
     },
     async loadData() {
       const that = this
@@ -516,7 +534,7 @@ export default {
         that.$set(item, 'imgUrl', item.colorImg)
         that.$set(item, 'styleNumber', item.num)
         that.$set(item, 'styleId', that.infoData.styleId)
-        that.$set(item, 'stylePrice', that.infoData.costPrice)
+        that.$set(item, 'stylePrice', that.infoData.tradePrice)
         data1[index] = item
         item.styleSize.forEach(i => {
           that.$set(i, 'sizeNumber', i.num)
@@ -533,31 +551,23 @@ export default {
           return i.sizeNumber > 0
         })
       })
-      console.log(data)
-      console.log(data1)
-      let data3 = {}
-      data3 = data1.filter(item => {
+      resultListinfo.style = data1.filter(item => {
         return item.styleSize.length !== 0
       })
-      if (data3[0]) {
-        resultListinfo.style.push(data3[0])
-      }
       resultList.push(resultListinfo)
       if (resultListinfo.style.length > 0) {
-        console.log('跳')
         that.$set(that.infoData, 'styleList', resultList)
-        console.log(that.infoData)
         that.$store.commit('order/addOrderStorage', that.infoData)
         this.$router.push('/styleCenter/orderGoods')
       } else {
-        that.$message.error('至少选择一件')
+        that.$message.error('请选择需要购买的商品数量')
       }
     },
     // 加入购物车
     async toorder() {
       this.cart()
       if (this.allList && this.allList.length === 0) {
-        this.$message.error('至少选择一件')
+        this.$message.error('请选择需要购买的商品数量')
       } else {
         const res = await addCart({
           styleList: this.allList,
@@ -569,6 +579,7 @@ export default {
           })
         }
       }
+      this.$parent.cgcart()
     },
     cart() {
       const that = this
@@ -923,9 +934,16 @@ video::-webkit-media-controls-timeline {
       display: flex;
       align-items: center;
       padding: 0 30px;
-      .zt-content__info{
-        text-align: center;
-        margin-right: 10px;
+      .zt-content__list{
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        width: 90%;
+        margin-left: 20px;
+        .zt-content__info{
+          text-align: center;
+          margin-right: 10px;
+        }
       }
     }
   }
@@ -949,6 +967,9 @@ video::-webkit-media-controls-timeline {
     .zt-content{
       display: flex;
       flex-wrap: wrap;
+      .zt-content__item:hover{
+        cursor: pointer;
+      }
       .zt-content__item{
         position: relative;
         width: 230px;

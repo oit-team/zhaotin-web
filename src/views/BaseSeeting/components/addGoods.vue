@@ -3,8 +3,8 @@
     <div class="flex justify-between items-center">
       <el-page-header :content="title" @back="goBack" />
       <div class="">
-        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm')">保存</el-button>
-        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-position" type="success" @click="releaseGood('ruleForm')">发布</el-button>
+        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('ruleForm' , 0)">保存</el-button>
+        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-position" type="success" @click="saveGood('ruleForm', 1)">发布</el-button>
       </div>
     </div>
 
@@ -48,37 +48,27 @@
                   <el-form-item label="商品材质" prop="styleFabric">
                     <el-input v-model.trim="ruleForm.styleFabric" style="width:76%;" maxlength="64" placeholder="请输入商品材质" />
                   </el-form-item>
-                  <el-collapse>
+                  <el-collapse v-model="collapseVal2">
                     <el-collapse-item title="价格配置" name="2">
                       <el-form-item label="成本价格" prop="costPrice">
-                        <el-input v-model.trim="ruleForm.costPrice" style="width:76%;" maxlength="32" placeholder="请输入成本价格" />
+                        <el-input v-model.trim="ruleForm.costPrice" oninput="value=value.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.').replace('.', '$#$').replace(/\./g, '').replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3').replace(/^\./g, '')" style="width:76%;" maxlength="32" placeholder="请输入成本价格" />
                       </el-form-item>
                       <el-form-item label="吊牌价格" prop="tagPrice">
-                        <el-input v-model.trim="ruleForm.tagPrice" style="width:76%;" maxlength="32" placeholder="请输入品牌价格" />
+                        <el-input v-model.trim="ruleForm.tagPrice" oninput="value=value.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.').replace('.', '$#$').replace(/\./g, '').replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3').replace(/^\./g, '')" style="width:76%;" maxlength="32" placeholder="请输入品牌价格" />
                       </el-form-item>
                       <el-form-item label="零售价格" prop="retailPrice">
-                        <el-input v-model.trim="ruleForm.retailPrice" style="width:76%;" maxlength="32" placeholder="请输入零售价格" />
+                        <el-input v-model.trim="ruleForm.retailPrice" oninput="value=value.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.').replace('.', '$#$').replace(/\./g, '').replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3').replace(/^\./g, '')" style="width:76%;" maxlength="32" placeholder="请输入零售价格" />
                       </el-form-item>
-                    </el-collapse-item>
-                  </el-collapse>
-                  <el-collapse>
-                    <el-collapse-item title="批发价格" name="3">
-          <!--            <el-form-item label="起订数" prop="minimumOrderQuantity">
-                        <el-input v-model.trim="styleTradePrice[0].minimumOrderQuantity" style="width:76%;" maxlength="32" placeholder="请输入起订数" />
-                      </el-form-item>
-                      <el-form-item label="截止数" prop="maximumOrder">
-                        <el-input v-model.trim="styleTradePrice[0].maximumOrder" style="width:76%;" maxlength="32" placeholder="请输入截止数" />
-                      </el-form-item> -->
-                      <el-form-item label="批发价" prop="onePrice">
-                        <el-input :disabled="true" v-model.trim="onePrice" style="width:76%;" maxlength="32" placeholder="请输入批发价" />
+                      <el-form-item label="批发价格" prop="tradePrice">
+                        <el-input v-model.trim="ruleForm.tradePrice" oninput="value=value.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.').replace('.', '$#$').replace(/\./g, '').replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3').replace(/^\./g, '')" style="width:76%;" maxlength="32" placeholder="请输入批发价" />
                       </el-form-item>
                     </el-collapse-item>
                   </el-collapse>
                   <!-- 基础配置折叠面板 -->
-                  <el-collapse>
+                  <el-collapse v-model="collapseVal1">
                     <el-collapse-item title="基础配置" name="1">
-                      <el-form-item label="所属系列" prop="seriesId">
-                        <el-select v-model="ruleForm.seriesId" style="width:76%;" placeholder="请选择所属系列">
+                      <el-form-item label="所属季节" prop="seriesId">
+                        <el-select v-model="ruleForm.seriesId" style="width:76%;" placeholder="请选择所属季节">
                           <el-option
                             v-for="item in seasoNameList"
                             :key="item.id"
@@ -109,28 +99,60 @@
                       </div>
                     </el-collapse-item>
                   </el-collapse>
+                  <el-collapse  v-model="collapseVal4">
+                    <el-collapse-item title="服务说明" name="1">
+                      <el-form-item label="服务说明">
+                        <quill
+                      	style="width:100%;"
+                      	:value="ruleForm.service"
+                      	:editor-setting="editorSetting"
+                      	:height="&quot;150px&quot;"
+                      	@changeVal="changeWashMaintenance"
+                        />
+                      </el-form-item>
+                    </el-collapse-item>
+                  </el-collapse>
                 </div>
                 <div class="fileInfoBox right ml-8">
                   <!-- 商品视频 -->
                   <el-form-item label="商品视频">
-                    <vc-upload v-bind="uploadOptionVidel" ref="uploadVideo">
+                    <el-upload
+                      :action="uploadUrl"
+                      :data="uploadData"
+                      :headers="headersData"
+                      :on-progress="uploadVideoProcess"
+                      multiple
+                      :show-file-list="false"
+                      list-type="picture-card"
+                      accept='.mp4,.mov'
+                      :class="ruleForm.styleVideo?'el-upload-video':''"
+                      :before-upload="beforeUploadVideo"
+                      :on-success="VideoUploadSuccess"
+                    >
+                      <video
+                        style=""
+                        v-if='ruleForm.styleVideo'
+                        class="avatar video-avatar"
+                        :src="ruleForm.styleVideo"
+                        controls="controls">
+                        您的浏览器不支持视频播放
+                      </video>
+                      <el-progress v-if="!ruleForm.styleVideo&&uploadVideoFlag" type="circle" :percentage="perValue"></el-progress>
+                      <i v-if="!ruleForm.styleVideo&&!uploadVideoFlag" class="el-icon-plus"></i>
+                    </el-upload>
+                    <div v-if="ruleForm.styleVideo" style="margin-top:10px"> <el-button @click="delVideo">删除视频</el-button> </div>
+                  </el-form-item>
+                  <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
+                  
+                  <el-form-item label="视频贴片">
+                    <vc-upload v-bind="uploadOptionVideImg" @onRemove='onRemoveVideoImg' ref="uploadVideoImg">
                       <i class="el-icon-plus"></i>
                     </vc-upload>
                   </el-form-item>
-                  <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
+                  <p class="tip">*最多可以上传1张图片，推荐格式jpg或png</p>
                   <div class="mt-12 ml-12">
-                    <el-collapse label="保养及卖点" name="sale">
+                    <el-collapse label="保养及卖点" class="editBox" name="sale" v-model="collapseVal3">
                       <el-collapse-item title="保养及卖点" name="sale">
-                        <el-form-item label="洗涤保养">
-                          <quill
-                            style="width:100%;"
-
-                            :value="ruleForm.washMaintenance"
-                            :editor-setting="editorSetting"
-                            :height="&quot;150px&quot;"
-                            @changeVal="changeWashMaintenance"
-                          />
-                        </el-form-item>
                         <el-form-item label="面料卖点">
                           <quill
                             style="width:100%;"
@@ -193,7 +215,7 @@
                         :label="item.value"
                       >
                       <template slot-scope="scope">
-                        <input v-if="editSizeFlag" v-model="scope.row[item.key]" type="text" maxlength="8" />
+                        <input v-if="editSizeFlag" v-model="scope.row[item.key]" oninput="value=value.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.').replace('.', '$#$').replace(/\./g, '').replace('$#$', '.').replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3').replace(/^\./g, '')" type="text" maxlength="8" />
                         <span v-else>{{ scope.row[item.key] }}</span>
                       </template>
                       </el-table-column>
@@ -203,6 +225,36 @@
                   <div v-else>
                     <div style="margin-right:20px;">商品尺码</div>
                     <p class="noSizeInfo">未发现<span style="color:#e60012;">{{ activeStyleCategory.dicttimeDisplayName }}</span>相关尺码配置，请前往信息预设中设置。</p>
+                  </div>
+                </div>
+              </div>
+              <el-divider class="divider" />
+              <div>
+                <!-- 厚薄程度 -->
+                <div style="width:40%;float:left">
+                  <div>
+                    <div style="margin:20px 0px;">
+                      <span style="margin-right:20px;">商品版型</span>
+                    </div>
+                  </div>
+                  <div class="styleDataBox" v-for="(item,index) in ruleForm.styleData" :key="index" >
+                    <span>{{item.name}}</span>
+                    <el-radio-group v-model="item.checked">
+                      <el-radio-button v-for="(Item,Index) in item.options" :label="Item.option"></el-radio-button>
+                    </el-radio-group>
+                  </div>
+                </div>
+                <div style="width:60%;float:left">
+                  <div>
+                    <div style="margin:20px 0px;">
+                      <span style="margin-right:20px;">洗涤条件</span>
+                    </div>
+                  </div>
+                  <div class="checkBox">
+                    <el-checkbox v-for="(item,index) in ruleForm.styleWashing" :key="index" :checked="item.status == 1" v-model="item.status" :label="item.status" :true-label="1" :false-label="0">
+                      <img :src="item.resUrl" alt="">
+                      <span>{{item.name}}</span>
+                    </el-checkbox>
                   </div>
                 </div>
               </div>
@@ -228,7 +280,7 @@
                     </div>
                     <el-drawer size="30%" :show-close="false" :visible.sync="drawer" class="text-center">
                       <div class="flex justify-between items-center px-4">
-                        <p class="text-sm">请输入商品颜色</p>
+                        <p class="text-sm">颜色</p>
                         <el-input
                           ref="colorInput"
                           v-model="newColor"
@@ -322,8 +374,9 @@
 <script>
 import quill from '@/views/common/quillEditor'
 import { addQuillTitle } from '@/assets/js/js/quill-title'
-import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo } from '@/api/goods'
+import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo, getStyleData } from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
+import MD5 from 'crypto-js/md5'
 // import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
 // import axios from 'axios'
 
@@ -343,8 +396,29 @@ export default {
       callback()
     }
     return {
+      collapseVal4: ['1'],
+      collapseVal1: ['1'],
+      collapseVal2: ['2'],
+      collapseVal3: ['sale'],
+      tabPosition: '',
+      perValue: '', //上传进度
+      uploadVideoFlag: false,
+      uploadUrl: '',
+      headersData: {
+        token: ''
+      },
+      uploadData: {
+        totalSize: '',
+        startPos: 0,
+        endPos: '',
+        fileType: 1,
+        userId: '',
+        fname: '',
+        noThumb: '',
+      },
       isEdit: false,
       videoList: [],
+      VideoImgList: [], //视频贴片
       videoUrl: '',
       activeGoodsShow: false,
       activeGoodsSize: [],
@@ -365,6 +439,7 @@ export default {
         //   chima: '',
         // },
       ], // 新增颜色的集合数组
+      
       newColor: '', // 新增的商品颜色个体
       uploadList: [],
       selectedItem: null,
@@ -388,6 +463,9 @@ export default {
       // imageUrl: '',
       // sellPoint:"<p>销售买点说的是的空间发生口角发生口角的看法大哥大很好看交换空间</p><br/><p>dfkjgdfkghdfjkgjdk</p>",
       ruleForm: {
+        service: '',
+        styleData: [],
+        styleWashing: [],
         recommendationLevel: '0',
         status: '0', // NOTGROUNDING  未上架  GROUNDING 已上架
         styleId: '', // 款式id
@@ -405,11 +483,13 @@ export default {
         tagPrice: '', // 品牌价格
         costPrice: '', // 成本价格
         styleVideo: '', // 商品视频
+        styleVideoPatch: '', //商品视频贴片
         washMaintenance: '', // 洗涤保养
         wearSellingPoint: '', // 穿着卖点
         sellingPointFabric: '', // 面料卖点
         designSellingPoint: '', // 设计卖点
         styleMajor: '', // 是否重点款
+        tradePrice: '', //批发价
       },
       // 不同的批发价格
       styleTradePrice: [
@@ -466,7 +546,7 @@ export default {
           { validator: pricevalidate, trigger: 'blur' },
         ],
         seriesId: [
-          { required: true, message: '请选择所属系列', trigger: 'blur' },
+          { required: true, message: '请选择所属季节', trigger: 'blur' },
         ],
         costPrice: [
           { required: true, message: '请选择成本价格', trigger: 'blur' },
@@ -476,6 +556,9 @@ export default {
         ],
         retailPrice: [
           { required: true, message: '请选择零售价格', trigger: 'blur' },
+        ],
+        tradePrice : [
+          { required: true, message: '请输入批发价格', trigger: 'blur' },
         ],
         idList: [
           {
@@ -573,49 +656,49 @@ export default {
         },
       }
     },
-    // 上传视频
-    uploadOptionVidel() {
+    //上传视频贴片
+    uploadOptionVideImg() {
       return {
         showFileList: true,
         multiple: true,
-        data: {
-          fileType: 1,
+        typeOption: {
+          'image/*': {
+            data: {
+              fileType: 0,
+            },
+          },
         },
-        fileList: this.videoList,
+        fileList: this.VideoImgList,
         listType: 'picture-card',
-        maxSize: 1024 * 50,
+        maxSize: 1024 * 20,
         limit: 1,
-        chunkSize: 1024 * 50,
+        chunkSize: 1024 * 5,
         check: true,
-        accept: 'video/*',
+        accept: 'image/*',
         onSuccess: (file, fileList) => {
           this.uploadList = fileList
-          // console.log(this.selectedColorName)
-          // this.colorNum = this.colorNum  ? this.colorNum : 0;
-          // this.selectedColorName[this.colorNum] = {}
-          // this.selectedColorName[this.colorNum].videoUrl = this.uploadList.response.data.fileUrl
-          this.ruleForm.styleVideo = this.uploadList.response.data.fileUrl
-          // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
-        }
+          this.ruleForm.styleVideoPatch = this.uploadList.response.data.fileUrl
+          console.log(this.ruleForm)
+        },
       }
     },
-    onePrice() {
-      let result = Number(this.ruleForm.retailPrice)
-      //   if (this.styleTradePrice[0].minimumOrderQuantity > 0 && this.styleTradePrice[0].maximumOrder < 5)
-      //    return  this.styleTradePrice[0].styleTradePrice * 0.8
-      // console.log(result)
-      this.styleTradePrice.forEach(item => {
-        if (Number(item.minimumOrderQuantity) > 0 & Number(item.maximumOrder) < 5) {
-          // console.log(Number(item.minimumOrderQuantity))
-          result *= 0.9
-        } else if (Number(item.minimumOrderQuantity) > 5 & Number(item.maximumOrder) < 10) {
-          result *= 0.8
-        } else {
-          result *= 0.7
-        }
-      })
-      return result
-    },
+    // onePrice() {
+    //   let result = Number(this.ruleForm.retailPrice)
+    //   //   if (this.styleTradePrice[0].minimumOrderQuantity > 0 && this.styleTradePrice[0].maximumOrder < 5)
+    //   //    return  this.styleTradePrice[0].styleTradePrice * 0.8
+    //   // console.log(result)
+    //   this.styleTradePrice.forEach(item => {
+    //     if (Number(item.minimumOrderQuantity) > 0 & Number(item.maximumOrder) < 5) {
+    //       // console.log(Number(item.minimumOrderQuantity))
+    //       result *= 0.9
+    //     } else if (Number(item.minimumOrderQuantity) > 5 & Number(item.maximumOrder) < 10) {
+    //       result *= 0.8
+    //     } else {
+    //       result *= 0.7
+    //     }
+    //   })
+    //   return result
+    // },
   },
   created() {
     this.getSeasonId()
@@ -626,21 +709,48 @@ export default {
       this.isEdit = true
     }
     if (this.$route.query.item) {
-      this.title = '编辑'
+      if (this.isEdit == false) {
+        this.title = '查看'
+      }else {
+        this.title = '编辑'
+      }
+      let res = this.$route.query.item.row;
+      res.styleData = JSON.parse(res.styleData)
+      if (res.styleData) {
+        res.styleData.forEach((item) => {
+          item.options.forEach((Item) => {
+            if (Item.status == 1) {
+              item.checked = Item.option
+            }
+          })
+        })
+      }
       this.ruleForm = this.$route.query.item.row
+      this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
+      this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
       this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
+      
+      console.log(this.ruleForm.styleWashing)
       if (this.ruleForm.styleLabel) {
         this.labelList = this.ruleForm.styleLabel.split(',')
       }
       if (this.ruleForm.styleVideo) {
         this.videoList.push({url: this.ruleForm.styleVideo})
       }
+      if (this.ruleForm.styleVideoPatch) {
+        this.VideoImgList.push({url: this.ruleForm.styleVideoPatch})
+      }
     //   this.menuIds = '1'
     } else {
       this.title = '新增'
+      this.getStyleData()
+      this.getStyleWashing()
     }
   },
   mounted() {
+    this.headersData.token = localStorage.token
+    this.uploadData.userId = sessionStorage.userId
+    this.uploadUrl = VcUpload.uploadUrl
     addQuillTitle()
     // this.getBandAndSeries()
     this.getGoodsCategory()
@@ -651,6 +761,10 @@ export default {
     },
     onRemoveXj(file) {
       this.selectedColorNameXiJie[this.colorNum] = this.selectedColorNameXiJie[this.colorNum].filter( item => item.url != file.url)
+    },
+    onRemoveVideoImg(file) {
+      console.log(file)
+      console.log('removeVideoImg')
     },
     //
     handlePictureCardPreview(file) {
@@ -672,7 +786,7 @@ export default {
     },
     //   点击返回
     goBack() {
-      if (this.operateFlag !== 'view') { // 编辑或新增提示一下
+      if (this.operateFlag !== 'view' && this.isEdit !== false) { // 编辑或新增提示一下
         this.$confirm('返回会丢失未保存的数据，确认吗?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -713,7 +827,6 @@ export default {
       this.uploadImgFlag = true
       // this.colorList.splice(item, 1)
       this.colorNum = index
-      
       if (_this.activeGoodsShow&&_this.activeGoodsSize[_this.colorNum]&&_this.activeGoodsSize[_this.colorNum].length > 0) {
         JSON.parse(_this.activeGoodsSize[this.colorNum]).forEach(item => {
           let res = _this.sizeInfo.resultMap.find(Item => {
@@ -737,7 +850,7 @@ export default {
     },
     // 卖点去除html标签，多行文本框里使用v-html行不通
     changeWashMaintenance(val) {
-      this.ruleForm.washMaintenance = val
+      this.ruleForm.service = val
       // // console.log("洗涤卖点==",val)
     },
     changeSellingPointFabric(val) {
@@ -824,9 +937,10 @@ export default {
     // 尺码==========================
     // 获取商品尺码信息
     getClothingSizeInfo(val) {
-      console.log(this.styleCategory)
       const label = this.styleCategory.find(item => item.dicttimeDisplayName == this.ruleForm.styleCategory)
-      console.log(this.ruleForm.styleCategory)
+      if (!label) {
+        return
+      }
       this.activeStyleCategory = label
       const con = {
         brandId: sessionStorage.brandId,
@@ -896,18 +1010,24 @@ export default {
     },
 
     // 保存
-    saveGood(formName) {
+    saveGood(formName,status) {
+      let msg = ''
+      if (status == 0) {
+        msg = '确认保存该商品信息吗?'
+      } else if(status == 1) {
+        msg = '您确定要发布商品至App与商品中心展示吗?'
+      }
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$confirm('确认保存该商品信息吗?', '提示', {
+          this.$confirm(msg , '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning',
           }).then(() => {
             if (this.title == '编辑'){
-              this.editGoodFun('NOTGROUNDING', formName)
+              this.editGoodFun(status)
             }else {
-              this.saveGoodFun('NOTGROUNDING', formName, 'save')
+              this.saveGoodFun(status)
             }
           }).catch(() => {
             this.$message({
@@ -925,13 +1045,35 @@ export default {
       //   cancelButtonText: '取消',
       //   type: 'warning',
       // }).then(() => {
-        this.saveGoodFun('GROUNDING', formName, 'release')
+        // this.saveGoodFun('GROUNDING', formName, 'release')
       // }).catch(() => {
       //   this.$message({
       //     type: 'info',
       //     message: '已取消',
       //   })
       // })
+    },
+    getSizeTitle() {
+      let obj = {}
+      if (this.$refs.goodsSizeRef) {
+        const _this = this;
+        _this.sizeInfo.sizeInfoVO.upTitle.forEach((item) => {
+          obj[item.key] = item.value
+        })
+      }
+      return obj;
+    },
+    getStyleDataToSubmit() {
+      this.ruleForm.styleData.forEach((item) => {
+        item.options.forEach((Item) => {
+          if (item.checked == Item.option) {
+            Item.status = 1
+          } else {
+            Item.status = 0
+          }
+        })
+      })
+      return this.ruleForm.styleData
     },
     getSizeList() {
       let sizeList = [];
@@ -940,8 +1082,8 @@ export default {
       if (this.$refs.goodsSizeRef) {
         let sizeConfig = [];
         _this.sizeInfo.resultMap.forEach(item => {
+          sizeConfig = []
           _this.sizeInfo.sizeInfoVO.upTitle.forEach(Item => {
-            sizeConfig = []
             if (item[Item.key]) {
               sizeConfig.push(item[Item.key])
             } else {
@@ -1024,27 +1166,28 @@ export default {
       })
       return styleColor
     },
-    saveGoodFun() {
-      
-      // console.log(this.labelList)  商品标签
+    saveGoodFun(status) {
       const _this = this;
-      const con = this.ruleForm;
+      const con = JSON.parse(JSON.stringify(this.ruleForm));
       con.stylePicture = ''  //款式图片 url地址
       con.brandId = sessionStorage.brandId //所属机构
-      con.tradePrice = this.onePrice //批发价
-      con.styleVideoPatch = '' //商品视频贴片
+      // con.tradePrice = this.onePrice //批发价
+      // con.styleVideoPatch = '' //商品视频贴片
       con.styleDetailPicture = '' // 暂无  应该是商品图片
       con.accessories = ''// 暂无 商品辅料
       con.filler = '' //暂无 无说明
       con.profitIndex = '' // 暂无 无说明
       con.efficiencyIndex = '' // 暂无 无说明
-      con.service = '' // 暂无 服务说明
-      con.styleLabel = this.labelList.toString(); //商品标签
+      con.styleLabel = this.labelList.toString();
       con.sizeList = this.getSizeList();
       con.styleColor = this.getStyleColor();
+      con.tatle = this.getSizeTitle()
+      con.styleData = JSON.stringify(this.getStyleDataToSubmit())
+      con.styleWashing = JSON.stringify(con.styleWashing)
+      con.styleSizeList = [];
+      con.status = status
       console.log(con)
-      // console.log(JSON.stringify(con))
-      // return;
+      return;
       addGoodsInfo(con).then((res) => {
         console.log(res)
         if (res.head.status == 0) {
@@ -1063,23 +1206,28 @@ export default {
         console.log(err)
       })
     },
-    editGoodFun() {
+    editGoodFun(status) {
       const _this = this;
-      const con = this.ruleForm;
+      const con = JSON.parse(JSON.stringify(this.ruleForm));
       con.stylePicture = ''  //款式图片 url地址
       con.brandId = sessionStorage.brandId //所属机构
-      con.tradePrice = this.onePrice //批发价
-      con.styleVideoPatch = '' //商品视频贴片
+      // con.tradePrice = this.onePrice //批发价
+      // con.styleVideoPatch = '' //商品视频贴片
       con.styleDetailPicture = '' // 暂无  应该是商品图片
       con.accessories = ''// 暂无 商品辅料
       con.filler = '' //暂无 无说明
       con.profitIndex = '' // 暂无 无说明
       con.efficiencyIndex = '' // 暂无 无说明
-      con.service = '' // 暂无 服务说明
       con.styleLabel = this.labelList.toString();
       con.sizeList = this.getSizeList();
       con.styleColor = this.getStyleColor();
-
+      con.tatle = this.getSizeTitle()
+      con.styleData = JSON.stringify(this.getStyleDataToSubmit())
+      con.styleWashing = JSON.stringify(con.styleWashing)
+      con.styleSizeList = [];
+      con.status = status
+      console.log(con)
+      console.log(con.status)
       updateStyleInfo(con).then((res) => {
         if (res.head.status == 0) {
           _this.$message({
@@ -1150,6 +1298,127 @@ export default {
         })
       }
     },
+    
+    uploadVideoProcess(event, file, fileList) {
+      this.uploadVideoFlag = true;
+      this.perValue = file.percentage.toFixed(0) * 1;
+    },
+    beforeUploadVideo(file){
+      this.delVideo()
+      this.uploadData.totalSize = parseInt(file.size/1024)
+      this.uploadData.endPos = file.size
+      this.uploadData.fileType = '1'
+      const pointIndex = file.name.lastIndexOf(".");
+      const fileType = file.name.substring(pointIndex+1);   //获取到文件后缀名
+      const isVideo = (fileType === "mp4" || fileType === "mov");
+      const isLt4M = file.size / 1024 / 1024 < 50;
+      const hour = Math.floor(Date.now() / (1000 * 60 * 60))
+      const md5FileName = `${ MD5(file.name + hour).toString() }.${ fileType }`
+      this.uploadData.fname = md5FileName
+      if (!isVideo) {
+        this.$message.error("上传视频只能是 mp4，mov 格式!");
+        return false
+      }
+      if (!isLt4M) {
+        this.$message.error("上传视频大小不能超过 50MB!");
+        return false
+      }
+      return isVideo && isLt4M;
+    },
+    VideoUploadSuccess(res,file){
+      // this.isShowUploadVideo = true;
+      this.uploadVideoFlag = false;
+      this.perValue = 0;
+      if (res.status === 0) {
+        this.ruleForm.styleVideo = res.fileUrl
+      } else {
+        this.$message.error('上传失败');
+      }
+    },
+    delVideo() {
+      this.ruleForm.styleVideo = ''
+    },
+    getStyleWashing() {
+      const con = {
+      	brandId: sessionStorage.brandId,
+      	type: 'STYLE_WASHING',
+      	userId: this.uploadData.userId,
+      }
+      const _this = this;
+      getStyleData(con).then((res) => {
+        if (res.head.status == 0) {
+          if(res.body.result.length > 0) {
+            res.body.result.forEach((item) => {
+              _this.ruleForm.styleWashing.push({
+                name:item.dicttimeDisplayName,
+                status: 0,
+                resUrl: item.imgUrl,
+                dictCode: item.dictitemCode
+              })
+            })
+          }
+          console.log(this.ruleForm.styleWashing)
+        } else {
+          this.$message.error(res.head.msg);
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    // 获取商品厚薄程度
+    getStyleData(style) {
+      const arr = [
+        {
+          name:'厚薄程度',
+          key:'STYLE_THICKNESS'
+        },{
+          name:'版型指数',
+          key:'VERSION_INDEX'
+        },{
+          name:'弹力指数',
+          key:'ELASTIC_INDEX'
+        },{
+          name:'柔软指数',
+          key:'SOFT_INDEX'
+        },
+      ]
+      async function getData (con,item) {
+        let resData = '';
+        try {
+          const res = await getStyleData(con)
+          if (res.head.status == 0) {
+            let styleData = {
+              name: item.name,
+              options: [],
+              checked: '',
+            }
+            if (res.body.result.length > 0) {
+              res.body.result.forEach((Item) => {
+                styleData.options.push({
+                  option: Item.dicttimeDisplayName,
+                  status: 0
+                })
+              })
+            }
+            _this.ruleForm.styleData.push(styleData)
+          } else {
+            this.$message.error(res.head.msg);
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      }
+      const _this = this
+      arr.forEach((item) => {
+        const con = {
+        	brandId: sessionStorage.brandId,
+        	type: item.key,
+        	userId: this.uploadData.userId,
+        }
+        let data = getData(con,item)
+      })
+      console.log(_this.ruleForm.styleData)
+    }
   },
 }
 </script>
@@ -1231,6 +1500,9 @@ export default {
   }
   .el-upload-video{
     text-align: left!important;
+    outline-width: 500px;
+    height:200px;
+    overflow:hidden;
     @{deep} .el-upload{
       width:70%;
     }
@@ -1309,7 +1581,8 @@ export default {
   background-color: rgb(240, 238, 238);
 }
 li.active{
-  background:#bcbcbc
+  background:#cda46c;
+  color:#fff;
 }
 .addColor {
   width: 100px;
@@ -1338,7 +1611,6 @@ li.active{
   list-style: none;
   font-size: 14px;
   font-weight: 800;
-  color: #303133;
 
 }
 /deep/ .el-tabs__active-bar {
@@ -1351,10 +1623,90 @@ li.active{
   display: flex;
   justify-content: center;
 }
-
+.styleDataBox{
+  margin-bottom: 12px;
+  span{
+    width:98px;
+    font-size:14px;
+    color:#606266;
+    display: inline-block;
+    padding-right:12px;
+    text-align: right;
+  }
+  /deep/.el-radio-button__orig-radio:checked + .el-radio-button__inner{
+    background-color:#cda46c;
+    border-color: #cda46c;
+    box-shadow:-1px 0 0 0 #cda46c;
+  }
+  /deep/.el-radio-button__inner:hover{
+    color:#cda46c
+  }
+  /deep/.is-active .el-radio-button__inner:hover{
+    color:#fff;
+  }
+} 
+.checkBox {
+  .el-checkbox{
+    border:1px solid #e8eaee;
+    padding:10px;
+    margin:0 0 14px 14px;
+  }
+  /deep/ .el-checkbox__input{
+    position: absolute;
+    top:10px;
+    left: 10px;
+  }
+  /deep/ .el-checkbox__label{
+    img{
+      width:120px;
+      height:120px;
+      height:auto;
+    }
+    text-align:center;
+    font-size:14px;
+    padding-right:0px;
+  }
+  /deep/.el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: #cda46c;
+    border-color: #cda46c;
+  }
+  /deep/.el-checkbox__input.is-checked + .el-checkbox__label{
+    color:#cda46c;
+  }
+  /deep/ .el-checkbox__inner:hover{
+    border-color:#cda46c;
+  }
+}
+/deep/.el-page-header__content{
+  font-size:14px!important;
+  font-weight: 500!important;
+}
+/deep/.el-radio-button__inner{
+  padding: 12px 30px;
+}
+.text-4xl {
+  font-size:16px;
+  line-height: 24px;
+  text-align: center;
+}
+.editBox {
+  /deep/ .el-form-item{
+    padding-top: 40px;
+  }
+  /deep/ .el-form-item:nth-child(1){
+    padding-top: 0px;
+  }
+}
 </style>
 <style>
   .el-upload-list__item {
     transition: none !important;
   }
+  >>>.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate
+  .el-checkbox.is-bordered.is-checked{
+      border-color: #cda46c;
+     }
+  .el-checkbox__input.is-focus .el-checkbox__inner{
+      border-color:  #cda46c;
+     }
 </style>

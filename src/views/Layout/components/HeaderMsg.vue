@@ -1,7 +1,7 @@
 <template>
   <div class="container h-24 flex">
     <div class="h-24 flex">
-      <div class="inline-block mt-5 mr-2">标</div>
+      <div class="inline-block mt-5 mr-2"><i class="iconfont icon-tongzhi"></i></div>
       <div class="h-24 flex flex-col justify-center text-yellow-600 leading-8 underline">
         <div class="">公告：因疫情应，部分地区延迟配送</div>
         <div>消息：本期新品将于2022年4月1日发售</div>
@@ -55,8 +55,12 @@ export default {
     },
     cgVal(val) {
       // 优化： 判断当前路由是否是goodsLIst，如果不是才跳转
-      this.$router.push('/styleCenter/goodsList')
-      this.$emit('searchVal', val)
+      if (this.$route.path === '/styleCenter/goodsList') {
+        this.$emit('searchVal', val)
+      } else {
+        this.$router.push('/styleCenter/goodsList')
+        this.$emit('searchVal', val)
+      }
     },
     toCart() {
       this.$router.push('/styleCenter/shopCart')
@@ -104,5 +108,9 @@ export default {
   padding: 5px 7px;
   border-radius: 50%;
   background-color: #cca46c;
+}
+.icon-tongzhi{
+  color: #cca46c;
+  font-weight: 800;
 }
 </style>

@@ -10,10 +10,15 @@
             <template v-if="true">
               <el-image class="file-res" :src="row.resUrl" fit="cover" />
             </template>
-            <!-- 商品视频 -->
-            <!-- <template v-if="row.resType === FILE_TYPE.VIDEO">
-              <el-image class="file-res" :src="row.videoImg" fit="cover" />
-            </template> -->
+          </template>
+          <template slot="content:status" slot-scope="{ row }">
+            <!-- 商品图片 -->
+            <span v-if="row.status == 1" style="color:#67C23A">
+              已上架
+            </span>
+            <span v-else-if="row.status == 0" style="color:red">
+              未上架
+            </span>
           </template>
           <!-- </el-drawer> -->
         </TablePage>
@@ -168,19 +173,19 @@ export default {
             type: 'success',
             click: () => this.addGoods(),
           },
-          {
-            name: '导入商品',
-            icon: 'el-icon-download',
-            // style:style="background:#4FD5AC;border-color: #4FD5AC;color:#fff;"
-            type: 'primary',
-            click: () => this.importGoods(),
-          },
-          {
-            name: '导出商品',
-            icon: 'el-icon-upload2',
-            type: 'primary',
-            click: () => this.export(),
-          },
+          // {
+          //   name: '导入商品',
+          //   icon: 'el-icon-download',
+          //   // style:style="background:#4FD5AC;border-color: #4FD5AC;color:#fff;"
+          //   type: 'primary',
+          //   click: () => this.importGoods(),
+          // },
+          // {
+          //   name: '导出商品',
+          //   icon: 'el-icon-upload2',
+          //   type: 'primary',
+          //   click: () => this.export(),
+          // },
           // {
           //   name: '导入库存',
           //   icon: 'el-icon-download',
@@ -207,6 +212,13 @@ export default {
                 type: 'danger',
                 icon: 'el-icon-delete',
                 click: this.deleteGoods,
+                disabled: ({ row }) => {
+                  if (row.status == '1') {  //1 是已上架
+                    return true
+                  } else if (row.status == '0') {
+                    return false
+                  }
+                },
               },
               {
                 tip: '编辑商品',
@@ -225,44 +237,23 @@ export default {
                 }),
               },
               {
-                tip: '商品上架',
-                type: 'warning',
-                icon: 'el-icon-top',
-                disabled: ({ row }) => {
-                  if (row.status == '1') {
-                    return true
-                  } else if (row.status == '0') {
-                    return false
-                  }
-                },
+                tip: ({ row }) => ["商品上架", "商品下架"][row.status],
+                type: ({ row }) => "warning",
+                icon: ({ row }) => ["el-icon-top"][row.status] || "el-icon-bottom",
                 click: ({ row }) => {
-                  this.updateStyleStatusById(row ,1)
-                }
-              },
-              {
-                tip: '商品下架',
-                type: 'warning',
-                icon: 'el-icon-bottom',
-                disabled: ({ row }) => {
-                  if (row.status == '0') {
-                    return true
-                  } else if (row.status == '1') {
-                    return false
-                  }
+                  this.updateStyleStatusById(row)
                 },
-                click: ({ row }) => {
-                  this.updateStyleStatusById(row ,0)
-                }
               },
-              {
-                tip: '库存分布',
-                // type: 'danger',
-                icon: 'el-icon-s-data',
-                click: ({ row }) => this.$router.push({
-                  // path: '/system/addRole',
-                  params: { item: row },
-                }),
-              },
+              // {
+              //   tip: '库存分布',
+              //   // type: 'danger',
+              //   icon: 'el-icon-s-data',
+              //   isShow: true,
+              //   click: ({ row }) => this.$router.push({
+              //     // path: '/system/addRole',
+              //     params: { item: row },
+              //   }),
+              // },
             ],
           },
         },
@@ -503,12 +494,15 @@ export default {
 
     },
     // 商品上下架
-    updateStyleStatusById(row,status) {
+    updateStyleStatusById(row) {
+      let status = row.status
       let msg = '';
-      if (status == 1) {
-        msg = '上架'
-      } else if (status == 0) {
+      if (row.status == 1){
+        status = 0
         msg = '下架'
+      } else {
+        status = 1
+        msg = '上架'
       }
       this.$confirm(`确认${msg}该菜单?`, '提示', {
         confirmButtonText: '确定',

@@ -1,7 +1,7 @@
 <template>
   <div>
     <HeaderNav class="mb-4" />
-    <HeaderMsg @searchVal="searchVal" />
+    <HeaderMsg @searchVal="searchVal" ref="msg" />
     <div class="container main">
       <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
     </div>
@@ -58,12 +58,16 @@ export default {
   },
   methods: {
     searchVal(val) {
+      console.log(val)
       const that = this
-      that.VAL = val.trim()
+      that.VAL = val || ''
       that.$nextTick(() => {
         that.$refs.child.loadData()
         that.$forceUpdate()
       })
+    },
+    cgcart() {
+      this.$refs.msg.getData()
     },
   },
 }

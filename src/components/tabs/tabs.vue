@@ -65,10 +65,10 @@ export default {
   padding: 0 20px;
 }
 .zt-tabs__item:hover{
-  cursor:default;
+  cursor:pointer;
 }
 .zt-tabs__homeItem:hover{
-  cursor:default;
+  cursor:pointer;
 }
 .zt-tabs__homeItem{
   display: flex;

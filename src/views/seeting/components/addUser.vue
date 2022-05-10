@@ -186,10 +186,13 @@ export default ({
   created() {
     // 编辑
     if (this.$route.query.item) {
-      console.log(this.$route.query.item);
+      this.getTreeOrgList()
+      // console.log(this.$route.query.item.row.hireDate.substr(0,10));
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
-      this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substr(0,10)
+      if(this.$route.query.item.row.hireDate) {
+        this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substr(0,10)
+      }
       this.osName = this.$route.query.item.row.nodeName
       this.orgId = this.$route.query.item.row.id
     }
@@ -211,15 +214,14 @@ export default ({
         brandId: sessionStorage.brandId,
       }).then((res) => {
       if(res.head.status === 0) {
-        this.orgList = res.body.orgList[0].childrenList
+        this.orgList = res.body.orgList
       }
       })
     },
-    // 修改所属店铺或者区域
+    // 修改所属区域
     changeArea(val) {
-      let checkedNodeList = this.$refs.chooseOption.getCheckedNodes();
-       if(checkedNodeList[0]) {
-        console.log(checkedNodeList);
+      let checkedNodeList = this.$refs.chooseOption.getCheckedNodes()
+       if(checkedNodeList) {
         this.areaId = checkedNodeList[0].data.id
        }
     },
@@ -263,12 +265,12 @@ export default ({
               ...this.ruleForm,
               code: '2',
               orgStId:this.areaId,
-            id:this.orgId
+              id:this.orgId
           }
            changeCustomer(con).then((res) => {
               if (res.head.status === 0) {
                 this.$message({
-                  message: '修改用户信息成功',
+                  message: '编辑用户成功',
                   type: 'success',
                 })
                 this.$router.back()
