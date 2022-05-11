@@ -9,7 +9,7 @@
       filterable
       v-model="associatedUser"
       :data="allUserList"
-      :props="{key:'id',label:'userName'}"
+      :props="{key:'loginId',label:'userName'}"
       :render-content="renderFunc"
       :titles="['未授权用户', '已授权用户']"
       :button-texts="['取消', '授权']"
@@ -85,8 +85,8 @@ export default {
       })
     },
     // 左侧点击事件
-    leftChecked() {
-      // console.log('左侧点击事件===')
+    leftChecked(item) {
+     // console.log(item);
     },
     // 右侧点击事件
     rightChecked() {
@@ -108,7 +108,7 @@ export default {
     },
     // 授权
     empowerUsersByRoleId(userArr, operateId) {
-      // this.checkedRoleArr = this.$refs.roleTree.getCheckedKeys();     // 选中的节点所组成的数组
+      //this.checkedRoleArr = this.$refs.roleTree.getCheckedKeys();     // 选中的节点所组成的数组
       // console.log("选中的角色数组==",this.checkedRoleArr)
       const _this = this
       const con = {

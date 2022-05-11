@@ -33,7 +33,7 @@
       :title="importType==1?'导入商品':'导入商品库存'"
       :visible.sync="importFlag"
       direction="rtl"
-      size="30%"
+      size="40%"
       :before-close="handleImportClose"
     >
       <div class="text-center">

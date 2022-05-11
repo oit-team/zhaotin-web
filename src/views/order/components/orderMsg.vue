@@ -32,9 +32,6 @@
                     <div class="" v-for="items in item.styleSize" :key="items.index">
                       <span>尺码*数量: {{ items.sizeName }} * {{ items.sizeNumber }}</span>
                     </div>
-                    <div class="" v-for="items in item.styleSize" :key="items.index">
-                      <span>尺码*数量: {{ items.sizeName }} * {{ items.sizeNumber }}</span>
-                    </div>
                   </div>
                 </div>
               </div>

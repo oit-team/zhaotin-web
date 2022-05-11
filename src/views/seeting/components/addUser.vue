@@ -13,7 +13,7 @@
       label-position="left"
       class="demo-ruleForm"
     >
-      <el-form-item label="用户名" prop="userName">
+      <el-form-item v-if="userN" label="用户名" prop="userName">
         <el-input v-model="ruleForm.userName" :disabled="editFlag" style="width:60%;" maxlength="20" placeholder="请选择用户名">
           <!-- <template slot="prepend" v-if="!editFlag">{{ brandAbbreviation }}</template> -->
         </el-input>
@@ -115,6 +115,7 @@ export default ({
 
     return {
       areaId:'',
+      userN:true,
         orgList: [], // 级联数据源
         osName:[],
         orgId:'',

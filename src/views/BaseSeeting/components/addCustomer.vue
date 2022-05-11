@@ -406,7 +406,6 @@ export default {
         documentaryName: [{ required: true, message: "请选择跟单人员", trigger: "blur" }],
         marketName: [{ required: true, message: "请选择市场人员", trigger: "blur" }],
         managerName: [{ required: true, message: "请选择客户经理", trigger: "blur" }],
-        refereesName: [{ required: true, message: "请选择推荐人", trigger: "blur" }],
       },
     };
   },

@@ -93,7 +93,7 @@
       :before-close="handleClose"
       :visible.sync="dialog"
       direction="rtl"
-      size="30%"
+      size="40%"
       custom-class="zt-demo__drawer"
       ref="drawer"
     >
@@ -130,7 +130,7 @@
       :before-close="handleClose"
       :visible.sync="dialog2"
       direction="rtl"
-      size="30%"
+      size="40%"
       custom-class="zt-demo__drawer"
       ref="drawer2"
     >
@@ -172,6 +172,7 @@ import {
   setOrderSite,
   CalculatePrice,
   addOrder,
+  dltOrderSite,
 } from '@/api/orderCart'
 
 export default {
@@ -255,15 +256,18 @@ export default {
           i.styleSize.forEach(n => {
             dataL.styleSize.unshift(n)
           })
-        })
-        if (dataL.styleSize && dataL.styleSize.length !== 0) {
+          console.log(dataL)
           list.unshift(dataL)
-        } else {
-          []
-        }
+        })
+        console.log(dataL)
+        // if (dataL.styleSize && dataL.styleSize.length !== 0) {
+        //   list.unshift(dataL)
+        // } else {
+        //   []
+        // }
       })
+      console.log(list)
       that.styleList = list
-      console.log(that.styleList)
       const res = await CalculatePrice({
         styleList: list,
       })
@@ -276,13 +280,19 @@ export default {
     },
     addSite() {
       const that = this
+      that.ruleForm = {
+        id: '',
+        name: '',
+        phone: '',
+        siteInfo: '',
+        isdef: 0, // s是否设为默认地址
+      }
       that.showDr = true
       that.dialog = true
     },
     // 修改地址
     setSite() {
       const that = this
-      console.log(that.radio)
       that.ruleForm = {
         id: this.siteList[that.radio].id,
         name: this.siteList[that.radio].consignee,
@@ -293,8 +303,15 @@ export default {
       that.showDr2 = true
       that.dialog2 = true
     },
-    cgradio(val) {
-      console.log(val)
+    async deleteSite() {
+      const res = await dltOrderSite({
+        receivingId: this.siteList[this.radio].id,
+      })
+      if (res.head.status === 0) {
+        this.$message.success('删除成功')
+      } else {
+        this.$message.success('删除失败')
+      }
     },
     handleClose(done) {
       if (this.loading) {
@@ -352,7 +369,9 @@ export default {
           that.dialog = false
           clearTimeout(that.timer)
         } else {
-          console.log('error submit!!')
+          that.$message.warning('提交失败')
+          that.loading = false
+          that.dialog = false
           return false
         }
       })
@@ -436,6 +455,9 @@ export default {
     color: #0078d7;
     box-sizing: border-box;
   }
+  .zt-site__add:hover{
+    cursor: pointer;
+  }
 }
 .zt-demo__drawer{
   padding: 0 20px;
@@ -478,9 +500,10 @@ export default {
         font-size: 16px;
       }
       .defoSite{
-        color: #000;
-        font-weight: 800;
+        color: #fff;
         font-size: 16px;
+        padding: 5px;
+        background-color: #999;
       }
     }
     .el-radio__label{

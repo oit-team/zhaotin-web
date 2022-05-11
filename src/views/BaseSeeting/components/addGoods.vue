@@ -278,7 +278,7 @@
                       </ul>
                       <div class="addColor" @click="addColor"> <i class="el-icon-plus"></i></div>
                     </div>
-                    <el-drawer size="30%" :show-close="false" :visible.sync="drawer" class="text-center">
+                    <el-drawer size="40%" :show-close="false" :visible.sync="drawer" class="text-center">
                       <div class="flex justify-between items-center px-4">
                         <p class="text-sm">颜色</p>
                         <el-input
