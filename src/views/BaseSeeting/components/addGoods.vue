@@ -101,7 +101,7 @@
                   </el-collapse>
                   <el-collapse  v-model="collapseVal4">
                     <el-collapse-item title="服务说明" name="1">
-                      <el-form-item label="服务说明">
+                      <el-form-item label="">
                         <quill
                       	style="width:100%;"
                       	:value="ruleForm.service"
@@ -240,7 +240,7 @@
                   <div class="styleDataBox" v-for="(item,index) in ruleForm.styleData" :key="index" >
                     <span>{{item.name}}</span>
                     <el-radio-group v-model="item.checked">
-                      <el-radio-button v-for="(Item,Index) in item.options" :label="Item.option"></el-radio-button>
+                      <el-radio-button v-for="(Item,Index) in item.options" :key="Index" :label="Item.option"></el-radio-button>
                     </el-radio-group>
                   </div>
                 </div>
@@ -759,6 +759,7 @@ export default {
       this.selectedColorNameXiJie[this.colorNum] = this.selectedColorNameXiJie[this.colorNum].filter( item => item.url != file.url)
     },
     onRemoveVideoImg(file) {
+      this.ruleForm.styleVideoPatch = ''
     },
     //
     handlePictureCardPreview(file) {

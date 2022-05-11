@@ -279,7 +279,7 @@
            <el-form-item label="联系人及联系方式" prop="contactDate">
               <el-input
                  type="textarea"
-                 placeholder="请输入装箱注意事项"
+                 placeholder="请输入联系人及联系方式"
                  style="width: 60%"
                  v-model="customerForm.contactDate"
                  :height="'280px'"

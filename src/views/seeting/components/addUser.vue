@@ -13,11 +13,11 @@
       label-position="left"
       class="demo-ruleForm"
     >
-      <el-form-item v-if="userN" label="用户名" prop="userName">
+<!--     <el-form-item v-if="userN" label="用户名" prop="userName">
         <el-input v-model="ruleForm.userName" :disabled="editFlag" style="width:60%;" maxlength="20" placeholder="请选择用户名">
-          <!-- <template slot="prepend" v-if="!editFlag">{{ brandAbbreviation }}</template> -->
+          <template slot="prepend" v-if="!editFlag">{{ brandAbbreviation }}</template>
         </el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="真实姓名" prop="nickName">
         <el-input v-model="ruleForm.nickName" style="width:60%;" maxlength="20" placeholder="请输入真实姓名" />
       </el-form-item>
