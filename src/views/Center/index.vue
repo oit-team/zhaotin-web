@@ -3,6 +3,9 @@
     <HeaderNav class="mb-4" />
     <HeaderMsg @searchVal="searchVal" ref="msg" />
     <div class="container main">
+      <keep-alive>
+        <router-view v-if="$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
+      </keep-alive>
       <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
     </div>
   </div>

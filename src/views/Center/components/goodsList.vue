@@ -44,6 +44,21 @@
             <i v-if="priceTF" class="el-icon-caret-bottom"></i>
             <i v-else class="el-icon-caret-top"></i>
           </div>
+          <div class="zt-bottom__price">
+            <el-input
+              class="zt-Binp"
+              size="small"
+              placeholder="￥"
+              v-model="input1"
+            />
+            -
+            <el-input
+              class="zt-Binp"
+              size="small"
+              placeholder="￥"
+              v-model="input2"
+            />
+          </div>
         </div>
       </div>
       <el-divider />
@@ -56,7 +71,8 @@
       infinite-scroll-delay="3000"
       infinite-scroll-distance="0"
     > -->
-    <div class="zt-content" v-else @scroll="scrollEvent">
+    <div class="zt-content" v-else ref="content">
+    <!-- <div class="zt-content" v-else @scroll="scrollEvent"> -->
       <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
       <div
         class="zt-content__item"
@@ -101,6 +117,8 @@ export default {
   data() {
     return {
       data: {},
+      input1: '',
+      input2: '',
       tabList1: [],
       dataList: [],
       labelText1: '筛选',
@@ -119,7 +137,7 @@ export default {
       formData: {
         styleNo: '', // 商品编号
         pageNum: 1,
-        pageSize: 20,
+        pageSize: 10,
         styleId: '', // 商品id
         styleLength: '', // 商品衣长
         styleCategory: '', // 商品类别
@@ -131,8 +149,8 @@ export default {
         styleSearch: '',
         status: '1', // 商品状态
         seriesId: '', // 季节id
-        shelfTimeSort: 0, // 批发价排序（0：从小到大 1是从大到小）
-        tradePriceSort: 0, // 上架时间排序（0：从小到大 1是从大到小）
+        shelfTimeSort: '', // 批发价排序（0：从小到大 1是从大到小）
+        tradePriceSort: '', // 上架时间排序（0：从小到大 1是从大到小）
       },
       showEmp: false,
       shouDjiantou: true,
@@ -158,6 +176,7 @@ export default {
     this.classData()
   },
   mounted() {
+    window.addEventListener('scroll', this.scrollEvent)
   },
   methods: {
     async loadData() {
@@ -177,8 +196,13 @@ export default {
       }
       that.dataList = res.body.resultList
       that.tabList1 = res.body.styelTypeList
+      let number1 = 0
+      that.tabList1.forEach(e => {
+        number1 += e.categoryNumber
+      })
       const all = {
         styleType: '全部',
+        categoryNumber: number1,
       }
       that.tabList1.unshift(all)
       that.goodsLength = res.body.resultList.length
@@ -197,24 +221,21 @@ export default {
           that.isUpdate = false
           that.$message.warning('已经到底了')
           // that.$message('bu')
+          that.formData.pageNum = 1
         } else {
           that.isUpdate = true
-          that.dataList.push(res.body.resultList)
+          that.dataList.push(...res.body.resultList)
           console.log(that.dataList)
           that.$forceUpdate
         }
       }
     },
-    scrollEvent(e) {
-      console.log(e)
-      // if ((e.srcElement.offsetHeight + e.srcElement.scrollTop) - e.srcElement.scrollHeight === 0) {
-      //   if (this.isUpdate) {
-      //     this.formData.pageNum++
-      //     this.addData()
-      //   } else {
-      //     this.$message.warning('到底了')
-      //   }
-      // }
+    scrollEvent() {
+      const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
+      if (data === 0) {
+        this.addData()
+        this.$forceUpdate()
+      }
     },
     // 顶部分类
     async classData() {
@@ -263,32 +284,36 @@ export default {
       if (id === 0) {
         that.$nextTick(() => {
           that.formData.styleCategory = ''
-          that.formData.shelfTimeSort = 0
-          that.formData.tradePriceSort = 0
+          that.formData.shelfTimeSort = ''
+          that.formData.tradePriceSort = ''
           that.loadData()
           that.$forceUpdate()
         })
       } else if (id === 1 && !this.shouDjiantou) {
         that.$nextTick(() => {
           that.formData.shelfTimeSort = 1
+          that.formData.tradePriceSort = ''
           that.loadData()
           that.$forceUpdate()
         })
       } else if (id === 1 && that.shouDjiantou) {
         that.$nextTick(() => {
           that.formData.shelfTimeSort = 0
+          that.formData.tradePriceSort = ''
           that.loadData()
           that.$forceUpdate()
         })
       } else if (id === 3 && that.priceTF) {
         that.$nextTick(() => {
           that.formData.tradePriceSort = 1
+          that.formData.shelfTimeSort = ''
           that.loadData()
           that.$forceUpdate()
         })
       } else if (id === 3 && !that.priceTF) {
         that.$nextTick(() => {
           that.formData.tradePriceSort = 0
+          that.formData.shelfTimeSort = ''
           that.loadData()
           that.$forceUpdate()
         })
@@ -341,11 +366,31 @@ export default {
     }
     .zt-bottom__tab{
       display: flex;
+      align-items: center;
       .zt-bottom__item{
         padding: 0 20px;
       }
       .zt-bottom__item:hover{
         cursor: pointer;
+      }
+    }
+    .zt-bottom__price{
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #CDA46C;
+      border-radius: 30px;
+      box-sizing: border-box;
+      .zt-Binp{
+        margin: 0 15px;
+        ::v-deep.el-input--small .el-input__inner{
+          border-radius: 20px;
+          border-color: #CDA46C;
+        }
+        >>>.el-input__inner{
+          border-radius: 20px;
+          border-color: #CDA46C;
+        }
       }
     }
     .selectB{

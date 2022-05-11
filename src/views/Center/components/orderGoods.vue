@@ -16,7 +16,7 @@
         :key="index"
       >
         <div class="site-item__l" v-if="radio === index">
-          <i class="el-icon-location">寄送至</i>
+          <i class="el-icon-location"></i>寄送至
         </div>
         <div class="zt-site__check">
           <el-radio v-model="radio" :label="index">
@@ -77,12 +77,15 @@
     </div>
     <div class="zt-footer">
       <div class="zt-footer__left">
-      </div>
-      <div class="zt-footer__right">
+        <!-- <div class="zt-footer__price" v-if="siteList && siteList.length !== 0"> -->
         <div class="zt-footer__price">
-          应付总额: <span class="zt-red">￥{{ priceAll }}</span>
+          总金额: <span class="zt-red">￥{{ priceAll }}</span>
+          <p>寄送地址：<span class="zt-hui">{{ siteList[radio].address || '' }}</span></p>
+          <p>收货人：<span class="zt-red">{{ siteList[radio].consignee || '' }}</span>{{ ' ' }}{{ siteList[radio].contactNum || '' }}</p>
           <!-- <p class="zt-hui">本次共选：商品样式(2) 商品尺寸(7)</p> -->
         </div>
+      </div>
+      <div class="zt-footer__right">
         <div class="zt-footer__button" @click="subOrder">
           提交订单
         </div>
@@ -113,7 +116,7 @@
             <el-input maxlength="11" v-model.number="ruleForm.phone" placeholder="手机号 " />
           </el-form-item>
           <el-form-item label="详细地址" prop="siteInfo">
-            <el-input v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
+            <el-input type="textarea" v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
           </el-form-item>
           <el-form-item label="设为默认收货地址" prop="isdef">
             <el-switch v-model="ruleForm.isdef" />
@@ -127,7 +130,7 @@
     </el-drawer>
     <el-drawer
       title="修改收货地址"
-      :before-close="handleClose"
+      :before-close="handleClose2"
       :visible.sync="dialog2"
       direction="rtl"
       size="40%"
@@ -150,7 +153,7 @@
             <el-input maxlength="11" v-model.number="ruleForm.phone" placeholder="手机号 " />
           </el-form-item>
           <el-form-item label="详细地址" prop="siteInfo">
-            <el-input v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
+            <el-input type="textarea" v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
           </el-form-item>
           <el-form-item label="设为默认收货地址" prop="isdef">
             <el-switch v-model="ruleForm.isdef" />
@@ -213,6 +216,8 @@ export default {
         ],
         phone: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
+          // { min: 11, message: '请注意手机号格式', trigger: 'blur' },
+          { pattern: /^[1][3,4,5,6,7,8][0-9]{9}$/, message: '请输入正确的手机号', trigger: 'blur' },
           // {
           //   min: 8, max: 12, message: '长度为 11 个字符', trigger: 'blur',
           // },
@@ -314,14 +319,27 @@ export default {
       }
     },
     handleClose(done) {
-      if (this.loading) {
-        return
-      }
       this.$confirm('确定要提交表单吗？')
         .then(() => {
           this.loading = true
           this.timer = setTimeout(() => {
             done()
+            // 动画关闭需要一定的时间
+            this.subForm('ruleForm')
+            setTimeout(() => {
+              this.loading = false
+            }, 400)
+          }, 2000)
+        })
+        .catch(() => {})
+    },
+    handleClose2(done) {
+      this.$confirm('确定要提交表单吗？')
+        .then(() => {
+          this.loading = true
+          this.timer = setTimeout(() => {
+            done()
+            this.subForm2('ruleForm')
             // 动画关闭需要一定的时间
             setTimeout(() => {
               this.loading = false
@@ -369,9 +387,9 @@ export default {
           that.dialog = false
           clearTimeout(that.timer)
         } else {
-          that.$message.warning('提交失败')
+          that.$message.warning('请填写正确信息')
           that.loading = false
-          that.dialog = false
+          // that.dialog = false
           return false
         }
       })
@@ -649,18 +667,18 @@ export default {
       cursor: pointer;
     }
   }
+  .zt-red{
+    font-size: 20px;
+    font-weight: 800;
+    color: #FF0000;
+  }
+  .zt-hui{
+    color: #666;
+  }
   .zt-footer__right{
     display: flex;
     text-align: right;
     font-size: 14px;
-    .zt-red{
-      font-size: 20px;
-      font-weight: 800;
-      color: #FF0000;
-    }
-    .zt-hui{
-      color: #666;
-    }
     .zt-footer__button{
       padding: 15px 50px;
       background-color: #cda46c;

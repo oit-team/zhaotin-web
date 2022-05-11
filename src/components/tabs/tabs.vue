@@ -1,24 +1,28 @@
 <template>
   <div class="ct-tabs">
     <div class="zt-tabs__label" v-if="labelText">{{ labelText }}:</div>
-    <div class="zt-tabs__center">
-      <div v-for="(item, index) in tabList" :key="index">
-        <div
-          v-if="!ishome"
-          :class="selectItem===index?'zt-tabs-select':'zt-tabs__item'"
-          @click="checkItem(index)"
-        >
-          {{ item.dicttimeDisplayName }}
-        </div>
-        <div
-          v-else
-          :class="selectItem===index?'zt-tabs__homeSelect':'zt-tabs__homeItem'"
-          @click="checkItem(index)"
-        >
-          {{ item.styleType || item.dicttimeDisplayName }}
-        </div>
+    <!-- <div> -->
+    <div v-if="!ishome" class="zt-tabs__center1">
+      <div
+        v-for="(item, index) in tabList"
+        :key="index"
+        :class="selectItem===index?'zt-tabs-select':'zt-tabs__item'"
+        @click="checkItem(index)"
+      >
+        {{ item.dicttimeDisplayName }}
       </div>
     </div>
+    <div v-else class="zt-tabs__center2">
+      <div
+        v-for="(item, index) in tabList"
+        :key="index"
+        :class="selectItem===index?'zt-tabs__homeSelect':'zt-tabs__homeItem'"
+        @click="checkItem(index)"
+      >
+        {{ item.styleType }}({{ item.categoryNumber }})
+      </div>
+    </div>
+    <!-- </div> -->
   </div>
 </template>
 
@@ -36,7 +40,8 @@ export default {
       showLb: true,
     }
   },
-  created() {
+  mounted() {
+    console.log(this.tabList)
   },
   methods: {
     checkItem(index) {
@@ -58,8 +63,15 @@ export default {
   margin: 10px 0;
   box-sizing: border-box;
 }
-.zt-tabs__center{
+.zt-tabs__center1{
   display: flex;
+  align-items: center;
+}
+.zt-tabs__center2{
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-around;
 }
 .zt-tabs__item{
   padding: 0 20px;
@@ -71,11 +83,11 @@ export default {
   cursor:pointer;
 }
 .zt-tabs__homeItem{
-  display: flex;
-  align-items: center;
+  // display: flex;
+  // align-items: center;
   color: #666666;
-  height: 100%;
-  padding: 0 35px;
+  // height: 100%;
+  // padding: 0 35px;
 }
 .zt-tabs__label{
   margin-right: 20px;

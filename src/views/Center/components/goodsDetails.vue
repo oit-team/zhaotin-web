@@ -52,13 +52,12 @@
             <div class="zt-images__left">
               <div
                 class="zt-images__item"
-                :class="imageIndex===index?'zt-images__select':''"
                 v-for="(item, index) in infoData.imgUrlList"
                 :key="index"
               >
                 <el-image
                   fit="contain"
-                  class="zt-images__image"
+                  :class="imageIndex===index?'zt-images__select':'zt-images__image'"
                   :src="item.resUrl"
                   @click="imageIndex=index,setCarouselItem(index)"
                 />
@@ -231,20 +230,6 @@
                 </div>
               </div>
             </div>
-            <!-- <div class="zt-content__info">
-              <div class="zt-data2__flex">
-                <div class="zt-data2__label"><i class="iconfont icon-mianliaomaidian"></i>面料卖点</div>
-                <div class="zt-data2__info">荷兰貂皮大衣</div>
-              </div>
-              <div class="zt-data2__flex">
-                <div class="zt-data2__label"><i class="iconfont icon-shejimaidian"></i>设计卖点</div>
-                <div class="zt-data2__info">发送到发送到发</div>
-              </div>
-              <div class="zt-data2__flex">
-                <div class="zt-data2__label"><i class="iconfont icon-chuanzhuomaidian"></i>穿着卖点</div>
-                <div class="zt-data2__info">发送到发送到发</div>
-              </div>
-            </div> -->
           </div>
         </div>
         <el-divider />
@@ -650,16 +635,25 @@ video::-webkit-media-controls-timeline {
         .zt-images__left{
           width: 95%;
           display: flex;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          overflow-y: hidden;
           .zt-images__item{
             position: relative;
             margin: 0 10px;
-            border: 1px solid #ECE8E5;
             border-radius: 5px;
             box-sizing: border-box;
             .zt-images__image{
               width: 80px;
               height: 80px;
               border-radius: 5px;
+              border: 1px solid #ECE8E5;
+            }
+            .zt-images__select{
+              width: 80px;
+              height: 80px;
+              border-radius: 5px;
+              border: 1px solid #CDA46C;
             }
             .el-icon-video-play{
               position: absolute;
@@ -671,9 +665,9 @@ video::-webkit-media-controls-timeline {
               z-index: 1;
             }
           }
-          .zt-images__select{
-            border: 1px solid #CDA46C;
-          }
+        }
+        .zt-images__left::-webkit-scrollbar{
+          display: none;
         }
         .zt-images__right{
           width: 4%;
@@ -682,6 +676,7 @@ video::-webkit-media-controls-timeline {
           border-radius: 10px;
           background-color: #ccc;
           font-size: 20px;
+          z-index: 1;
         }
       }
     }

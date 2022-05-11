@@ -55,6 +55,9 @@ const routes = [
       {
         path: '/styleCenter/goodsDetails',
         component: GoodsDetails,
+        meta: {
+          keepAlive: true,
+        },
       },
       {
         path: '/styleCenter/goodsList',
