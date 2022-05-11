@@ -678,7 +678,6 @@ export default {
         onSuccess: (file, fileList) => {
           this.uploadList = fileList
           this.ruleForm.styleVideoPatch = this.uploadList.response.data.fileUrl
-          console.log(this.ruleForm)
         },
       }
     },
@@ -729,8 +728,6 @@ export default {
       this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
       this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
       this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
-      
-      console.log(this.ruleForm.styleWashing)
       if (this.ruleForm.styleLabel) {
         this.labelList = this.ruleForm.styleLabel.split(',')
       }
@@ -763,8 +760,6 @@ export default {
       this.selectedColorNameXiJie[this.colorNum] = this.selectedColorNameXiJie[this.colorNum].filter( item => item.url != file.url)
     },
     onRemoveVideoImg(file) {
-      console.log(file)
-      console.log('removeVideoImg')
     },
     //
     handlePictureCardPreview(file) {
@@ -805,7 +800,6 @@ export default {
     },
     // 商品颜色
     addColor() {
-      console.log('添加颜色')
       this.drawer = true
       // 打开弹框时自动获取焦点
       this.$nextTick(() => {
@@ -951,9 +945,7 @@ export default {
         if (res.head.status === 0) {
           if (res.body) {
             this.sizeInfo = res.body
-            console.log('sizeInfo',this.sizeInfo)
             this.sizeTableList = res.body.resultMap
-            console.log(this.sizeTableList)
             this.sizeTableList.forEach(el => {
               el.userId = sessionStorage.userId
               const temp = el.SIZE_NAME
@@ -966,7 +958,6 @@ export default {
             if (this.ruleForm.styleSizeList.length > 0) {
               this.setSizeInfo()
             }
-            console.log("this.sizeTableList,",this.sizeTableList)
           } else {
             this.sizeInfo = null
             this.sizeTableList = []
@@ -990,7 +981,6 @@ export default {
     // 商品尺码
     editSizeConfirm() {
       this.editSizeFlag = false
-      console.log("this.sizeTableList:",this.sizeTableList)
     },
     changeRow(currentRow, oldCurrentRow) {
       // // console.log("currentRow, ",currentRow,"oldCurrentRow:", oldCurrentRow);
@@ -1186,10 +1176,7 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
-      console.log(con)
-      return;
       addGoodsInfo(con).then((res) => {
-        console.log(res)
         if (res.head.status == 0) {
           _this.$message({
             type: 'success',
@@ -1226,8 +1213,6 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
-      console.log(con)
-      console.log(con.status)
       updateStyleInfo(con).then((res) => {
         if (res.head.status == 0) {
           _this.$message({
@@ -1244,8 +1229,6 @@ export default {
       }).catch((err) => {
         
       })
-      console.log(con)
-      console.log('edit')
     },
     // 重置
     resetForm(formName) {
@@ -1357,7 +1340,6 @@ export default {
               })
             })
           }
-          console.log(this.ruleForm.styleWashing)
         } else {
           this.$message.error(res.head.msg);
         }
@@ -1417,7 +1399,6 @@ export default {
         }
         let data = getData(con,item)
       })
-      console.log(_this.ruleForm.styleData)
     }
   },
 }
