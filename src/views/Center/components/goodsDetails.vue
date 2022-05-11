@@ -38,7 +38,7 @@
               </div>
             </el-carousel-item>
             <el-carousel-item
-              v-for="(item, index) in infoData.imgDetailUrlList"
+              v-for="(item, index) in infoData.imgUrlList"
               :key="index"
             >
               <el-image
