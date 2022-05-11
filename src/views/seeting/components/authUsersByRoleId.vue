@@ -9,7 +9,7 @@
       filterable
       v-model="associatedUser"
       :data="allUserList"
-      :props="{key:'loginId',label:'userName'}"
+      :props="{key:'id',label:'userName'}"
       :render-content="renderFunc"
       :titles="['未授权用户', '已授权用户']"
       :button-texts="['取消', '授权']"
@@ -74,6 +74,7 @@ export default {
           // console.log("获取用户列表成功===");
           _this.allUserList = res.body.allUser
           _this.associatedUser = res.body.isAssociatedUser
+          console.log(_this.associatedUser)
         } else {
           _this.$message({
             message: res.head.msg,

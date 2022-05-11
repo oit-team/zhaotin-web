@@ -4,7 +4,7 @@ import API_SERVICE from '@/api/API_SERVICE'
 // 图片尺寸限制
 const UPLOAD_IMAGE_SIZE_MAX = 2000
 // 压缩率
-const COMPRESSION_RATE = 0.7
+const COMPRESSION_RATE = 0.8
 
 /**
  * 获取分块上传表单数据
