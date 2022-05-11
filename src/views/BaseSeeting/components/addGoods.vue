@@ -385,7 +385,6 @@ export default {
   components: { VcUpload, quill },
   data() {
     const pricevalidate = (rule, value, callback) => {
-      // // console.log("价格验证value",value)
       if (/^\d+\.?\d{0,2}$/.test(value)) {
         if (value.indexOf('.') === '-1' && value.length > 1 && value.slice(0, 1) === '0') {
           callback(new Error('最多包含两位小数的正数且不能为以0开头的正整数'))
