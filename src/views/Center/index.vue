@@ -4,6 +4,8 @@
     <HeaderMsg @searchVal="searchVal" ref="msg" />
     <div class="container main">
       <keep-alive>
+        <!-- <keep-alive :include="views"> -->
+        <!-- <router-view :input-val="VAL" :style-length="styleLength" ref="child" /> -->
         <router-view v-if="$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
       </keep-alive>
       <router-view v-if="!$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
@@ -15,13 +17,11 @@
 import HeaderNav from '@/views/Layout/components/HeaderNav'
 // import { getGoodsSizeInfo } from '@/api/goods'
 import HeaderMsg from '../Layout/components/HeaderMsg'
-import Tabs from '../../components/tabs/tabs'
 
 export default {
   components: {
     HeaderNav,
     HeaderMsg,
-    Tabs,
   },
   data() {
     return {
@@ -31,6 +31,7 @@ export default {
       Uid: sessionStorage.getItem('userId'),
       styleLength: '',
       VAL: '',
+      // views: [],
     }
   },
   computed: {
@@ -58,6 +59,12 @@ export default {
     },
   },
   created() {
+    // const v = this.$store.state.order.cacheView
+    // console.log(v)
+    // if (v && v.length !== 0) {
+    //   this.views.push(...v)
+    // }
+    // console.log(this.views)
   },
   methods: {
     searchVal(val) {

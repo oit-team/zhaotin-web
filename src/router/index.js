@@ -10,7 +10,7 @@ import GoodsDetails from '@/views/Center/components/goodsDetails'
 import GoodsList from '@/views/Center/components/goodsList'
 import ShopCart from '@/views/Center/components/shopCart'
 import OrderGoods from '@/views/Center/components/orderGoods'
-import Nullpage from '@/views/Center/components/nullpage'
+// import Nullpage from '@/views/Center/components/nullpage'
 // import BaseSeeting from '@/views/BaseSeeting/index'
 // import SystemRole from '@/views/seeting/components/role'
 // import MenuList from '@/views/seeting/components/menuList'
@@ -43,7 +43,6 @@ const routes = [
     name: 'Layout',
     component: Layout,
     children: [
-
     ],
   },
   {
@@ -71,11 +70,11 @@ const routes = [
         path: '/styleCenter/orderGoods',
         component: OrderGoods,
       },
-      {
-        path: '/styleCenter/nullpage',
-        component: Nullpage,
-        name: 'Nullpage',
-      },
+      // {
+      //   path: '/styleCenter/nullpage',
+      //   component: Nullpage,
+      //   name: 'Nullpage',
+      // },
     ],
     // component: () => import('@/views/Center/index'),
   },
