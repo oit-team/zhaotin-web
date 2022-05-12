@@ -55,8 +55,14 @@
           :default-checked-keys="defaultCheckedKeys"
           :props="defaultProps">
           <div class="custom-tree-node" slot-scope="{ data }">
-            <span v-if='data.sizeName'>{{ data.sizeName }}</span>
-            <span v-if='data.aliasName'>({{ data.aliasName }})</span>
+            <span class="sizeBox">
+              <span v-if='data.sizeName'>{{ data.sizeName }}</span>
+              <span v-if='data.aliasName'>({{ data.aliasName }})</span>
+            </span>
+            <span class="SizeSortBox">
+              <i @click="sortSizeList('up',data)" class="el-icon-top"></i>
+              <i @click="sortSizeList('down',data)" class="el-icon-bottom"></i>
+            </span>
           </div>
         </el-tree>
 
@@ -448,6 +454,31 @@ export default {
         });          
       });
       
+    },
+    sortSizeList(msg,data) {
+      const sizeList = JSON.parse(JSON.stringify(this.sizeList))
+      const index = this.sizeList.findIndex(item => item == data)
+      if (msg == 'up'){
+        if (index == 0) {
+          this.$message({
+            type: 'warning',
+            message: '该尺码已经排在第一'
+          }); 
+        }else {
+          sizeList[index] = sizeList.splice(index - 1, 1, sizeList[index])[0]
+          this.sizeList = sizeList
+        }
+      }else if (msg = 'down'){
+        if (index == sizeList.length -1) {
+          this.$message({
+            type: 'warning',
+            message: '该尺码已经排在最后'
+          }); 
+        } else {
+          sizeList[index] = sizeList.splice(index + 1, 1, sizeList[index])[0]
+          this.sizeList = sizeList
+        }
+      }
     }
 
   }
@@ -544,5 +575,18 @@ export default {
 }
 /deep/.el-drawer__open .el-drawer.rtl {
   padding: 0 20px;
+}
+.custom-tree-node i{
+  margin-left:10px;
+}
+.sizeBox{
+  display: inline-block;
+  width:200px;
+}
+.SizeSortBox{
+  border:1px solid red;
+  i:hover{
+    color:#cda46c;
+  }
 }
 </style>

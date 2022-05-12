@@ -42,7 +42,10 @@
             </div>
             <template #reference>
               <div v-if="userinfo">
-                {{ userinfo.username }}<img
+                <span style="display: inline-block;float: left;max-width: 220px;overflow:hidden;white-space:nowrap; text-overflow:ellipsis;">
+                  {{ userinfo.showName }}
+                </span>
+                <img
                   class="inline-block le
               ading-10 ml-2"
                   src="../../../assets/icon/header/down.svg"

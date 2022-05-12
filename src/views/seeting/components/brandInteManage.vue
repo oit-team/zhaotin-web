@@ -456,9 +456,14 @@ export default {
       this.areadrawer = true;
       this.editFlag = false;
       if (this.nodeInfo) {
+        console.log(this.areaForm)
         this.areaForm.deptName = this.nodeInfo.osName;
         this.areaForm.deptCode = this.nodeInfo.nodeCode;
-        this.areaForm.dutyId = Number(this.nodeInfo.dutyId);
+        if (this.nodeInfo.dutyId) {
+          this.areaForm.dutyId = Number(this.nodeInfo.dutyId);
+        } else {
+          this.areaForm.dutyId = null;
+        }
       } else {
         this.areaForm.dutyId = null;
       }
@@ -563,8 +568,17 @@ export default {
       const res = await getTreeOrgList({
         brandId: sessionStorage.brandId,
       });
-      // console.log(res)
-      this.orgList = res.body.orgList;
+      this.orgList = [{
+        osName:'全部',
+        menuId:'allMenu',
+        brandId:'allMenu',
+        id:'',
+        sort:'',
+        childrenList:res.body.orgList
+      }]
+      console.log(this.orgList)
+      console.log(res.body.orgList)
+      // this.orgList = res.body.orgList;
     },
     // 新增区域
     async addAreaOrShopFun() {

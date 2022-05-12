@@ -269,6 +269,7 @@
                       <ul class="flex direction-col" v-if="colorList.length">
                         <li
                           @click="deleteColor(item,index)"
+                          @contextmenu.prevent="rightClick('color', item, index)"
                           :class="{'active':colorNum == index,'wordBorder':true}"
                           v-for="(item,index) in colorList"
                           :key="item"
@@ -368,6 +369,30 @@
     <!-- <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt="" />
     </el-dialog> -->
+    <el-dialog
+      :title="editColor.colorName || 'test'"
+      :visible.sync="centerDialogVisible"
+      :before-close='closeEditColor'
+      width="30%"
+      center>
+      <span>请选择您的操作</span>
+      <el-dialog
+        width="30%"
+        title="提示"
+        :visible.sync="innerVisible"
+        center
+        append-to-body>
+        <span>确认删除</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="deleteItem">确 认</el-button>
+          <el-button type="primary" @click="closeDialog">取 消</el-button>
+        </span>
+      </el-dialog>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleEditClick">编 辑</el-button>
+        <el-button type="primary" @click="innerVisible = true">删 除</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -395,6 +420,9 @@ export default {
       callback()
     }
     return {
+      innerVisible: false, //删除颜色提示框
+      centerDialogVisible: false, //编辑颜色提示框
+      editColor: '', //右键颜色时保存数据
       collapseVal4: ['1'],
       collapseVal1: ['1'],
       collapseVal2: ['2'],
@@ -838,9 +866,36 @@ export default {
       if (!this.newColor) {
         return this.$message.warning('请输入颜色')
       }
-      this.colorList.push(this.newColor)
+      if (this.editColor != '') {
+        const ColorIndex = this.colorList.findIndex(item => item == this.newColor)
+        if (ColorIndex == -1) {
+          this.colorList[this.editColor.index] = this.newColor
+          this.editColor.colorName = this.newColor
+        } else if (ColorIndex == this.editColor.index){
+          this.colorList[this.editColor.index] = this.newColor
+          this.editColor.colorName = this.newColor
+        } else{
+          this.$message({
+            message: '已存在该颜色',
+            type: 'warning',
+          })
+          return;
+        }
+      }else {
+        if (this.colorList.indexOf(this.newColor) == -1) {
+          this.colorList.push(this.newColor)
+        } else {
+          this.$message({
+            message: '已存在该颜色',
+            type: 'warning',
+          })
+          return;
+        }
+         
+      }
       this.newColor = ''
       this.drawer = false
+      this.closeDialog()
     },
     // 卖点去除html标签，多行文本框里使用v-html行不通
     changeWashMaintenance(val) {
@@ -957,6 +1012,8 @@ export default {
             })
             if (this.ruleForm.styleSizeList.length > 0) {
               this.setSizeInfo()
+            } else {
+              this.setImgInfo()
             }
           } else {
             this.sizeInfo = null
@@ -1069,27 +1126,25 @@ export default {
       let sizeList = [];
       let styleColor = [];
       const _this = this;
-      if (this.$refs.goodsSizeRef) {
-        let sizeConfig = [];
-        _this.sizeInfo.resultMap.forEach(item => {
-          sizeConfig = []
-          _this.sizeInfo.sizeInfoVO.upTitle.forEach(Item => {
-            if (item[Item.key]) {
-              sizeConfig.push(item[Item.key])
-            } else {
-              sizeConfig.push('')
-            }
-          })
-          sizeList.push({
-            sizeConfig: sizeConfig,
-            ID: item.SIZEID,
-            SIZE_NAME: item.SIZE_NAME,
-            userId: item.userId,
-            sort: 1,
-            sizeName: item.SIZE_NAME
-          })
+      let sizeConfig = [];
+      _this.sizeInfo.resultMap.forEach(item => {
+        sizeConfig = []
+        _this.sizeInfo.sizeInfoVO.upTitle.forEach(Item => {
+          if (item[Item.key]) {
+            sizeConfig.push(item[Item.key])
+          } else {
+            sizeConfig.push('')
+          }
         })
-      }
+        sizeList.push({
+          sizeConfig: sizeConfig,
+          ID: item.SIZEID,
+          SIZE_NAME: item.SIZE_NAME,
+          userId: item.userId,
+          sort: 1,
+          sizeName: item.SIZE_NAME
+        })
+      })
       return sizeList
     },
     getStyleColor() {
@@ -1399,6 +1454,29 @@ export default {
         }
         let data = getData(con,item)
       })
+    },
+    rightClick(msg,item,index) {
+      this.editColor = {
+        colorName: item,
+        index: index
+      };
+      this.centerDialogVisible = true
+    },
+    closeDialog() {
+      this.innerVisible = false;
+      this.closeEditColor()
+    },
+    deleteItem() {
+      console.log('deleteItem')
+    },
+    handleEditClick() {
+      this.drawer = true
+      this.newColor = this.editColor.colorName
+    },
+    closeEditColor() {
+      this.editColor = ''
+      this.newColor = ''
+      this.centerDialogVisible = false;
     }
   },
 }
