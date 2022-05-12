@@ -5,11 +5,14 @@
       <div class="">
         <el-page-header
           @back="$router.back()"
+          content="订单详情"
         />
         <div class="flex justify-between px-14">
-          <div class=" font-extrabold text-xl">订单编号：{{ orderNo }}</div>
-          <div class="font-extrabold text-xl">下单时间: {{ orderTime }}</div>
-          <div class="font-extrabold text-xl">订单类型: {{ orderTypeName }}</div>
+          <div class=" font-extrabold">单号：{{ orderNo }}</div>
+          <div class="font-extrabold">下单时间: {{ orderTime }}</div>
+          <!-- <div class="font-extrabold text-xl">订单类型: {{ orderTypeName }}</div> -->
+          <div class="font-extrabold">件数: {{ Numb }}件</div>
+          <div class="font-extrabold">总金额: <span class="zt-red">￥{{ priceAll }}</span></div>
         </div>
         <!-- <el-table
           :data="orderInfoList"
@@ -87,12 +90,24 @@
                 <div class="zt-size__item" v-for="(itemM, indexM) in itemN.styleSize" :key="indexM">
                   <div class="zt-size__size">所选尺码：{{ itemM.sizeName }}</div>
                   <div class="zt-size__size">单价：￥{{ itemN.stylePrice }}</div>
-                  <div class="zt-size__size"><el-input-number size="mini" :min="1" v-model="itemM.sizeNumber" /></div>
+                  <div class="zt-size__size">x {{ itemM.sizeNumber }}</div>
+                  <!-- <div class="zt-size__size"><el-input-number disabled size="mini" :min="1" v-model="itemM.sizeNumber" /></div> -->
                   <div class="zt-size__size">小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}</div>
-                  <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div>
+                  <!-- <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div> -->
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="zt-footer">
+          <div class="zt-footer__left">
+            <!-- <p>寄送地址：<span>{{ dataInfo.consigneeAddress || '无' }}</span></p>
+            <p>收货人：<span>{{ dataInfo.consignee || '无' }}</span>{{ ' ' }}{{ dataInfo.consigneePhone || '' }}</p> -->
+            <!-- <div class="zt-footer__price" v-if="siteList && siteList.length !== 0"> -->
+          </div>
+          <div class="zt-footer__right">
+            <p>收货人：<span>{{ dataInfo.consignee || '无' }}</span>{{ ' ' }}{{ dataInfo.consigneePhone || '' }}</p>
+            <p>寄送地址：<span>{{ dataInfo.consigneeAddress || '无' }}</span></p>
           </div>
         </div>
       </div>
@@ -117,6 +132,9 @@ export default {
       orderTime: '',
       orderTypeName: '',
       orderInfoList: [],
+      Numb: 0,
+      priceAll: 0,
+      dataInfo: {},
     }
   },
   created() {
@@ -134,12 +152,15 @@ export default {
       }
       await getOrderById(con).then((res) => {
         if (res.head.status === 0) {
+          that.dataInfo = res.body.resultList
           that.orderNo = res.body.resultList.orderNo
           that.orderTypeName = res.body.resultList.orderTypeName
           that.orderTime = res.body.resultList.orderTime
           that.orderInfoList = res.body.resultList.orderStyleList
-          console.log(that.orderInfoList)
+          that.priceAll = res.body.resultList.totalOrderAmount
+
           that.orderInfoList.forEach(e => {
+            that.Numb += e.styleNumber
             e.style.forEach(i => {
               that.$set(i, 'openList', true)
             })
@@ -175,6 +196,9 @@ export default {
   /deep/.font-extrabold {
     width: 310px;
   }
+  /deep/.font-extrabold {
+    font-weight: 400;
+  }
   /deep/.el-table td.el-table__cell div {
     margin-left: 10px;
     margin-bottom: 5px;
@@ -186,12 +210,19 @@ export default {
     width: auto;
   }
   /deep/.el-page-header__left .el-icon-back {
-    font-size: 26px;
+    font-size: 16px;
   }
   /deep/.el-page-header__title {
-    font-size: 22px;
+    font-size: 16px;
     margin: 28px 0;
-   line-height: 22px;
+    line-height: 22px;
+  }
+  /deep/.el-page-header__content {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    margin: 28px 0;
+    line-height: 22px;
   }
 .zt-content{
   background-color: #f5f5f5;
@@ -258,5 +289,66 @@ export default {
   .zt-cart__set:hover{
     cursor: default;
   }
+}
+.zt-footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 16px;
+  padding: 0 20px;
+  background-color: #f6f5f3;
+  .zt-footer__left{
+    // display: flex;
+    align-items: center;
+    padding: 10px 0;
+    line-height: 30px;
+    box-sizing: border-box;
+    .zt-left__btn{
+      border: 1px solid #c9a76e;
+      color: #c9a76e;
+      text-align: center;
+      padding: 5px 30px;
+      margin: 0 20px;
+      border-radius: 30px;
+      box-sizing: border-box;
+      .el-icon-delete{
+        color: #c9a76e;
+      }
+    }
+    .zt-left__btn:hover{
+      cursor: pointer;
+    }
+  }
+  .zt-red{
+    font-size: 20px;
+    font-weight: 800;
+    color: #FF0000;
+  }
+  .zt-hui{
+    color: #666;
+  }
+  .zt-footer__right{
+    // display: flex;
+    align-items: center;
+    padding: 10px 0;
+    line-height: 30px;
+    box-sizing: border-box;
+    .zt-footer__button{
+      padding: 15px 50px;
+      background-color: #cda46c;
+      margin-left: 20px;
+      border-radius: 30px;
+      font-size: 18px;
+      color: #fff;
+      box-sizing: border-box;
+    }
+    .zt-footer__button:hover{
+      cursor: pointer;
+    }
+  }
+}
+.zt-red{
+  color: #FF0000;
 }
 </style>

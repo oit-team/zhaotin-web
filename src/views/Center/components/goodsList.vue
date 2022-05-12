@@ -180,11 +180,13 @@ export default {
     if (this.isUpdate) {
       window.addEventListener('scroll', this.scrollEvent)
     } else {
+      window.removeEventListener('scroll', this.scrollEvent)
       this.formData.pageNum = 1
     }
   },
   beforeDestroy() {
-    window.removeEventListener('scroll', this.scrollEvent)
+    // window.removeEventListener('scroll', this.scrollEvent)
+    window.removeEventListener('scroll', this.stt(this.scrollEvent, 500))
   },
   methods: {
     async loadData() {
@@ -246,12 +248,33 @@ export default {
         }
       }
     },
-    scrollEvent() {
-      const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
-      if (data === 0) {
-        this.addData()
-        this.$forceUpdate()
+    stt(fn, tm) {
+      // 前一次的时间
+      let previous = 0
+      // 返回一个匿名函数闭包
+      return function () {
+        // 当前触发事件
+        const now = Date.now()
+        // 满足时间差则执行目标函数
+        if (now - previous >= tm) {
+          // 执行目标函数，并将this，和event传过去
+          // eslint-disable-next-line prefer-rest-params
+          fn.apply(this, arguments)
+          // 重置previous
+          previous = now
+        }
       }
+    },
+    scrollEvent() {
+      setTimeout(() => {
+        if (this.isUpdate) {
+          const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
+          if (data === 0) {
+            this.addData()
+            this.$forceUpdate()
+          }
+        }
+      }, 500)
     },
     // 顶部分类
     async classData() {

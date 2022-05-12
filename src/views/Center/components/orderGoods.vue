@@ -612,32 +612,15 @@ export default {
     border: 1px solid #c9a76e;
   }
   .zt-cart__name{
-    // width: 300px;
-    // padding: 0 10px;
     p{
       color: #909193;
       font-size: 14px;
     }
   }
-  .zt-cart__color{
-    // width: 150px;
-    // padding: 0 20px;
-  }
-  .zt-cart__price{
-    // width: 100px;
-    // padding: 0 20px;
-  }
-  .zt-cart__num{
-    // width: 100px;
-    // padding: 0 20px;
-  }
   .zt-cart__allPrice{
-    // width: 100px;
-    // padding: 0 20px;
     color: #c9a76e;
   }
   .zt-cart__set{
-    // width: 100px;
     padding: 0 20px;
   }
   .zt-cart__set:hover{
