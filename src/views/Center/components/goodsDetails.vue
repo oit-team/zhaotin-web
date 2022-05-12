@@ -134,7 +134,7 @@
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">尺码</div>
-              <div v-if="infoData.styleColorList" class="zt-data__info">
+              <div v-if="infoData.styleColorList && infoData.styleColorList.length !== 0" class="zt-data__info">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
                   <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
                     <div
@@ -251,24 +251,36 @@
               />
               <el-table-column
                 prop="sizeConfig[0]"
-                label="肩宽"
+                label="肩袖长"
                 width="120"
                 align="center"
               />
               <el-table-column
                 prop="sizeConfig[1]"
-                label="胸围"
+                label="袖口"
                 width="120"
                 align="center"
               />
               <el-table-column
                 prop="sizeConfig[2]"
-                label="衣长"
+                label="胸围"
                 width="120"
                 align="center"
               />
               <el-table-column
                 prop="sizeConfig[3]"
+                label="肩宽"
+                width="120"
+                align="center"
+              />
+              <el-table-column
+                prop="sizeConfig[4]"
+                label="领围"
+                width="120"
+                align="center"
+              />
+              <el-table-column
+                prop="sizeConfig[5]"
                 label="袖长"
                 width="120"
                 align="center"
@@ -564,6 +576,7 @@ export default {
           })
         }
       }
+      this.$store.commit('order/addcacheView', this.$route.path)
       this.$parent.cgcart()
     },
     cart() {

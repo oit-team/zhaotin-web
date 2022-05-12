@@ -58,6 +58,10 @@
               placeholder="￥"
               v-model="input2"
             />
+            <!-- <div class="zt-price__sub" v-loading.fullscreen.lock="fullscreenLoading" @click="openLoading"> -->
+            <div class="zt-price__sub" @click="priceC">
+              确定
+            </div>
           </div>
         </div>
       </div>
@@ -71,7 +75,7 @@
       infinite-scroll-delay="3000"
       infinite-scroll-distance="0"
     > -->
-    <div class="zt-content" v-else ref="content">
+    <div class="zt-content" v-loading="fullscreenLoading" v-else ref="content">
       <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
       <div
         class="zt-content__item"
@@ -130,13 +134,10 @@ export default {
       goodsLength: 0,
       styleCategory: '',
       goodsId: '',
-      // pageSize: '20',
-      // pageNum: 1,
-      // inputVal: '',
       formData: {
         styleNo: '', // 商品编号
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 20,
         styleId: '', // 商品id
         styleLength: '', // 商品衣长
         styleCategory: '', // 商品类别
@@ -155,6 +156,7 @@ export default {
       shouDjiantou: true,
       priceTF: true,
       // -----
+      fullscreenLoading: false,
       tabList: [],
       styleLength: '',
       isUpdate: true,
@@ -175,11 +177,24 @@ export default {
     this.classData()
   },
   mounted() {
-    window.addEventListener('scroll', this.scrollEvent)
+    if (this.isUpdate) {
+      window.addEventListener('scroll', this.scrollEvent)
+    } else {
+      window.removeEventListener('scroll', this.scrollEvent)
+      this.formData.pageNum = 1
+    }
+  },
+  beforeDestroy() {
+    // window.removeEventListener('scroll', this.scrollEvent)
+    window.removeEventListener('scroll', this.stt(this.scrollEvent, 500))
   },
   methods: {
     async loadData() {
       const that = this
+      that.fullscreenLoading = true
+      setTimeout(() => {
+        that.fullscreenLoading = false
+      }, 1000)
       that.formData.pageNum = 1
       that.formData.styleSearch = that.inputVal || ''
       that.formData.styleLength = that.styleLength || ''
@@ -210,6 +225,10 @@ export default {
     async addData() {
       const that = this
       if (that.isUpdate === true) {
+        that.fullscreenLoading = true
+        setTimeout(() => {
+          that.fullscreenLoading = false
+        }, 1000)
         that.formData.pageNum++
         console.log(that.formData)
         that.formData.styleLength = that.styleLength || ''
@@ -229,12 +248,33 @@ export default {
         }
       }
     },
-    scrollEvent() {
-      const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
-      if (data === 0) {
-        this.addData()
-        this.$forceUpdate()
+    stt(fn, tm) {
+      // 前一次的时间
+      let previous = 0
+      // 返回一个匿名函数闭包
+      return function () {
+        // 当前触发事件
+        const now = Date.now()
+        // 满足时间差则执行目标函数
+        if (now - previous >= tm) {
+          // 执行目标函数，并将this，和event传过去
+          // eslint-disable-next-line prefer-rest-params
+          fn.apply(this, arguments)
+          // 重置previous
+          previous = now
+        }
       }
+    },
+    scrollEvent() {
+      setTimeout(() => {
+        if (this.isUpdate) {
+          const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
+          if (data === 0) {
+            this.addData()
+            this.$forceUpdate()
+          }
+        }
+      }, 500)
     },
     // 顶部分类
     async classData() {
@@ -323,6 +363,26 @@ export default {
     //   console.log(val)
     //   this.classData()
     // },
+    // 价格筛选  区间
+    priceC() {
+      // console.log(this.input1)
+      // console.log(this.input2)
+      this.input1 = this.input1.replace(/\D/g, '')
+      this.input2 = this.input2.replace(/\D/g, '')
+      if (this.input1 !== '' && this.input2 !== '') {
+        if (this.input1 < this.input2) {
+          this.formData.startTradePrice = this.input1
+          this.formData.endTradePrice = this.input2
+          this.loadData()
+        } else {
+          this.formData.startTradePrice = this.input2
+          this.formData.endTradePrice = this.input1
+          this.loadData()
+        }
+      } else {
+        this.loadData()
+      }
+    },
     todetails(id) {
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
@@ -333,6 +393,9 @@ export default {
 <style lang='scss' scoped>
 .zt-page{
   height: 100%;
+}
+::v-deep .el-loading-spinner{
+  left: 50%;
 }
 .zt-tabs__top{
   width: 100%;
@@ -381,15 +444,21 @@ export default {
       border-radius: 30px;
       box-sizing: border-box;
       .zt-Binp{
+        width: 120px;
         margin: 0 15px;
-        ::v-deep.el-input--small .el-input__inner{
-          border-radius: 20px;
-          border-color: #CDA46C;
-        }
-        >>>.el-input__inner{
-          border-radius: 20px;
-          border-color: #CDA46C;
-        }
+      }
+      ::v-deep .el-input__inner{
+        width: 120px;
+        border-radius: 20px;
+        border-color: #CDA46C;
+      }
+      .zt-price__sub{
+        width: 70px;
+        background-color: #CDA46C;
+        color: #fff;
+        text-align: center;
+        padding: 4px 0;
+        border-radius: 20px;
       }
     }
     .selectB{

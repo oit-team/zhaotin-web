@@ -80,7 +80,7 @@
         <!-- <div class="zt-footer__price" v-if="siteList && siteList.length !== 0"> -->
         <div class="zt-footer__price">
           总金额: <span class="zt-red">￥{{ priceAll }}</span>
-          <p>寄送地址：<span class="zt-hui">{{ siteList[radio]?siteList[radio].address:'无' }}</span></p>
+          <p>寄送地址：<span>{{ siteList[radio]?siteList[radio].address:'无' }}</span></p>
           <p>收货人：<span>{{ siteList[radio]?siteList[radio].consignee:'无' }}</span>{{ ' ' }}{{ siteList[radio]?siteList[radio].contactNum:'' }}</p>
           <!-- <p class="zt-hui">本次共选：商品样式(2) 商品尺寸(7)</p> -->
         </div>
@@ -224,7 +224,13 @@ export default {
         ],
         siteInfo: { required: true, message: '地址不能为空', trigger: 'blur' },
       },
+      oldUrl: '',
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.oldUrl = from.path
+    })
   },
   created() {
     this.getData()
@@ -232,6 +238,7 @@ export default {
     console.log(this.formData)
   },
   methods: {
+    // 获取收货地址信息
     async getData() {
       const that = this
       const res = await getOrderSite({
@@ -261,17 +268,9 @@ export default {
           i.styleSize.forEach(n => {
             dataL.styleSize.unshift(n)
           })
-          console.log(dataL)
           list.unshift(dataL)
         })
-        console.log(dataL)
-        // if (dataL.styleSize && dataL.styleSize.length !== 0) {
-        //   list.unshift(dataL)
-        // } else {
-        //   []
-        // }
       })
-      console.log(list)
       that.styleList = list
       const res = await CalculatePrice({
         styleList: list,
@@ -433,13 +432,18 @@ export default {
         orderType: 1,
         styleList: that.styleList,
       })
-      console.log(res)
       if (res.head.status === 0) {
         that.$message({
           type: 'success',
           message: '提交成功',
         })
         setTimeout(() => {
+          // if (that.oldUrl === '/styleCenter/goodsDetails') {
+          //   const id = that.formData.styleId
+          //   that.$router.push(`/styleCenter/goodsDetails?id=${id}`)
+          // } else {
+          //   that.$router.go(-1)
+          // }
           that.$router.go(-1)
         }, 800)
       } else {
@@ -608,32 +612,15 @@ export default {
     border: 1px solid #c9a76e;
   }
   .zt-cart__name{
-    // width: 300px;
-    // padding: 0 10px;
     p{
       color: #909193;
       font-size: 14px;
     }
   }
-  .zt-cart__color{
-    // width: 150px;
-    // padding: 0 20px;
-  }
-  .zt-cart__price{
-    // width: 100px;
-    // padding: 0 20px;
-  }
-  .zt-cart__num{
-    // width: 100px;
-    // padding: 0 20px;
-  }
   .zt-cart__allPrice{
-    // width: 100px;
-    // padding: 0 20px;
     color: #c9a76e;
   }
   .zt-cart__set{
-    // width: 100px;
     padding: 0 20px;
   }
   .zt-cart__set:hover{

@@ -1,10 +1,11 @@
 <template>
   <div class="container h-24 flex">
     <div class="h-24 flex">
-      <div class="inline-block mt-5 mr-2"><i class="iconfont icon-tongzhi"></i></div>
+      <div class="mr-2 zt-config"><i class="iconfont icon-tongzhi"></i></div>
+      <!-- <div class="inline-block mt-5 mr-2"><i class="iconfont icon-tongzhi"></i></div> -->
       <div class="h-24 flex flex-col justify-center text-yellow-600 leading-8 underline">
-        <div>公告：{{ configT[0] }}</div>
-        <div>消息：{{ configT[1] }}</div>
+        <div class="zt-config__fig">公告：{{ configT[0] }}</div>
+        <!-- <div>消息：{{ configT[1] }}</div> -->
       </div>
     </div>
     <div class="flex-1 flex items-center px-32">
@@ -56,6 +57,7 @@ export default {
     async config() {
       const res = await getConfig({})
       this.configT = res.body.announceInfo
+      console.log(this.configT)
     },
     cgVal(val) {
       // 优化： 判断当前路由是否是goodsLIst，如果不是才跳转
@@ -116,5 +118,15 @@ export default {
 .icon-tongzhi{
   color: #cca46c;
   font-weight: 800;
+}
+.zt-config{
+  display: flex;
+  align-items: center;
+}
+.zt-config__fig{
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

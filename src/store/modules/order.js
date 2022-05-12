@@ -5,6 +5,7 @@ export default {
   state: {
     brforeAddOrder: [],
     orderStorage: [], // 购物车商品集合
+    cacheView: [],
   },
   getters: {
   },
@@ -15,6 +16,12 @@ export default {
     addOrderStorage(state, data) {
       // state.orderStorage.push(JSON.parse(data))
       state.orderStorage = JSON.parse(JSON.stringify(data))
+    },
+    addcacheView(state, data) {
+    	state.cacheView.push(data)
+    },
+    deletecacheView(state, index) {
+    	state.cacheView.splice(index, 1)
     },
     // deleteOrder(state, index) {
     //   state.orderStorage.splice(index, 1)

@@ -21,7 +21,7 @@
               </ul>
             </div>
             <template #reference>
-              <div @click="skip(item)" :class="$route.fullPath === item.menuUrl ? 'box-color': '' ">{{ item.menuName }}</div>
+              <div @click="skip(item)" :class="$route.fullPath === item.menuUrl || $route.redirectedFrom === item.menuUrl ? 'box-color': '' ">{{ item.menuName }}</div>
             </template>
           </el-popover>
         </ul>
@@ -142,6 +142,7 @@ export default {
           { pattern: /^[A-Za-z0-9]{6,20}$/, message: '只能输入6-20位字母、数字组合', trigger: 'blur' },
         ],
       },
+      urlNew: '',
     }
   },
 
@@ -156,8 +157,11 @@ export default {
         brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
       })
       this.list = res.body.resultList
+      console.log(this.list)
     },
     skip(item) {
+      console.log(item.menuUrl)
+      console.log(this.$route)
       sessionStorage.setItem('headTitString', item.fieldDes)
       if (sessionStorage.getItem('headTitString')) {
         if (!item.childrenMenu) {

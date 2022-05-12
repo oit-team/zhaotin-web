@@ -41,7 +41,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.tabList)
   },
   methods: {
     checkItem(index) {
