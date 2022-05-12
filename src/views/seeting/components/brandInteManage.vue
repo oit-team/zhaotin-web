@@ -456,7 +456,6 @@ export default {
       this.areadrawer = true;
       this.editFlag = false;
       if (this.nodeInfo) {
-        console.log(this.areaForm)
         this.areaForm.deptName = this.nodeInfo.osName;
         this.areaForm.deptCode = this.nodeInfo.nodeCode;
         if (this.nodeInfo.dutyId) {

@@ -475,7 +475,8 @@ export default {
             message: '该尺码已经排在最后'
           }); 
         } else {
-          sizeList[index] = sizeList.splice(index + 1, 1, sizeList[index])[0]
+          sizeList[index] = sizeList.splice(index + 1 , 1, sizeList[index])[0]
+          
           this.sizeList = sizeList
         }
       }

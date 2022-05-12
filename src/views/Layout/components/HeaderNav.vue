@@ -46,8 +46,7 @@
                   {{ userinfo.showName }}
                 </span>
                 <img
-                  class="inline-block le
-              ading-10 ml-2"
+                  class="inline-block leading-10 ml-2"
                   src="../../../assets/icon/header/down.svg"
                   alt=""
                 />

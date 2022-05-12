@@ -273,7 +273,7 @@
                           :class="{'active':colorNum == index,'wordBorder':true}"
                           v-for="(item,index) in colorList"
                           :key="item"
-                        >
+                        >  
                           <p class="text-4xl">{{ item }}</p>
                         </li>
                       </ul>
