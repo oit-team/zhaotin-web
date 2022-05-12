@@ -6,7 +6,7 @@
       <keep-alive>
         <router-view v-if="$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
       </keep-alive>
-      <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
+      <router-view v-if="!$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
     </div>
   </div>
 </template>

@@ -72,7 +72,6 @@
       infinite-scroll-distance="0"
     > -->
     <div class="zt-content" v-else ref="content">
-    <!-- <div class="zt-content" v-else @scroll="scrollEvent"> -->
       <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
       <div
         class="zt-content__item"

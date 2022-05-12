@@ -80,8 +80,8 @@
         <!-- <div class="zt-footer__price" v-if="siteList && siteList.length !== 0"> -->
         <div class="zt-footer__price">
           总金额: <span class="zt-red">￥{{ priceAll }}</span>
-          <p>寄送地址：<span class="zt-hui">{{ siteList[radio].address || '' }}</span></p>
-          <p>收货人：<span class="zt-red">{{ siteList[radio].consignee || '' }}</span>{{ ' ' }}{{ siteList[radio].contactNum || '' }}</p>
+          <p>寄送地址：<span class="zt-hui">{{ siteList[radio]?siteList[radio].address:'无' }}</span></p>
+          <p>收货人：<span>{{ siteList[radio]?siteList[radio].consignee:'无' }}</span>{{ ' ' }}{{ siteList[radio]?siteList[radio].contactNum:'' }}</p>
           <!-- <p class="zt-hui">本次共选：商品样式(2) 商品尺寸(7)</p> -->
         </div>
       </div>
@@ -281,7 +281,7 @@ export default {
       }
     },
     goBack() {
-      this.$router.go(-1)
+      this.$router.back()
     },
     addSite() {
       const that = this
