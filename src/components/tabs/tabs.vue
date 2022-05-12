@@ -70,7 +70,7 @@ export default {
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-around;
+  // justify-content: space-around;
 }
 .zt-tabs__item{
   padding: 0 20px;
@@ -86,7 +86,7 @@ export default {
   // align-items: center;
   color: #666666;
   // height: 100%;
-  // padding: 0 35px;
+  padding: 0 20px;
 }
 .zt-tabs__label{
   margin-right: 20px;
