@@ -340,11 +340,6 @@ export default {
         })
       }
     },
-    // searchVal(val) {
-    //   this.VAL = val
-    //   console.log(val)
-    //   this.classData()
-    // },
     // 价格筛选  区间
     priceC() {
       this.input1 = this.input1.replace(/\D/g, '')

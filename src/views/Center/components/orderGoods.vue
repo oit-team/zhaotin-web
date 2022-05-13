@@ -24,8 +24,9 @@
           </el-radio>
           <span v-if="item.defaultNum === 1" class="defoSite">默认地址</span>
         </div>
-        <div class="site-item__r" v-if="radio === index" @click="setSite">
-          修改本地址
+        <div class="site-item__r" v-if="radio === index">
+          <div class="site-item__d" @click="deleteSite">删除</div>
+          <div class="site-item__c" @click="setSite">修改本地址</div>
         </div>
       </div>
     </div>
@@ -43,6 +44,7 @@
                 style="width: 100px; height: 100px"
                 :src="itemN.imgUrl"
                 fit="contain"
+                @click="todetails(item.styleId)"
               />
             <!-- </div> -->
             </el-col>
@@ -253,8 +255,10 @@ export default {
       that.siteList = res.body.resultList
       if (that.siteList && that.siteList.length === 0) {
         that.showEmp = true
+        this.$forceUpdate
       } else {
         that.showEmp = false
+        this.$forceUpdate
       }
       that.priceA()
     },
@@ -314,15 +318,22 @@ export default {
       that.showDr2 = true
       that.dialog2 = true
     },
-    async deleteSite() {
-      const res = await dltOrderSite({
-        receivingId: this.siteList[this.radio].id,
-      })
-      if (res.head.status === 0) {
-        this.$message.success('删除成功')
-      } else {
-        this.$message.success('删除失败')
-      }
+    deleteSite() {
+      this.$confirm('确认删除该地址吗？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        const res = await dltOrderSite({
+          receivingId: this.siteList[this.radio].id,
+        })
+        if (res.head.status === 0) {
+          this.$message.success('删除成功')
+        } else {
+          this.$message.warning('删除失败')
+        }
+        this.getData()
+      }).catch(() => {})
     },
     handleClose(done) {
       this.$confirm('确定要提交表单吗？')
@@ -434,25 +445,33 @@ export default {
     },
     async subOrder() {
       const that = this
-      const res = await addOrder({
-        receivingId: that.siteList[that.radio].id,
-        orderType: 1,
-        styleList: that.styleList,
-      })
-      if (res.head.status === 0) {
-        that.$message({
-          type: 'success',
-          message: '提交成功',
+      if (that.siteList[that.radio] && that.radio && that.siteList[that.radio].id) {
+        const res = await addOrder({
+          receivingId: that.siteList[that.radio].id,
+          orderType: 1,
+          styleList: that.styleList,
         })
-        setTimeout(() => {
-          that.$router.go(-1)
-        }, 800)
+        if (res.head.status === 0) {
+          that.$message({
+            type: 'success',
+            message: '提交成功',
+          })
+          setTimeout(() => {
+            that.$router.go(-1)
+          }, 800)
+        } else {
+          that.$message({
+            type: 'error',
+            message: `提交失败,${res.head.msg}`,
+          })
+        }
       } else {
-        that.$message({
-          type: 'error',
-          message: `提交失败,${res.head.msg}`,
-        })
+        this.$message.warning('请选择收货地址')
       }
+    },
+    // 推荐区  图片点击事件
+    todetails(id) {
+      this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
   },
 }
@@ -536,9 +555,13 @@ export default {
       font-size: 16px !important;
     }
     .site-item__r{
+      display: flex;
       position: absolute;
       right: 10px;
       color: #0078d7;
+      .site-item__d{
+        margin-right: 20px;
+      }
     }
     .zt-siteInfo{
       display: flex;

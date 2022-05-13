@@ -69,6 +69,7 @@
                     style="width: 100px; height: 100px"
                     :src="itemN.imgUrl"
                     fit="contain"
+                    @click="todetails(item.styleId)"
                   />
                 </el-col>
                 <el-col :span="10">
@@ -165,7 +166,6 @@ export default {
               that.$set(i, 'openList', true)
             })
           })
-          console.log(that.orderInfoList)
         }
       })
     },
@@ -175,6 +175,10 @@ export default {
           color: 'red',
         }
       }
+    },
+    // 推荐区  图片点击事件
+    todetails(id) {
+      this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
   },
 }

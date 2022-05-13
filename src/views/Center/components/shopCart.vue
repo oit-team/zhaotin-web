@@ -22,6 +22,7 @@
                   style="width: 100px; height: 100px"
                   :src="itemN.imgUrl"
                   fit="contain"
+                  @click="todetails(item.styleId)"
                 />
               <!-- </div> -->
               </el-col>
@@ -115,8 +116,10 @@ export default {
       if (res.head.status === 0) {
         if (that.formData.styleList && that.formData.styleList.length === 0) {
           that.showemp = true
+          that.$forceUpdate
         } else {
           that.showemp = false
+          that.$forceUpdate
         }
       }
       that.formData.styleList.forEach(e => {
@@ -425,7 +428,7 @@ export default {
       data3 = data1.filter(item => {
         return item.style.length !== 0
       })
-      console.log(data3)
+      // console.log(data3)
       data2.styleList = data3
       if (that.priceAll !== 0) {
         // 如果有一个选中
@@ -437,6 +440,10 @@ export default {
         })
       }
       that.$store.commit('order/addOrderStorage', data2)
+    },
+    // 推荐区  图片点击事件
+    todetails(id) {
+      this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
   },
 }
