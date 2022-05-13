@@ -3,12 +3,10 @@
     <HeaderNav class="mb-4" />
     <HeaderMsg @searchVal="searchVal" ref="msg" />
     <div class="container main">
-      <keep-alive>
-        <!-- <keep-alive :include="views"> -->
-        <!-- <router-view :input-val="VAL" :style-length="styleLength" ref="child" /> -->
+      <!-- <keep-alive>
         <router-view v-if="$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
-      </keep-alive>
-      <router-view v-if="!$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
+      </keep-alive> -->
+      <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
     </div>
   </div>
 </template>
@@ -31,7 +29,6 @@ export default {
       Uid: sessionStorage.getItem('userId'),
       styleLength: '',
       VAL: '',
-      // views: [],
     }
   },
   computed: {
@@ -68,7 +65,6 @@ export default {
   },
   methods: {
     searchVal(val) {
-      console.log(val)
       const that = this
       that.VAL = val || ''
       that.$nextTick(() => {

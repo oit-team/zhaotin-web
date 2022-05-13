@@ -13,7 +13,7 @@
           @checkTab="checkTab"
         />
       </div>
-      <el-divider />
+      <!-- <el-divider /> -->
       <div class="zt-tabs__bottom">
         <div class="zt-bottom__label">排序</div>
         <div class="zt-bottom__tab">
@@ -177,7 +177,7 @@ export default {
     this.classData()
   },
   mounted() {
-    if (this.isUpdate) {
+    if (this.isUpdate && this.$route.path === '/styleCenter/goodsList') {
       window.addEventListener('scroll', this.scrollEvent)
     } else {
       window.removeEventListener('scroll', this.scrollEvent)
@@ -185,8 +185,7 @@ export default {
     }
   },
   beforeDestroy() {
-    // window.removeEventListener('scroll', this.scrollEvent)
-    window.removeEventListener('scroll', this.stt(this.scrollEvent, 500))
+    window.removeEventListener('scroll', this.scrollEvent)
   },
   methods: {
     async loadData() {
@@ -245,23 +244,6 @@ export default {
           that.dataList.push(...res.body.resultList)
           console.log(that.dataList)
           that.$forceUpdate
-        }
-      }
-    },
-    stt(fn, tm) {
-      // 前一次的时间
-      let previous = 0
-      // 返回一个匿名函数闭包
-      return function () {
-        // 当前触发事件
-        const now = Date.now()
-        // 满足时间差则执行目标函数
-        if (now - previous >= tm) {
-          // 执行目标函数，并将this，和event传过去
-          // eslint-disable-next-line prefer-rest-params
-          fn.apply(this, arguments)
-          // 重置previous
-          previous = now
         }
       }
     },
@@ -365,10 +347,10 @@ export default {
     // },
     // 价格筛选  区间
     priceC() {
-      // console.log(this.input1)
-      // console.log(this.input2)
       this.input1 = this.input1.replace(/\D/g, '')
       this.input2 = this.input2.replace(/\D/g, '')
+      console.log(this.input1)
+      console.log(this.input2)
       if (this.input1 !== '' && this.input2 !== '') {
         if (this.input1 < this.input2) {
           this.formData.startTradePrice = this.input1
@@ -380,6 +362,8 @@ export default {
           this.loadData()
         }
       } else {
+        this.formData.startTradePrice = ''
+        this.formData.endTradePrice = ''
         this.loadData()
       }
     },
@@ -468,6 +452,9 @@ export default {
     .selectB:hover{
       cursor: pointer;
     }
+  }
+  ::v-deep .el-divider--horizontal{
+    margin: 15px 0;
   }
 }
 .zt-content{

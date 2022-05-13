@@ -6,6 +6,8 @@ export default {
     brforeAddOrder: [],
     orderStorage: [], // 购物车商品集合
     cacheView: [],
+    detailData: {},
+    isStart: true,
   },
   getters: {
   },
@@ -17,12 +19,18 @@ export default {
       // state.orderStorage.push(JSON.parse(data))
       state.orderStorage = JSON.parse(JSON.stringify(data))
     },
-    addcacheView(state, data) {
-    	state.cacheView.push(data)
+    cgDetail(state, data) {
+      state.detailData = JSON.parse(JSON.stringify(data))
     },
-    deletecacheView(state, index) {
-    	state.cacheView.splice(index, 1)
+    cgStart(state, data) {
+      state.isStart = data
     },
+    // addcacheView(state, data) {
+    // 	state.cacheView.push(data)
+    // },
+    // deletecacheView(state, index) {
+    // 	state.cacheView.splice(index, 1)
+    // },
     // deleteOrder(state, index) {
     //   state.orderStorage.splice(index, 1)
     // },

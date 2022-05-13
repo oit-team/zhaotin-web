@@ -228,7 +228,7 @@ export default {
   background-color: #f5f5f5;
   // border-radius: 20px;
   padding: 20px 10px;
-  margin-top: 40px;
+  margin-top: 15px;
   box-sizing: border-box;
 }
 .zt-content__item{
