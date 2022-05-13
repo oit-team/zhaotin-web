@@ -99,6 +99,7 @@
         <!-- <el-divider /> -->
         <!-- <div class="zt-item__line top-line">已售50000件</div> -->
       </div>
+      <el-divider v-if="!isUpdate">已经到底了</el-divider>
     </div>
   </div>
 </template>
@@ -177,10 +178,10 @@ export default {
     this.classData()
   },
   mounted() {
-    if (this.isUpdate && this.$route.path === '/styleCenter/goodsList') {
+    if (this.isUpdate) {
       window.addEventListener('scroll', this.scrollEvent)
     } else {
-      window.removeEventListener('scroll', this.scrollEvent)
+      // window.removeEventListener('scroll', this.scrollEvent)
       this.formData.pageNum = 1
     }
   },
@@ -202,9 +203,11 @@ export default {
       })
       if (res.body.resultList.length === 0) {
         that.isUpdate = false
+        window.removeEventListener('scroll', this.scrollEvent)
         that.showEmp = true
       } else {
         that.isUpdate = true
+        window.addEventListener('scroll', this.scrollEvent)
         that.showEmp = false
       }
       that.dataList = res.body.resultList
@@ -229,20 +232,17 @@ export default {
           that.fullscreenLoading = false
         }, 1000)
         that.formData.pageNum++
-        console.log(that.formData)
         that.formData.styleLength = that.styleLength || ''
         const res = await getProductList({
           ...that.formData,
         })
         if (res.body.resultList.length === 0) {
           that.isUpdate = false
-          that.$message.warning('已经到底了')
-          // that.$message('bu')
+          window.removeEventListener('scroll', this.scrollEvent)
           that.formData.pageNum = 1
         } else {
           that.isUpdate = true
           that.dataList.push(...res.body.resultList)
-          console.log(that.dataList)
           that.$forceUpdate
         }
       }
@@ -395,7 +395,6 @@ export default {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 10px 0;
     box-sizing: border-box;
   }
   .zt-tabs__center:hover{
@@ -444,6 +443,9 @@ export default {
         padding: 4px 0;
         border-radius: 20px;
       }
+      .zt-price__sub{
+        cursor: pointer;
+      }
     }
     .selectB{
       padding: 0 20px;
@@ -461,7 +463,7 @@ export default {
   display: flex;
   height: 100%;
   flex-wrap: wrap;
-  overflow: auto;
+  // overflow: auto;
   .zt-content__item:hover{
     cursor: pointer;
   }

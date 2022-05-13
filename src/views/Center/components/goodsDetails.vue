@@ -331,7 +331,8 @@
         <div class="zt-content__title">
           季节推荐
         </div>
-        <div class="zt-content">
+        <el-empty v-if="showEmp" description="暂无相关数据" />
+        <div class="zt-content" v-else>
           <div
             class="zt-content__item"
             v-for="(item, index) in dataList"
@@ -412,6 +413,7 @@ export default {
       priceAll: 0,
       showResult: false,
       resultText: '',
+      showEmp: false,
     }
   },
   created() {
@@ -486,6 +488,11 @@ export default {
         ...that.formData,
       })
       that.dataList = res.body.resultList
+      if (res.body.resultList.length === 0) {
+        this.showEmp = true
+      } else {
+        this.showEmp = false
+      }
       that.goodsLength = res.body.resultList.length
     },
     // 轮播图 切换出控制
@@ -494,7 +501,7 @@ export default {
     },
     // 商品数量
     handleChange(value) {
-      if (value <= 99 && value >= 0) {
+      if (value >= 0) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
         this.infoData.styleColorList.forEach(e => {
           let n = 0

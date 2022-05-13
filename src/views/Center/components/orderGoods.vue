@@ -565,7 +565,7 @@ export default {
 .zt-content{
   background-color: #f5f5f5;
   // border-radius: 20px;
-  padding: 20px 10px;
+  padding: 10px 10px;
   box-sizing: border-box;
 }
 .zt-content__item{
@@ -673,7 +673,7 @@ export default {
     .zt-footer__button{
       padding: 15px 50px;
       background-color: #cda46c;
-      margin-left: 20px;
+      margin: 0 20px;
       border-radius: 30px;
       font-size: 18px;
       color: #fff;

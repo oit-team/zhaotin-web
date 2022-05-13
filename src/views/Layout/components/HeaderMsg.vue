@@ -127,4 +127,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.zt-config__fig:hover{
+  cursor: pointer;
+}
 </style>
