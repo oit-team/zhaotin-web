@@ -12,12 +12,12 @@
       <el-form-item label="类别排序" prop="dictitemOrderkey">
         <el-input v-model.trim="cateGoryForm.dictitemOrderkey" style="width:60%;"  placeholder="请输入类别排序"></el-input>
       </el-form-item>
-       <el-form-item v-if="cateGoryVisibilty" label="类别图片">
+<!--       <el-form-item v-if="cateGoryVisibilty" label="类别图片">
           <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
           <div class="w-24 h-24 mb-12">
             <el-image :src="imgUrl" fit="cover" />
           </div>
-       </el-form-item>
+       </el-form-item> -->
        <el-form-item label="点击上传类别图片">
         <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
           <i class="el-icon-plus"></i>
@@ -25,7 +25,7 @@
        </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
-        <span v-for="(item,index) in sortList" :key='index'>{{item.dictitemOrderkey}},</span>
+        <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
       </div>
       <el-form-item>
         <el-button size="small" icon="el-icon-check" type="primary" @click="submitForm('cateGoryForm')">保存</el-button>
@@ -38,7 +38,7 @@
 
 <script>
 import VcUpload from '@/views/common/Upload'
-import {addCateGory,sortList,updateCateGory,sort} from '@/api/category'
+import {addCateGory,sortList,updateCateGory,sort,getSizeSortList} from '@/api/category'
 export default {
   name:'addCategory',
   components:{VcUpload},
@@ -53,6 +53,8 @@ export default {
     return {
       cateGoryVisibilty:false,
       imgUrl:'',
+      imgList: [], //上传图片的列表
+      fileList: [],
       editFlag:false,
       dictitemCode:null,
       cateGoryForm: {
@@ -79,6 +81,8 @@ export default {
       this.cateGoryVisibilty = true
       this.cateGoryForm = this.$route.query.item.row;
       this.imgUrl = this.$route.query.item.row.imgUrl
+      this.imgList = [{url:this.imgUrl}]
+      this.fileList = [{url:this.imgUrl}]
       this.dictitemCode = this.$route.query.item.row.dictitemCode
     }else{
       this.editFlag = true;
@@ -101,6 +105,7 @@ export default {
             },
           },
         },
+        fileList: this.fileList,
         listType: 'picture-card',
         maxSize: 1024 * 20,
         limit: 1,
@@ -108,8 +113,9 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
-          this.uploadList = fileList
-          this.imgUrl = this.uploadList.response.data.fileUrl
+          // this.imgUrl = this.uploadList.response.data.fileUrl
+          this.imgList = this.$refs.uploadImage.uploadFiles
+          console.log(this.imgList)
         },
       }
     },
@@ -120,16 +126,18 @@ export default {
     },
     // 查询所有的类别排序字段
     querySortList(){
-      const con = {
-        userId: sessionStorage.userId,
-        dictCode: "ACTEGORY",
-        dictitemCode:'ACTEGORY',
-        dictitemOrderkey: this.cateGoryForm.dictitemOrderkey,
-        brandId: sessionStorage.brandId
-      }
-        sortList(con).then((res) => {
+      // const con = {
+      //   userId: sessionStorage.userId,
+      //   dictCode: "ACTEGORY",
+      //   dictitemCode:'ACTEGORY',
+      //   dictitemOrderkey: this.cateGoryForm.dictitemOrderkey,
+      //   brandId: sessionStorage.brandId
+      // }
+      const con = {}
+        getSizeSortList(con).then((res) => {
+          console.log(res)
             if(res.head.status === 0) {
-             this.sortList = res.body.result
+             this.sortList = res.body.resultList
             }
         })
     },
@@ -173,12 +181,20 @@ export default {
       });
     },
     saveFunction(){
-        const con = {
-             dictCode: "ACTEGORY",
-             ...this.cateGoryForm,
-             createId: sessionStorage.userId,
-             imgUrl:this.imgUrl
-            }
+      let imgUrlArr = []
+      this.imgList.forEach((item,i) => {
+        if (item.response) {
+          imgUrlArr.push(item.response.data.fileUrl)
+        } else {
+          imgUrlArr.push(item.url)
+        }
+      })
+      const con = {
+           dictCode: "ACTEGORY",
+           ...this.cateGoryForm,
+           createId: sessionStorage.userId,
+           imgUrl:imgUrlArr.toSource()
+          }
       if(!this.editFlag){  // 编辑
       console.log(this.$route.query.item.row.imgUrl);
       

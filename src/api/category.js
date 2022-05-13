@@ -34,6 +34,13 @@ export function sort(params) {
     cmd: 100005,
   })
 }
+// 查询尺码已存在的排序
+export function getSizeSortList(params) {
+  return post('/goods/size/getSizeSortList', params, {
+    mod: 'home',
+    cmd: 100006,
+  })
+}
 // 查询排序
 export function sortList(params) {
   return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {

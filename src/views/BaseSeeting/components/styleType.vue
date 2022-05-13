@@ -84,7 +84,6 @@ export default {
   },
   methods: {
     async loadData(params) {
-      console.log(params);
       const con = {
          ...params,
        userId:sessionStorage.userId,
