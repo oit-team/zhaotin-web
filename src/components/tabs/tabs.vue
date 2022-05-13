@@ -109,4 +109,7 @@ export default {
   white-space: nowrap;
   box-sizing: border-box;
 }
+.zt-tabs__homeSelect:hover{
+  cursor: pointer;
+}
 </style>
