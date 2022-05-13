@@ -835,16 +835,18 @@ export default {
       })
     },
     // 点击删除已输入的商品颜色
-    deleteColor(item, index) {
+    deleteColor(item, index,msg) {
       const _this = this
       if (this.$refs.uploadImage) {
         this.$refs['uploadImage'].clearFiles()
         this.$refs['uploadxijieImage'].clearFiles()
       }
       const times = this.colorNum
-      if (this.activeGoodsShow&&this.$refs.goodsSizeRef) {
-        this.activeGoodsSize[times] = JSON.stringify(this.$refs.goodsSizeRef.selection) //记录选中的尺寸
-        this.$refs.goodsSizeRef.clearSelection()
+      if ( msg != 'noChangeSize') {
+        if (this.activeGoodsShow&&this.$refs.goodsSizeRef) {
+          this.activeGoodsSize[times] = JSON.stringify(this.$refs.goodsSizeRef.selection) //记录选中的尺寸
+          this.$refs.goodsSizeRef.clearSelection()
+        }
       }
       this.uploadImgFlag = true
       // this.colorList.splice(item, 1)
@@ -996,8 +998,10 @@ export default {
         catergre: label.dicttimeDisplayName,
         styleId: null,
       }
+      this.sizeInfo = null
+      this.sizeTableList = []
       getClothingSizeInfo(con).then((res) => {
-        if (res.head.status === 0) {
+        if (res.head.status == 0) {
           if (res.body) {
             this.sizeInfo = res.body
             this.sizeTableList = res.body.resultMap
@@ -1020,8 +1024,7 @@ export default {
             this.sizeTableList = []
           }
         } else {
-          this.sizeInfo = null
-          this.sizeTableList = []
+          
           _this.$message({
             message: res.head.msg,
             type: 'warning'
@@ -1211,7 +1214,36 @@ export default {
       })
       return styleColor
     },
+    checkstyleColor (con) {
+      let returnRes = true
+      const _this = this
+      if (con.styleColor.length == 0) {
+        _this.$message({
+          type: 'warning',
+          message: '发布前请上传颜色',
+        })
+        return false
+      } else {
+        con.styleColor.forEach((item,index) => {
+          if (item.styleSize.length == 0) {
+            returnRes = false
+            //尺码是必选的
+          } else if (item.styleDetailPicture == "" || item.stylePicture == "") {
+            returnRes = false
+            //图片是必传的
+          }
+        })
+      }
+      if (!returnRes) {
+        _this.$message({
+          type: 'warning',
+          message: '发布前请添加各颜色的商品图片、细节图片、商品尺码',
+        })
+      }
+      return returnRes 
+    },
     saveGoodFun(status) {
+      
       const _this = this;
       const con = JSON.parse(JSON.stringify(this.ruleForm));
       con.stylePicture = ''  //款式图片 url地址
@@ -1231,6 +1263,11 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
+      if (status == 1) {
+        if (!this.checkstyleColor(con)) {
+          return;
+        }
+      }
       addGoodsInfo(con).then((res) => {
         if (res.head.status == 0) {
           _this.$message({
@@ -1268,6 +1305,11 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
+      if (status == 1) {
+        if (!this.checkstyleColor(con)) {
+          return;
+        }
+      }
       updateStyleInfo(con).then((res) => {
         if (res.head.status == 0) {
           _this.$message({
@@ -1467,7 +1509,23 @@ export default {
       this.closeEditColor()
     },
     deleteItem() {
-      console.log('deleteItem')
+      // console.log(this.activeGoodsSize)
+      // return ;
+      const index = this.editColor.index
+      this.colorList.splice(index,1)
+      this.selectedColorName.splice(index,1)
+      this.selectedColorNameXiJie.splice(index,1)
+      this.activeGoodsSize.splice(index,1)
+      if (this.colorNum == index && this.colorList.length > 0){
+        this.$refs.goodsSizeRef.clearSelection();
+        this.deleteColor(this.colorList[0],0,'noChangeSize')
+      } else if (this.colorNum > index) {
+        this.$refs.goodsSizeRef.clearSelection();
+        this.deleteColor(this.colorList[this.colorNum - 1],this.colorNum - 1,'noChangeSize')
+      } else if (this.colorList.length == 0) {
+        this.colorNum = undefined
+      }
+      this.closeDialog()
     },
     handleEditClick() {
       this.drawer = true

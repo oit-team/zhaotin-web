@@ -59,10 +59,10 @@
               <span v-if='data.sizeName'>{{ data.sizeName }}</span>
               <span v-if='data.aliasName'>({{ data.aliasName }})</span>
             </span>
-            <span class="SizeSortBox">
+<!--            <span class="SizeSortBox">
               <i @click="sortSizeList('up',data)" class="el-icon-top"></i>
               <i @click="sortSizeList('down',data)" class="el-icon-bottom"></i>
-            </span>
+            </span> -->
           </div>
         </el-tree>
 
@@ -86,6 +86,9 @@
           </el-form-item>
           <el-form-item label="尺码别名" :label-width="formLabelWidth" prop="aliasName">
             <el-input v-model="ruleForm.aliasName" autocomplete="off" maxlength="32" placeholder="请输入尺码别名"></el-input>
+          </el-form-item>
+          <el-form-item label="排序" :label-width="formLabelWidth" prop="sort">
+            <el-input v-model="ruleForm.sort" oninput="value=value.replace(/[^\d]/g,'')" autocomplete="off" maxlength="32" placeholder="请输入序号"></el-input>
           </el-form-item>
         </el-form>
         <div class="text-center">
@@ -137,12 +140,13 @@ export default {
       },
       ruleForm:{
         sizeName:'',
-        aliasName:''
+        aliasName:'',
+        sort:'',
       },
       rules:{
         sizeName:[
           { required: true, message: '请输入尺码名称', trigger: 'blur' },
-          { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
+          { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' },
         ]
       },
       formLabelWidth: '100px',
@@ -311,6 +315,9 @@ export default {
           sizeId:checkedKeys,
         }
       if(this.state.length){  // 编辑
+        console.log(con)
+        // return;
+      
         updateSizeConfInfo(con).then((res) => {
           if(res.head.status === 0){
             this.$message({
@@ -356,6 +363,7 @@ export default {
               aliasName:this.ruleForm.aliasName,
               userId: sessionStorage.userId,
               brandId: sessionStorage.brandId,
+              sort:this.ruleForm.sort
             }
             updateSizeInfo(con).then((res) => {
               if(res.head.status === 0){
@@ -385,7 +393,7 @@ export default {
               brandId: sessionStorage.brandId,
               sizeName:this.ruleForm.sizeName,
               aliasName:this.ruleForm.aliasName,
-              sort:this.$route.query.item.row.dictitemOrderkey
+              sort:this.ruleForm.sort
             }
             insertSizeInfo(con).then((res) => {
               if(res.head.status === 0){

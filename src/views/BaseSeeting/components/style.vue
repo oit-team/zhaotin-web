@@ -493,6 +493,37 @@ export default {
     confirmExportGoods() {
 
     },
+    //上架前判断该商品各个颜色是否都有图片和尺码
+    checkstyleColor (row) {
+      console.log(row)
+      let returnRes = true
+      if (row.styleColorList.length == 0) {
+        this.$message({
+          type: 'warning',
+          message: '发布前请上传颜色',
+        })
+        return false
+      } else {
+        row.styleColorList.forEach((item,index) => {
+          if (item.styleSize.length == 0) {
+            //尺码未设置
+            returnRes = false 
+          } else if (item.styleImg.length == 0 || item.styleImgDetail.length ==0){
+            returnRes = false 
+            //图片未上传
+          }
+        })
+      }
+      if (!returnRes) {
+        this.$message({
+          type: 'warning',
+          message: '发布前请添加各颜色的商品图片、细节图片、商品尺码',
+        })
+      }
+      return returnRes
+      
+    },
+    
     // 商品上下架
     updateStyleStatusById(row) {
       let status = row.status
@@ -512,6 +543,9 @@ export default {
         const con = {
           sId: row.styleId,
           status: status
+        }
+        if (status == 1 && !this.checkstyleColor(row)) {
+          return;
         }
         updateStyleStatusById(con).then((res) => {
           if (res.head.status == 0) {

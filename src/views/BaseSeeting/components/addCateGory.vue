@@ -79,6 +79,7 @@ export default {
       this.cateGoryVisibilty = true
       this.cateGoryForm = this.$route.query.item.row;
       this.imgUrl = this.$route.query.item.row.imgUrl
+      this.dictitemCode = this.$route.query.item.row.dictitemCode
     }else{
       this.editFlag = true;
     }
