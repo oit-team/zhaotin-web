@@ -193,7 +193,7 @@ export default {
            dictCode: "ACTEGORY",
            ...this.cateGoryForm,
            createId: sessionStorage.userId,
-           imgUrl:imgUrlArr.toSource()
+           imgUrl:imgUrlArr.toString()
           }
       if(!this.editFlag){  // 编辑
       console.log(this.$route.query.item.row.imgUrl);
