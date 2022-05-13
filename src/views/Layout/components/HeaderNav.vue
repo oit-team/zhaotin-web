@@ -156,11 +156,8 @@ export default {
         brandId: JSON.parse(sessionStorage.getItem('userinfo')).brandId,
       })
       this.list = res.body.resultList
-      console.log(this.list)
     },
     skip(item) {
-      console.log(item.menuUrl)
-      console.log(this.$route)
       sessionStorage.setItem('headTitString', item.fieldDes)
       if (sessionStorage.getItem('headTitString')) {
         if (!item.childrenMenu) {

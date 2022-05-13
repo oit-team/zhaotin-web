@@ -1,9 +1,9 @@
 <template>
-  <div class="container h-24 flex">
-    <div class="h-24 flex">
+  <div class="container h-12 flex">
+    <div class="h-12 flex">
       <div class="mr-2 zt-config"><i class="iconfont icon-tongzhi"></i></div>
       <!-- <div class="inline-block mt-5 mr-2"><i class="iconfont icon-tongzhi"></i></div> -->
-      <div class="h-24 flex flex-col justify-center text-yellow-600 leading-8 underline">
+      <div class="h-12 flex flex-col justify-center text-yellow-600 leading-8 underline">
         <div class="zt-config__fig">公告：{{ configT[0] }}</div>
         <!-- <div>消息：{{ configT[1] }}</div> -->
       </div>
@@ -57,7 +57,6 @@ export default {
     async config() {
       const res = await getConfig({})
       this.configT = res.body.announceInfo
-      console.log(this.configT)
     },
     cgVal(val) {
       // 优化： 判断当前路由是否是goodsLIst，如果不是才跳转
@@ -75,7 +74,6 @@ export default {
         this.listLength = list.length
         this.$forceUpdate
       }
-      console.log(this.listLength)
     },
     async getData() {
       const that = this
@@ -128,5 +126,8 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.zt-config__fig:hover{
+  cursor: pointer;
 }
 </style>

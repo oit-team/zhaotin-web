@@ -70,10 +70,12 @@ export default {
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-around;
+  flex-wrap: wrap;
+  // justify-content: space-around;
 }
 .zt-tabs__item{
   padding: 0 20px;
+  box-sizing: border-box;
 }
 .zt-tabs__item:hover{
   cursor:pointer;
@@ -82,27 +84,32 @@ export default {
   cursor:pointer;
 }
 .zt-tabs__homeItem{
-  // display: flex;
-  // align-items: center;
   color: #666666;
-  // height: 100%;
-  // padding: 0 35px;
+  padding: 15px;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 .zt-tabs__label{
   margin-right: 20px;
 }
 .zt-tabs-select{
-  padding: 0 20px;
+  padding: 15px;
   color: #CDA46C;
+  white-space: nowrap;
+  box-sizing: border-box;
 }
 .zt-tabs__homeSelect{
-  width: 120px;
+  // width: 120px;
   text-align: center;
   background-color: #333;
   color: #CDA46C;
   font-weight: 800;
   border-radius: 30px;
-  padding: 14px 20px;
+  padding: 15px;
+  white-space: nowrap;
   box-sizing: border-box;
+}
+.zt-tabs__homeSelect:hover{
+  cursor: pointer;
 }
 </style>

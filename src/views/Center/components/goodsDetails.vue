@@ -158,7 +158,13 @@
             </div>
             <div class="zt-data__size">
               <div class="zt-data__label">数量</div>
-              <el-input-number size="small" v-model="num" @change="handleChange" :min="0" />
+              <el-input-number
+                v-if="infoData.styleColorList && infoData.styleColorList.length !== 0"
+                size="small"
+                v-model="num"
+                @change="handleChange"
+                :min="0"
+              />
               <!-- <div v-if="infoData.styleColorList">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
                   <el-input-number size="small" v-model="item.num" @change="handleChange" :min="1" :max="99" />
@@ -325,7 +331,8 @@
         <div class="zt-content__title">
           季节推荐
         </div>
-        <div class="zt-content">
+        <el-empty v-if="showEmp" description="暂无相关数据" />
+        <div class="zt-content" v-else>
           <div
             class="zt-content__item"
             v-for="(item, index) in dataList"
@@ -406,12 +413,24 @@ export default {
       priceAll: 0,
       showResult: false,
       resultText: '',
+      showEmp: false,
     }
   },
   created() {
     this.goodsId = this.$route.query.id
-    this.getData()
-    this.loadData()
+    if (this.$store.state.order.isStart) {
+      this.getData()
+      this.loadData()
+    } else {
+      this.infoData = this.$store.state.order.detailData
+    }
+  },
+  beforeDestroy() {
+    if (this.$route.path === '/styleCenter/orderGoods') {
+      this.$store.commit('order/cgStart', false)
+    } else {
+      this.$store.commit('order/cgStart', true)
+    }
   },
   methods: {
     getData() {
@@ -469,6 +488,11 @@ export default {
         ...that.formData,
       })
       that.dataList = res.body.resultList
+      if (res.body.resultList.length === 0) {
+        this.showEmp = true
+      } else {
+        this.showEmp = false
+      }
       that.goodsLength = res.body.resultList.length
     },
     // 轮播图 切换出控制
@@ -477,7 +501,7 @@ export default {
     },
     // 商品数量
     handleChange(value) {
-      if (value <= 99 && value >= 0) {
+      if (value >= 0) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
         this.infoData.styleColorList.forEach(e => {
           let n = 0
@@ -514,8 +538,9 @@ export default {
     // 点击订购
     async toshoping() {
       const that = this
-      console.log(that.infoData)
       const data = JSON.parse(JSON.stringify(that.infoData))
+      that.$store.commit('order/cgDetail', that.infoData)
+      console.log(that.$store.state.order.detailData)
       // 新建  商品对象
       const resultList = []
       const resultListinfo = {
@@ -535,10 +560,6 @@ export default {
         data1[index] = item
         item.styleSize.forEach(i => {
           that.$set(i, 'sizeNumber', i.num)
-          // i.sort = undefined
-          // i.sizeKey = undefined
-          // i.sizeValue = undefined
-          // i.num = undefined
           delete i.num
           delete i.sort
           delete i.sizeKey
@@ -555,7 +576,7 @@ export default {
       if (resultListinfo.style.length > 0) {
         that.$set(that.infoData, 'styleList', resultList)
         that.$store.commit('order/addOrderStorage', that.infoData)
-        this.$router.push('/styleCenter/orderGoods')
+        that.$router.push('/styleCenter/orderGoods')
       } else {
         that.$message.error('请选择需要购买的商品数量')
       }
@@ -574,10 +595,9 @@ export default {
             message: '成功加入购物清单',
             type: 'success',
           })
+          this.$parent.cgcart()
         }
       }
-      this.$store.commit('order/addcacheView', this.$route.path)
-      this.$parent.cgcart()
     },
     cart() {
       const that = this

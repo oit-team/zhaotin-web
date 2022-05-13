@@ -235,7 +235,13 @@ export default {
   created() {
     this.getData()
     this.formData = this.$store.state.order.orderStorage
-    console.log(this.formData)
+  },
+  beforeDestroy() {
+    if (this.$route.path === '/styleCenter/goodsDetails') {
+      this.$store.commit('order/cgStart', false)
+    } else {
+      this.$store.commit('order/cgStart', true)
+    }
   },
   methods: {
     // 获取收货地址信息
@@ -281,6 +287,7 @@ export default {
     },
     goBack() {
       this.$router.back()
+      // this.$store.commit('order/cgStart', false)
     },
     addSite() {
       const that = this
@@ -438,12 +445,6 @@ export default {
           message: '提交成功',
         })
         setTimeout(() => {
-          // if (that.oldUrl === '/styleCenter/goodsDetails') {
-          //   const id = that.formData.styleId
-          //   that.$router.push(`/styleCenter/goodsDetails?id=${id}`)
-          // } else {
-          //   that.$router.go(-1)
-          // }
           that.$router.go(-1)
         }, 800)
       } else {
@@ -495,6 +496,9 @@ export default {
   .el-button--primary{
     width: 40%;
   }
+}
+::v-deep .el-page-header__content{
+  font-size: 16px;
 }
 .zt-order__title{
   padding: 20px;
@@ -561,7 +565,7 @@ export default {
 .zt-content{
   background-color: #f5f5f5;
   // border-radius: 20px;
-  padding: 20px 10px;
+  padding: 10px 10px;
   box-sizing: border-box;
 }
 .zt-content__item{
@@ -669,7 +673,7 @@ export default {
     .zt-footer__button{
       padding: 15px 50px;
       background-color: #cda46c;
-      margin-left: 20px;
+      margin: 0 20px;
       border-radius: 30px;
       font-size: 18px;
       color: #fff;
