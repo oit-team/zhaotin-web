@@ -445,7 +445,9 @@ export default {
     },
     async subOrder() {
       const that = this
-      if (that.siteList[that.radio] && that.radio && that.siteList[that.radio].id) {
+      console.log(that.siteList)
+      console.log(that.radio)
+      if (that.siteList[that.radio] && that.siteList[that.radio].id) {
         const res = await addOrder({
           receivingId: that.siteList[that.radio].id,
           orderType: 1,
