@@ -199,6 +199,7 @@ export default {
       this.sizeId = item.id;
       this.ruleForm.sizeName = item.sizeName;
       this.ruleForm.aliasName = item.aliasName;
+      this.ruleForm.sort = item.sort;
     },
     // 新增尺码
     addSize(){
