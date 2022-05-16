@@ -1,7 +1,7 @@
 <template>
   <div class="ct-tabs">
     <div class="zt-tabs__label" v-if="labelText">{{ labelText }}:</div>
-    <!-- <div> -->
+    <!-- 二级 tab -->
     <div v-if="!ishome" class="zt-tabs__center1">
       <div
         v-for="(item, index) in tabList"
@@ -12,6 +12,7 @@
         {{ item.dicttimeDisplayName }}
       </div>
     </div>
+    <!-- 顶部 tab -->
     <div v-else class="zt-tabs__center2">
       <div
         v-for="(item, index) in tabList"
@@ -19,7 +20,7 @@
         :class="selectItem===index?'zt-tabs__homeSelect':'zt-tabs__homeItem'"
         @click="checkItem(index)"
       >
-        {{ item.styleType }}({{ item.categoryNumber }})
+        {{ item.categoryName }}({{ item.countNum }})
       </div>
     </div>
     <!-- </div> -->
@@ -74,7 +75,7 @@ export default {
   // justify-content: space-around;
 }
 .zt-tabs__item{
-  padding: 0 20px;
+  padding: 15px;
   box-sizing: border-box;
 }
 .zt-tabs__item:hover{

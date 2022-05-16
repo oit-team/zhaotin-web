@@ -8,6 +8,12 @@ export function getGoodsSizeInfo(params) {
     cmd: 100009,
   })
 }
+export function getGoodsSizeClass(params) {
+  return post('/goods/dictitemInfo/getStyleCategory', params, {
+    mod: 'home',
+    cmd: 100001,
+  })
+}
 // 所属季节
 export function getSeasonId(params) {
   return post('/goods/season/getSeason', params, {

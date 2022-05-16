@@ -24,6 +24,7 @@ export default {
 
 <style>
 .main {
+  position: relative;
   min-height: 600px;
 }
 </style>

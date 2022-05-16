@@ -1,5 +1,23 @@
 <template>
-  <div class="zt-page">
+  <div class="zt-page" id="Mpage">
+    <div class="nav-r">
+      <div class="addorder zt-flex">
+        <i class="el-icon-document-add"></i>
+        <div>快速补货</div>
+      </div>
+      <div class="orderCart zt-flex" @click="toCart">
+        <i class="el-icon-s-order"></i>
+        <div>订货清单</div>
+      </div>
+      <div class="service zt-flex">
+        <i class="el-icon-chat-line-round"></i>
+        <div>在线客服</div>
+      </div>
+      <div class="totop zt-flex" @click="backTop">
+        <i class="el-icon-arrow-up"></i>
+        <div>返回顶部</div>
+      </div>
+    </div>
     <div class="zt-tabs__top">
       <!-- <div class="container"> -->
       <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
@@ -106,7 +124,7 @@
 
 <script>
 import { getProductList } from '@/api/product'
-import { getGoodsSizeInfo } from '@/api/goods'
+import { getGoodsSizeInfo, getGoodsSizeClass } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
 
 export default {
@@ -141,7 +159,7 @@ export default {
         pageSize: 20,
         styleId: '', // 商品id
         styleLength: '', // 商品衣长
-        styleCategory: '', // 商品类别
+        styleCategory: '', // 商品类别dicttimeDisplayName
         endTradePrice: '', // 结束批发价
         startTradePrice: '', // 开始批发价
         startcreatTime: '', // 开始时间
@@ -159,7 +177,7 @@ export default {
       // -----
       fullscreenLoading: false,
       tabList: [],
-      styleLength: '',
+      // styleLength: '',
       isUpdate: true,
     }
   },
@@ -169,13 +187,14 @@ export default {
     inputVal(val) {
       console.log(val)
     },
-    styleLength(val) {
-      console.log(val)
-    },
+    // styleLength(val) {
+    //   console.log(val)
+    // },
   },
   created() {
     this.loadData()
     this.classData()
+    this.classData2()
   },
   mounted() {
     if (this.isUpdate) {
@@ -197,7 +216,6 @@ export default {
       }, 1000)
       that.formData.pageNum = 1
       that.formData.styleSearch = that.inputVal || ''
-      that.formData.styleLength = that.styleLength || ''
       const res = await getProductList({
         ...that.formData,
       })
@@ -211,17 +229,7 @@ export default {
         that.showEmp = false
       }
       that.dataList = res.body.resultList
-      that.tabList1 = res.body.styelTypeList
-      let number1 = 0
-      that.tabList1.forEach(e => {
-        number1 += e.categoryNumber
-      })
-      const all = {
-        styleType: '全部',
-        categoryNumber: number1,
-      }
-      that.tabList1.unshift(all)
-      that.goodsLength = res.body.resultList.length
+      // that.tabList1 = res.body.styelTypeList
     },
     // 页面 触底加载
     async addData() {
@@ -232,7 +240,7 @@ export default {
           that.fullscreenLoading = false
         }, 1000)
         that.formData.pageNum++
-        that.formData.styleLength = that.styleLength || ''
+        // that.formData.styleLength = that.styleLength || ''
         const res = await getProductList({
           ...that.formData,
         })
@@ -258,7 +266,7 @@ export default {
         }
       }, 500)
     },
-    // 顶部分类
+    // 二级分类
     async classData() {
       const res = await getGoodsSizeInfo({
         brandId: this.bran,
@@ -267,34 +275,55 @@ export default {
       })
       this.tabList = res.body.result
       const all = {
-        dicttimeDisplayName: '综合推荐',
+        dicttimeDisplayName: '全部',
         dictitemCode: '',
       }
       this.tabList.unshift(all)
-      // const styleL = this.tabList[0].dicttimeDisplayName
-      // this.styleLength = styleL
     },
+    // 顶部分类
+    async classData2() {
+      const res = await getGoodsSizeClass({
+        dictCode: 'SYSTEM_CONFIG',
+      })
+      this.tabList1 = res.body.styleCategory
+      let number1 = 0
+      this.tabList1.forEach(e => {
+        number1 += e.countNum
+      })
+      const all = {
+        categoryName: '综合推荐',
+        countNum: number1,
+      }
+      this.tabList1.unshift(all)
+    },
+    // 点击二级tab
     checkTab(index) {
       const that = this
-      let styleL = ''
+      let con = ''
       if (index !== 0) {
-        styleL = that.tabList[index].dicttimeDisplayName
+        con = that.tabList[index].dicttimeDisplayName
+      } else {
+        con = ''
       }
-      that.styleLength = styleL
+      console.log(con)
       that.$nextTick(() => {
-        // that.$refs.child.loadData()
+        that.formData.styleLength = con
         this.loadData()
         that.$forceUpdate()
       })
     },
+    // 点击顶部 tab
     checkTab1(index) {
       const that = this
-      let cla = ''
+      let con = ''
       if (index !== 0) {
-        cla = that.tabList1[index].styleType
+        con = that.tabList1[index].categoryName
+      } else {
+        con = ''
       }
+      console.log(con)
       that.$nextTick(() => {
-        that.formData.styleCategory = cla
+        that.formData.styleCategory = con
         that.loadData()
         that.$forceUpdate()
       })
@@ -365,6 +394,12 @@ export default {
     todetails(id) {
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
+    toCart() {
+      this.$router.push('/styleCenter/shopCart')
+    },
+    backTop() {
+      window.scrollTo('0', '0')
+    },
   },
 }
 </script>
@@ -372,6 +407,31 @@ export default {
 <style lang='scss' scoped>
 .zt-page{
   height: 100%;
+}
+.nav-r{
+  position: fixed;
+  right: 15%;
+  bottom: 15%;
+  transform: translate(100%, 0px);
+}
+.zt-flex{
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 10px;
+  background: linear-gradient(to bottom,#FFB902,#FF9606);
+  padding: 8px;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+}
+.zt-flex:hover{
+  cursor: pointer;
+}
+.el-icon-arrow-up,
+.el-icon-chat-line-round,
+.el-icon-s-order,
+.el-icon-document-add{
+  font-size: 30px;
 }
 ::v-deep .el-loading-spinner{
   left: 50%;

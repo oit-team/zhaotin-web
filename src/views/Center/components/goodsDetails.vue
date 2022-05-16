@@ -21,6 +21,7 @@
             height="500px"
             ref="carousel"
             :autoplay="false"
+            indicator-position="none"
           >
             <el-carousel-item v-if="infoData.styleVideo">
               <div class="zt-swiper__item">
@@ -49,7 +50,7 @@
             </el-carousel-item>
           </el-carousel>
           <div class="zt-head__images">
-            <div class="zt-images__left">
+            <div class="zt-images__left" style="" ref="imagesL">
               <div
                 class="zt-images__item"
                 v-for="(item, index) in infoData.imgUrlList"
@@ -64,7 +65,7 @@
                 <i v-if="index===0&&infoData.styleVideo" class="el-icon-video-play"></i>
               </div>
             </div>
-            <div class="zt-images__right">
+            <div class="zt-images__right" @click="transformImg">
               <i class="el-icon-arrow-right"></i>
             </div>
           </div>
@@ -375,11 +376,8 @@ export default {
     return {
       goodsId: '',
       infoData: {},
-      value2: 3,
       colors: ['#CDA46C', '#CDA46C', '#CDA46C'],
       num: 0,
-      ishome: false,
-      tabList: [],
       dataList: [],
       formData: {
         styleNo: '', // 商品编号
@@ -402,18 +400,14 @@ export default {
       imageIndex: 0, // 选择图片
       colorIndex: 0, // 选择颜色
       sizeIndex: 0, // 选择大小
-      orderData: {},
-      beforeOrder: {},
-      successtip: false,
-      service1: [],
       allList: [],
       styleData: {},
       sizeData: {},
-      formData2: {},
       priceAll: 0,
       showResult: false,
       resultText: '',
       showEmp: false,
+      imgMarginL: 0,
     }
   },
   created() {
@@ -473,6 +467,9 @@ export default {
               resUrl: this.infoData.styleVideoPatch,
             }
             this.infoData.imgUrlList.unshift(url)
+          }
+          if (this.infoData.imgDetailUrlList) {
+            this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
           }
         }
       }).catch((ret) => {
@@ -625,6 +622,9 @@ export default {
           console.log(that.allList)
         }
       })
+    },
+    transformImg() {
+      console.log(this.$refs.transformImg.clientWidth)
     },
   },
 }
