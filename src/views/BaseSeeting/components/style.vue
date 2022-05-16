@@ -8,7 +8,7 @@
           <template slot="content:resUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
             <template v-if="true">
-              <el-image class="file-res" :src="row.resUrl" fit="cover" />
+              <el-image class="file-res" style="max-width:50px;max-height:50px;" :src="row.resUrl" fit="cover" />
             </template>
           </template>
           <template slot="content:status" slot-scope="{ row }">
@@ -505,10 +505,11 @@ export default {
         return false
       } else {
         row.styleColorList.forEach((item,index) => {
-          if (item.styleSize.length == 0) {
+          console.log(item)
+          if (!item.styleSize || item.styleSize.length == 0) {
             //尺码未设置
             returnRes = false 
-          } else if (item.styleImg.length == 0 || item.styleImgDetail.length ==0){
+          } else if (!item.styleImg || item.styleImg.length == 0){
             returnRes = false 
             //图片未上传
           }
@@ -535,7 +536,7 @@ export default {
         status = 1
         msg = '上架'
       }
-      this.$confirm(`确认${msg}该菜单?`, '提示', {
+      this.$confirm(`确认${msg}该商品?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -573,9 +574,23 @@ export default {
 
 }
 </script>
-
-<style>
-.table-h {
-  height: 600px;
-}
+<style lang="less" scoped>
+  .table-h {
+    height: 600px;
+  }
+  /deep/ .el-table--scrollable-x .el-table__body-wrapper {
+    overflow: auto;
+  }
+  /deep/ .gutter {
+    width: 22px !important;
+    display: inline-block !important;
+  }
+  /deep/ .el-table__fixed-right-patch {
+    width: 22px !important;
+  }
+  /deep/ .el-table__fixed-right {
+      top: 0;
+      left: auto;
+      right: 18px;
+  }
 </style>

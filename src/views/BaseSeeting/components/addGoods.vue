@@ -774,7 +774,8 @@ export default {
   mounted() {
     this.headersData.token = localStorage.token
     this.uploadData.userId = sessionStorage.userId
-    this.uploadUrl = VcUpload.uploadUrl
+    const BASE_URL = process.env.VUE_APP_BASE_URL
+    this.uploadUrl =  BASE_URL + '/system/file/uploadFile'
     addQuillTitle()
     // this.getBandAndSeries()
     this.getGoodsCategory()
@@ -1228,7 +1229,7 @@ export default {
           if (item.styleSize.length == 0) {
             returnRes = false
             //尺码是必选的
-          } else if (item.styleDetailPicture == "" || item.stylePicture == "") {
+          } else if (item.stylePicture == "") {
             returnRes = false
             //图片是必传的
           }
@@ -1351,24 +1352,31 @@ export default {
         imgList = []
         imgDetalList = []
         _this.colorList.push(item.styleColor)
-        item.styleSize.forEach((Item,Index) => {
-          goodsSize = _this.sizeInfo.resultMap.find(GoodsItem => GoodsItem.sizeName == Item.sizeName)
-          goodsSizeList.push(goodsSize)
-        }) 
-        item.styleImg.forEach((Item,Index) => {
-          imgList.push({
-            url:Item.resUrl
+        if (item.styleSize) {
+          item.styleSize.forEach((Item,Index) => {
+            goodsSize = _this.sizeInfo.resultMap.find(GoodsItem => GoodsItem.sizeName == Item.sizeName)
+            goodsSizeList.push(goodsSize)
+          }) 
+        }
+        if (item.styleImg) {
+          item.styleImg.forEach((Item,Index) => {
+            imgList.push({
+              url:Item.resUrl
+            })
           })
-        })
-        item.styleImgDetail.forEach((Item,Index) => {
-          imgDetalList.push({
-            url:Item.resUrl
+        }
+        if (item.styleImgDetail) {
+          item.styleImgDetail.forEach((Item,Index) => {
+            imgDetalList.push({
+              url:Item.resUrl
+            })
           })
-        })
+        }
         // goodsSize = _this.sizeInfo.resultMap.find(Item => Item.SIZEID == )
         _this.activeGoodsSize.push(JSON.stringify(goodsSizeList))
         _this.selectedColorName.push(imgList)
         _this.selectedColorNameXiJie.push(imgDetalList)
+        
         
       })
       if (_this.colorList.length > 0) {
@@ -1523,6 +1531,9 @@ export default {
         this.$refs.goodsSizeRef.clearSelection();
         this.deleteColor(this.colorList[this.colorNum - 1],this.colorNum - 1,'noChangeSize')
       } else if (this.colorList.length == 0) {
+        this.$refs.uploadImage.clearFiles();
+        this.$refs.uploadxijieImage.clearFiles();
+        this.$refs.goodsSizeRef.clearSelection();
         this.colorNum = undefined
       }
       this.closeDialog()
