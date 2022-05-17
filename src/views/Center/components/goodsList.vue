@@ -68,15 +68,8 @@
       <el-divider />
     </div>
     <el-empty v-if="showEmp" description="暂无相关数据" />
-    <!-- <div
-      class="zt-content"
-      v-else
-      v-infinite-scroll="addData"
-      infinite-scroll-delay="3000"
-      infinite-scroll-distance="0"
-    > -->
     <div class="zt-content" v-loading="fullscreenLoading" v-else ref="content">
-      <div :class="isTop?'nav-R':'nav-r'">
+      <div class="nav-r" :class="isTop?'nav-R':''">
         <!-- <div class="addorder zt-flex">
           <i class="el-icon-document-add"></i>
           <div>快速补货</div>
@@ -573,13 +566,15 @@ export default {
 }
 .nav-r{
   position: absolute;
-  right: 0;
+  left: 50%;
   top: 0;
+  margin-left: 580px;
   transform: translate(100%, 0px);
+  z-index: 100;
 }
 .nav-R{
   position: fixed;
-  right: 17%;
+  // right: 17%;
   top: 10%;
   transform: translate(100%, 0px);
 }
@@ -591,6 +586,7 @@ export default {
   background: linear-gradient(to bottom,#FFB902,#FF9606);
   padding: 8px;
   margin-bottom: 5px;
+  white-space: nowrap;
   box-sizing: border-box;
 }
 .zt-flex:hover{
