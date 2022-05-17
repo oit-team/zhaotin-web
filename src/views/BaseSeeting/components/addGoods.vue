@@ -752,6 +752,10 @@ export default {
         })
       }
       this.ruleForm = this.$route.query.item.row
+      //解决富文本框聚焦页面滚动问题
+      this.$nextTick(function() {
+        window.scrollTo(0,0);
+      });
       this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
       this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
       this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
@@ -1215,6 +1219,21 @@ export default {
       })
       return styleColor
     },
+    checkVideoAndImg(con) {
+      let returnRes = false
+      if (con.styleVideoPatch && con.styleVideo){
+        returnRes = true
+      } else if (!con.styleVideoPatch && !con.styleVideo){
+        returnRes = true
+      } else {
+        returnRes = false 
+        this.$message({
+          type: 'warning',
+          message: '请同时上传视频和视频贴图',
+        })
+      }
+      return returnRes
+    },
     checkstyleColor (con) {
       let returnRes = true
       const _this = this
@@ -1264,6 +1283,10 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
+      cosole.log(this.checkVideoAndImg(con))
+      if (!this.checkVideoAndImg(con)) {
+        return
+      }
       if (status == 1) {
         if (!this.checkstyleColor(con)) {
           return;
@@ -1306,6 +1329,9 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
+      if (!this.checkVideoAndImg(con)) {
+        return
+      }
       if (status == 1) {
         if (!this.checkstyleColor(con)) {
           return;

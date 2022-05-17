@@ -46,7 +46,7 @@
         <el-divider></el-divider>
         <h3>尺码配置</h3>
         <el-tree
-          :data="sizeList"
+          :data="SortSizeList"
           show-checkbox
           default-expand-all
           node-key="id"
@@ -59,10 +59,10 @@
               <span v-if='data.sizeName'>{{ data.sizeName }}</span>
               <span v-if='data.aliasName'>({{ data.aliasName }})</span>
             </span>
-<!--            <span class="SizeSortBox">
-              <i @click="sortSizeList('up',data)" class="el-icon-top"></i>
-              <i @click="sortSizeList('down',data)" class="el-icon-bottom"></i>
-            </span> -->
+           <span class="SizeSortBox">
+              <i @click="SizeListSort('up',data)" class="el-icon-top"></i>
+              <i @click="SizeListSort('down',data)" class="el-icon-bottom"></i>
+            </span>
           </div>
         </el-tree>
 
@@ -87,9 +87,9 @@
           <el-form-item label="尺码别名" :label-width="formLabelWidth" prop="aliasName">
             <el-input v-model="ruleForm.aliasName" autocomplete="off" maxlength="32" placeholder="请输入尺码别名"></el-input>
           </el-form-item>
-          <el-form-item label="排序" :label-width="formLabelWidth" prop="sort">
+<!--          <el-form-item label="排序" :label-width="formLabelWidth" prop="sort">
             <el-input v-model="ruleForm.sort" oninput="value=value.replace(/[^\d]/g,'')" autocomplete="off" maxlength="32" placeholder="请输入序号"></el-input>
-          </el-form-item>
+          </el-form-item> -->
         </el-form>
         <div class="text-center">
           <el-button size="small" @click="cancelSize('ruleForm')">取 消</el-button>
@@ -133,6 +133,7 @@ export default {
       partList:[],
 
       sizeList:[],
+      SortSizeList:[],
       sizeFlag:false,
       sizeId:null,
       defaultProps: {
@@ -169,7 +170,6 @@ export default {
   },
   mounted(){
     this.getSizeList();
-    this.getGoodsSizeInfo();
   },
   methods:{
     goBack(){
@@ -189,6 +189,7 @@ export default {
             type:'warning'
           })
         }
+        this.getGoodsSizeInfo();
       }).catch(() => {
       })
     },
@@ -199,7 +200,7 @@ export default {
       this.sizeId = item.id;
       this.ruleForm.sizeName = item.sizeName;
       this.ruleForm.aliasName = item.aliasName;
-      this.ruleForm.sort = item.sort;
+      // this.ruleForm.sort = item.sort;
     },
     // 新增尺码
     addSize(){
@@ -235,6 +236,7 @@ export default {
             for(let i=0;i<this.baseInfo.resultMap.length;i++){
               this.defaultCheckedKeys.push(this.baseInfo.resultMap[i].SIZEID)
             }
+            this.SortSizeList = this.sizeList
           }
         }else if(res.head.status === -3){
             this.cateId = null;
@@ -298,7 +300,7 @@ export default {
     },
     // 保存类别相关联的信息
     saveCateRelatedInfo(){
-      // console.log(this.state);
+      console.log(this.state);
       let obj = {};
       let newArr =  Array.from(new Set(this.state))
       this.state = newArr;
@@ -307,13 +309,22 @@ export default {
         obj[key] = newArr[i]
       }
       let checkedKeys = this.$refs.tree.getCheckedKeys();     // 选中的节点所组成的数组
+      let checkList = [];
+      this.sizeList.forEach((item,index) => {
+        if (checkedKeys.indexOf(item.id) != -1) {
+          checkList.push({
+            sizeId: item.id,
+            sort: index
+          })
+        }
+      })
         let con = {
           id:this.cateId,
           brandId:sessionStorage.brandId,
           catergre:this.$route.query.item.row.dictitemDisplayName,
           userId:sessionStorage.userId,
           title:JSON.stringify(obj),
-          sizeId:checkedKeys,
+          sizeId:checkList,
         }
       if(this.state.length){  // 编辑
         console.log(con)
@@ -364,7 +375,7 @@ export default {
               aliasName:this.ruleForm.aliasName,
               userId: sessionStorage.userId,
               brandId: sessionStorage.brandId,
-              sort:this.ruleForm.sort
+              // sort:this.ruleForm.sort
             }
             updateSizeInfo(con).then((res) => {
               if(res.head.status === 0){
@@ -394,7 +405,7 @@ export default {
               brandId: sessionStorage.brandId,
               sizeName:this.ruleForm.sizeName,
               aliasName:this.ruleForm.aliasName,
-              sort:this.ruleForm.sort
+              // sort:this.ruleForm.sort
             }
             insertSizeInfo(con).then((res) => {
               if(res.head.status === 0){
@@ -464,9 +475,9 @@ export default {
       });
       
     },
-    sortSizeList(msg,data) {
-      const sizeList = JSON.parse(JSON.stringify(this.sizeList))
-      const index = this.sizeList.findIndex(item => item == data)
+    SizeListSort(msg,data) {
+      const sizeList = JSON.parse(JSON.stringify(this.SortSizeList))
+      const index = this.SortSizeList.findIndex(item => item == data)
       if (msg == 'up'){
         if (index == 0) {
           this.$message({
@@ -475,7 +486,7 @@ export default {
           }); 
         }else {
           sizeList[index] = sizeList.splice(index - 1, 1, sizeList[index])[0]
-          this.sizeList = sizeList
+          this.SortSizeList = sizeList
         }
       }else if (msg = 'down'){
         if (index == sizeList.length -1) {
@@ -486,7 +497,7 @@ export default {
         } else {
           sizeList[index] = sizeList.splice(index + 1 , 1, sizeList[index])[0]
           
-          this.sizeList = sizeList
+          this.SortSizeList = sizeList
         }
       }
     }
@@ -594,7 +605,6 @@ export default {
   width:200px;
 }
 .SizeSortBox{
-  border:1px solid red;
   i:hover{
     color:#cda46c;
   }

@@ -8,7 +8,7 @@
           <template slot="content:resUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
             <template v-if="true">
-              <el-image class="file-res" style="max-width:50px;max-height:50px;" :src="row.resUrl" fit="cover" />
+              <el-image class="file-res" style="max-height:50px;" :src="row.resUrl" fit="cover" />
             </template>
           </template>
           <template slot="content:status" slot-scope="{ row }">

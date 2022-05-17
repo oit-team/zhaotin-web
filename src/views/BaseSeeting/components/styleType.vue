@@ -5,8 +5,11 @@
      <div> <TablePage v-bind="tablePageOption" ref="cateTable" auto>
             <template slot="content:imgUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
-            <template v-if="row.imgUrl" class="flex items-center">
-            <div class="imgBox"><el-image class="w-full h-full" :src="row.imgUrl" fit="cover" @load="onImageLoad"/></div>
+  <!--         <template v-if="row.imgUrl" class="flex items-center">
+            <div class="imgBox"><el-image style="height:50px" class="w-full h-full" :src="row.imgUrl" @load="onImageLoad"/></div>
+            </template> -->
+            <template v-if="true">
+              <el-image class="file-res" style="max-height:50px;" :src="row.imgUrl" fit="cover" />
             </template>
           </template>
        </TablePage></div>
@@ -126,8 +129,10 @@ export default {
 /deep/ .el-table__body-wrapper {
     height: 600px;
 }
-.imgBox {
-  width: 118px;
-  height: 150px;
+
+/deep/ .el-image__inner{
+  height: 50px;
+  width: auto;
 }
+
 </style>
