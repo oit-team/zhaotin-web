@@ -200,7 +200,7 @@ export default {
     if (this.isUpdate) {
       window.addEventListener('scroll', this.scrollEvent)
     } else {
-      // window.removeEventListener('scroll', this.scrollEvent)
+      window.removeEventListener('scroll', this.scrollEvent)
       this.formData.pageNum = 1
     }
   },
@@ -398,7 +398,10 @@ export default {
       this.$router.push('/styleCenter/shopCart')
     },
     backTop() {
-      window.scrollTo('0', '0')
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+      if (scrollTop !== 0) {
+        window.scrollTo('0', '0')
+      }
     },
   },
 }

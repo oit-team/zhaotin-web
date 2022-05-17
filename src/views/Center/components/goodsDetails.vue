@@ -49,8 +49,11 @@
               />
             </el-carousel-item>
           </el-carousel>
-          <div class="zt-head__images">
-            <div class="zt-images__left" style="" ref="imagesL">
+          <div class="zt-head__images" ref="pimages">
+            <div class="zt-images__left" v-if="imgMarginL < 0" @click="transformImgL">
+              <i class="el-icon-arrow-left"></i>
+            </div>
+            <div class="zt-images__center" :style="'marginLeft:' + imgMarginL+ 'px'" ref="imagesL">
               <div
                 class="zt-images__item"
                 v-for="(item, index) in infoData.imgUrlList"
@@ -62,10 +65,10 @@
                   :src="item.resUrl"
                   @click="imageIndex=index,setCarouselItem(index)"
                 />
-                <i v-if="index===0&&infoData.styleVideo" class="el-icon-video-play"></i>
+                <i v-if="index===0&&infoData.styleVideo" class="el-icon-caret-right"></i>
               </div>
             </div>
-            <div class="zt-images__right" @click="transformImg">
+            <div class="zt-images__right" @click="transformImgR">
               <i class="el-icon-arrow-right"></i>
             </div>
           </div>
@@ -527,7 +530,6 @@ export default {
     // 推荐区  图片点击事件
     todetails(id) {
       this.goodsId = id
-      console.log(this.goodsId)
       this.getData()
       this.$forceUpdate()
       window.scrollTo('0', '0')
@@ -623,8 +625,16 @@ export default {
         }
       })
     },
-    transformImg() {
-      console.log(this.$refs.transformImg.clientWidth)
+    transformImgL() {
+      this.imgMarginL += 50
+      // if (this.$refs.imagesL.scrollWidth > this.$refs.pimages.scrollWidth) {
+      //   this.imgMarginL += 50
+      // }
+    },
+    transformImgR() {
+      if (this.$refs.pimages.clientWidth < this.$refs.pimages.scrollWidth) {
+        this.imgMarginL -= 50
+      }
     },
   },
 }
@@ -664,13 +674,23 @@ video::-webkit-media-controls-timeline {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        overflow: hidden;
         margin: 10px 0;
         .zt-images__left{
+          width: 4%;
+          height: 88px;
+          line-height: 88px;
+          border-radius: 10px;
+          background-color: #ccc;
+          font-size: 20px;
+          z-index: 1;
+        }
+        .zt-images__center{
           width: 95%;
           display: flex;
           flex-wrap: nowrap;
-          overflow-x: auto;
-          overflow-y: hidden;
+          // overflow-x: auto;
+          // overflow-y: hidden;
           .zt-images__item{
             position: relative;
             margin: 0 10px;
@@ -688,18 +708,18 @@ video::-webkit-media-controls-timeline {
               border-radius: 5px;
               border: 1px solid #CDA46C;
             }
-            .el-icon-video-play{
+            .el-icon-caret-right{
               position: absolute;
               top: 50%;
               left: 50%;
               transform: translate(-50%,-50%);
-              color: #999;
-              font-size: 20px;
+              color: deepskyblue;
+              font-size: 34px;
               z-index: 1;
             }
           }
         }
-        .zt-images__left::-webkit-scrollbar{
+        .zt-images__center::-webkit-scrollbar{
           display: none;
         }
         .zt-images__right{

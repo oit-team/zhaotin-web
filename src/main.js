@@ -54,6 +54,13 @@ const player = new Plyr('#player')
 //   }
 // })
 
+router.afterEach(() => {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+  if (scrollTop !== 0) {
+    window.scrollTo('0', '0')
+  }
+})
+
 Vue.use(VueQuillEditor)
 Vue.config.productionTip = false
 new Vue({
