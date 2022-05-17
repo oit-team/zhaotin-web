@@ -26,21 +26,21 @@
       <div class="flex">
 
         <div class="left">
-           <el-form-item label="登录账号" prop="loginName">
+           <el-form-item label="登录账号" label-width="100%" prop="loginName">
             <el-input
              :disabled="editFlag"
               v-model="customerForm.loginName"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入登录账号"
             />
           </el-form-item>
 
-           <el-form-item label="用户密码" prop="passWord">
+           <el-form-item label="用户密码" label-width="100%" prop="passWord">
             <el-input
               type="password"
               autocomplete="new-password"
               v-model="customerForm.passWord"
-              style="width: 60%"
+              style="width: 100%"
               @input="$forceUpdate()"
               placeholder="请输入用户密码"
             />
@@ -48,35 +48,35 @@
               <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:0px;color:#e60012;"></i>不填则为默认密码</div>
           </el-form-item>
 
-          <el-form-item label="客户名称" prop="customerName">
+          <el-form-item label="客户名称" label-width="100%" prop="customerName">
             <el-input
               v-model="customerForm.customerName"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入客户名称"
             />
           </el-form-item>
-          <el-form-item label="真实姓名" prop="realName">
+          <el-form-item label="真实姓名" label-width="100%" prop="realName">
             <el-input
               v-model="customerForm.realName"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入真实姓名"
             />
           </el-form-item>
-          <el-form-item label="入驻日期" prop="enterTime">
+          <el-form-item label="入驻日期" label-width="100%" prop="enterTime">
             <el-date-picker
               v-model="customerForm.enterTime"
-              style="width: 60%"
+              style="width: 100%"
               type="date"
               value-format="yyyy-MM-dd"
               placeholder="请选择日期"
             />
           </el-form-item>
-          <el-form-item label="大区选择" prop="orgName">
+          <el-form-item label="大区选择" label-width="100%" prop="orgName">
             <el-select
               v-model="customerForm.orgName"
               placeholder="请选择您所在的大区"
               @change="changeOrg"
-              style="width: 60%"
+              style="width: 100%"
             >
               <el-option
                 v-for="item in OrgList"
@@ -87,11 +87,11 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="所属省：" prop="provinces">
+          <el-form-item label="所属省：" label-width="100%" prop="provinces">
             <el-select
               v-model="customerForm.provinces"
               placeholder="请选择您所在的省份"
-              style="width: 60%"
+              style="width: 100%"
               @change="changeProvince"
             >
               <el-option
@@ -104,10 +104,10 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="所属市" prop="city">
+          <el-form-item label="所属市" label-width="100%" prop="city">
             <el-select
               v-model="customerForm.city"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请选择您所在的城市"
               @change="changeCity"
             >
@@ -121,11 +121,11 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="所属县" prop="region">
+          <el-form-item label="所属县" label-width="100%" prop="region">
             <el-select
               @change="changeRegion"
               v-model="customerForm.region"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请选择您所在的区县"
             >
               <el-option
@@ -138,57 +138,57 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="地址" prop="customerAddress">
+          <el-form-item label="地址" label-width="100%" prop="customerAddress">
             <el-input
               v-model="customerForm.customerAddress"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入地址"
             />
           </el-form-item>
         </div>
           <el-divider direction="vertical" />
            <div class="right">
-        <el-form-item label="客户吊牌/吊牌价" prop="tagPrice">
+        <el-form-item label="客户吊牌/吊牌价" label-width="100%" prop="tagPrice">
             <el-input
               v-model="customerForm.tagPrice"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入客户吊牌/吊牌价"
             />
           </el-form-item>
 
-          <el-form-item label="客户洗唛" prop="customerWashing">
+          <el-form-item label="客户洗唛" label-width="100%" prop="customerWashing">
             <el-input
               v-model="customerForm.customerWashing"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入客户洗唛"
             />
           </el-form-item>
 
-            <el-form-item label="客户商标">
+            <el-form-item label="客户商标" label-width="100%">
         <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
           <i class="el-icon-plus"></i>
         </vc-upload>
        </el-form-item>
-        <el-form-item v-if="cateGoryVisibilty" label="客户商标">
+        <el-form-item v-if="cateGoryVisibilty" label-width="100%" label="客户商标">
           <span class="flex text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上 &nbsp; 传即可</span>
           <div class="w-24 h-24 mb-12">
             <el-image :src="customerForm.trademark" fit="cover" />
           </div>
        </el-form-item>
 
-          <el-form-item label="客户洗唛车法" prop="washingLabel">
+          <el-form-item label="客户洗唛车法" label-width="100%" prop="washingLabel">
             <el-input
               v-model="customerForm.washingLabel"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入客户洗唛车法"
             />
           </el-form-item>
 
-           <el-form-item label="推荐人" prop="refereesName">
+           <el-form-item label="推荐人" label-width="100%" prop="refereesName">
             <el-select
               @change="changeRefereesName"
               v-model="customerForm.refereesName"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请选择推荐人"
             >
               <el-option
@@ -201,11 +201,11 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="跟单人员" prop="documentaryName">
+          <el-form-item label="跟单人员" label-width="100%" prop="documentaryName">
             <el-select
               @change="changeDocumentary"
               v-model="customerForm.documentaryName"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请选择跟单人员"
             >
               <el-option
@@ -218,11 +218,11 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="市场人员" prop="marketName">
+          <el-form-item label="市场人员" label-width="100%" prop="marketName">
             <el-select
               @change="changeMarket"
               v-model="customerForm.marketName"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请选择市场人员"
             >
               <el-option
@@ -235,11 +235,11 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="客户经理" prop="documentaryName">
+          <el-form-item label="客户经理" label-width="100%" prop="documentaryName">
             <el-select
               @change="changeManager"
               v-model="customerForm.managerName"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请选择客户经理"
             >
               <el-option
@@ -254,33 +254,33 @@
 
           <el-collapse v-model="activeNames">
             <el-collapse-item title="详细备注" name="1">
-              <el-form-item label="装箱注意事项" prop="matters">
+              <el-form-item label="装箱注意事项" label-width="100%" prop="matters">
                <el-input
                  type="textarea"
                  placeholder="请输入装箱注意事项"
-                 style="width: 60%"
+                 style="width: 100%"
                  v-model="customerForm.matters"
                  :height="'280px'"
                >
                </el-input>
           </el-form-item>
 
-          <el-form-item label="发货明细表格要求" prop="deliveryDetails">
+          <el-form-item label="发货明细表格要求" label-width="100%" prop="deliveryDetails">
             <el-input
               type="textarea"
               placeholder="请输入内容"
-              style="width: 60%"
+              style="width: 100%"
               v-model="customerForm.deliveryDetails"
               :height="'280px'"
             >
             </el-input>
           </el-form-item>
 
-           <el-form-item label="联系人及联系方式" prop="contactDate">
+           <el-form-item label="联系人及联系方式" label-width="100%" prop="contactDate">
               <el-input
                  type="textarea"
                  placeholder="请输入联系人及联系方式"
-                 style="width: 60%"
+                 style="width: 100%"
                  v-model="customerForm.contactDate"
                  :height="'280px'"
                >
@@ -289,10 +289,10 @@
             </el-collapse-item>
           </el-collapse>
 
-          <el-form-item label="快递方式" prop="courier" class="mt-4">
+          <el-form-item label="快递方式" prop="courier" label-width="100%" class="mt-4">
             <el-input
               v-model="customerForm.courier"
-              style="width: 60%"
+              style="width: 100%"
               placeholder="请输入快递方式"
             />
           </el-form-item>
@@ -637,7 +637,7 @@ export default {
 
 <style lang="less" scoped>
 #addMenu {
-  height: calc(100vh - 180px);
+  height: calc(100vh - 88px);
   overflow: auto;
 }
 /deep/ .el-form-item__label {
@@ -670,6 +670,9 @@ export default {
 }
 /deep/ .el-textarea__inner {
   height: 100px;
+}
+/deep/ .el-form-item__content {
+  margin-left:20px!important;
 }
 .pwdTip {
   margin-left: 40px;
