@@ -267,8 +267,10 @@ export default {
           // console.log(this.$refs.content.getBoundingClientRect().y)
           if (this.$refs.content.getBoundingClientRect().y <= 0) {
             this.isTop = true
+            this.$forceUpdate
           } else {
             this.isTop = false
+            this.$forceUpdate
           }
         }
       }, 500)
