@@ -50,7 +50,6 @@ export default {
     this.config()
   },
   mounted() {
-    this.con()
   },
   methods: {
     async config() {
@@ -60,7 +59,7 @@ export default {
       const nm = that.configT[0].length * 16
       that.mL = `${-nm} + 'px'`
       that.$set(that, 'mL', `${-nm}px`)
-      console.log(that.mL)
+      // console.log(that.mL)
     },
     cgVal(val) {
       // 优化： 判断当前路由是否是goodsLIst，如果不是才跳转

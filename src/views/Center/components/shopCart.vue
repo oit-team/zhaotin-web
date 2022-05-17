@@ -238,36 +238,6 @@ export default {
     },
     async cgpriceAll() {
       const that = this
-      // if (that.checkedAll === true) {
-      //   const list = []
-      //   let dataL = {}
-      //   that.formData.styleList.forEach(e => {
-      //     e.style.forEach(i => {
-      //       dataL = {
-      //         styleId: i.styleId,
-      //         styleNo: e.styleNo,
-      //         styleColor: i.id,
-      //         styleSize: [],
-      //       }
-      //       i.styleSize.forEach(n => {
-      //         dataL.styleSize.unshift(n)
-      //       })
-      //     })
-      //     if (dataL.styleSize && dataL.styleSize.length !== 0) {
-      //       list.unshift(dataL)
-      //     } else {
-      //       []
-      //     }
-      //   })
-      //   // console.log(list)
-      //   const res = await CalculatePrice({
-      //     styleList: list,
-      //   })
-      //   if (res.head.status === 0) {
-      //     that.priceAll = res.body.styleTotalPrice
-      //   }
-      // } else {
-      // that.priceAll = 0
       const list = []
       let dataL = {}
       that.formData.styleList.forEach(e => {
@@ -283,14 +253,17 @@ export default {
               dataL.styleSize.unshift(n)
             })
           }
-        })
-        if (dataL.styleSize && dataL.styleSize.length !== 0) {
           list.unshift(dataL)
-        } else {
-          []
-        }
+        })
+        // if (dataL.styleSize && dataL.styleSize.length !== 0) {
+        //   list.unshift(dataL)
+        // } else {
+        //   []
+        // }
       })
       that.priceList = list
+      console.log(list)
+      console.log(that.priceList)
       const res = await CalculatePrice({
         styleList: list,
       })
@@ -382,6 +355,7 @@ export default {
             })
             // list.unshift(dataL)
             console.log(list)
+            that.priceList = list
             // if (dataL.styleSize && dataL.styleSize.length !== 0) {
             //   list.unshift(dataL)
             // } else {
