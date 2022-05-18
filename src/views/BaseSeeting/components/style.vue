@@ -593,4 +593,9 @@ export default {
       left: auto;
       right: 18px;
   }
+  
+  /deep/ .el-image__inner{
+    height: 50px;
+    width: auto;
+  }
 </style>

@@ -1283,7 +1283,6 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
-      cosole.log(this.checkVideoAndImg(con))
       if (!this.checkVideoAndImg(con)) {
         return
       }
