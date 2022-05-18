@@ -1,23 +1,5 @@
 <template>
   <div class="zt-page" id="Mpage">
-    <div class="nav-r">
-      <div class="addorder zt-flex">
-        <i class="el-icon-document-add"></i>
-        <div>快速补货</div>
-      </div>
-      <div class="orderCart zt-flex" @click="toCart">
-        <i class="el-icon-s-order"></i>
-        <div>订货清单</div>
-      </div>
-      <div class="service zt-flex">
-        <i class="el-icon-chat-line-round"></i>
-        <div>在线客服</div>
-      </div>
-      <div class="totop zt-flex" @click="backTop">
-        <i class="el-icon-arrow-up"></i>
-        <div>返回顶部</div>
-      </div>
-    </div>
     <div class="zt-tabs__top">
       <!-- <div class="container"> -->
       <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
@@ -86,14 +68,25 @@
       <el-divider />
     </div>
     <el-empty v-if="showEmp" description="暂无相关数据" />
-    <!-- <div
-      class="zt-content"
-      v-else
-      v-infinite-scroll="addData"
-      infinite-scroll-delay="3000"
-      infinite-scroll-distance="0"
-    > -->
     <div class="zt-content" v-loading="fullscreenLoading" v-else ref="content">
+      <div class="nav-r" :class="isTop?'nav-R':''">
+        <!-- <div class="addorder zt-flex">
+          <i class="el-icon-document-add"></i>
+          <div>快速补货</div>
+        </div> -->
+        <div class="orderCart zt-flex" @click="toCart">
+          <i class="el-icon-s-order"></i>
+          <div>订货清单</div>
+        </div>
+        <!-- <div class="service zt-flex">
+          <i class="el-icon-chat-line-round"></i>
+          <div>在线客服</div>
+        </div> -->
+        <div class="totop zt-flex" @click="backTop">
+          <i class="el-icon-arrow-up"></i>
+          <div>返回顶部</div>
+        </div>
+      </div>
       <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
       <div
         class="zt-content__item"
@@ -179,6 +172,7 @@ export default {
       tabList: [],
       // styleLength: '',
       isUpdate: true,
+      isTop: false,
     }
   },
   computed: {
@@ -200,7 +194,7 @@ export default {
     if (this.isUpdate) {
       window.addEventListener('scroll', this.scrollEvent)
     } else {
-      // window.removeEventListener('scroll', this.scrollEvent)
+      window.removeEventListener('scroll', this.scrollEvent)
       this.formData.pageNum = 1
     }
   },
@@ -262,6 +256,14 @@ export default {
           if (data === 0) {
             this.addData()
             this.$forceUpdate()
+          }
+          // console.log(this.$refs.content.getBoundingClientRect().y)
+          if (this.$refs.content.getBoundingClientRect().y <= 0) {
+            this.isTop = true
+            this.$forceUpdate
+          } else {
+            this.isTop = false
+            this.$forceUpdate
           }
         }
       }, 500)
@@ -398,7 +400,10 @@ export default {
       this.$router.push('/styleCenter/shopCart')
     },
     backTop() {
-      window.scrollTo('0', '0')
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+      if (scrollTop !== 0) {
+        window.scrollTo('0', '0')
+      }
     },
   },
 }
@@ -407,31 +412,6 @@ export default {
 <style lang='scss' scoped>
 .zt-page{
   height: 100%;
-}
-.nav-r{
-  position: fixed;
-  right: 15%;
-  bottom: 15%;
-  transform: translate(100%, 0px);
-}
-.zt-flex{
-  text-align: center;
-  color: #fff;
-  font-size: 14px;
-  border-radius: 10px;
-  background: linear-gradient(to bottom,#FFB902,#FF9606);
-  padding: 8px;
-  margin-bottom: 5px;
-  box-sizing: border-box;
-}
-.zt-flex:hover{
-  cursor: pointer;
-}
-.el-icon-arrow-up,
-.el-icon-chat-line-round,
-.el-icon-s-order,
-.el-icon-document-add{
-  font-size: 30px;
 }
 ::v-deep .el-loading-spinner{
   left: 50%;
@@ -515,6 +495,7 @@ export default {
   }
 }
 .zt-content{
+  position: relative;
   display: flex;
   height: 100%;
   flex-wrap: wrap;
@@ -582,6 +563,40 @@ export default {
     margin-bottom: 16px;
     border: 1px solid #F2F2F2;
   }
+}
+.nav-r{
+  position: absolute;
+  left: 50%;
+  top: 0;
+  margin-left: 580px;
+  transform: translate(100%, 0px);
+  z-index: 100;
+}
+.nav-R{
+  position: fixed;
+  // right: 17%;
+  top: 10%;
+  transform: translate(100%, 0px);
+}
+.zt-flex{
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 10px;
+  background: linear-gradient(to bottom,#FFB902,#FF9606);
+  padding: 8px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.zt-flex:hover{
+  cursor: pointer;
+}
+.el-icon-arrow-up,
+.el-icon-chat-line-round,
+.el-icon-s-order,
+.el-icon-document-add{
+  font-size: 30px;
 }
 .top-line{
   border-top: 1px solid #F2F2F2;

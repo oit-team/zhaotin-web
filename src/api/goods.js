@@ -1,13 +1,14 @@
 import { post } from './index'
 // import API_SERVICE from './API_SERVICE'
 
-// 商品类别
+// 商品一级类别
 export function getGoodsSizeInfo(params) {
   return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
     mod: 'home',
     cmd: 100009,
   })
 }
+// 商品二级分类
 export function getGoodsSizeClass(params) {
   return post('/goods/dictitemInfo/getStyleCategory', params, {
     mod: 'home',

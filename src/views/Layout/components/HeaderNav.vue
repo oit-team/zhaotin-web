@@ -234,7 +234,7 @@ export default {
 }
 
 </script>
-<style lang="less">
+<style lang='scss' scoped>
 .box-color {
   color: #eab308;
 }

@@ -1,22 +1,11 @@
 <template>
   <div class="container h-12 flex">
     <div class="h-12 flex">
-      <div class="mr-2 zt-config"><i class="iconfont icon-tongzhi"></i></div>
+      <div class="mr-2 zt-config"><i class="iconfont icon-tongzhi"></i>公告:</div>
       <el-tooltip class="item" effect="light" :content="configT[0]" placement="top-start">
         <!-- underline -->
-        <div class="h-12 flex flex-col justify-center text-yellow-600 leading-8 w-255 zt-config__fig">
-          <!-- <el-carousel
-            indicator-position="none"
-            arrow="never"
-            :interval="5000"
-            height="50px"
-          >
-            <el-carousel-item v-for="item in 2" :key="item">
-              <div class="zt-fig">公告：{{ configT[0] }}</div>
-            </el-carousel-item>
-          </el-carousel> -->
-          <!-- <div class="" :style="'margin-left:' + marginLeft + 'px'" ref="configw">公告：{{ configT[0] }}</div> -->
-          <div class="zt-fig" ref="configw">公告：{{ configT[0] }}</div>
+        <div class="h-12 flex flex-col justify-center text-yellow-600 leading-8 w-255 zt-config__fig" ref="pconfit">
+          <div class="zt-fig" ref="configw" :style="{'--mL':mL}">{{ configT[0] }}</div>
         </div>
       </el-tooltip>
     </div>
@@ -53,6 +42,7 @@ export default {
       configT: [],
       marginLeft: 0,
       noticeWidth: 0,
+      mL: '',
     }
   },
   created() {
@@ -60,16 +50,16 @@ export default {
     this.config()
   },
   mounted() {
-    this.con()
   },
   methods: {
     async config() {
+      const that = this
       const res = await getConfig({})
-      this.configT = res.body.announceInfo
-      this.$nextTick(() => {
-        console.log(this.configT[0].length)
-      })
-      // console.log(this.configT.length)
+      that.configT = res.body.announceInfo
+      const nm = that.configT[0].length * 16
+      that.mL = `${-nm} + 'px'`
+      that.$set(that, 'mL', `${-nm}px`)
+      // console.log(that.mL)
     },
     cgVal(val) {
       // 优化： 判断当前路由是否是goodsLIst，如果不是才跳转
@@ -94,37 +84,31 @@ export default {
       that.FormData = res.body.resultList
       that.listLength = that.FormData.styleList.length
     },
-    con() {
-      // setInterval(() => {
-      //   this.marginLeft -= 1
-      // }, 100)
-      // console.log(this.$refs.configw)
-      console.log(this.configT.length)
-    },
   },
 }
 </script>
 
-<style>
-.one input {
-    border-radius: 60px;
+<style lang='scss' scoped>
+// $marginl: var(--mL);
+.one ::v-deep input {
+    border-radius: 60px 0 0 60px;
     padding-left: 37px !important;
 }
-.one .el-icon-search {
+.one ::v-deep .el-icon-search {
   margin-left: 6px;
 }
-.one .el-input__prefix {
+.one ::v-deep .el-input__prefix {
     transform: scale(1.5);
 }
-.one .el-input-group__append {
+.one ::v-deep .el-input-group__append {
   border-radius: 0 60px 60px 0;
   border-color: #CDA46C !important;
   background-color: #CDA46C !important;
 }
-.one .el-input__inner {
+.one ::v-deep .el-input__inner {
   border-color: #CDA46C !important;
 }
-.one .search  span{
+.one ::v-deep .search  span{
   color: white;
 }
 .order-num{
@@ -148,44 +132,44 @@ export default {
 .icon-tongzhi{
   color: #cca46c;
   font-weight: 800;
+  margin-right: 10px;
 }
 .zt-config{
   display: flex;
   align-items: center;
+  color: #CDA46C;
 }
 .zt-config__fig{
-  width: 200px;
+  display: flex;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+   /* text-overflow: ellipsis; */
 }
 .zt-config__fig:hover{
   cursor: pointer;
 }
 .zt-fig{
+  /* width: 255px; */
+  // font-size: 16px;
+  // overflow-x: auto;
+  // overflow-y: hidden;
   animation-name: config;
   animation-duration: 30s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-direction: normal;
 }
+.zt-fig::-webkit-scrollbar {
+  display: none;
+}
 @keyframes config{
   0%{
     margin-left: 0px;
     /* transform: translateX(0px); */
   }
-  /* 25%{
-    margin-left: -500px;
-  } */
-  /* 50%{
-    /* margin-left: -1000px;
-    transform: translateX(-1000px);
-  } */
-  /* 75%{
-    margin-left: -500px;
-  } */
   100%{
-    margin-left: -1000px;
+    margin-left: var(--mL);
+    // margin-left: -1000px;
     /* transform: translateX(-1000px); */
   }
 }
