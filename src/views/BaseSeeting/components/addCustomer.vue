@@ -276,12 +276,12 @@
             </el-input>
           </el-form-item>
 
-           <el-form-item label="联系人及联系方式" label-width="100%" prop="contactDate">
+           <el-form-item label="联系人及联系方式" label-width="100%" prop="contactData">
               <el-input
                  type="textarea"
                  placeholder="请输入联系人及联系方式"
                  style="width: 100%"
-                 v-model="customerForm.contactDate"
+                 v-model="customerForm.contactData"
                  :height="'280px'"
                >
                </el-input>
@@ -362,7 +362,7 @@ export default {
         region: "",
         realName: "",
         customerName: "", // 客户名称
-        contactDate: "", // 联系人及联系方式
+        contactData: "", // 联系人及联系方式
         customerAddress: "",
         customerType: 0,
         tagPrice: "", // 吊牌价
@@ -620,7 +620,7 @@ export default {
     },
     // 联系人及其联系方式
     changeWashContactDate(val) {
-      this.customerForm.contactDate = val
+      this.customerForm.contactData = val
     },
     // 装箱
     changeWashMatters(val) {
