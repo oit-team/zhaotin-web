@@ -6,9 +6,8 @@
       <el-form-item label="词典类型" prop="dictName" >
         <el-select
 					:disabled="!editFlag"
-					v-model="cateGoryForm.dictName"
+					v-model="cateGoryForm.dictCode"
 					placeholder="请选择词典类型" 
-					@change="handleSelect"
 				>
           <el-option
             v-for="item in Dlist"
@@ -147,23 +146,16 @@ export default {
 		},
     // 查询所有的类别排序字段
     querySortList(){
-      // const con = {
-      //   userId: sessionStorage.userId,
-      //   dictCode: "ACTEGORY",
-      //   dictitemCode:'ACTEGORY',
-      //   dictitemOrderkey: this.cateGoryForm.dictitemOrderkey,
-      //   brandId: sessionStorage.brandId
-      // }
       const con = {}
-        getSizeSortList(con).then((res) => {
-          console.log(res)
-            if(res.head.status === 0) {
-             this.sortList = res.body.resultList
-            }
-        })
+      getSizeSortList(con).then((res) => {
+        console.log(res)
+          if(res.head.status === 0) {
+            this.sortList = res.body.resultList
+          }
+      })
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
     },
 
     submitForm(formName) {
@@ -241,10 +233,6 @@ export default {
       }
        this.$router.back();
     },
-		handleSelect(val) {
-			console.log(val)
-			this.cateGoryForm.dictCode = val
-		},
   }
 }
 

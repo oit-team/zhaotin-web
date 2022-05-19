@@ -40,18 +40,23 @@
           :value="item.value"
         />
       </el-select> -->
-      <el-form ref="textForm" :model="textForm" label-width="80px">
-        <el-form-item label="类型">
+      <el-form
+        ref="textForm"
+        :model="textForm"
+        label-width="80px"
+        :rules="textRules"
+      >
+        <el-form-item label="类型" prop="class">
           <el-select v-model="textForm.class" placeholder="请选择类型">
             <el-option
-              v-for="item in 4"
-              :key="item"
-              :label="item"
-              :value="item"
+              v-for="item in reasonList"
+              :key="item.dictitemCode"
+              :label="item.dicttimeDisplayName"
+              :value="item.dicttimeDisplayName"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="备注">
+        <el-form-item label="备注" prop="remarks">
           <el-input type="textarea" v-model="textForm.remarks" />
         </el-form-item>
       </el-form>
@@ -114,7 +119,7 @@
         </div>
       </div>
       <div class="zt-footer__right">
-        <div class="zt-footer__button" @click="subOrder">
+        <div class="zt-footer__button" @click="subOrder('textForm')">
           提交订单
         </div>
       </div>
@@ -205,6 +210,7 @@ import {
   addOrder,
   dltOrderSite,
 } from '@/api/orderCart'
+import { getDictionaryInfo } from '@/api/category'
 
 export default {
   name: 'ShopCart',
@@ -235,6 +241,14 @@ export default {
         class: '',
         remarks: '',
       },
+      textRules: {
+        class: [
+          { required: true, message: '请选择下单事由', trigger: 'blur' },
+        ],
+        remarks: [
+          { required: false, message: '备注', trigger: 'blur' },
+        ],
+      },
       ruleForm: {
         id: '',
         name: '',
@@ -257,6 +271,7 @@ export default {
         siteInfo: { required: true, message: '地址不能为空', trigger: 'blur' },
       },
       oldUrl: '',
+      reasonList: [],
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -266,6 +281,7 @@ export default {
   },
   created() {
     this.getData()
+    this.getReason()
     this.formData = this.$store.state.order.orderStorage
   },
   beforeDestroy() {
@@ -291,6 +307,17 @@ export default {
         this.$forceUpdate
       }
       that.priceA()
+    },
+    // 下单事由  列表
+    async getReason() {
+      const res = await getDictionaryInfo({
+        type: 'ORDER_REASON',
+        userId: sessionStorage.userId,
+      })
+      console.log(res)
+      if (res.head.status === 0) {
+        this.reasonList = res.body.result
+      }
     },
     // 总价
     async priceA() {
@@ -319,10 +346,12 @@ export default {
         that.priceAll = res.body.styleTotalPrice
       }
     },
+    // 返回功能
     goBack() {
       this.$router.back()
       // this.$store.commit('order/cgStart', false)
     },
+    // 新增地址
     addSite() {
       const that = this
       that.ruleForm = {
@@ -348,6 +377,7 @@ export default {
       that.showDr2 = true
       that.dialog2 = true
     },
+    // 删除地址
     deleteSite() {
       this.$confirm('确认删除该地址吗？', {
         confirmButtonText: '确定',
@@ -407,7 +437,7 @@ export default {
       this.dialog2 = false
       clearTimeout(this.timer)
     },
-    // 点击提交
+    // 点击提交 地址
     subForm(formName) {
       const that = this
       const isf = that.ruleForm.isdef ? 1 : 0
@@ -441,6 +471,7 @@ export default {
         }
       })
     },
+    // 点击提交 地址
     subForm2(formName) {
       const that = this
       const isf = that.ruleForm.isdef ? 1 : 0
@@ -473,33 +504,44 @@ export default {
         }
       })
     },
-    async subOrder() {
+    // 提交订单
+    subOrder(formName) {
       const that = this
-      if (that.siteList[that.radio] && that.siteList[that.radio].id) {
-        const res = await addOrder({
-          receivingId: that.siteList[that.radio].id,
-          orderType: 1,
-          styleList: that.styleList,
-        })
-        if (res.head.status === 0) {
-          that.$message({
-            type: 'success',
-            message: '提交成功',
-          })
-          setTimeout(() => {
-            that.$router.go(-1)
-          }, 800)
+      console.log(that.textForm)
+      that.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          if (that.siteList[that.radio] && that.siteList[that.radio].id) {
+            const res = await addOrder({
+              receivingId: that.siteList[that.radio].id,
+              orderType: 1,
+              orderReason: that.textForm.class,
+              orderNote: that.textForm.remarks,
+              styleList: that.styleList,
+            })
+            if (res.head.status === 0) {
+              that.$message({
+                type: 'success',
+                message: '提交成功',
+              })
+              setTimeout(() => {
+                that.$router.go(-1)
+              }, 800)
+            } else {
+              that.$message({
+                type: 'error',
+                message: `提交失败,${res.head.msg}`,
+              })
+            }
+          } else {
+            that.$message.warning('请选择收货地址')
+          }
         } else {
-          that.$message({
-            type: 'error',
-            message: `提交失败,${res.head.msg}`,
-          })
+          that.$message.warning('提交失败,请选择下单事由')
+          return false
         }
-      } else {
-        this.$message.warning('请选择收货地址')
-      }
+      })
     },
-    // 推荐区  图片点击事件
+    // 图片点击事件
     todetails(id) {
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },

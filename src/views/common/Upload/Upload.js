@@ -2,7 +2,11 @@ import axios from 'axios'
 import { Upload, Image } from 'element-ui'
 import { createNamespace, genSlots } from '../utils'
 import {
-  mixin, getDefaultHeaders, getDefaultFormData, getFileItemDefault,
+  mixin,
+  getDefaultHeaders,
+  getDefaultFormData,
+  getFileItemDefault,
+  imageCompression,
 } from './options'
 import Vue from 'vue'
 
@@ -75,15 +79,20 @@ export default {
   methods: {
     // 根据条件调用对应的上传
     handleHttpRequest(option) {
-      // if (/^image\//.test(option.file.type)) {
-      //   this.uploadImage(option)
-      // }
-      if (this.isChunked) {
-        this.uploadChunk(option)
-      }
-       else {
-        this.uploadFile(option)
-      }
+      // 外层函数不要以promise执行，所以包一层立即执行函数
+      (async () => {
+        if (/^image\//.test(option.file.type)) {
+          const rawFile = option.file
+          option.file = await imageCompression(option.file)
+          option.file.uid = rawFile.uid
+          option.file.name = rawFile.name
+        }
+        if (this.isChunked) {
+          await this.uploadChunk(option)
+        } else {
+          await this.uploadFile(option)
+        }
+      })()
     },
     /**
      * 上传文件
@@ -199,7 +208,6 @@ export default {
         ...config,
       })
         .then(res => {
-          // console.log(res);
           return res
         })
         .catch(err => {
@@ -259,7 +267,6 @@ export default {
       this.$refs.uploadCore.clearFiles()
     },
     handleRemove(file) {
-      this.$emit('onRemove', file);
       this.emitEvent('onRemove', file)
       this.abort(file)
     },
@@ -288,7 +295,7 @@ export default {
       }
     },
     previewFile(file) {
-      const remoteUrl = file.url || file.response.data.data.fileUrls[0].fileUrl
+      const remoteUrl = file.response?.data?.fileUrl || file.url
       const urlList = this.getUploadImageResults()
       const PreviewImage = Vue.extend({
         name: 'previewImage',
@@ -305,7 +312,9 @@ export default {
                 this.$destroy()
               },
               load: () => {
-                this.$el.querySelector('img').click()
+                const img = this.$el.querySelector('img')
+                img.style.display = 'none'
+                img.click()
               },
             },
           })

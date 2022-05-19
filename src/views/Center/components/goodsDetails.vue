@@ -58,12 +58,12 @@
                 class="zt-images__item"
                 v-for="(item, index) in infoData.imgUrlList"
                 :key="index"
+                @click="imageIndex=index,setCarouselItem(index)"
               >
                 <el-image
                   fit="contain"
                   :class="imageIndex===index?'zt-images__select':'zt-images__image'"
                   :src="item.resUrl"
-                  @click="imageIndex=index,setCarouselItem(index)"
                 />
                 <i v-if="index===0&&infoData.styleVideo" class="el-icon-caret-right"></i>
               </div>
@@ -447,7 +447,6 @@ export default {
             }
           })
           that.thumbnailList = [...that.infoData.imgUrlList, ...that.infoData.imgDetailUrlList]
-          console.log(that.thumbnailList)
           that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
           // recommendationLevel : 推荐指数
           that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
@@ -477,7 +476,6 @@ export default {
           if (that.infoData.imgDetailUrlList.length !== 0) {
             that.infoData.imgUrlList.push(...that.infoData.imgDetailUrlList)
           }
-          console.log(that.infoData.imgUrlList)
         }
       }).catch((ret) => {
         if (ret.head.status !== 0) {
