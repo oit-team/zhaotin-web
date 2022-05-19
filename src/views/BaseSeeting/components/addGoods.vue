@@ -78,11 +78,29 @@
                         </el-select>
                       </el-form-item>
                       <!-- recommendationLevel  '0' 非重点  ‘1’ 重点款 -->
-                      <el-form-item label="是否重点款" prop="recommendationLevel">
-                        <el-select v-model="ruleForm.styleMajor" style="width:76%;" placeholder="请选择是否标记为重点款">
-                          <el-option label="否" value="0" />
-                          <el-option label="是" value="1" />
+                      
+                      <el-form-item label="款类型" prop="styleMajor">
+                        <el-select v-model="ruleForm.styleMajor" style="width:76%;" placeholder="请选择款类型">
+                          <el-option
+                            v-for="item in styleMajorList"
+                            :key="item.dictitemCode"
+                            :label="item.dicttimeDisplayName"
+                            :value="item.dicttimeDisplayName">
+                          </el-option>
                         </el-select>
+                      </el-form-item>
+                      <el-form-item label="款式" prop="styleLength">
+                        <el-select v-model="ruleForm.styleLength" style="width:76%;" placeholder="请选择款式">
+                          <el-option
+                            v-for="item in styleLengthList"
+                            :key="item.dictitemCode"
+                            :label="item.dicttimeDisplayName"
+                            :value="item.dicttimeDisplayName">
+                          </el-option>
+                        </el-select>
+                      </el-form-item>
+                      <el-form-item label="推荐指数" prop="recommendationLevel">
+                        <el-input v-model.trim="ruleForm.recommendationLevel" style="width:76%;" placeholder="请输入推荐指数(1-5)" :maxlength="1" oninput="this.value = this.value.replace(/[^1-5]/g, '');"/>
                       </el-form-item>
                       <el-form-item label="适用场合" prop="styleInfo">
                         <el-input v-model.trim="ruleForm.styleInfo" style="width:76%;" placeholder="请输入适用场合" />
@@ -420,6 +438,8 @@ export default {
       callback()
     }
     return {
+      styleLengthList: [], //款式列表
+      styleMajorList: [], //款类型列表
       innerVisible: false, //删除颜色提示框
       centerDialogVisible: false, //编辑颜色提示框
       editColor: '', //右键颜色时保存数据
@@ -493,7 +513,6 @@ export default {
         service: '',
         styleData: [],
         styleWashing: [],
-        recommendationLevel: '0',
         status: '0', // NOTGROUNDING  未上架  GROUNDING 已上架
         styleId: '', // 款式id
         styleCategory: '', // 商品类别
@@ -517,6 +536,7 @@ export default {
         designSellingPoint: '', // 设计卖点
         styleMajor: '', // 是否重点款
         tradePrice: '', //批发价
+        recommendationLevel: '', //推荐指数
       },
       // 不同的批发价格
       styleTradePrice: [
@@ -576,7 +596,7 @@ export default {
           { required: true, message: '请选择所属季节', trigger: 'blur' },
         ],
         costPrice: [
-          { required: true, message: '请选择成本价格', trigger: 'blur' },
+          { required: true, message: '请输入成本价格', trigger: 'blur' },
         ],
         tagPrice: [
           { required: true, message: '请选择吊牌价格', trigger: 'blur' },
@@ -597,7 +617,13 @@ export default {
           // { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
         ],
         recommendationLevel: [
-          { required: true, message: '请确认是否为重点款', trigger: 'blur' },
+          { required: true, message: '请输入推荐指数', trigger: 'blur' },
+        ],
+        styleLength: [
+          { required: true, message: '请选择款式', trigger: 'blur' },
+        ],
+        styleMajor: [
+          { required: true, message: '请选择款类型', trigger: 'blur' },
         ],
 
       },
@@ -759,6 +785,14 @@ export default {
       this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
       this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
       this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
+      if (!this.ruleForm.styleData) {
+        this.ruleForm.styleData = []
+        this.getStyleData()
+      }
+      if (!this.ruleForm.styleWashing) {
+        this.ruleForm.styleWashing = []
+        this.getStyleWashing()
+      }
       if (this.ruleForm.styleLabel) {
         this.labelList = this.ruleForm.styleLabel.split(',')
       }
@@ -783,6 +817,8 @@ export default {
     addQuillTitle()
     // this.getBandAndSeries()
     this.getGoodsCategory()
+    this.getStyleBarCode()
+    this.getStyleLength()
   },
   methods: {
     onRemove(file) {
@@ -841,6 +877,19 @@ export default {
     },
     // 点击删除已输入的商品颜色
     deleteColor(item, index,msg) {
+      if (index == this.colorNum) {
+        const _this = this;
+        //重复点击的时候，更新选中尺码信息
+        if (_this.activeGoodsShow&&_this.activeGoodsSize[_this.colorNum]&&_this.activeGoodsSize[_this.colorNum].length > 0) {
+          JSON.parse(_this.activeGoodsSize[this.colorNum]).forEach(item => {
+            let res = _this.sizeInfo.resultMap.find(Item => {
+              return Item.SIZEID == item.SIZEID
+            })
+            _this.$refs.goodsSizeRef.toggleRowSelection(res,true);
+          })
+        }
+        return;
+      }
       const _this = this
       if (this.$refs.uploadImage) {
         this.$refs['uploadImage'].clearFiles()
@@ -1005,6 +1054,9 @@ export default {
       }
       this.sizeInfo = null
       this.sizeTableList = []
+      if (this.title == '编辑' || this.title == '查看') {
+        this.setImgInfo();
+      }
       getClothingSizeInfo(con).then((res) => {
         if (res.head.status == 0) {
           if (res.body) {
@@ -1022,19 +1074,13 @@ export default {
             if (this.ruleForm.styleSizeList.length > 0) {
               this.setSizeInfo()
             } else {
-              this.setImgInfo()
+              // this.setImgInfo()
             }
           } else {
             this.sizeInfo = null
             this.sizeTableList = []
           }
-        } else {
-          
-          _this.$message({
-            message: res.head.msg,
-            type: 'warning'
-          });
-        }
+        } 
       }).catch(err => {
         // console.log(err)
       })
@@ -1084,11 +1130,6 @@ export default {
             }else {
               this.saveGoodFun(status)
             }
-          }).catch(() => {
-            this.$message({
-              type: 'info',
-              message: '已取消',
-            })
           })
         }
       })
@@ -1135,6 +1176,9 @@ export default {
       let styleColor = [];
       const _this = this;
       let sizeConfig = [];
+      if (!_this.sizeInfo) {
+        return sizeList
+      }
       _this.sizeInfo.resultMap.forEach(item => {
         sizeConfig = []
         _this.sizeInfo.sizeInfoVO.upTitle.forEach(Item => {
@@ -1192,7 +1236,8 @@ export default {
         } else {
           styleColor[index].styleDetailPicture = ''
         }
-        if (this.activeGoodsSize[index]) {
+        console.log(this.activeGoodsSize[index])
+        if (this.activeGoodsSize[index]&&this.sizeInfo) {
           let sizeConfig = [];
           let sizeKey = [];
           JSON.parse(_this.activeGoodsSize[index]).forEach(item => {
@@ -1277,6 +1322,7 @@ export default {
       con.efficiencyIndex = '' // 暂无 无说明
       con.styleLabel = this.labelList.toString();
       con.sizeList = this.getSizeList();
+      console.log(con.sizeList)
       con.styleColor = this.getStyleColor();
       con.tatle = this.getSizeTitle()
       con.styleData = JSON.stringify(this.getStyleDataToSubmit())
@@ -1367,6 +1413,10 @@ export default {
       this.setImgInfo() 
     },
     setImgInfo() {
+      this.colorList = [];
+      this.activeGoodsSize = []
+      this.selectedColorName = [];
+      this.selectedColorNameXiJie = [];
       const _this = this
       let goodsSize = ''
       let goodsSizeList = []
@@ -1377,7 +1427,7 @@ export default {
         imgList = []
         imgDetalList = []
         _this.colorList.push(item.styleColor)
-        if (item.styleSize) {
+        if (item.styleSize &&  _this.sizeInfo ) {
           item.styleSize.forEach((Item,Index) => {
             goodsSize = _this.sizeInfo.resultMap.find(GoodsItem => GoodsItem.sizeName == Item.sizeName)
             goodsSizeList.push(goodsSize)
@@ -1398,9 +1448,9 @@ export default {
           })
         }
         // goodsSize = _this.sizeInfo.resultMap.find(Item => Item.SIZEID == )
-        _this.activeGoodsSize.push(JSON.stringify(goodsSizeList))
-        _this.selectedColorName.push(imgList)
-        _this.selectedColorNameXiJie.push(imgDetalList)
+        _this.activeGoodsSize[index] = JSON.stringify(goodsSizeList)
+        _this.selectedColorName[index] = imgList
+        _this.selectedColorNameXiJie[index] = imgDetalList
         
         
       })
@@ -1450,6 +1500,40 @@ export default {
     },
     delVideo() {
       this.ruleForm.styleVideo = ''
+    },
+    getStyleLength() {
+      const con = {
+      	brandId: sessionStorage.brandId,
+      	type: 'STYLE_LENGTH',
+      	userId: this.uploadData.userId,
+      }
+      const _this = this;
+      getStyleData(con).then((res) => {
+        if (res.head.status == 0) {
+          _this.styleLengthList = res.body.result
+        } else {
+          this.$message.error(res.head.msg);
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    getStyleBarCode() {
+      const con = {
+      	brandId: sessionStorage.brandId,
+      	type: 'STYLE_BAR_CODE',
+      	userId: this.uploadData.userId,
+      }
+      const _this = this;
+      getStyleData(con).then((res) => {
+        if (res.head.status == 0) {
+          _this.styleMajorList = res.body.result
+        } else {
+          this.$message.error(res.head.msg);
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
     },
     getStyleWashing() {
       const con = {
@@ -1850,8 +1934,13 @@ li.active{
     padding-top: 0px;
   }
 }
+#basls{
+    overflow:hidden;
+  }
+
 </style>
 <style>
+  
   .el-upload-list__item {
     transition: none !important;
   }
@@ -1862,4 +1951,5 @@ li.active{
   .el-checkbox__input.is-focus .el-checkbox__inner{
       border-color:  #cda46c;
      }
+
 </style>
