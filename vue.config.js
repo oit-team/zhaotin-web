@@ -16,11 +16,11 @@ module.exports = defineConfig({
   productionSourceMap: false,
   devServer: {
     proxy: {
-      '/api': {
-        target: 'http://51sr080531.51vip.biz',
+      [process.env.VUE_APP_BASE_URL]: {
+        target: process.env.VUE_APP_HOST,
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '',
+          [`^${process.env.VUE_APP_BASE_URL}`]: '',
         },
       },
     },
