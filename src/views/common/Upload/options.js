@@ -4,7 +4,7 @@ import API_SERVICE from '@/api/API_SERVICE'
 // 图片尺寸限制
 const UPLOAD_IMAGE_SIZE_MAX = 2000
 // 压缩率
-const COMPRESSION_RATE = 0.8
+const COMPRESSION_RATE = 0.7
 
 /**
  * 获取分块上传表单数据
@@ -135,7 +135,7 @@ export const getFileItemDefault = () => ({
  * @param file 图片文件
  * @return {Promise<string>} 压缩后的base64格式图片
  */
-async function imageCompression(file) {
+export async function imageCompression(file) {
   const fileBase64 = await fileToBase64(file)
   const image = await base64ToImage(fileBase64)
   const canvas = document.createElement('canvas')
@@ -152,7 +152,9 @@ async function imageCompression(file) {
     canvas.height = imageHeight
   }
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height)
-  return canvas.toDataURL('image/jpeg', COMPRESSION_RATE)
+  return new Promise(resolve => {
+    canvas.toBlob(blob => resolve(blob), 'image/jpeg', COMPRESSION_RATE)
+  })
 }
 
 /**
@@ -161,7 +163,7 @@ async function imageCompression(file) {
  * @return {Promise<string>}
  */
 function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     const reader = new FileReader()
     reader.onload = (e) => {
       resolve(e.target.result)
@@ -178,7 +180,7 @@ function fileToBase64(file) {
 function base64ToImage(base64) {
   const image = new Image()
   image.src = base64
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     image.onload = (e) => resolve(e.target)
   })
 }
@@ -193,7 +195,7 @@ export function getDefaultUploadUrlByFileType(type) {
   //   // 图片上传地址
   return API_SERVICE.SYSTEM + '/file/uploadFile'
   // } else {
-    // 默认地址
+  // 默认地址
   // return API_SERVICE.SYSTEM + '/file/upVideoOrAudio'
   // }
 }
@@ -291,7 +293,7 @@ export const mixin = {
     getUploadImageResults() {
       return this.uploadFiles.map(item => (
         item.response
-          ? item.response.data.data.fileUrls[0].fileUrl
+          ? item.response.data.fileUrl
           : item.url
       ))
     },
