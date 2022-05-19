@@ -62,7 +62,7 @@
         <div style="margin-top: 20px">
           <el-button v-if="importType==1" size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
           <el-button v-if="importType==2" size="small" type="success" @click="confirmImportStock">导入库存</el-button>
-          <el-button size="small" @click="importFlag = false">取消导入</el-button>
+          <el-button size="small" @click="importGoodsClose">取消导入</el-button>
         </div>
       </div>
     </el-drawer>
@@ -71,9 +71,10 @@
     <el-drawer
       title="请选择需要导出的字段"
       :visible.sync="exportModelFlag"
-      :wrapper-closable="false"
+      :wrapper-closable="true"
       direction="rtl"
       size="40%"
+      :before-close="handleExportClose"
     >
       <div class="text-center">
         <el-checkbox-group v-model="checkList" @change="changeChecked">
@@ -131,7 +132,7 @@
 <script>
 import TablePage from '@/components/business/TablePage'
 import { getProductList } from '@/api/product'
-import { getDeleteStyleInfo, getExportInfo, addimporStyleInfo, updateStyleStatusById } from '@/api/goods'
+import { getDeleteStyleInfo, getExportInfo, getExportStyleInfo, addimporStyleInfo, updateStyleStatusById } from '@/api/goods'
 import axios from 'axios'
 
 export default {
@@ -173,19 +174,19 @@ export default {
             type: 'success',
             click: () => this.addGoods(),
           },
-          // {
-          //   name: '导入商品',
-          //   icon: 'el-icon-download',
-          //   // style:style="background:#4FD5AC;border-color: #4FD5AC;color:#fff;"
-          //   type: 'primary',
-          //   click: () => this.importGoods(),
-          // },
-          // {
-          //   name: '导出商品',
-          //   icon: 'el-icon-upload2',
-          //   type: 'primary',
-          //   click: () => this.export(),
-          // },
+          {
+            name: '导入商品',
+            icon: 'el-icon-download',
+            // style:style="background:#4FD5AC;border-color: #4FD5AC;color:#fff;"
+            type: 'primary',
+            click: () => this.importGoods(),
+          },
+          {
+            name: '导出商品',
+            icon: 'el-icon-upload2',
+            type: 'primary',
+            click: () => this.export(),
+          },
           // {
           //   name: '导入库存',
           //   icon: 'el-icon-download',
@@ -287,13 +288,12 @@ export default {
     getExportInfo() {
       this.tempCheckList = []
       const con = {
-        type: sessionStorage.menuCode,
-        code: 'goods',
+        type: 'styleList',
+        code: 'style',
       }
       getExportInfo(con).then((res) => {
-        // console.log(res)
-        if (res.data.head.status === 0) {
-          this.exportInfoList = res.data.body.exportTitle
+        if (res.head.status == 0) {
+          this.exportInfoList = res.body.exportTitle
           for (let i = 0; i < this.exportInfoList.length; i++) {
             this.tempCheckList.push(this.exportInfoList[i].columnName)
           }
@@ -301,7 +301,7 @@ export default {
           // console.log("默认全选===",this.checkList)
         } else {
           this.$message({
-            message: res.data.head.msg,
+            message: res.head.msg,
             type: 'warning',
           })
         }
@@ -376,7 +376,7 @@ export default {
           type: 'warning',
           message: '正在导入中，请稍候',
         })
-
+        console.log(789)
         const formData = new FormData() //  用FormData存放上传文件
         // console.log("this.fileList====",this.fileList)
         formData.append('file', this.fileList[0].raw)
@@ -385,52 +385,61 @@ export default {
         // console.log("formData====",formData)
         // 向webapi发起请求，等待后台接收
         const _this = this
+        console.log(axios)
+        axios.post(`${_this.GLOBAL.data_manager_server}/dataStockInfo/importStockInfo`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }).then((res) => {
+          _this.importFlag = false
+          // console.log("-----------------",res.data);
+          _this.$refs.upload.clearFiles()
+          if (res.data.head.status === 0) {
+            // console.log("导入库存成功",res.data.body)
+            _this.importResult = res.data.body
+            _this.addCount = res.data.body.addCount
+            _this.upDateCount = res.data.body.upDateCount
+            _this.failureCount = res.data.body.failureCount
 
-        // _this.$axios.post(`${_this.GLOBAL.data_manager_server}/dataStockInfo/importStockInfo`, formData, {
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data',
-        //   },
-        // }).then((res) => {
-        //   _this.importFlag = false
-        //   // console.log("-----------------",res.data);
-        //   _this.$refs.upload.clearFiles()
-        //   if (res.data.head.status === 0) {
-        //     // console.log("导入库存成功",res.data.body)
-        //     _this.importResult = res.data.body
-        //     _this.addCount = res.data.body.addCount
-        //     _this.upDateCount = res.data.body.upDateCount
-        //     _this.failureCount = res.data.body.failureCount
+            _this.fileList = []
+            _this.fileData = ''
 
-        //     _this.fileList = []
-        //     _this.fileData = ''
-
-        //     if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
-        //       _this.importErrDataFlag = true
-        //       _this.importErrData = res.data.body.errorStr
-        //     } else {
-        //       this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
-        //         confirmButtonText: '确定',
-        //         callback: action => {},
-        //       })
-        //     }
-        //   } else {
-        //     this.$message({
-        //       type: 'error',
-        //       message: res.data.head.msg,
-        //     })
-        //   }
-        // }).catch(() => {
-        //   this.$message({
-        //     type: 'warning',
-        //     message: '导入商品失败',
-        //   })
-        // })
+            if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
+              _this.importErrDataFlag = true
+              _this.importErrData = res.data.body.errorStr
+            } else {
+              this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
+                confirmButtonText: '确定',
+                callback: action => {},
+              })
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.data.head.msg,
+            })
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '导入商品失败',
+          })
+        })
       }
+    },
+    importGoodsClose() {
+      this.importFlag = false
+      this.$refs.upload.clearFiles()
     },
     handleImportClose() {
       this.$confirm('确认关闭？').then(() => {
         this.importFlag = false
         this.$refs.upload.clearFiles()
+      }).catch(() => {})
+    },
+    handleExportClose () {
+      this.$confirm('确认关闭？').then(() => {
+        this.exportModelFlag = false
       }).catch(() => {})
     },
     // 监控上传文件列表
@@ -471,6 +480,49 @@ export default {
         // console.log("this.fileList====",this.fileList)
         formData.append('file', this.fileList[0].raw)
         formData.append('brandId', sessionStorage.brandId)
+        formData.append('code', '2')
+        formData.append('userId', sessionStorage.userId)
+        axios({
+          url: '/api/goods/style/addimporStyleInfo',
+          method: 'post',
+          headers: {
+          'Content-Type': 'multipart/form-data',
+          token: sessionStorage.accessToken,
+          },
+          data: formData,
+        }).then((res) => {
+          this.importFlag = false
+          this.$refs.upload.clearFiles()
+          if (res.status === 200) {
+            this.importResult = res.data.body
+            this.addCount = res.data.body.addCount
+            this.upDateCount = res.data.body.upDateCount
+            this.failureCount = res.data.body.failureCount
+            this.fileList = []
+            this.fileData = ''
+            if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
+              this.importErrDataFlag = true
+              this.importErrData = res.data.body.errorStr
+            } else {
+              this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+                  this.$refs.page.loadData()
+                },
+              })
+            }
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.data.head.msg,
+            })
+          } 
+        }).catch((err) => {
+          this.$message({
+            type: 'warning',
+            message: '导入商品失败',
+          })
+        })
       }
     },
     // 导入错误数据的关闭操作
@@ -491,7 +543,47 @@ export default {
     },
     // 确认导出商品按钮
     confirmExportGoods() {
-
+      this.rowList = {}
+      if (this.checkList.length > 0) {
+        for(let i=0;i<this.checkList.length;i++){
+          for(let j=0;j<this.exportInfoList.length;j++){
+            if(this.checkList[i]==this.exportInfoList[j].columnName){
+              this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc;
+            }
+          }
+        }
+      }
+      if (Object.keys(this.rowList).length > 0) {
+        this.exportModelFlag = false
+        const con = {
+          pageNum:1,
+          pageSize:999,
+          rowList:this.rowList
+        }
+        getExportStyleInfo(con,{responseType: 'arraybuffer'}).then((res) => {
+          var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
+          var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
+          var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
+          var result = patt.exec(contentDisposition);
+          var filename = result[1];
+          var downloadElement = document.createElement('a');
+          var href = window.URL.createObjectURL(blob); //创建下载的链接
+          downloadElement.style.display = 'none';
+          downloadElement.href = href;
+          downloadElement.download = `${filename}-商品列表-${filename}` ; //下载后文件名
+          document.body.appendChild(downloadElement);
+          downloadElement.click(); //点击下载
+          document.body.removeChild(downloadElement); //下载完成移除元素
+          window.URL.revokeObjectURL(href); //释放掉blob对象
+        }).catch((err) => {
+          console.log(err)
+        })
+      } else {
+        this.$message({
+          type: 'warning',
+          message: '请先选择导出数据相关字段',
+        })
+      }
     },
     //上架前判断该商品各个颜色是否都有图片和尺码
     checkstyleColor (row) {
