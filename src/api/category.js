@@ -55,6 +55,13 @@ export function getDictionaryList(params) {
     cmd: 100008,
   })
 }
+// 查询 dictcode 对应列表
+export function getDictionaryInfo(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+    mod: 'home',
+    cmd: 100009,
+  })
+}
 // 类别尺码
 export function getSizeInfoAll(params) {
   return post('/goods/size/getSizeInfoAll', params, {
