@@ -1,49 +1,123 @@
 <template>
   <div>
-    <div class="main container">
-      <!-- <div>商品中心</div> -->
-      <div class="h-96"><el-cascader
-    v-model="value"
-    :options="options"></el-cascader></div>
-      <!-- 出口 -->
-      <router-view />
+    <div> <TablePage v-bind="tablePageOption" ref="cateTable" auto>
+      <template slot="content:imgUrl" slot-scope="{ row }">
+        <template v-if="true">
+          <el-image class="file-res" style="max-height:50px;" :src="row.imgUrl" fit="cover" />
+        </template>
+      </template>
+      </TablePage>
     </div>
+      <!-- 出口 -->
+    <router-view />
+    <!-- </div> -->
   </div>
 </template>
 
 <script>
-// import TablePage from '@/components/business/TablePage'
-import { getProductList } from '@/api/product'
+import TablePage from '@/components/business/TablePage'
+import { cateGoryList,delCateGory } from '@/api/category'
 
 export default {
   name: 'Style',
   components: {
-    // TablePage,
+    TablePage,
   },
   data() {
     return {
       data: {},
-       value: [],
-       options:[
-         {
-          value: 'zhinan',
-          label: '指南',
-          children:[{
-            value: 'shejiyuanze',
-            label: '设计原则',
-          }]
-         }
-       ]
+      keyList:[] // 类别排序集合
     }
   },
 
-  methods: {
-
+  computed: {
+    tablePageOption() {
+      return {
+        promise: this.loadData,
+         actions: [
+          {
+            name: '新增词典',
+            type: 'success',
+            icon: 'el-icon-plus',
+            click: () => this.$router.push('/basls/otherCategoryList/addDictionaryType'),
+          },
+        ],
+        table: {
+          data: this.data.resultList,
+           actions: {
+            width: 180,
+            buttons: [
+              {
+                tip: '编辑',
+                type: 'success',
+                icon: 'el-icon-edit',
+                click: (scope) => this.$router.push({
+                  path: '/basls/otherCategoryList/addDictionaryType',
+                  query: { item: scope },
+                }),
+              },
+              {
+                tip: '删除',
+                type: 'danger',
+                icon: 'el-icon-delete',
+                click: this.deleteCateGory,
+              },
+            ],
+          },
+        },
+        pager: {
+          total: this.data.count,
+        },
+      }
+    },
   },
-
+  methods: {
+    async loadData(params) {
+      const con = {
+         ...params,
+       userId:sessionStorage.userId,
+       type:''
+      }
+      await cateGoryList(con).then((res) => {
+        if(res.head.status === 0) {
+          this.data = res.body
+          res.body.resultList.forEach(item => {
+            this.keyList.push(item.dictitemOrderkey)
+          })
+          sessionStorage.setItem('keyList',this.keyList)
+        }
+      })
+    },
+    deleteCateGory(item) {
+      this.$confirm('确订删除该商品类别吗？','提示',{
+        confirmButtonText:'确定',
+        cancelButtonText:'取消',
+        type:'warning',
+      }).then(() => {
+        const con = {
+          dictCode: item.row.dictCode,
+          dictitemCode:item.row.dictitemCode
+        }
+        delCateGory(con).then((res) => {
+          this.$refs.cateTable.loadData()
+        })
+      })
+    },
+    onImageLoad() {
+      this.$refs.cateTable.doLayout()
+    }
+  },
 }
 </script>
 
-<style>
+<style lang="less" scoped>
+/deep/ .el-table__body-wrapper {
+    height: 600px;
+}
+
+/deep/ .el-image__inner{
+  height: 50px;
+  width: auto;
+}
 
 </style>

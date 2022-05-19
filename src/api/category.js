@@ -48,6 +48,13 @@ export function sortList(params) {
     cmd: 100006,
   })
 }
+// 查询 所有词典
+export function getDictionaryList(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+    mod: 'home',
+    cmd: 100008,
+  })
+}
 // 类别尺码
 export function getSizeInfoAll(params) {
   return post('/goods/size/getSizeInfoAll', params, {

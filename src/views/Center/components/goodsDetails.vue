@@ -34,12 +34,12 @@
                   :poster="infoData.styleVideoPatch"
                 >
                   <source :src="infoData.styleVideo" type="video/mp4" />
-                  <track kind="captions" label="English captions" src="/path/to/captions.vtt" srclang="en" default />
+                  <track kind="captions" label="English captions" src="" srclang="en" default />
                 </video>
               </div>
             </el-carousel-item>
             <el-carousel-item
-              v-for="(item, index) in infoData.imgUrlList"
+              v-for="(item, index) in thumbnailList"
               :key="index"
             >
               <el-image
@@ -411,6 +411,7 @@ export default {
       resultText: '',
       showEmp: false,
       imgMarginL: 0,
+      thumbnailList: [],
     }
   },
   created() {
@@ -445,11 +446,13 @@ export default {
               list.push(e)
             }
           })
+          that.thumbnailList = [...that.infoData.imgUrlList, ...that.infoData.imgDetailUrlList]
+          console.log(that.thumbnailList)
           that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
           // recommendationLevel : 推荐指数
           that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
           // 给数据中  加入数量
-          this.infoData.styleColorList.forEach(e => {
+          that.infoData.styleColorList.forEach(e => {
             let n = 0
             e.styleSize.forEach(i => {
               i.num = 0
@@ -465,15 +468,16 @@ export default {
             styleSize: [],
           }
           // 将 视频封面 加到切换轮播的images中
-          if (this.infoData.styleVideoPatch) {
+          if (that.infoData.styleVideoPatch !== null) {
             const url = {
-              resUrl: this.infoData.styleVideoPatch,
+              resUrl: that.infoData.styleVideoPatch,
             }
-            this.infoData.imgUrlList.unshift(url)
+            that.infoData.imgUrlList.unshift(url)
           }
-          if (this.infoData.imgDetailUrlList) {
-            this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
+          if (that.infoData.imgDetailUrlList.length !== 0) {
+            that.infoData.imgUrlList.push(...that.infoData.imgDetailUrlList)
           }
+          console.log(that.infoData.imgUrlList)
         }
       }).catch((ret) => {
         if (ret.head.status !== 0) {

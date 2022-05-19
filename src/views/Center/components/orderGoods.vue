@@ -30,6 +30,32 @@
         </div>
       </div>
     </div>
+    <div class="zt-order__title">下单事由</div>
+    <div class="zt-text">
+      <!-- <el-select v-model="value" placeholder="请选择">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select> -->
+      <el-form ref="textForm" :model="textForm" label-width="80px">
+        <el-form-item label="类型">
+          <el-select v-model="textForm.class" placeholder="请选择类型">
+            <el-option
+              v-for="item in 4"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input type="textarea" v-model="textForm.remarks" />
+        </el-form-item>
+      </el-form>
+    </div>
     <div class="zt-order__title">确认订单信息</div>
     <div class="zt-content">
       <div class="zt-content__item" v-for="(item, index) in formData.styleList" :key="index">
@@ -205,6 +231,10 @@ export default {
       loading: false,
       loading2: false,
       formLabelWidth: '150px',
+      textForm: {
+        class: '',
+        remarks: '',
+      },
       ruleForm: {
         id: '',
         name: '',

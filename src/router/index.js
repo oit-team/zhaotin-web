@@ -142,6 +142,10 @@ const routes = [
         component: () => import('@/views/BaseSeeting/components/otherCategoryList'),
       },
       {
+        path: '/basls/otherCategoryList/addDictionaryType',
+        component: () => import('@/views/BaseSeeting/components/addDictionaryType'),
+      },
+      {
         path: '/basls/style/addGoods',
         component: () => import('@/views/BaseSeeting/components/addGoods'),
       },
@@ -152,6 +156,10 @@ const routes = [
       {
         path: '/basls/customerAccount/addCustomer',
         component: () => import('@/views/BaseSeeting/components/addCustomer'),
+      },
+      {
+        path: '/basls/styleType/addDictionaryType',
+        component: () => import('@/views/BaseSeeting/components/addDictionaryType'),
       },
       {
         path: '/basls/styleType/addCateGory',

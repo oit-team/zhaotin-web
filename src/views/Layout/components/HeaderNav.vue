@@ -249,4 +249,7 @@ export default {
 .secondColor {
   color:  #eab308;
 }
+.text-center:hover{
+  cursor: pointer;
+}
 </style>
