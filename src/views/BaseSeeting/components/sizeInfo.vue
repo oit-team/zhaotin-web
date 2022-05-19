@@ -52,6 +52,7 @@
           node-key="id"
           ref="tree"
           highlight-current
+          @check-change="handleCheckChange"
           :default-checked-keys="defaultCheckedKeys"
           :props="defaultProps">
           <div class="custom-tree-node" slot-scope="{ data }">
@@ -236,7 +237,18 @@ export default {
             for(let i=0;i<this.baseInfo.resultMap.length;i++){
               this.defaultCheckedKeys.push(this.baseInfo.resultMap[i].SIZEID)
             }
-            this.SortSizeList = this.sizeList
+            let SortSizeList = [...this.sizeList];
+            let CheckedSortItem = ''
+            this.sizeList.forEach((item,index) => {
+              CheckedSortItem = this.baseInfo.resultMap.find(Item => Item.SIZE_NAME == item.sizeName)
+              if (CheckedSortItem) {
+                let obj1 = this.sizeList[index]
+                let obj2 = this.sizeList[CheckedSortItem.SORT]
+                SortSizeList[CheckedSortItem.SORT] = obj1
+                SortSizeList[index] = obj2
+              }
+            })
+            this.SortSizeList = SortSizeList
           }
         }else if(res.head.status === -3){
             this.cateId = null;
@@ -310,7 +322,7 @@ export default {
       }
       let checkedKeys = this.$refs.tree.getCheckedKeys();     // 选中的节点所组成的数组
       let checkList = [];
-      this.sizeList.forEach((item,index) => {
+      this.SortSizeList.forEach((item,index) => {
         if (checkedKeys.indexOf(item.id) != -1) {
           checkList.push({
             sizeId: item.id,
@@ -318,14 +330,14 @@ export default {
           })
         }
       })
-        let con = {
-          id:this.cateId,
-          brandId:sessionStorage.brandId,
-          catergre:this.$route.query.item.row.dictitemDisplayName,
-          userId:sessionStorage.userId,
-          title:JSON.stringify(obj),
-          sizeId:checkList,
-        }
+      let con = {
+        id:this.cateId,
+        brandId:sessionStorage.brandId,
+        catergre:this.$route.query.item.row.dictitemDisplayName,
+        userId:sessionStorage.userId,
+        title:JSON.stringify(obj),
+        sizeId:checkList,
+      }
       if(this.state.length){  // 编辑
         console.log(con)
         // return;
@@ -496,10 +508,13 @@ export default {
           }); 
         } else {
           sizeList[index] = sizeList.splice(index + 1 , 1, sizeList[index])[0]
-          
           this.SortSizeList = sizeList
         }
       }
+    },
+    handleCheckChange () {
+      let checkedKeys = this.$refs.tree.getCheckedKeys();     // 选中的节点所组成的数组
+      this.defaultCheckedKeys = checkedKeys;
     }
 
   }

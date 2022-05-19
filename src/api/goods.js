@@ -55,9 +55,18 @@ export function addimporStyleInfo(params) {
 export function getExportInfo(params) {
   return post('system/excelPublic/getExportInfo', params)
 }
+
+export function getExportStyleInfo(params, config) {
+  return post('goods/style/getExportStyleInfo', params, {
+    ...config,
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+
 // 新增商品
 export function addGoodsInfo(params) {
-  return post('/goods/style/addStyleInfo', params, {
+  return post('goods/style/addStyleInfo', params, {
     mod: 'home',
     cmd: 10008,
   })
