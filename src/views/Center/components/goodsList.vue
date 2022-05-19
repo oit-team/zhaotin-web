@@ -100,7 +100,8 @@
           fit="contain"
         />
         <div class="zt-video__b" v-if="item.styleVideo">
-          <i class="el-icon-video-camera-solid"></i>
+          <!-- <i class="el-icon-video-camera-solid"></i> -->
+          <i class="iconfont icon-shipin"></i>
         </div>
         <div class="zt-item__line">{{ item.styleName }}</div>
         <div class="zt-item__line">
@@ -521,13 +522,11 @@ export default {
       position: absolute;
       top: 10px;
       right: 10px;
-      padding: 5px 7px;
-      background-color: #FF9606;
       border-radius: 5px;
       box-sizing: border-box;
-      .el-icon-video-camera-solid{
-        font-size: 20px;
-        color: #fff;
+      .icon-shipin{
+        font-size: 28px;
+        color: #FF9606;
       }
     }
     .zt-item__line{

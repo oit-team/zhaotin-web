@@ -3,7 +3,7 @@
     <el-page-header @back="goBack" :content="editFlag ? '新增词典' : '修改词典'"></el-page-header>
     <el-divider></el-divider>
     <el-form style="margin-top:20px;" :model="cateGoryForm" :rules="rules" ref="cateGoryForm" label-width="90px" class="demo-cateGoryForm">
-      <el-form-item label="词典类型" prop="dictName" >
+      <el-form-item label="词典类型" prop="dictCode" >
         <el-select
 					:disabled="!editFlag"
 					v-model="cateGoryForm.dictCode"
@@ -27,7 +27,13 @@
       <el-form-item label="词典排序" prop="dictitemOrderkey">
         <el-input v-model.trim="cateGoryForm.dictitemOrderkey" style="width:60%;"  placeholder="请输入词典排序"></el-input>
       </el-form-item>
-      <!-- <el-form-item label="点击上传词典图片">
+      <el-form-item v-if="cateGoryVisibilty" label="类别图片">
+          <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
+          <div class="w-24 h-24 mb-12">
+            <el-image :src="imgUrl" fit="cover" />
+          </div>
+       </el-form-item>
+      <el-form-item label="点击上传词典图片">
         <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
           <i class="el-icon-plus"></i>
         </vc-upload>
@@ -35,7 +41,7 @@
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
         <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
-      </div> -->
+      </div>
       <el-form-item>
         <el-button size="small" icon="el-icon-check" type="primary" @click="submitForm('cateGoryForm')">保存</el-button>
         <el-button size="small" icon="el-icon-refresh" @click="resetForm('cateGoryForm')">重置</el-button>
@@ -67,13 +73,13 @@ export default {
       editFlag:false,
       dictitemCode:null,
       cateGoryForm: {
-				dictName: '',
+				dictCode: '',
         dictitemDisplayName: "",
         remark: "",
         dictitemOrderkey: null,
       },
       rules: {
-				dictName: [
+				dictCode: [
 					{ required: true, message: '请选择词典类型', trigger: 'change' }
 				],
         dictitemDisplayName: [
@@ -87,6 +93,7 @@ export default {
       },
       sortList:[],
 			Dlist: [],
+      upImg: '',
     }
   },
   created(){
@@ -127,9 +134,8 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
-          // this.imgUrl = this.uploadList.response.data.fileUrl
+          this.upImg = fileList.response.data.fileUrl
           this.imgList = this.$refs.uploadImage.uploadFiles
-          console.log(this.imgList)
         },
 				dictName: '',
       }
@@ -139,6 +145,7 @@ export default {
     goBack(){
       this.$router.go(-1);   // 查看直接返回
     },
+    // 获取所有的类型
 		async getDList() {
 			const res = await getDictionaryList({})
 			console.log(res)
@@ -168,6 +175,7 @@ export default {
             dictitemCode: this.dictitemCode,
             dictitemOrderkey: this.cateGoryForm.dictitemOrderkey,
             // brandId: sessionStorage.brandId
+            imgUrl: this.upImg,
           }
 					console.log(con)
           sort(con).then((res) => {
