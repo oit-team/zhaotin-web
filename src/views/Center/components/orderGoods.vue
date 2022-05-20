@@ -507,7 +507,6 @@ export default {
     // 提交订单
     subOrder(formName) {
       const that = this
-      console.log(that.textForm)
       that.$refs[formName].validate(async (valid) => {
         if (valid) {
           if (that.siteList[that.radio] && that.siteList[that.radio].id) {

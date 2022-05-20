@@ -157,7 +157,13 @@ export default {
           })
 
           progressTotal += progressLoaded
-          if (progressTotal >= rawFile.size) upload.handleSuccess(res, rawFile)
+          if (progressTotal >= rawFile.size) {
+            try {
+              upload.handleSuccess(res, rawFile)
+            } catch (err) {
+              console.error(err)
+            }
+          }
         } catch (err) {
           if (axios.isCancel(err)) {
             break
@@ -187,6 +193,7 @@ export default {
         })
         .catch(err => {
           if (!axios.isCancel(err)) upload.handleError(err, rawFile)
+          return Promise.reject(err)
         })
     },
     /**

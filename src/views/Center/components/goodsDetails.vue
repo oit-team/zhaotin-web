@@ -65,7 +65,8 @@
                   :class="imageIndex===index?'zt-images__select':'zt-images__image'"
                   :src="item.resUrl"
                 />
-                <i v-if="index===0&&infoData.styleVideo" class="el-icon-caret-right"></i>
+                <i v-if="index===0&&infoData.styleVideo" class="iconfont icon-qiehuanchanpin"></i>
+                <!-- <i v-if="index===0&&infoData.styleVideo" class="el-icon-caret-right"></i> -->
               </div>
             </div>
             <div class="zt-images__right" @click="transformImgR">
@@ -710,13 +711,14 @@ video::-webkit-media-controls-timeline {
               border-radius: 5px;
               border: 1px solid #CDA46C;
             }
-            .el-icon-caret-right{
+            .icon-qiehuanchanpin{
               position: absolute;
               top: 50%;
               left: 50%;
               transform: translate(-50%,-50%);
-              color: deepskyblue;
-              font-size: 34px;
+              color: #fff;
+              font-size: 30px;
+              opacity: 0.7;
               z-index: 1;
             }
           }
