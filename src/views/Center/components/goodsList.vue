@@ -344,28 +344,28 @@ export default {
         })
       } else if (id === 1 && !this.shouDjiantou) {
         that.$nextTick(() => {
-          that.formData.shelfTimeSort = 1
+          that.formData.shelfTimeSort = '1'
           that.formData.tradePriceSort = ''
           that.loadData()
           that.$forceUpdate()
         })
       } else if (id === 1 && that.shouDjiantou) {
         that.$nextTick(() => {
-          that.formData.shelfTimeSort = 0
+          that.formData.shelfTimeSort = '0'
           that.formData.tradePriceSort = ''
           that.loadData()
           that.$forceUpdate()
         })
       } else if (id === 3 && that.priceTF) {
         that.$nextTick(() => {
-          that.formData.tradePriceSort = 1
+          that.formData.tradePriceSort = '1'
           that.formData.shelfTimeSort = ''
           that.loadData()
           that.$forceUpdate()
         })
       } else if (id === 3 && !that.priceTF) {
         that.$nextTick(() => {
-          that.formData.tradePriceSort = 0
+          that.formData.tradePriceSort = '0'
           that.formData.shelfTimeSort = ''
           that.loadData()
           that.$forceUpdate()
