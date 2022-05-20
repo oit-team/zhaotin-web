@@ -583,10 +583,12 @@ export default {
       }
       if (Object.keys(this.rowList).length > 0) {
         this.exportModelFlag = false
+        const SearchData = this.$refs.page.$refs.search._data.form
         const con = {
           pageNum:1,
           pageSize:999,
-          rowList:this.rowList
+          rowList:this.rowList,
+          ...SearchData
         }
         getExportStyleInfo(con,{responseType: 'arraybuffer'}).then((res) => {
           var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型

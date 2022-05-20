@@ -455,11 +455,13 @@ export default {
       }
       if (this.rowList) {
         this.exportModelFlag = false
+        let SeaerchInfo = this.$refs.table.$refs.search._data.form
         const con = {
           // code: "1",
           pageNum: "1",
           pageSize: "999",
-          rowList:this.rowList
+          rowList:this.rowList,
+          ...SeaerchInfo
         }
         getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
             console.log(res.data);
