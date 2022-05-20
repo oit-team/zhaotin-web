@@ -290,9 +290,9 @@
                           @contextmenu.prevent="rightClick('color', item, index)"
                           :class="{'active':colorNum == index,'wordBorder':true}"
                           v-for="(item,index) in colorList"
-                          :key="item"
+                          :key="item.colorName"
                         >  
-                          <p class="text-4xl">{{ item }}</p>
+                          <p class="text-4xl">{{ item.colorName }}</p>
                         </li>
                       </ul>
                       <div class="addColor" @click="addColor"> <i class="el-icon-plus"></i></div>
@@ -780,7 +780,7 @@ export default {
       this.ruleForm = this.$route.query.item.row
       //解决富文本框聚焦页面滚动问题
       this.$nextTick(function() {
-        window.scrollTo(0,0);
+        this.$parent.$refs.scrollbarBox.scrollTo(0,0);
       });
       this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
       this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
@@ -923,12 +923,12 @@ export default {
         return this.$message.warning('请输入颜色')
       }
       if (this.editColor != '') {
-        const ColorIndex = this.colorList.findIndex(item => item == this.newColor)
+        const ColorIndex = this.colorList.findIndex(item => item.colorName == this.newColor)
         if (ColorIndex == -1) {
-          this.colorList[this.editColor.index] = this.newColor
+          this.colorList[this.editColor.index].colorName = this.newColor
           this.editColor.colorName = this.newColor
         } else if (ColorIndex == this.editColor.index){
-          this.colorList[this.editColor.index] = this.newColor
+          this.colorList[this.editColor.index].colorName = this.newColor
           this.editColor.colorName = this.newColor
         } else{
           this.$message({
@@ -938,8 +938,12 @@ export default {
           return;
         }
       }else {
-        if (this.colorList.indexOf(this.newColor) == -1) {
-          this.colorList.push(this.newColor)
+        const ColorIndex = this.colorList.findIndex(item => item.colorName == this.newColor)
+        if (ColorIndex == -1) {
+          this.colorList.push({
+            colorName:this.newColor,
+            colorId:''
+          })
         } else {
           this.$message({
             message: '已存在该颜色',
@@ -1130,6 +1134,11 @@ export default {
             }else {
               this.saveGoodFun(status)
             }
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消',
+            })
           })
         }
       })
@@ -1208,7 +1217,8 @@ export default {
       this.colorList.forEach((item,index) => {
         let sizeList = [];
         styleColor.push({
-          colourName: item
+          colourName: item.colorName,
+          colorId:item.colorId
         })
         if (_this.selectedColorName[index] &&_this.selectedColorName[index].length > 0 ) {  //判断是否存在 商品图片
           let imgArr = []
@@ -1236,7 +1246,6 @@ export default {
         } else {
           styleColor[index].styleDetailPicture = ''
         }
-        console.log(this.activeGoodsSize[index])
         if (this.activeGoodsSize[index]&&this.sizeInfo) {
           let sizeConfig = [];
           let sizeKey = [];
@@ -1322,7 +1331,6 @@ export default {
       con.efficiencyIndex = '' // 暂无 无说明
       con.styleLabel = this.labelList.toString();
       con.sizeList = this.getSizeList();
-      console.log(con.sizeList)
       con.styleColor = this.getStyleColor();
       con.tatle = this.getSizeTitle()
       con.styleData = JSON.stringify(this.getStyleDataToSubmit())
@@ -1426,7 +1434,10 @@ export default {
         goodsSizeList = []
         imgList = []
         imgDetalList = []
-        _this.colorList.push(item.styleColor)
+        _this.colorList.push({
+          colorId:item.id,
+          colorName:item.styleColor
+        })
         if (item.styleSize &&  _this.sizeInfo ) {
           item.styleSize.forEach((Item,Index) => {
             goodsSize = _this.sizeInfo.resultMap.find(GoodsItem => GoodsItem.sizeName == Item.sizeName)
@@ -1616,8 +1627,9 @@ export default {
     },
     rightClick(msg,item,index) {
       this.editColor = {
-        colorName: item,
-        index: index
+        colorName: item.colorName,
+        index: index,
+        colorId: item.colorId,
       };
       this.centerDialogVisible = true
     },
@@ -1634,15 +1646,25 @@ export default {
       this.selectedColorNameXiJie.splice(index,1)
       this.activeGoodsSize.splice(index,1)
       if (this.colorNum == index && this.colorList.length > 0){
-        this.$refs.goodsSizeRef.clearSelection();
+        if (this.$refs.goodsSizeRef) {
+          this.$refs.goodsSizeRef.clearSelection();
+        }
         this.deleteColor(this.colorList[0],0,'noChangeSize')
       } else if (this.colorNum > index) {
-        this.$refs.goodsSizeRef.clearSelection();
+        if (this.$refs.goodsSizeRef) {
+          this.$refs.goodsSizeRef.clearSelection();
+        }
         this.deleteColor(this.colorList[this.colorNum - 1],this.colorNum - 1,'noChangeSize')
       } else if (this.colorList.length == 0) {
-        this.$refs.uploadImage.clearFiles();
-        this.$refs.uploadxijieImage.clearFiles();
-        this.$refs.goodsSizeRef.clearSelection();
+        if (this.$refs.uploadImage) {
+          this.$refs.uploadImage.clearFiles();
+        }
+        if (this.$refs.uploadxijieImage) {
+          this.$refs.uploadxijieImage.clearFiles();
+        }
+        if (this.$refs.goodsSizeRef) {
+          this.$refs.goodsSizeRef.clearSelection();
+        }
         this.colorNum = undefined
       }
       this.closeDialog()
