@@ -46,8 +46,8 @@
         label-width="80px"
         :rules="textRules"
       >
-        <el-form-item label="类型" prop="class">
-          <el-select v-model="textForm.class" placeholder="请选择类型">
+        <el-form-item label="原因" prop="class">
+          <el-select v-model="textForm.class" placeholder="请选择下单原因">
             <el-option
               v-for="item in reasonList"
               :key="item.dictitemCode"
@@ -243,7 +243,7 @@ export default {
       },
       textRules: {
         class: [
-          { required: true, message: '请选择下单事由', trigger: 'blur' },
+          { required: true, message: '请选择下单原因', trigger: 'blur' },
         ],
         remarks: [
           { required: false, message: '备注', trigger: 'blur' },
@@ -349,7 +349,7 @@ export default {
     // 返回功能
     goBack() {
       this.$router.back()
-      // this.$store.commit('order/cgStart', false)
+      this.$store.commit('order/cgStart', false)
     },
     // 新增地址
     addSite() {
@@ -522,20 +522,21 @@ export default {
                 type: 'success',
                 message: '提交成功',
               })
+              this.$store.commit('order/cgStart', true)
               setTimeout(() => {
                 that.$router.go(-1)
               }, 800)
             } else {
               that.$message({
                 type: 'error',
-                message: `提交失败,${res.head.msg}`,
+                message: res.head.msg,
               })
             }
           } else {
             that.$message.warning('请选择收货地址')
           }
         } else {
-          that.$message.warning('提交失败,请选择下单事由')
+          that.$message.warning('请选择下单原因')
           return false
         }
       })

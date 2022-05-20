@@ -39,7 +39,7 @@
               </div>
             </el-carousel-item>
             <el-carousel-item
-              v-for="(item, index) in thumbnailList"
+              v-for="(item, index) in infoData.thumbnailList"
               :key="index"
             >
               <el-image
@@ -427,6 +427,7 @@ export default {
   beforeDestroy() {
     if (this.$route.path === '/styleCenter/orderGoods') {
       this.$store.commit('order/cgStart', false)
+      this.$store.commit('order/cgDetail', this.infoData)
     } else {
       this.$store.commit('order/cgStart', true)
     }
@@ -441,16 +442,21 @@ export default {
           that.infoData = res.body.resultList
           that.infoData.styleData = JSON.parse(that.infoData.styleData)
           that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
-          const list = []
-          that.infoData.styleWashing.forEach(e => {
-            if (e.status === 1) {
-              list.push(e)
-            }
-          })
+          if (that.infoData.styleWashing) {
+            const list = []
+            that.infoData.styleWashing.forEach(e => {
+              if (e.status === 1) {
+                list.push(e)
+              }
+            })
+            that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
+          }
           that.thumbnailList = [...that.infoData.imgUrlList, ...that.infoData.imgDetailUrlList]
-          that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
+          that.$set(that.infoData, 'thumbnailList', that.thumbnailList)
           // recommendationLevel : 推荐指数
           that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
+          // eslint-disable-next-line operator-assignment
+          that.infoData.recommendationLevel += 0
           // 给数据中  加入数量
           that.infoData.styleColorList.forEach(e => {
             let n = 0
@@ -479,10 +485,11 @@ export default {
           }
         }
       }).catch((ret) => {
-        if (ret.head.status !== 0) {
-          that.showResult = true
-          that.resultText = ret.head.msg
-        }
+        // if (ret.head.status !== 0) {
+        console.log(ret)
+        // that.showResult = true
+        // that.resultText = ret.head.msg
+        // }
       })
     },
     async loadData() {
