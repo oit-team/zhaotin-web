@@ -36,7 +36,7 @@
       size="40%"
       :before-close="handleImportClose"
     >
-      <div class="text-center">
+      <div class="text-center" v-show="!ErrerInfoShow">
         <el-upload
           class="upload-demo"
           style="margin:30px 0px;"
@@ -63,6 +63,26 @@
           <el-button v-if="importType==1" size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
           <el-button v-if="importType==2" size="small" type="success" @click="confirmImportStock">导入库存</el-button>
           <el-button size="small" @click="importGoodsClose">取消导入</el-button>
+        </div>
+      </div>
+      <div class="ErrorInfo" v-show="ErrerInfoShow">
+        <h3>{{ addCount }}</h3>
+        <h3>{{ upDateCount }}</h3>
+        <h3>{{ failureCount }}</h3>
+        <h3>失败数据如下:</h3>
+        <p>{{errMessage}}</p>
+        <ul class="errDataBox" style="text-align:left;">
+          <li
+            class="errDataItem"
+            style="line-height:30px;"
+            v-for="(item,index) in importErrData"
+            :key="index"
+          >
+            {{ item }}
+          </li>
+        </ul>
+        <div style="margin-top: 20px">
+          <el-button size="small" @click="importGoodsClose">取消</el-button>
         </div>
       </div>
     </el-drawer>
@@ -111,6 +131,7 @@
         <h3>{{ upDateCount }}</h3>
         <h3>{{ failureCount }}</h3>
         <h3>失败数据如下:</h3>
+        <p>{{errMessage}}</p>
         <ul class="errDataBox" style="text-align:left;">
           <li
             class="errDataItem"
@@ -144,7 +165,7 @@ export default {
     return {
       data: {},
       drawerVisible: true,
-
+      ErrerInfoShow: false,
       importType: 1, // 导入类型  1 商品  2 商品库存
       importFlag: false, // 导入商品显示隐藏
       fileList: [], // 上传的文件列表
@@ -160,6 +181,7 @@ export default {
       upDateCount: null,
       failureCount: null,
       importErrData: null, // 导入失败数据列表
+      errMessage: null,
     }
   },
 
@@ -385,7 +407,6 @@ export default {
         // console.log("formData====",formData)
         // 向webapi发起请求，等待后台接收
         const _this = this
-        console.log(axios)
         axios.post(`${_this.GLOBAL.data_manager_server}/dataStockInfo/importStockInfo`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -428,13 +449,18 @@ export default {
       }
     },
     importGoodsClose() {
-      this.importFlag = false
+      this.addCount = null
+      this.upDateCount = null
+      this.failureCount = null
+      this.errMessage = null
+      this.importErrData = null
       this.$refs.upload.clearFiles()
+      this.ErrerInfoShow = false
+      this.importFlag = false
     },
     handleImportClose() {
       this.$confirm('确认关闭？').then(() => {
-        this.importFlag = false
-        this.$refs.upload.clearFiles()
+        this.importGoodsClose()
       }).catch(() => {})
     },
     handleExportClose () {
@@ -475,15 +501,16 @@ export default {
           message: '正在导入中，请稍候',
           duration: '1000',
         })
-
+        const _this = this;
         const formData = new FormData() //  用FormData存放上传文件
         // console.log("this.fileList====",this.fileList)
         formData.append('file', this.fileList[0].raw)
         formData.append('brandId', sessionStorage.brandId)
         formData.append('code', '2')
         formData.append('userId', sessionStorage.userId)
+        const BASE_URL = process.env.VUE_APP_BASE_URL
         axios({
-          url: '/api/goods/style/addimporStyleInfo',
+          url: `${BASE_URL}/goods/style/addimporStyleInfo`,
           method: 'post',
           headers: {
           'Content-Type': 'multipart/form-data',
@@ -491,35 +518,36 @@ export default {
           },
           data: formData,
         }).then((res) => {
-          this.importFlag = false
-          this.$refs.upload.clearFiles()
-          if (res.status === 200) {
+          if (res.status === 200 && res.data.head.status == 0) {
             this.importResult = res.data.body
             this.addCount = res.data.body.addCount
             this.upDateCount = res.data.body.upDateCount
             this.failureCount = res.data.body.failureCount
             this.fileList = []
             this.fileData = ''
+            this.$refs.page.loadData()
             if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
-              this.importErrDataFlag = true
+              this.ErrerInfoShow = true
               this.importErrData = res.data.body.errorStr
             } else {
               this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
                 confirmButtonText: '确定',
                 callback: action => {
-                  this.$refs.page.loadData()
+                  this.importGoodsClose()
                 },
               })
             }
           } else {
+            this.ErrerInfoShow = true;
+            this.errMessage = res.data.head.msg
             this.$message({
               type: 'error',
-              message: res.data.head.msg,
+              message: '导入商品失败',
             })
           } 
         }).catch((err) => {
           this.$message({
-            type: 'warning',
+            type: 'error',
             message: '导入商品失败',
           })
         })
@@ -570,7 +598,7 @@ export default {
           var href = window.URL.createObjectURL(blob); //创建下载的链接
           downloadElement.style.display = 'none';
           downloadElement.href = href;
-          downloadElement.download = `${filename}-商品列表-${filename}` ; //下载后文件名
+          downloadElement.download = `商品列表-${filename}` ; //下载后文件名
           document.body.appendChild(downloadElement);
           downloadElement.click(); //点击下载
           document.body.removeChild(downloadElement); //下载完成移除元素
@@ -689,5 +717,8 @@ export default {
   /deep/ .el-image__inner{
     height: 50px;
     width: auto;
+  }
+  .ErrorInfo{
+    padding:0 20px;
   }
 </style>

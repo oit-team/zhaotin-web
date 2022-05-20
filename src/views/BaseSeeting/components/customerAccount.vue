@@ -15,7 +15,7 @@
 
     <!-- 导入客户 -->
     <el-drawer
-      :title="'导入商品'"
+      :title="'导入客户'"
       :visible.sync="importFlag"
       direction="rtl"
       size="40%"
@@ -46,7 +46,27 @@
         </el-upload>
         <div style="margin-top: 20px">
           <el-button size="small" type="success" @click="confirmImportGoods">导入客户</el-button>
-          <el-button size="small" @click="importFlag = false">取消导入</el-button>
+          <el-button size="small" @click="importGoodsClose">取消导入</el-button>
+        </div>
+      </div>
+      <div class="ErrorInfo" v-show="ErrerInfoShow">
+        <h3>{{ addCount }}</h3>
+        <h3>{{ upDateCount }}</h3>
+        <h3>{{ failureCount }}</h3>
+        <h3>失败数据如下:</h3>
+        <p>{{errMessage}}</p>
+        <ul class="errDataBox" style="text-align:left;">
+          <li
+            class="errDataItem"
+            style="line-height:30px;"
+            v-for="(item,index) in importErrData"
+            :key="index"
+          >
+            {{ item }}
+          </li>
+        </ul>
+        <div style="margin-top: 20px">
+          <el-button size="small" @click="importGoodsClose">取消</el-button>
         </div>
       </div>
     </el-drawer>
@@ -75,6 +95,7 @@
               {{ item.columnDesc }}
             </el-checkbox>
           </div>
+          
         </el-checkbox-group>
         <div style="margin-top: 20px">
           <el-button size="small" @click="cancelExport">取 消</el-button>
@@ -137,7 +158,7 @@ export default {
       CUSTOMER_TYPE_TEXT,
       CUSTOMER_STATE_TEXT,
 
-
+      ErrerInfoShow: false,
       data: {},
       importFlag: false, // 导入客户显示隐藏
       exportModelFlag: false, // 导出客户显示隐藏
@@ -152,6 +173,7 @@ export default {
       upDateCount:null,
       failureCount:null,
       importErrData:null, // 导入失败数据列表
+      errMessage: null,
     }
   },
 
@@ -341,8 +363,9 @@ export default {
         formData.append('brandId', sessionStorage.brandId)
         formData.append('code', '2')
         formData.append('userId', sessionStorage.userId)
+        const BASE_URL = process.env.VUE_APP_BASE_URL
         axios({
-          url: '/api/system/user/addImportCustomer',
+          url: `${BASE_URL}/system/user/addImportCustomer`,
           method: 'post',
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -350,31 +373,32 @@ export default {
           },
           data: formData,
         }).then((res) => {
-          this.importFlag = false
-          // console.log(res)
-          this.$refs.upload.clearFiles()
-          if (res.status === 200) {
+          if (res.status === 200 && res.data.head.status == 0) {
             this.importResult = res.data.body
             this.addCount = res.data.body.addCount
             this.upDateCount = res.data.body.upDateCount
             this.failureCount = res.data.body.failureCount
             this.fileList = []
             this.fileData = ''
+            this.$refs.table.loadData()
             if (res.data.body.errorStr && res.data.body.errorStr.length > 0) {
-              this.importErrDataFlag = true
+              this.ErrerInfoShow = true
               this.importErrData = res.data.body.errorStr
             } else {
               this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
                 confirmButtonText: '确定',
                 callback: action => {
-                  this.$refs.table.loadData()
+                  this.importGoodsClose()
+                  
                 },
               })
             }
           } else {
+            this.ErrerInfoShow = true;
+            this.errMessage = res.data.head.msg
             this.$message({
               type: 'error',
-              message: res.data.head.msg,
+              message: '导入客户失败',
             })
           }
         }).catch(() => {
@@ -388,9 +412,18 @@ export default {
     // 导入关闭提示
     handleImportClose() {
       this.$confirm('确认关闭？').then(() => {
-        this.importFlag = false
-        this.$refs.upload.clearFiles()
+        this.importGoodsClose()
       })
+    },
+    importGoodsClose() {
+      this.addCount = null
+      this.upDateCount = null
+      this.failureCount = null
+      this.errMessage = null
+      this.importErrData = null
+      this.$refs.upload.clearFiles()
+      this.ErrerInfoShow = false
+      this.importFlag = false
     },
     // 导出关闭提示
     handleExportClose() {
@@ -429,7 +462,7 @@ export default {
           rowList:this.rowList
         }
         getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
-            // console.log(res.data);
+            console.log(res.data);
             var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
             var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
             var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
