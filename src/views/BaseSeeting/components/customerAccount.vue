@@ -21,7 +21,7 @@
       size="40%"
       :before-close="handleImportClose"
     >
-      <div class="text-center">
+      <div class="text-center" v-show="!ErrerInfoShow">
         <el-upload
           class="upload-demo"
           style="margin:30px 0px;"
