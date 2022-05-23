@@ -1,7 +1,7 @@
 <template>
   <div style="position: absolute;height: 100%;width: 100%;">
     <HeaderNav class="w-screen mb-4" />
-    <div class="main container scrollbar" style="height: calc(100% - 88px);overflow:auto">
+    <div class="main container scrollbar" ref='scrollbarBox' style="height: calc(100% - 88px);overflow:auto">
       <!-- <div>基础配置</div> -->
       <!-- 出口 -->
       <router-view />

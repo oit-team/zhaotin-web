@@ -7,8 +7,11 @@
           <!-- <el-drawer :visible.sync="drawerVisible" size="40%"> -->
           <template slot="content:resUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
-            <template v-if="true">
+            <template v-if="row.resUrl">
               <el-image class="file-res" style="max-height:50px;" :src="row.resUrl" fit="cover" />
+            </template>
+            <template v-else>
+              <span>无</span> 
             </template>
           </template>
           <template slot="content:status" slot-scope="{ row }">
@@ -18,6 +21,15 @@
             </span>
             <span v-else-if="row.status == 0" style="color:red">
               未上架
+            </span>
+          </template>
+          <template slot="content:styleColor" slot-scope="{ row }">
+            <!-- 商品颜色 -->
+           <span v-if="row.styleColor">
+              {{row.styleColor}}
+            </span>
+            <span v-else>
+              无
             </span>
           </template>
           <!-- </el-drawer> -->
