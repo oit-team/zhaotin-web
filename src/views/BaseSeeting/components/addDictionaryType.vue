@@ -24,24 +24,28 @@
       <el-form-item label="词典描述" prop="remark">
         <el-input v-model="cateGoryForm.remark" style="width:60%;"  placeholder="请输入词典描述"></el-input>
       </el-form-item>
-      <el-form-item label="词典排序" prop="dictitemOrderkey">
+      <el-form-item label="词典排序" prop="dictitemOrderkey" class="inline-item">
         <el-input v-model.trim="cateGoryForm.dictitemOrderkey" style="width:60%;"  placeholder="请输入词典排序"></el-input>
-      </el-form-item>
-      <el-form-item v-if="cateGoryVisibilty" label="类别图片">
-          <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
-          <div class="w-24 h-24 mb-12">
-            <el-image :src="imgUrl" fit="cover" />
-          </div>
-       </el-form-item>
-      <el-form-item label="点击上传词典图片">
-        <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
-          <i class="el-icon-plus"></i>
-        </vc-upload>
       </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
         <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
       </div>
+      <!-- <el-form-item v-if="cateGoryVisibilty" label="类别图片">
+          <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
+          <div class="w-24 h-24 mb-12">
+            <el-image :src="imgUrl" fit="cover" />
+          </div>
+       </el-form-item> -->
+      <el-form-item label="图片">
+        <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
+          <i class="el-icon-plus"></i>
+        </vc-upload>
+      </el-form-item>
+      <!-- <div class="tip">
+        <p>*排序请勿重复,已存在排序号如下:</p>
+        <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
+      </div> -->
       <el-form-item>
         <el-button size="small" icon="el-icon-check" type="primary" @click="submitForm('cateGoryForm')">保存</el-button>
         <el-button size="small" icon="el-icon-refresh" @click="resetForm('cateGoryForm')">重置</el-button>
@@ -255,6 +259,7 @@ export default {
   .tip{
     padding-left:90px;
     color:#e60012;
+    margin-bottom: 22px;
   }
 
 }
