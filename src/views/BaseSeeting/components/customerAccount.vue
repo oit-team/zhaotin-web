@@ -508,4 +508,7 @@ export default {
 /deep/ .el-table__body-wrapper {
     height: 500px;
 }
+.ErrorInfo{
+  padding:0 20px;
+}
 </style>

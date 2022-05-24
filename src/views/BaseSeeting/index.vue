@@ -4,7 +4,10 @@
     <div class="main container scrollbar" ref='scrollbarBox' style="height: calc(100% - 88px);overflow:auto">
       <!-- <div>基础配置</div> -->
       <!-- 出口 -->
-      <router-view />
+      <keep-alive>
+        <router-view v-if="keepAlivePath.indexOf($route.fullPath) != -1"/>
+      </keep-alive>
+        <router-view v-if="keepAlivePath.indexOf($route.fullPath) == -1"/>
     </div>
   </div>
 </template>
@@ -16,6 +19,11 @@ export default {
 
   components: {
     HeaderNav,
+  },
+  data() {
+    return {
+      keepAlivePath:['/basls/style'],
+    }
   },
 }
 </script>

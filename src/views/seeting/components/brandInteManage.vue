@@ -13,6 +13,7 @@
             style="border-color: #ff8c7c; background: #ff8c7c; color: #fff"
             class="delBtnOnly"
             icon="el-icon-plus"
+            size="mini"
             @click="addAreaOrShopFun"
             circle
           />
@@ -20,6 +21,7 @@
         <el-tooltip class="item" effect="dark" content="搜索" placement="top">
           <el-button
             type="primary"
+            size="mini"
             @click="changeOperate(1)"
             icon="el-icon-search"
             circle
@@ -575,8 +577,9 @@ export default {
         sort:'',
         childrenList:res.body.orgList
       }]
-      console.log(this.orgList)
-      console.log(res.body.orgList)
+      this.$nextTick(() => {
+        this.$refs.tree.setCurrentKey('allMenu'); 
+      });
       // this.orgList = res.body.orgList;
     },
     // 新增区域
@@ -917,13 +920,15 @@ export default {
   padding-left: 10px;
 }
 #brandInteManage .leftTreeCon {
-  margin: 0 40px;
+  margin: 0 10px;
+  padding: 0 6px;
   display: flex;
   flex-direction: column;
-  width: 150px;
+  width: 210px;
+  border:1px solid #e5e7eb;
 }
 #brandInteManage .leftTreeCon .btnBox {
-  margin: 6px 0px 12px;
+  margin: 12px 0px 8px;
 }
 #brandInteManage .leftTreeCon .statisticsBox {
   width: 100%;
@@ -965,6 +970,14 @@ export default {
   border-radius: 10px;
   text-align: center;
   line-height: 20px;
+}
+/deep/ .el-tree-node__content{
+  padding: 6px 0;
+  height: auto;
+}
+/deep/ .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content{
+  background: #c5ddff;
+  color: #1978fe;
 }
 #brandInteManage
   .leftTreeCon

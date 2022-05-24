@@ -301,7 +301,10 @@ export default {
     },
   },
   created() {
-
+      
+  },
+  activated() {
+    this.$refs.page.loadData()
   },
   methods: {
     isDisabled(row) {
