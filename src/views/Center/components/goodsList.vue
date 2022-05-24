@@ -324,7 +324,6 @@ export default {
       } else {
         con = ''
       }
-      console.log(con)
       that.$nextTick(() => {
         that.formData.styleCategory = con
         that.loadData()

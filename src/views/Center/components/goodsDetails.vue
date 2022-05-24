@@ -307,7 +307,7 @@
             <div class="zt-info__item" v-for="(item, index) in infoData.styleData" :key="index">
               <div class="zt-item__label">{{ item.name }}</div>
               <div class="zt-item__item" v-for="(itemN, indexN) in item.options" :key="indexN">
-                <div :class="itemN.status === 1?'zt-item__select':'zt-item__item-item'">
+                <div :class="itemN.status === '1'?'zt-item__select':'zt-item__item-item'">
                   {{ itemN.option }}
                 </div>
               </div>
@@ -319,7 +319,7 @@
           <div class="zt-content__label">洗涤说明</div>
           <div class="zt-content__list">
             <div class="zt-content__info" v-for="(item, index) in infoData.styleWashing" :key="index">
-              <div v-if="item.status === 1">
+              <div v-if="item.status === '1'">
                 <el-image
                   style="width: 80px; height: 80px"
                   :src="item.resUrl"
