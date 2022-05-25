@@ -1,17 +1,35 @@
 <template>
   <div class="ml-48" id="addMenu">
-    <el-backtop
-      target="#addMenu"
-      :visibility-height="200"
-      :right="70"
-      :bottom="100"
-    />
-
-    <el-page-header
-      @back="$router.back()"
-      :content="editFlag ? '编辑客户' : '新增客户'"
-    />
-
+    <div class="headerBox">
+      <el-backtop
+        target="#addMenu"
+        :visibility-height="200"
+        :right="70"
+        :bottom="100"
+      />
+      
+      <el-page-header
+        @back="$router.back()"
+        :content="editFlag ? '编辑客户' : '新增客户'"
+      />
+      <div class="text-center">
+         <el-button
+          size="small"
+          icon="el-icon-check"
+          type="primary"
+          @click="submitForm('customerForm')"
+          >保存</el-button
+        >
+        <el-button
+          size="small"
+          icon="el-icon-refresh"
+          v-if="!editFlag"
+          @click="resetForm('customerForm')"
+          >重置</el-button
+        >
+      </div>
+    </div> 
+    
     <el-divider />
 
     <el-form
@@ -73,10 +91,11 @@
           </el-form-item>
           <el-form-item label="大区选择" label-width="100%" prop="orgName">
             <el-select
-              v-model="customerForm.orgName"
+              v-model="orgName"
               placeholder="请选择您所在的大区"
               @change="changeOrg"
               style="width: 100%"
+              value-key="osName"
             >
               <el-option
                 v-for="item in OrgList"
@@ -89,10 +108,11 @@
 
           <el-form-item label="所属省：" label-width="100%" prop="provinces">
             <el-select
-              v-model="customerForm.provinces"
+              v-model="provinces"
               placeholder="请选择您所在的省份"
               style="width: 100%"
               @change="changeProvince"
+              value-key="code"
             >
               <el-option
                 v-for="item in areaList"
@@ -106,10 +126,11 @@
 
           <el-form-item label="所属市" label-width="100%" prop="city">
             <el-select
-              v-model="customerForm.city"
+              v-model="city"
               style="width: 100%"
               placeholder="请选择您所在的城市"
               @change="changeCity"
+              value-key="code"
             >
               <el-option
                 v-for="item in cityList"
@@ -299,22 +320,7 @@
         </div>
       </div>
     </el-form>
-      <div class="text-center">
-         <el-button
-          size="small"
-          icon="el-icon-check"
-          type="primary"
-          @click="submitForm('customerForm')"
-          >保存</el-button
-        >
-        <el-button
-          size="small"
-          icon="el-icon-refresh"
-          v-if="!editFlag"
-          @click="resetForm('customerForm')"
-          >重置</el-button
-        >
-      </div>
+      
   </div>
 </template>
 
@@ -329,6 +335,9 @@ export default {
   components: { quill, VcUpload },
   data() {
     return {
+      orgName: "", // 所属大区
+      provinces: "",
+      city: "",
       cateGoryVisibilty:false,
       // imgUrl:'',
       activeNames:['1'],
@@ -422,6 +431,9 @@ export default {
       this.customerForm = this.$route.query.item.row;
       this.customerForm.trademark = this.$route.query.item.row.trademark
       this.customerForm.passWord = ''
+      this.orgName = this.$route.query.item.row.orgName
+      this.provinces = this.$route.query.item.row.provinces
+      this.city = this.$route.query.item.row.city
     }
   },
   computed: {
@@ -535,7 +547,6 @@ export default {
     },
     // 修改入参的区域数据
     changeOrg(val) {
-      // console.log(val);
       this.customerForm.orgName = val.osName;
       this.customerForm.orgStId = val.id;
     },
@@ -637,8 +648,8 @@ export default {
 
 <style lang="less" scoped>
 #addMenu {
-  height: calc(100vh - 88px);
   overflow: auto;
+  margin-left: 100px;
 }
 /deep/ .el-form-item__label {
   padding: 0 0;
@@ -659,14 +670,15 @@ export default {
     margin-right: 80px;
 }
 .left {
-  width: 450px;
+  width: 50%;
+  min-width:450px;
 }
 .right {
-  width: 450px;
+  width: 50%;
+  min-width:450px;
 }
 /deep/.text-center {
-  margin-left: -105px;
-  margin-top: 20px;
+  float:right;
 }
 /deep/ .el-textarea__inner {
   height: 100px;
@@ -676,5 +688,15 @@ export default {
 }
 .pwdTip {
   margin-left: 40px;
+}
+/deep/.el-page-header{
+  float:left;
+}
+/deep/.el-page-header__content{
+  font-size:14px!important;
+  font-weight: 500!important;
+}
+.headerBox{
+  overflow:hidden;
 }
 </style>

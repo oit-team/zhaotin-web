@@ -159,6 +159,8 @@ export default {
     },
     skip(item) {
       sessionStorage.setItem('headTitString', item.fieldDes)
+      this.$store.commit('menu/addMmenuOperation', item.menuOperation)
+      console.log(this.$store.state.menu.menuOperation)
       if (sessionStorage.getItem('headTitString')) {
         if (!item.childrenMenu) {
           this.$router.push(item.menuUrl)
@@ -167,6 +169,8 @@ export default {
     },
     skipSecond(items) {
       sessionStorage.setItem('headTitString', items.fieldDes)
+      this.$store.commit('menu/addMmenuOperation', items.menuOperation)
+      console.log(this.$store.state.menu.menuOperation)
       if (sessionStorage.getItem('headTitString')) {
         this.$router.push(items.menuUrl)
       }

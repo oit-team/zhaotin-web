@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>
+  <div style="height:100%">
+    <div style="height:100%">
         <TablePage v-bind="tablePageOption" auto ref="table"> 
           <template slot="content:customerType" slot-scope="{ row }">
             {{ CUSTOMER_TYPE_TEXT[row.customerType] }}
@@ -179,55 +179,71 @@ export default {
 
   computed: {
     tablePageOption() {
+      let operation = JSON.parse(this.$store.state.menu.menuOperation)
+      let actions = [];
+      let buttons = [];
+      operation.forEach((item,index) => {
+        if (item.statue == 1) {
+          if (item.operationKey == 'update') {
+            buttons.push({
+              tip: '编辑',
+              type: 'warning',
+              icon: 'el-icon-edit',
+              click: (scope) => this.$router.push({
+                path: '/basls/customerAccount/addCustomer',
+                query: { item: scope },
+              }),
+            })
+          } else if (item.operationKey == 'delete') {
+            buttons.push({
+              tip: '删除',
+              type: 'danger',
+              icon: 'el-icon-delete',
+              click: this.deleteCustomer,
+            })
+            
+          } else if (item.operationKey == 'disable') {
+            buttons.push({
+              tip: ({ row }) => ['禁用', '启用'][row.customerState],
+              type: ({ row }) => ['success'][row.customerState] || 'info',
+              icon: ({ row }) => ['el-icon-open'][row.customerState] || 'el-icon-turn-off',
+              click: this.changeState
+            })
+            
+          } else if (item.operationKey == 'import') {
+            actions.push({
+              name: '导入客户',
+              type: 'primary',
+              icon: 'el-icon-download',
+              click: () => this.importCustomer(),
+            })
+            
+          } else if (item.operationKey == 'export') {
+            actions.push({
+              name: '导出客户',
+              type: 'primary',
+              icon: 'el-icon-upload2',
+              click: () => this.exportCustomer(),
+            })
+            
+          } else if (item.operationKey == 'insert') {
+            actions.push({
+              name: '新增客户',
+              type: 'success',
+              icon: 'el-icon-plus',
+              click: () => this.$router.push('/basls/customerAccount/addCustomer'),
+            })
+          }
+        }
+      })
       return {
         promise: this.loadData,
-        actions: [
-          {
-            name: '新增客户',
-            type: 'success',
-            icon: 'el-icon-plus',
-            click: () => this.$router.push('/basls/customerAccount/addCustomer'),
-          },
-          {
-            name: '导入客户',
-            type: 'primary',
-            icon: 'el-icon-download',
-            click: () => this.importCustomer(),
-          },
-          {
-            name: '导出客户',
-            type: 'primary',
-            icon: 'el-icon-upload2',
-            click: () => this.exportCustomer(),
-          },
-        ],
+        actions: actions,
         table: {
           data: this.data.resultList,
           actions: {
             width: 180,
-            buttons: [
-              {
-                tip: '编辑',
-                type: 'warning',
-                icon: 'el-icon-edit',
-                click: (scope) => this.$router.push({
-                  path: '/basls/customerAccount/addCustomer',
-                  query: { item: scope },
-                }),
-              },
-              {
-                tip: '删除',
-                type: 'danger',
-                icon: 'el-icon-delete',
-                click: this.deleteCustomer,
-              },
-              {
-                tip: ({ row }) => ['禁用', '启用'][row.customerState],
-                type: ({ row }) => ['success'][row.customerState] || 'info',
-                icon: ({ row }) => ['el-icon-open'][row.customerState] || 'el-icon-turn-off',
-                click: this.changeState
-              },
-            ],
+            buttons: buttons,
           },
         },
         pager: {
