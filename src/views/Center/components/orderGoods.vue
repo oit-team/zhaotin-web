@@ -314,7 +314,6 @@ export default {
         type: 'ORDER_REASON',
         userId: sessionStorage.userId,
       })
-      console.log(res)
       if (res.head.status === 0) {
         this.reasonList = res.body.result
       }
@@ -499,7 +498,7 @@ export default {
           that.dialog2 = false
           clearTimeout(that.timer)
         } else {
-          console.log('error submit!!')
+          // console.log('error submit!!')
           return false
         }
       })

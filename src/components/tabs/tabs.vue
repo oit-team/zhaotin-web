@@ -100,13 +100,12 @@ export default {
   box-sizing: border-box;
 }
 .zt-tabs__homeSelect{
-  // width: 120px;
   text-align: center;
   background-color: #333;
   color: #CDA46C;
   font-weight: 800;
   border-radius: 30px;
-  padding: 15px;
+  padding: 15px 25px;
   white-space: nowrap;
   box-sizing: border-box;
 }

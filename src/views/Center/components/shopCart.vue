@@ -106,9 +106,6 @@ export default {
     // window.addEventListener('scroll', this.handleScrollx, true)
   },
   methods: {
-    // handleScrollx() {
-    //   console.log('距离顶部高度', this.$refs.pronbit.getBoundingClientRect().bottom)
-    // },
     async getData() {
       const that = this
       const res = await getShoppingCart({})
@@ -339,11 +336,12 @@ export default {
           let dataL = {}
           that.formData.styleList.forEach(e => {
             e.style.forEach(i => {
-              // console.log(i)
+              console.log(i)
               dataL = {
                 styleId: i.styleId,
                 styleNo: e.styleNo,
                 styleColor: i.id,
+                cartStyleType: i.cartStyleType,
                 styleSize: [],
               }
               i.styleSize.forEach(n => {

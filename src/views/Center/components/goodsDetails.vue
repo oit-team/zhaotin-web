@@ -413,10 +413,13 @@ export default {
       showEmp: false,
       imgMarginL: 0,
       thumbnailList: [],
+      orderType: '',
     }
   },
   created() {
     this.goodsId = this.$route.query.id
+    this.orderType = this.$route.query.orderType
+    console.log(this.orderType)
     if (this.$store.state.order.isStart) {
       this.getData()
       this.loadData()
@@ -484,12 +487,7 @@ export default {
             that.infoData.imgUrlList.push(...that.infoData.imgDetailUrlList)
           }
         }
-      }).catch((ret) => {
-        // if (ret.head.status !== 0) {
-        console.log(ret)
-        // that.showResult = true
-        // that.resultText = ret.head.msg
-        // }
+      }).catch(() => {
       })
     },
     async loadData() {
@@ -549,7 +547,6 @@ export default {
       const that = this
       const data = JSON.parse(JSON.stringify(that.infoData))
       that.$store.commit('order/cgDetail', that.infoData)
-      console.log(that.$store.state.order.detailData)
       // 新建  商品对象
       const resultList = []
       const resultListinfo = {
@@ -594,10 +591,11 @@ export default {
     async toorder() {
       this.cart()
       if (this.allList && this.allList.length === 0) {
-        this.$message.error('请选择需要购买的商品数量')
+        this.$message.error('请选择购买的商品数量')
       } else {
         const res = await addCart({
           styleList: this.allList,
+          cartStyleType: this.orderType,
         })
         if (res.head.status === 0) {
           this.$message({
@@ -631,7 +629,6 @@ export default {
             }
           })
           that.allList.unshift(styleData)
-          console.log(that.allList)
         }
       })
     },

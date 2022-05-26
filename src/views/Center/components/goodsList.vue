@@ -12,10 +12,21 @@
           :label-text="labelText1"
           @checkTab="checkTab"
         />
+        <div class="zt-radio">
+          <div class="zt-radio__label">最近一年:</div>
+          <!-- <el-radio-group v-model="radio" @change="radioText">
+            <el-radio label="1">未下款</el-radio>
+            <el-radio label="2">已下款</el-radio>
+          </el-radio-group> -->
+          <!-- <el-checkbox-group @change="radioText"> -->
+          <el-checkbox v-model="radio1" @change="radioText">未下款</el-checkbox>
+          <el-checkbox v-model="radio2" @change="radioText">已下款</el-checkbox>
+          <!-- </el-checkbox-group> -->
+        </div>
       </div>
       <!-- <el-divider /> -->
       <div class="zt-tabs__bottom">
-        <div class="zt-bottom__label">排序</div>
+        <div class="zt-bottom__label">排序:</div>
         <div class="zt-bottom__tab">
           <div
             :class="selectB===0?'selectB':'zt-bottom__item'"
@@ -151,6 +162,7 @@ export default {
         styleNo: '', // 商品编号
         pageNum: 1,
         pageSize: 20,
+        orderType: '1',
         styleId: '', // 商品id
         styleLength: '', // 商品衣长
         styleCategory: '', // 商品类别dicttimeDisplayName
@@ -168,6 +180,9 @@ export default {
       showEmp: false,
       shouDjiantou: true,
       priceTF: true,
+      radio: null,
+      radio1: false,
+      radio2: false,
       // -----
       fullscreenLoading: false,
       tabList: [],
@@ -258,7 +273,6 @@ export default {
             this.addData()
             this.$forceUpdate()
           }
-          // console.log(this.$refs.content.getBoundingClientRect().y)
           if (this.$refs.content.getBoundingClientRect().y <= 0) {
             this.isTop = true
             this.$forceUpdate
@@ -308,7 +322,6 @@ export default {
       } else {
         con = ''
       }
-      console.log(con)
       that.$nextTick(() => {
         that.formData.styleLength = con
         this.loadData()
@@ -375,8 +388,6 @@ export default {
     priceC() {
       this.input1 = this.input1.replace(/\D/g, '')
       this.input2 = this.input2.replace(/\D/g, '')
-      console.log(this.input1)
-      console.log(this.input2)
       if (this.input1 !== '' && this.input2 !== '') {
         if (this.input1 < this.input2) {
           this.formData.startTradePrice = this.input1
@@ -394,7 +405,14 @@ export default {
       }
     },
     todetails(id) {
-      this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
+      this.$router.push(`/styleCenter/goodsDetails?id=${id}&orderType=${this.formData.orderType}`)
+      // this.$router.push({
+      //   name: 'goodsDetails',
+      //   params: {
+      //     id,
+      //     orderType: this.formData.orderType,
+      //   },
+      // })
     },
     toCart() {
       this.$router.push('/styleCenter/shopCart')
@@ -403,6 +421,18 @@ export default {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
       if (scrollTop !== 0) {
         window.scrollTo('0', '0')
+      }
+    },
+    radioText(val) {
+      if (this.radio1 === this.radio2) {
+        this.formData.orderType = '1'
+        this.loadData()
+      } else if (this.radio1) {
+        this.formData.orderType = '2'
+        this.loadData()
+      } else if (this.radio2) {
+        this.formData.orderType = '3'
+        this.loadData()
       }
     },
   },
@@ -431,6 +461,9 @@ export default {
     align-items: center;
     width: 100%;
     box-sizing: border-box;
+    .ct-tabs{
+      width: 30%;
+    }
   }
   .zt-tabs__center:hover{
     cursor: pointer;
@@ -492,6 +525,39 @@ export default {
   }
   ::v-deep .el-divider--horizontal{
     margin: 15px 0;
+  }
+  .zt-radio{
+    display: flex;
+    align-items: center;
+    .zt-radio__label{
+      margin-right: 20px;
+    }
+  }
+  ::v-deep .el-radio{
+    font-size: 16px;
+  }
+  ::v-deep .el-radio__label{
+    font-size: 16px;
+  }
+  ::v-deep .is-checked + .el-radio__label{
+    color: #CDA46C;
+  }
+  ::v-deep .is-checked .el-radio__inner{
+    border-color: #CDA46C;
+    background: #CDA46C;
+  }
+  ::v-deep .el-checkbox{
+    font-size: 16px;
+  }
+  ::v-deep .el-checkbox__label{
+    font-size: 16px;
+  }
+  ::v-deep .is-checked + .el-checkbox__label{
+    color: #CDA46C;
+  }
+  ::v-deep .is-checked .el-checkbox__inner{
+    border-color: #CDA46C;
+    background: #CDA46C;
   }
 }
 .zt-content{
