@@ -8,9 +8,9 @@
           content="订单详情"
         />
         <div class="flex justify-between px-14">
-          <div class=" font-extrabold">单号：{{ orderNo }}</div>
+          <div class="font-extrabold">单号：{{ orderNo }}</div>
           <div class="font-extrabold">下单时间: {{ orderTime }}</div>
-          <!-- <div class="font-extrabold text-xl">订单类型: {{ orderTypeName }}</div> -->
+          <div class="font-extrabold">订单类型: {{ orderTypeName }}</div>
           <div class="font-extrabold">件数: {{ Numb }}件</div>
           <div class="font-extrabold">总金额: <span class="zt-red">￥{{ priceAll }}</span></div>
         </div>
@@ -102,9 +102,8 @@
         </div>
         <div class="zt-footer">
           <div class="zt-footer__left">
-            <!-- <p>寄送地址：<span>{{ dataInfo.consigneeAddress || '无' }}</span></p>
-            <p>收货人：<span>{{ dataInfo.consignee || '无' }}</span>{{ ' ' }}{{ dataInfo.consigneePhone || '' }}</p> -->
-            <!-- <div class="zt-footer__price" v-if="siteList && siteList.length !== 0"> -->
+            <p>下单原因：<span>{{ dataInfo.orderReason || '无' }}</span></p>
+            <p>备注：<span>{{ dataInfo.orderNote || '无' }}</span></p>
           </div>
           <div class="zt-footer__right">
             <p>收货人：<span>{{ dataInfo.consignee || '无' }}</span>{{ ' ' }}{{ dataInfo.consigneePhone || '' }}</p>
