@@ -202,6 +202,17 @@ export default {
               click: this.deleteCustomer,
             })
             
+          } else if (item.operationKey == 'selectById') {
+            buttons.push({
+              tip: '查看客户详情',
+              type: 'primary',
+              icon: 'el-icon-view',
+              click: (scope) => this.$router.push({
+                path: '/basls/customerAccount/addCustomer',
+                query: { item: scope , flag: 1},
+              }),
+            })
+            
           } else if (item.operationKey == 'disable') {
             buttons.push({
               tip: ({ row }) => ['禁用', '启用'][row.customerState],
@@ -257,14 +268,14 @@ export default {
       const con = {
         ...params,
         brandId:sessionStorage.brandId,
-        code:'1'
+        code:'1',
+        selectOperation: 'selectAll'
       }
       const res = await getCustomer(con)
       this.data = res.body
     },
     // 删除角色
     deleteCustomer(item) {
-      console.log(item);
       this.$confirm('确认删除该角色吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -480,7 +491,6 @@ export default {
           ...SeaerchInfo
         }
         getExportCustomer(con,{responseType: 'arraybuffer'}).then((res) => {
-            console.log(res.data);
             var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
             var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
             var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
