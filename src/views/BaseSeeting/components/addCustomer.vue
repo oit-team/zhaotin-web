@@ -10,13 +10,14 @@
       
       <el-page-header
         @back="$router.back()"
-        :content="editFlag ? '编辑客户' : '新增客户'"
+        :content="title"
       />
       <div class="text-center">
          <el-button
           size="small"
           icon="el-icon-check"
           type="primary"
+          v-if="editFlag&&!justRead"
           @click="submitForm('customerForm')"
           >保存</el-button
         >
@@ -186,16 +187,17 @@
           </el-form-item>
 
             <el-form-item label="客户商标" label-width="100%">
-        <vc-upload v-bind="uploadOptionimg" ref="uploadImage">
+        <vc-upload v-bind="uploadOptionimg"  ref="uploadImage">
           <i class="el-icon-plus"></i>
         </vc-upload>
+        <p class="tip">*最多可以上传1张图片，推荐格式jpg或png</p>
        </el-form-item>
-        <el-form-item v-if="cateGoryVisibilty" label-width="100%" label="客户商标">
+<!--        <el-form-item v-if="cateGoryVisibilty" label-width="100%" label="客户商标">
           <span class="flex text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上 &nbsp; 传即可</span>
           <div class="w-24 h-24 mb-12">
             <el-image :src="customerForm.trademark" fit="cover" />
           </div>
-       </el-form-item>
+       </el-form-item> -->
 
           <el-form-item label="客户洗唛车法" label-width="100%" prop="washingLabel">
             <el-input
@@ -335,6 +337,9 @@ export default {
   components: { quill, VcUpload },
   data() {
     return {
+      fileList: [],
+      title: '新增客户',
+      justRead: false, //仅查看
       orgName: "", // 所属大区
       provinces: "",
       city: "",
@@ -422,11 +427,12 @@ export default {
     this.getCustomerList();
     this.getCityList();
     this.getTreeOrgList();
-     this.customerForm.passWord = ''
-      this.customerForm.loginName = ''
+    this.customerForm.passWord = ''
+    this.customerForm.loginName = ''
     if (this.$route.query.item) {
       this.imgVisible = true
       this.editFlag = true;
+      this.title = '编辑客户'
       this.cateGoryVisibilty = true
       this.customerForm = this.$route.query.item.row;
       this.customerForm.trademark = this.$route.query.item.row.trademark
@@ -434,6 +440,17 @@ export default {
       this.orgName = this.$route.query.item.row.orgName
       this.provinces = this.$route.query.item.row.provinces
       this.city = this.$route.query.item.row.city
+      if (this.customerForm.trademark) {
+        this.fileList = [{
+          url:this.customerForm.trademark
+        }]
+      } else {
+        this.fileList = []
+      }
+    }
+    if (this.$route.query.flag) {
+      this.justRead = true
+      this.title = '查看客户'
     }
   },
   computed: {
@@ -449,6 +466,7 @@ export default {
             },
           },
         },
+        fileList: this.fileList,
         listType: "picture-card",
         maxSize: 1024 * 20,
         limit: 1,
@@ -458,11 +476,14 @@ export default {
         onSuccess: (file, fileList) => {
           this.uploadList = fileList
           this.customerForm.trademark = this.uploadList.response.data.fileUrl
-        },
+        }
       };
     },
   },
   methods: {
+    // onRemove(file) {
+    //   this.customerForm.trademark = ''
+    // },
     // 获取区域数据
     async getCityList() {
       const res = await axios.get(
@@ -698,5 +719,12 @@ export default {
 }
 .headerBox{
   overflow:hidden;
+}
+.tip{
+  color:#e60012;
+  margin:12px 0px;
+}
+/deep/ .el-upload-list__item {
+  transition: none !important;
 }
 </style>
