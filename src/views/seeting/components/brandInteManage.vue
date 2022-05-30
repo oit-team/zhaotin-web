@@ -792,7 +792,6 @@ export default {
           type: "warning",
         });
       } else if (this.$refs.table.selected.length === 1) {
-        console.log(this.$refs.table.selected);
         this.batchPowerFlag = true;
         const con = {
           id: this.$refs.table.selected[0].loginId,
@@ -803,8 +802,9 @@ export default {
         this.getRoleList(con);
       } else {
         this.batchPowerFlag = true;
+        this.$refs.roleMultipleTable.clearSelection()
         const con = {
-          id: this.$refs.table.selected[0].loginId,
+          id: '',
           pageNum: this.params.pageNum,
           pageSize: this.params.pageSize,
           brandId: sessionStorage.brandId,
@@ -815,11 +815,11 @@ export default {
     getRoleList(con) {
       reqRole(con).then((res) => {
         this.powerList = res.body.resultList;
+        this.userIds = [];
         this.$refs.table.selected.forEach((item) => {
           this.userIds.push(item.loginId);
         });
         const result = res.body.isAssociatedRole;
-        console.log(result);
         if (result) {
           this.checkedRoleArr = result;
           let checkedArr = [];
@@ -838,18 +838,23 @@ export default {
     },
     // 角色选项有变化时
     roleSelection(val) {
-      console.log(val);
+      let arr = val.map(item => item.roleId)
+      this.roleId = arr
     },
     // 当页勾选以及取消
     changeSelectRole(selection, row) {
-      let fitemIndex = this.roleId.findIndex((item) => {
-        return item == row.roleId;
-      });
-      if (fitemIndex < 0) {
-        this.roleId.push(row.roleId);
-      } else {
-        this.roleId.splice(fitemIndex, 1);
-      }
+      //   console.log(123123123)
+      // let fitemIndex = this.roleId.findIndex((item) => {
+      //   return item == row.roleId;
+      // });
+      // if (fitemIndex < 0) {
+      //   // this.roleId.push(row.roleId);
+      // } else {
+       
+      //   console.log(fitemIndex)
+      //   // this.roleId.splice(fitemIndex, 1);
+      // }
+      
     },
     // 表格全选内容
     selectAllRole(val) {
@@ -864,7 +869,7 @@ export default {
     cancelBatch() {
       this.batchPowerFlag = false;
       this.roleId = [];
-      this.$refs.roleMultipleTable.clearSelection();
+      // this.$refs.roleMultipleTable.clearSelection();
     },
     // 确认授权
     confirmBatch() {

@@ -265,11 +265,18 @@ export default {
   },
   methods: {
     async loadData(params) {
+      let operation = JSON.parse(this.$store.state.menu.menuOperation)
+      let selectOperation = ""
+      operation.forEach(item => {
+        if (item.operationKey == "selectAll" && item.statue == 1) {
+          selectOperation = "selectAll"
+        }
+      })
       const con = {
         ...params,
         brandId:sessionStorage.brandId,
         code:'1',
-        selectOperation: 'selectAll'
+        selectOperation: selectOperation
       }
       const res = await getCustomer(con)
       this.data = res.body

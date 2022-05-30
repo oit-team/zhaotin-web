@@ -30,6 +30,24 @@ export default {
 
   computed: {
     tablePageOption() {
+      const operation = JSON.parse(this.$store.state.menu.menuOperation)
+      console.log(operation)
+      const buttons = []
+      operation.forEach((item, index) => {
+        if (item.statue === 1) {
+          if (item.operationKey === 'selectById') {
+            buttons.push({
+              tip: '订单详情',
+              type: 'success',
+              icon: 'el-icon-view',
+              click: (scope) => this.$router.push({
+                path: '/order/orderMsg',
+                query: { item: scope },
+              }),
+            })
+          }
+        }
+      })
       return {
         promise: this.loadData,
         // 搜索表单内的按钮
@@ -39,17 +57,7 @@ export default {
           data: this.data.resultList,
           actions: {
             width: 180,
-            buttons: [
-              {
-                tip: '订单详情',
-                type: 'success',
-                icon: 'el-icon-view',
-                click: (scope) => this.$router.push({
-                  path: '/order/orderMsg',
-                  query: { item: scope },
-                }),
-              },
-            ],
+            buttons,
           },
         },
         pager: {
@@ -62,9 +70,17 @@ export default {
   },
   methods: {
     async loadData(params) {
+      const operation = JSON.parse(this.$store.state.menu.menuOperation)
+      let selectOperation = ''
+      operation.forEach(item => {
+        if (item.operationKey === 'selectAll' && item.statue === 1) {
+          selectOperation = 'selectAll'
+        }
+      })
       const con = {
         userId: sessionStorage.userId,
         ...params,
+        selectOperation,
       }
       await orderInfo(con).then((res) => {
         if (res.head.status === 0) {

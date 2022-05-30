@@ -22,13 +22,33 @@
           :props="defaultProps"
           :show-checkbox="true"
           default-expand-all
-        />
+        >
+          <span class="custom-tree-node" slot-scope="{data}">
+            <span>{{data.menuName}}</span>
+            <span class='authBtn'>
+              <i class="el-icon-thumb"  @click.stop="() => authBtn(data)"></i>
+            </span>
+          </span>
+        </el-tree>
       </el-form-item>
       <el-form-item>
         <el-button size="small" icon="el-icon-check" type="primary" @click="submitForm('ruleForm')">保存</el-button>
         <el-button size="small" icon="el-icon-refresh" v-if="editFlag" @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
     </el-form>
+    <el-drawer
+      :title="currentMenuName+'--请选择需要授权的按钮'"
+      :visible.sync="authFlag"
+      direction="rtl"
+      size="40%"
+      :before-close="handleAuthClose"
+      >
+      <div class="demo-drawer__content">
+        <div class="btnListBox">
+          <el-checkbox v-for="(item,index) in btnList" :disabled="btnDisable" :label="item.operationValue" v-model="item.statue" :true-label="1" :false-label="0"></el-checkbox>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -40,6 +60,10 @@ export default {
   name: 'AddRole',
   data() {
     return {
+      btnDisable: false, //当前打开的列表按钮是否允许点击
+      currentMenuName:'', //当前打开授权的菜单名称
+      btnList: [], //当前打开授权的按钮列表
+      authFlag: false, //是否显示授权页
       menuIds: [], // 权限菜单点击选中的menuId数组
       editFlag: true, // 判断是否出现重置
       menuList: [], // 树形菜单列表
@@ -204,10 +228,42 @@ export default {
         }
       })
     },
+    authBtn(data) {
+      const checkedKeys = this.$refs.tree.getCheckedKeys()
+      const btnDisable = checkedKeys.findIndex(item => item == data.menuId) == -1 ? true : false
+      // console.log(data)
+      if (typeof data.menuOperation == 'string') {
+        data.menuOperation = JSON.parse(data.menuOperation)
+      }
+      this.btnList = data.menuOperation
+      this.currentMenuName = data.menuName
+      this.btnDisable = btnDisable
+      console.log(this.btnDisable)
+      this.authFlag = true
+      
+    },
+    handleAuthClose() {
+      this.authFlag = false
+    }
   },
 }
 </script>
 
-<style>
-
+<style lang="less" scoped>
+.btnListBox{
+  padding-left: 20px;
+  .el-checkbox{
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+.authBtn{
+  cursor:pointer;
+  margin-left: 6px;
+  transition:color .15s linear;
+}
+.authBtn:hover {
+  color:#5cb6ff;
+  transition:color .15s linear;
+}
 </style>
