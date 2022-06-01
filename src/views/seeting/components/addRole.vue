@@ -60,6 +60,7 @@ export default {
   name: 'AddRole',
   data() {
     return {
+      allMenuOperationList: [],
       btnDisable: false, //当前打开的列表按钮是否允许点击
       currentMenuName:'', //当前打开授权的菜单名称
       btnList: [], //当前打开授权的按钮列表
@@ -147,6 +148,7 @@ export default {
         // console.log('获取此角色所拥有的菜单id列表-----', res.data.body)
         if (res.head.status === 0) {
         //   console.log(res.body)
+          this.allMenuOperationList = res.body.allMenuOperationList
           this.defaultCheckedKeys = res.body.menuIdList// 此角色的菜单menuIds
           this.getHomeMenuList()// 获取菜单树
         } else {
@@ -162,16 +164,32 @@ export default {
       const _this = this
       _this.$refs[formName].validate((valid) => {
         if (valid) {
-          const halfCheckedKeys = this.$refs.tree.getHalfCheckedKeys() // 半选中的节点所组成的数组
-          const checkedKeys = this.$refs.tree.getCheckedKeys() // 选中的节点所组成的数组
+          const halfCheckedKeys = this.$refs.tree.getHalfCheckedNodes() // 半选中的节点所组成的数组
+          const checkedKeys = this.$refs.tree.getCheckedNodes() // 选中的节点所组成的数组
           //   console.log(halfCheckedKeys, checkedKeys)
           for (let j = 0; j < halfCheckedKeys.length; j++) {
             checkedKeys.push(halfCheckedKeys[j])
           }
           //   console.log(halfCheckedKeys,checkedKeys)
           // console.log(checkedKeys.toString())
-          _this.menuIds = checkedKeys
-          //   console.log(this.menuIds)
+          let menuIds = []
+          checkedKeys.forEach(item => {
+            let menuOperation = ""
+            if (item.menuOperation) {
+              if (typeof item.menuOperation != 'string') {
+                menuOperation = JSON.stringify(item.menuOperation)
+              } else {
+                menuOperation = item.menuOperation
+              }
+            }
+            menuIds.push({
+              menuId: item.menuId,
+              menuOperation: menuOperation,
+              menuName: item.menuName,
+            })
+          })
+          
+          _this.menuIds = menuIds
           // console.log('_this.ruleForm.roleId',_this.ruleForm.roleId)
           //   if (_this.ruleForm.roleId === 0 || _this.ruleForm.roleId) {
           // console.log("编辑用户",_this.ruleForm.roleId)
@@ -186,7 +204,7 @@ export default {
             // brandId: '1',
             roleId: this.ruleForm.roleId,
             // brandId:this.ruleForm.brandId?this.ruleForm.brandId:"0",
-            menuIds: this.menuIds.toString(),
+            menuIds: _this.menuIds,
           }
           // console.log(this.ruleForm)
           if (!this.ruleForm.roleId) {
@@ -215,7 +233,7 @@ export default {
               userId: sessionStorage.userId,
               roleId: this.ruleForm.roleId,
               brandId: sessionStorage.brandId,
-              menuIds: this.menuIds.toString(),
+              menuIds: this.menuIds,
             }).then(() => {
             //   console.log(res)
               this.$router.back()
@@ -231,14 +249,18 @@ export default {
     authBtn(data) {
       const checkedKeys = this.$refs.tree.getCheckedKeys()
       const btnDisable = checkedKeys.findIndex(item => item == data.menuId) == -1 ? true : false
-      // console.log(data)
+      let checkedMenu = this.allMenuOperationList.findIndex(item=>item.menuId == data.menuId)
+      if (checkedMenu != -1) {
+        data.menuOperation = this.allMenuOperationList[checkedMenu].menuOperation
+        this.allMenuOperationList[checkedMenu] = ''
+      }
+      // return;
       if (typeof data.menuOperation == 'string') {
         data.menuOperation = JSON.parse(data.menuOperation)
       }
       this.btnList = data.menuOperation
       this.currentMenuName = data.menuName
       this.btnDisable = btnDisable
-      console.log(this.btnDisable)
       this.authFlag = true
       
     },

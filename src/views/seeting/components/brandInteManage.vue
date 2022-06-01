@@ -876,6 +876,7 @@ export default {
       addUserAndRole({
         roleIds: this.roleId.toString(),
         userIds: this.userIds.toString(),
+        usRoCode:'1',
       }).then((res) => {
         if (res.head.status === 0) {
           this.$message({
