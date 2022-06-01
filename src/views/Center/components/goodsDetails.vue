@@ -248,7 +248,33 @@
         <div class="zt-content__data3">
           <div class="zt-content__label">尺码信息</div>
           <div class="zt-content__info">
-            <el-table
+            <div class="data3-form">
+              <div class="form-line">
+                <div class="form-line__item">尺码</div>
+                <div
+                  class="form-line__item"
+                  v-for="(item, index) in titleMap"
+                  :key="index"
+                >
+                  {{ item }}
+                </div>
+              </div>
+              <div
+                class="form-line"
+                v-for="(item, index) in infoData.styleSizeList"
+                :key="index"
+              >
+                <div class="form-line__item">{{ item.sizeName }}</div>
+                <div
+                  class="form-line__item"
+                  v-for="(iteM, indeX) in item.sizeConfig"
+                  :key="indeX"
+                >
+                  {{ iteM || '-' }}
+                </div>
+              </div>
+            </div>
+            <!-- <el-table
               :data="infoData.styleSizeList"
               height="250"
               border
@@ -261,42 +287,14 @@
                 align="center"
               />
               <el-table-column
-                prop="sizeConfig[0]"
-                label="肩袖长"
+                v-for="(item, index) in titleMap"
+                :key="index"
+                prop="sizeConfig"
+                :label="item"
                 width="120"
                 align="center"
               />
-              <el-table-column
-                prop="sizeConfig[1]"
-                label="袖口"
-                width="120"
-                align="center"
-              />
-              <el-table-column
-                prop="sizeConfig[2]"
-                label="胸围"
-                width="120"
-                align="center"
-              />
-              <el-table-column
-                prop="sizeConfig[3]"
-                label="肩宽"
-                width="120"
-                align="center"
-              />
-              <el-table-column
-                prop="sizeConfig[4]"
-                label="领围"
-                width="120"
-                align="center"
-              />
-              <el-table-column
-                prop="sizeConfig[5]"
-                label="袖长"
-                width="120"
-                align="center"
-              />
-            </el-table>
+            </el-table> -->
           </div>
         </div>
         <el-divider />
@@ -317,16 +315,16 @@
         <el-divider />
         <div class="zt-content__data5">
           <div class="zt-content__label">洗涤说明</div>
-          <div class="zt-content__list">
+          <div class="zt-content__list" v-if="infoData.styleWashing">
             <div class="zt-content__info" v-for="(item, index) in infoData.styleWashing" :key="index">
-              <div v-if="item.status === '1'">
-                <el-image
-                  style="width: 80px; height: 80px"
-                  :src="item.resUrl"
-                  fit="contain"
-                />
-                <div>{{ item.name }}</div>
-              </div>
+              <!-- <div v-if="item.status === '1'"> -->
+              <el-image
+                style="width: 80px; height: 80px"
+                :src="item.resUrl"
+                fit="contain"
+              />
+              <div>{{ item.name }}</div>
+              <!-- </div> -->
             </div>
           </div>
         </div>
@@ -396,7 +394,7 @@ export default {
         endcreateTime: '', // 结束时间
         styleName: '', // 商品名称
         status: '1', // 商品状态
-        seriesId: '3', // 季节id
+        seriesId: '', // 季节id
         shelfTimeSort: 0, // 批发价排序（0：从小到大 1是从大到小）
         tradePriceSort: 0, // 上架时间排序（0：从小到大 1是从大到小）
       },
@@ -414,15 +412,15 @@ export default {
       imgMarginL: 0,
       thumbnailList: [],
       orderType: '',
+      sizeConfig: [],
+      titleMap: [],
     }
   },
   created() {
     this.goodsId = this.$route.query.id
     this.orderType = this.$route.query.orderType
-    console.log(this.orderType)
     if (this.$store.state.order.isStart) {
       this.getData()
-      this.loadData()
     } else {
       this.infoData = this.$store.state.order.detailData
     }
@@ -455,6 +453,14 @@ export default {
             that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
           }
           that.thumbnailList = [...that.infoData.imgUrlList, ...that.infoData.imgDetailUrlList]
+          that.titleMap = Object
+            .keys(that.infoData.titleMap)
+            .sort((prev, next) => (+prev.substring(3)) - (+next.substring(3)))
+            .map(key => that.infoData.titleMap[key])
+          that.infoData.styleSizeList.forEach(e => {
+            that.sizeConfig.push(e.sizeConfig)
+          })
+          that.formData.seriesId = String(res.body.resultList.seriesId)
           that.$set(that.infoData, 'thumbnailList', that.thumbnailList)
           // recommendationLevel : 推荐指数
           that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
@@ -486,6 +492,7 @@ export default {
           if (that.infoData.imgDetailUrlList.length !== 0) {
             that.infoData.imgUrlList.push(...that.infoData.imgDetailUrlList)
           }
+          that.loadData()
         }
       }).catch(() => {
       })
@@ -954,6 +961,10 @@ video::-webkit-media-controls-timeline {
       display: flex;
       align-items: baseline;
       padding: 0 30px;
+      .zt-content__info{
+        min-width: 70%;
+        max-width: 90%;
+      }
     }
     .zt-content__data4{
       display: flex;
@@ -1086,6 +1097,29 @@ video::-webkit-media-controls-timeline {
         border: 1px solid #F2F2F2;
       }
     }
+  }
+}
+.data3-form{
+  border: 1px solid #EBEEF5;
+  color: #909399;
+  .form-line{
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    align-items: center;
+    border-top: 1px solid #EBEEF5;
+    .form-line__item{
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      border-left: 1px solid #EBEEF5;
+    }
+    .form-line__item:first-child{
+      border: none;
+    }
+  }
+  .form-line:first-child{
+    border: none;
   }
 }
 .zt-jin{
