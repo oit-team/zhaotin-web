@@ -305,7 +305,7 @@
             <div class="zt-info__item" v-for="(item, index) in infoData.styleData" :key="index">
               <div class="zt-item__label">{{ item.name }}</div>
               <div class="zt-item__item" v-for="(itemN, indexN) in item.options" :key="indexN">
-                <div :class="itemN.status === '1'?'zt-item__select':'zt-item__item-item'">
+                <div :class="itemN.status === 1?'zt-item__select':'zt-item__item-item'">
                   {{ itemN.option }}
                 </div>
               </div>
@@ -442,6 +442,7 @@ export default {
         if (res.head.status === 0) {
           that.infoData = res.body.resultList
           that.infoData.styleData = JSON.parse(that.infoData.styleData)
+          console.log(that.infoData.styleData)
           that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
           if (that.infoData.styleWashing) {
             const list = []
