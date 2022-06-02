@@ -104,3 +104,27 @@ export function updateSizeConfInfo(params) {
     cmd: 100008,
   })
 }
+// 查询积分配置code对应的配置信息
+export function getCollocation(params) {
+  return post('/goods/integralRole/getIntegralRuleList', params, {
+    mod: 'vue',
+  })
+}
+// 删除积分规则
+export function deleteCollocation(params) {
+  return post('/goods/integralRole/deleteIntegralRule', params, {
+    mod: 'vue',
+  })
+}
+// 新增积分规则
+export function addCollocation(params) {
+  return post('/goods/integralRole/addIntegralRule', params, {
+    mod: 'vue',
+  })
+}
+// 修改积分规则
+export function updateCollocation(params) {
+  return post('/goods/integralRole/updateIntegralRule', params, {
+    mod: 'vue',
+  })
+}
