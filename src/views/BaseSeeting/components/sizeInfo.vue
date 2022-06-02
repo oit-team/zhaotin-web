@@ -184,6 +184,7 @@ export default {
       getSizeInfoAll(con).then((res) => {
         if(res.head.status === 0) {
           this.sizeList = res.body.resultList
+          this.SortSizeList = this.sizeList
         }else {
           this.$message({
             message:res.head.msg,
@@ -219,6 +220,7 @@ export default {
       clothingSizeInfo(con).then((res) => {
         // console.log(res);
         this.editSizeFlag = false;
+        const _this = this
         if(res.head.status === 0){
           if(res.body){
             this.baseInfo = res.body;
@@ -242,12 +244,23 @@ export default {
             this.sizeList.forEach((item,index) => {
               CheckedSortItem = this.baseInfo.resultMap.find(Item => Item.SIZE_NAME == item.sizeName)
               if (CheckedSortItem) {
-                let obj1 = this.sizeList[index]
-                let obj2 = this.sizeList[CheckedSortItem.SORT]
-                SortSizeList[CheckedSortItem.SORT] = obj1
-                SortSizeList[index] = obj2
+                // let obj1 = this.sizeList[index]
+                // let obj2 = this.sizeList[CheckedSortItem.SORT]
+                // SortSizeList[CheckedSortItem.SORT] = obj1
+                // SortSizeList[index] = obj2
+                item.sort = CheckedSortItem.SORT
+              } else {
+                if (index == _this.sizeList.length-1) {
+                  item.sort = index - 0.1
+                } else {
+                  item.sort = index+0.1
+                }
               }
             })
+            SortSizeList.sort((a,b) => {
+              return a.sort - b.sort
+            })
+            SortSizeList = SortSizeList.filter(item => item != 'undefined')
             this.SortSizeList = SortSizeList
           }
         }else if(res.head.status === -3){

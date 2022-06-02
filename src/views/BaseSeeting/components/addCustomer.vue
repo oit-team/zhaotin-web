@@ -17,7 +17,7 @@
           size="small"
           icon="el-icon-check"
           type="primary"
-          v-if="editFlag&&!justRead"
+          v-if="!justRead"
           @click="submitForm('customerForm')"
           >保存</el-button
         >
