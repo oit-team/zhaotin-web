@@ -648,7 +648,7 @@ export default {
   font-size: 14px;
   border-radius: 10px;
   background: linear-gradient(to bottom,#FFB902,#FF9606);
-  padding: 8px;
+  padding: 5px;
   margin-bottom: 5px;
   white-space: nowrap;
   box-sizing: border-box;

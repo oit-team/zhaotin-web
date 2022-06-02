@@ -67,11 +67,6 @@ const routes = [
         path: '/styleCenter/orderGoods',
         component: OrderGoods,
       },
-      // {
-      //   path: '/styleCenter/nullpage',
-      //   component: Nullpage,
-      //   name: 'Nullpage',
-      // },
     ],
     // component: () => import('@/views/Center/index'),
   },
@@ -168,6 +163,10 @@ const routes = [
       {
         path: '/basls/styleType/sizeInfo',
         component: () => import('@/views/BaseSeeting/components/sizeInfo'),
+      },
+      {
+        path: '/basls/Integral',
+        component: () => import('@/views/BaseSeeting/components/Integral'),
       },
     ],
   },
