@@ -442,7 +442,6 @@ export default {
         if (res.head.status === 0) {
           that.infoData = res.body.resultList
           that.infoData.styleData = JSON.parse(that.infoData.styleData)
-          console.log(that.infoData.styleData)
           that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
           if (that.infoData.styleWashing) {
             const list = []
