@@ -78,8 +78,7 @@
       </div>
       <el-divider />
     </div>
-    <el-empty v-if="showEmp" description="暂无相关数据" />
-    <div class="zt-content" v-loading="fullscreenLoading" v-else ref="content">
+    <el-empty v-show="showEmp" description="暂无相关数据">
       <div class="nav-r" :class="isTop?'nav-R':''">
         <!-- <div class="addorder zt-flex">
           <i class="el-icon-document-add"></i>
@@ -98,7 +97,26 @@
           <div>返回顶部</div>
         </div>
       </div>
-      <!-- :class="goodsLength>=5?'zt-content__item_margin':''" -->
+    </el-empty>
+    <div class="zt-content" v-loading="fullscreenLoading" v-show="!showEmp" ref="content">
+      <div class="nav-r" :class="isTop?'nav-R':''">
+        <!-- <div class="addorder zt-flex">
+          <i class="el-icon-document-add"></i>
+          <div>快速补货</div>
+        </div> -->
+        <div class="orderCart zt-flex" @click="toCart">
+          <i class="el-icon-s-order"></i>
+          <div>订货清单</div>
+        </div>
+        <!-- <div class="service zt-flex">
+          <i class="el-icon-chat-line-round"></i>
+          <div>在线客服</div>
+        </div> -->
+        <div class="totop zt-flex" @click="backTop">
+          <i class="el-icon-arrow-up"></i>
+          <div>返回顶部</div>
+        </div>
+      </div>
       <div
         class="zt-content__item"
         v-for="(item, index) in dataList"
@@ -221,25 +239,24 @@ export default {
     async loadData() {
       const that = this
       that.fullscreenLoading = true
-      setTimeout(() => {
+      setTimeout(async () => {
         that.fullscreenLoading = false
+        that.formData.pageNum = 1
+        that.formData.styleSearch = that.inputVal || ''
+        const res = await getProductList({
+          ...that.formData,
+        })
+        if (res.body.resultList.length === 0) {
+          that.isUpdate = false
+          window.removeEventListener('scroll', this.scrollEvent)
+          that.showEmp = true
+        } else {
+          that.isUpdate = true
+          window.addEventListener('scroll', this.scrollEvent)
+          that.showEmp = false
+        }
+        that.dataList = res.body.resultList
       }, 1000)
-      that.formData.pageNum = 1
-      that.formData.styleSearch = that.inputVal || ''
-      const res = await getProductList({
-        ...that.formData,
-      })
-      if (res.body.resultList.length === 0) {
-        that.isUpdate = false
-        window.removeEventListener('scroll', this.scrollEvent)
-        that.showEmp = true
-      } else {
-        that.isUpdate = true
-        window.addEventListener('scroll', this.scrollEvent)
-        that.showEmp = false
-      }
-      that.dataList = res.body.resultList
-      // that.tabList1 = res.body.styelTypeList
     },
     // 页面 触底加载
     async addData() {
@@ -564,6 +581,7 @@ export default {
   position: relative;
   display: flex;
   height: 100%;
+  min-height: 50vh;
   flex-wrap: wrap;
   // overflow: auto;
   .zt-content__item:hover{
@@ -627,6 +645,9 @@ export default {
     margin-bottom: 16px;
     border: 1px solid #F2F2F2;
   }
+}
+::v-deep .el-empty{
+  position: relative;
 }
 .nav-r{
   position: absolute;
