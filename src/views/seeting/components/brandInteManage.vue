@@ -802,7 +802,9 @@ export default {
         this.getRoleList(con);
       } else {
         this.batchPowerFlag = true;
-        this.$refs.roleMultipleTable.clearSelection()
+        if (this.$refs.roleMultipleTable) {
+          this.$refs.roleMultipleTable.clearSelection()
+        }
         const con = {
           id: '',
           pageNum: this.params.pageNum,
