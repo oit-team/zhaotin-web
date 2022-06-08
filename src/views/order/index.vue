@@ -31,8 +31,8 @@ export default {
   computed: {
     tablePageOption() {
       const operation = JSON.parse(this.$store.state.menu.menuOperation)
-      console.log(operation)
       const buttons = []
+      const actions = []
       operation.forEach((item, index) => {
         if (item.statue === 1) {
           if (item.operationKey === 'selectById') {
@@ -45,14 +45,37 @@ export default {
                 query: { item: scope },
               }),
             })
+          } else if (item.operationKey === 'update') {
+            buttons.push({
+              tip: '编辑',
+              type: 'warning',
+              icon: 'el-icon-edit',
+              click: (scope) => this.$router.push({
+                path: '/order/orderMsg',
+                query: { item: scope },
+              }),
+            })
+          } else if (item.operationKey === 'delete') {
+            buttons.push({
+              tip: '删除',
+              type: 'danger',
+              icon: 'el-icon-delete',
+              click: () => {},
+            })
+          } else if (item.operationKey === 'insert') {
+            actions.push({
+              name: '新增订单',
+              type: 'success',
+              icon: 'el-icon-plus',
+              // click: () => this.$router.push('/basls/customerAccount/addCustomer'),
+            })
           }
         }
       })
       return {
         promise: this.loadData,
         // 搜索表单内的按钮
-        actions: [
-        ],
+        actions,
         table: {
           data: this.data.resultList,
           actions: {

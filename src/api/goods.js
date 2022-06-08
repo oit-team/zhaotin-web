@@ -92,3 +92,38 @@ export function updateStyleStatusById(params) {
     cmd: 10008,
   })
 }
+// 查询季节列表
+export function getSeason(params) {
+  return post('/goods/season/getSeason', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 新增季节
+export function addSeason(params) {
+  return post('/goods/season/addSeason', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 修改季节
+export function updateSeason(params) {
+  return post('/goods/season/updateSeason', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 查询季节详情
+export function getSeasonById(params) {
+  return post('/goods/season/getSeasonById', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}
+// 删除季节
+export function delSeason(params) {
+  return post('/goods/season/deleteSeason', params, {
+    mod: 'home',
+    cmd: 10008,
+  })
+}

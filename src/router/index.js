@@ -168,6 +168,14 @@ const routes = [
         path: '/basls/Integral',
         component: () => import('@/views/BaseSeeting/components/Integral'),
       },
+      {
+        path: '/basls/season',
+        component: () => import('@/views/BaseSeeting/components/season'),
+      },
+      {
+        path: '/basls/season/addSeason',
+        component: () => import('@/views/BaseSeeting/components/addSeason'),
+      },
     ],
   },
   {
