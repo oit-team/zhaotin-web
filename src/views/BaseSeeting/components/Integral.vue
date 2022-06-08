@@ -1,7 +1,7 @@
 <template>
 	<div class="zt-page">
 		<el-container>
-			<el-aside width="200px">
+			<el-aside width="210px">
 				<div class="title">
 					积分类型
 				</div>
@@ -31,7 +31,7 @@
 				<el-card class="box-card" v-if="dialog">
 					<div class="card-head">
 						<div class="card-head__left"></div>
-						<div class="card-head__right" @click="offcard('form')">
+						<div class="card-head__right" @click="offcard('forms')">
 							<i class="el-icon-close"></i>
 						</div>
 					</div>
@@ -42,7 +42,8 @@
 							:rules="rules"
 							:model="form"
 							label-width="150px"
-						>
+						>	
+							<!-- 区间 -->
 							<el-form-item label="区间" required>
 								<el-col :span="6">
 									<el-form-item prop="startValue">
@@ -61,6 +62,7 @@
 									</el-form-item>
 								</el-col>
 							</el-form-item>
+							<!-- 区间积分 -->
 							<el-form-item
 								v-show="!form.chain"
 								label="积分"
@@ -68,7 +70,8 @@
 							>
 								<el-input v-model.number="form.OneintegralValue" placeholder=""></el-input>
 							</el-form-item>
-							<el-form-item label="联动规则" v-if="leftTab.remark === '1'">
+							<!-- 联动规则  切换状态-->
+							<el-form-item prop="chain" label="联动规则" v-if="leftTab.remark === '1'">
 								<el-switch v-model="form.chain" @change="cgSwitch"></el-switch>
 							</el-form-item>
 							<div v-if="form.chain">
@@ -91,7 +94,7 @@
 									}"
 								>
 									<el-col :span="20">
-										<el-input v-model="item.integralValue" placeholder=""></el-input>
+										<el-input v-model="item.integralValue" placeholder="" />
 									</el-col>
 									<el-col :span="2">
 										<div class="jif">积分</div>
@@ -105,6 +108,7 @@
 						</el-form>
 					</div>
 				</el-card>
+				<!-- <el-empty v-if="ruleList.length" description="暂无数据"></el-empty> -->
 				<!-- 展示框 -->
 				<el-card
 					class="box-card"
@@ -126,6 +130,7 @@
 						label-width="150px"
 						:disabled="item.disab"
 					>
+						<!-- 区间 -->
 						<el-form-item label="区间" required>
 							<el-col :span="10">
 								<el-form-item prop="startValue">
@@ -142,8 +147,9 @@
 								<span>{{ item.valueUnit }}</span>
 							</el-col>
 						</el-form-item>
+						<!-- 已有积分 -->
 						<el-form-item
-							v-if="item.integralValue"
+							v-if="item.integralValue && !item.chain"
 							label="积分"
 							prop="integralValue"
 						>
@@ -167,6 +173,40 @@
 									<div class="jif">积分</div>
 								</el-col>
 							</el-form-item>
+						</div>
+						<!-- 如果没有联动规则 且是编辑状态 且可以选择联动规则 -->
+						<div v-show="!item.preList && !item.disab && leftTab.remark === '1'">
+							<!-- 联动规则  切换状态-->
+							<el-form-item prop="chain" label="联动规则">
+								<el-switch v-model="item.chain" @change="cgSwitch"></el-switch>
+							</el-form-item>
+							<div v-if="item.chain">
+								<el-form-item label="规则类型" prop="preRuleCode">
+									<el-select @change="cgSelect2" v-model="item.preRuleCode" placeholder="请选择">
+										<el-option
+											v-for="item in tabsS"
+											:key="item.dictitemCode"
+											:label="item.dicttimeDisplayName"
+											:value="item.dictitemCode">
+										</el-option>
+									</el-select>
+								</el-form-item>
+								<el-form-item
+									v-for="(iteM, indeX) in PreList"
+									:key="indeX"
+									:label="`${iteM.startValue}~${iteM.endValue}${iteM.valueUnit}`"
+									:rules="{
+										required: true, message: '请输入积分', trigger: 'change'
+									}"
+								>
+									<el-col :span="20">
+										<el-input v-model.number="iteM.integralValue" placeholder=""></el-input>
+									</el-col>
+									<el-col :span="2">
+										<div class="jif">积分</div>
+									</el-col>
+								</el-form-item>
+							</div>
 						</div>
 						<el-form-item v-if="!item.disab">
 							<el-button type="primary" @click="subForm(`form${index}`,item)">提交</el-button>
@@ -196,6 +236,7 @@ export default {
 			tabsS: [],
 			selectT: 0,
 			dialog: false,
+			ruleListkong: false,
 			form: {
 				startValue: '',
 				endValue: '',
@@ -206,6 +247,8 @@ export default {
 				preRuleCode: '',
 				OneintegralValue: '',
 			},
+			PreList: [],
+			preRuleCode: '',
 			formData: {
 				pageNum: 1,
 				pageSize: 20,
@@ -237,7 +280,7 @@ export default {
 				// console.log(res)
 				if (res.head.status === 0) {
 					that.tabs = res.body.result
-					that.tabsS = res.body.result
+					// that.tabsS = res.body.result
 					that.leftTab = res.body.result[0]
 					that.getCollocation()
 				} else {
@@ -252,28 +295,35 @@ export default {
 				roleTypeCode: that.leftTab.dictitemCode,
 			}).then(res => {
 				if (res.head.status === 0) {
-					that.ruleList = res.body.resultList
-					that.ruleList.forEach(e => {
-						that.$set(e, 'disab', true)
-						if (e.preRuleCode) {
-							that.tabsS.forEach(i => {
-								if (i.dictitemCode === e.preRuleCode) {
-									this.$set(e, 'preRuleName', i.dicttimeDisplayName)
-								}
-							})
-						}
-					})
+					that.ruleList = JSON.parse(JSON.stringify(res.body.resultList))
+					if (that.ruleList.length) {
+						that.ruleList.forEach(e => {
+							that.$set(e, 'disab', true)
+							that.$set(e, 'chain', false)
+							that.$forceUpdate()
+							if (e.preRuleCode) {
+								that.tabsS = JSON.parse(JSON.stringify(that.tabs))
+								that.tabsS.forEach(i => {
+									if (i.dictitemCode === e.preRuleCode) {
+										this.$set(e, 'preRuleName', i.dicttimeDisplayName)
+										that.$forceUpdate()
+									}
+								})
+							}
+						})
+						that.$forceUpdate
+					} else {
+						
+					}
 				}
 			})
 		},
 		// 左侧 tab 切换
 		selectTab(item) {
 			this.leftTab = item
-			console.log(this.leftTab)
 			if (this.dialog) {
 				this.offcard('forms')
 			}
-			// this.dictitemCode = item.dictitemCode
 			this.getCollocation()
 		},
 		// 删除规则
@@ -305,12 +355,18 @@ export default {
 		// 新增规则
 		addRules() {
 			const that = this
-			this.dialog = true
+			that.dialog = true
 			that.tabsS = JSON.parse(JSON.stringify(that.tabs))
 			that.tabsS.forEach((e, index, arr) => {
 				if (e.dictitemCode === that.leftTab.dictitemCode) {
 					that.tabsS.splice(index, 1)
 				}
+			})
+			that.ruleList.forEach(e => {
+				console.log(e)
+				that.$set(e, 'disab', true)
+				that.$set(e, 'chain', false)
+				that.$forceUpdate()
 			})
 		},
 		// 新增 提交
@@ -361,22 +417,23 @@ export default {
 				// 关闭新增卡片  重置 form 表单
 				this.dialog = false
 				this.$refs[formName].resetFields()
+				let newRules = { required: true, type: 'number', message: '请输入积分', trigger: 'change' }
+				this.rules = {...this.rules, OneintegralValue: newRules}
 			}).catch(() => {
 			})
 		},
 		// 是否联动
 		cgSwitch(e) {
 			if (e) {
-				// let newRules = { required: false, message: '请输入积分', trigger: 'change' }
-				// this.rules = {...this.rules, OneintegralValue: newRules}
 				this.rules.OneintegralValue = {}
 			} else {
 				let newRules = { required: true, type: 'number', message: '请输入积分', trigger: 'change' }
 				this.rules = {...this.rules, OneintegralValue: newRules}
 			}
 		},
-		// 下拉框 改变
+		// 新增 下拉框 改变
 		cgSelect(e) {
+			console.log(e)
 			this.form.preRuleCode = e
 			getCollocation({
 				roleTypeCode: e,
@@ -385,44 +442,83 @@ export default {
 				if (res.head.status === 0) {
 					this.form.preList = res.body.resultList
 				}
-				console.log(this.ruleList)
+				console.log(this.form.preList)
+			})
+		},
+		// 修改 下拉框 改变
+		cgSelect2(e) {
+			console.log(e)
+			this.preRuleCode = e
+			getCollocation({
+				roleTypeCode: e,
+			}).then(res => {
+				console.log(res)
+				if (res.head.status === 0) {
+					this.PreList = res.body.resultList
+				}
+				console.log(this.PreList)
 			})
 		},
 		// 编辑修改
 		cgdisab(item) {
-			this.$set(item, 'disab', !item.disab)
-			// if (item.disab) {
-			// 	this.getCollocation()
-			// }
+			const that = this
+			console.log(item)
+			that.$set(item, 'disab', !item.disab)
+			if (item.disab) {
+				that.getCollocation()
+				that.$forceUpdate
+			} else {
+				that.tabsS = JSON.parse(JSON.stringify(that.tabs))
+				that.tabsS.forEach((e, index) => {
+					if (e.dictitemCode === that.leftTab.dictitemCode) {
+						that.tabsS.splice(index, 1)
+					}
+				})
+			}
+			if (that.dialog) {
+				that.offcard('forms')
+			}
 		},
 		// 修改提交
 		subForm(formName, item) {
 			this.$refs[formName][0].validate((valid) => {
 				if (valid) {
 					console.log(item)
-					const preList = []
-					item.preList.forEach(e => {
-						const pre = {
-							preIntegralId: e.preIntegralId,
-							integralValue: e.integralValue,
-						}
-						preList.push(pre)
-					})
-					updateCollocation({
-						id: item.id,
+					if (item.preList) {
+						this.PreList = item.preList
+					}
+					let preList = []
+					if (this.PreList && this.PreList.length !== 0) {
+						this.PreList.forEach(e => {
+							const ad = {
+								preIntegralId: e.preIntegralId,
+								integralValue: e.integralValue - 0,
+							}
+							preList.push(ad)
+						})
+					}
+					const formDt = {
 						ruleTypeCode: item.ruleTypeCode,
-						ruleType: item.ruleType,
+						ruleType: 1,
+						id: item.id,
 						startValue: item.startValue,
 						endValue: item.endValue,
 						valueUnit: item.valueUnit,
-						integralValue: item.integralValue,
 						preRuleCode: item.preRuleCode,
 						preList: preList,
-					}).then(res => {
+					}
+					if (preList.length === 0) {
+						formDt.integralValue = item.integralValue
+					}
+					console.log(formDt)
+					console.log(this.PreList)
+					console.log(preList)
+					updateCollocation(formDt).then(res => {
 						console.log(res)
 						if (res.head.status === 0) {
 							this.$message.success('修改成功')
 							this.getCollocation()
+							this.$forceUpdate
 						} else {
 							this.$message.warning(res.head.msg)
 						}
@@ -445,16 +541,19 @@ body > .el-container {
 	margin-bottom: 40px;
 }
 .el-aside {
-	// background-color: #D3DCE6;
 	color: #333;
 	text-align: center;
-	line-height: 50px;
+	line-height: 40px;
+	padding: 0 10px;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
 }
 .tabs{
 	.tabs-item{
 		background-color: #fff;
 		border: 1px solid #CDA46C;
 		color: #909090;
+		font-size: 14px;
 		border-radius: 5px;
 		margin: 20px 0;
 	}
