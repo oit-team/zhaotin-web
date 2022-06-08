@@ -637,14 +637,6 @@ export default {
       font-size: 24px;
     }
   }
-  .zt-content__item_margin{
-    width: 230px;
-    color: #333333;
-    font-size: 14px;
-    margin: auto;
-    margin-bottom: 16px;
-    border: 1px solid #F2F2F2;
-  }
 }
 ::v-deep .el-empty{
   position: relative;
