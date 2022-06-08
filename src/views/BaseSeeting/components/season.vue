@@ -71,7 +71,7 @@ export default {
       })
       return {
         promise: this.loadData,
-         actions,
+        actions,
         table: {
           data: this.data.resultList,
            actions: {
@@ -107,7 +107,7 @@ export default {
     deleteSeason(item) {
       this.$confirm('确订删除该季节吗？','提示',{
         confirmButtonText:'确定',
-        cancelButtonText:'取消',
+        cancelButtonText:'取消', 
         type:'warning',
       }).then(() => {
         const con = {
