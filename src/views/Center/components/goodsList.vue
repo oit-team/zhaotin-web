@@ -479,7 +479,8 @@ export default {
     width: 100%;
     box-sizing: border-box;
     .ct-tabs{
-      width: 30%;
+      width: auto;
+      margin-right: 50px;
     }
   }
   .zt-tabs__center:hover{
