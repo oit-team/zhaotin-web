@@ -787,7 +787,8 @@ export default {
       this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
       if (!this.ruleForm.styleData) {
         this.ruleForm.styleData = []
-        this.getStyleData()
+        // this.getStyleData()
+        this.getStyleDataNew()
       }
       if (!this.ruleForm.styleWashing) {
         this.ruleForm.styleWashing = []
@@ -805,7 +806,8 @@ export default {
     //   this.menuIds = '1'
     } else {
       this.title = '新增'
-      this.getStyleData()
+      // this.getStyleData()
+      this.getStyleDataNew()
       this.getStyleWashing()
     }
   },
@@ -1565,6 +1567,24 @@ export default {
               })
             })
           }
+        } else {
+          this.$message.error(res.head.msg);
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    getStyleDataNew() {
+      const con = {
+      	brandId: sessionStorage.brandId,
+      	type: 'STYLE_DATA',
+      	userId: this.uploadData.userId,
+      }
+      const _this = this;
+      getStyleData(con).then((res) => {
+        console.log(res)
+        if (res.head.status == 0) {
+          _this.ruleForm.styleData = JSON.parse(res.body.result[0].dicttimeDisplayName)
         } else {
           this.$message.error(res.head.msg);
         }
