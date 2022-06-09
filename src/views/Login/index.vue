@@ -7,7 +7,7 @@
         </div>
         <div class="contentRight">
           <div class="right">
-            <div class="right_title">昭廷</div>
+            <div class="right_title">昭廷一站式集采平台</div>
             <el-form>
               <el-form-item>
                 <el-input v-model.trim="formData.userName" clearable placeholder="请输入用户名" />
@@ -66,6 +66,7 @@ export default {
     width:100%;
     height:100%;
     min-width: 1024px;
+    position:absolute;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -76,7 +77,6 @@ export default {
       width:60%;
       min-width:900px;
       height:450px;
-      margin-top: 80px;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -106,8 +106,8 @@ export default {
           // margin:0 auto;
           .right_title {
             width:100%;
-            border-bottom: 2px solid  #eab308;
-            color: #eab308;
+            border-bottom: 2px solid  #CDA46C;
+            color: #CDA46C;
             text-align: left;
             height: 60px;
             line-height: 60px;
@@ -122,15 +122,15 @@ export default {
             margin:10px 0;
           }
           /deep/ .el-input__inner:focus{
-            border-color: #eab308;
+            border-color: #CDA46C;
           }
           /deep/ .loginBtn .btn_submit {
             width: 100%;
             height: 48px;
             cursor: pointer;
-            background-color:  #eab308;
+            background-color:  #CDA46C;
             // border-radius: 15px;
-            border-color: #eab308;
+            border-color: #CDA46C;
             font-size: 20px;
             margin: 40px 0;
           }
