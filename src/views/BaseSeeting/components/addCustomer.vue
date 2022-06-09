@@ -217,7 +217,7 @@
               <el-option
                 v-for="item in refereesList"
                 :key="item.id"
-                :label="item.realName"
+                :label="item.realName+'('+item.loginName+')'"
                 :value="item"
               >
               </el-option>
@@ -544,7 +544,7 @@ export default {
     // 选中推荐人
     changeRefereesName(val) {
       // console.log(val);
-      this.customerForm.refereesName = val.realName
+      this.customerForm.refereesName = val.realName+'('+val.loginName+')'
       this.customerForm.refereesId = val.id
     },
     changeDocumentary(val) {
