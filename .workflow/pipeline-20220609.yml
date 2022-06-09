@@ -19,7 +19,7 @@ stages:
         displayName: Nodejs 构建
         nodeVersion: 16.14.2
         commands:
-          - pnpm install && pnpm run build
+          - npm install && npm run build
         artifacts:
           - name: BUILD_ARTIFACT
             path:
