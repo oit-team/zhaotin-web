@@ -1582,7 +1582,6 @@ export default {
       }
       const _this = this;
       getStyleData(con).then((res) => {
-        console.log(res)
         if (res.head.status == 0) {
           _this.ruleForm.styleData = JSON.parse(res.body.result[0].dicttimeDisplayName)
         } else {
