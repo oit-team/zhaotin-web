@@ -416,6 +416,7 @@ export default {
 			}).then(() => {
 				// 关闭新增卡片  重置 form 表单
 				this.dialog = false
+				this.form.preList = []
 				this.$refs[formName].resetFields()
 				let newRules = { required: true, type: 'number', message: '请输入积分', trigger: 'change' }
 				this.rules = {...this.rules, OneintegralValue: newRules}
@@ -442,7 +443,6 @@ export default {
 				if (res.head.status === 0) {
 					this.form.preList = res.body.resultList
 				}
-				console.log(this.form.preList)
 			})
 		},
 		// 修改 下拉框 改变
@@ -465,6 +465,8 @@ export default {
 			console.log(item)
 			that.$set(item, 'disab', !item.disab)
 			if (item.disab) {
+				that.preRuleCode = ''
+				that.PreList = []
 				that.getCollocation()
 				that.$forceUpdate
 			} else {
@@ -483,7 +485,7 @@ export default {
 		subForm(formName, item) {
 			this.$refs[formName][0].validate((valid) => {
 				if (valid) {
-					console.log(item)
+					// console.log(item)
 					if (item.preList) {
 						this.PreList = item.preList
 					}
