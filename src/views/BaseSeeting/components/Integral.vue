@@ -108,7 +108,7 @@
 						</el-form>
 					</div>
 				</el-card>
-				<!-- <el-empty v-if="ruleList.length" description="暂无数据"></el-empty> -->
+				<el-empty v-if="!ruleList.length" description="暂无数据"></el-empty>
 				<!-- 展示框 -->
 				<el-card
 					class="box-card"
@@ -262,7 +262,7 @@ export default {
 				integralValue: { required: true, message: '请输入积分', trigger: 'change' },
 				valueUnit: { required: true, message: '单位：年/元/人', trigger: 'change' },
 				preRuleCode: { required: true, message: '请选择联动类型', trigger: 'change' },
-				OneintegralValue: { required: true, type: 'number', message: '请输入积分', trigger: 'change' },
+				OneintegralValue: { required: true, message: '请输入积分', trigger: 'change' },
 			},
 			total: 0,
 		}
@@ -491,7 +491,7 @@ export default {
 					if (this.PreList && this.PreList.length !== 0) {
 						this.PreList.forEach(e => {
 							const ad = {
-								preIntegralId: e.preIntegralId,
+								preIntegralId: item.preList?e.preIntegralId:e.id,
 								integralValue: e.integralValue - 0,
 							}
 							preList.push(ad)
