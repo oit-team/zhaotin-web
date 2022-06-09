@@ -64,7 +64,6 @@
 							</el-form-item>
 							<!-- 区间积分 -->
 							<el-form-item
-								v-show="!form.chain"
 								label="积分"
 								prop="OneintegralValue"
 							>
@@ -388,10 +387,11 @@ export default {
 				valueUnit: this.form.valueUnit,
 				preRuleCode: this.form.preRuleCode,
 				preList: preList,
+				integralValue: this.form.OneintegralValue,
 			}
-			if (this.form.OneintegralValue) {
-				formDt.integralValue = this.form.OneintegralValue
-			}
+			// if (this.form.OneintegralValue) {
+			// 	formDt.integralValue = this.form.OneintegralValue
+			// }
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
 					addCollocation(formDt).then(res => {
@@ -419,19 +419,19 @@ export default {
 				this.form.preList = []
 				this.$refs[formName].resetFields()
 				let newRules = { required: true, type: 'number', message: '请输入积分', trigger: 'change' }
-				this.rules = {...this.rules, OneintegralValue: newRules}
+				// this.rules = {...this.rules, OneintegralValue: newRules}
 			}).catch(() => {
 			})
 		},
 		// 是否联动
-		cgSwitch(e) {
-			if (e) {
-				this.rules.OneintegralValue = {}
-			} else {
-				let newRules = { required: true, type: 'number', message: '请输入积分', trigger: 'change' }
-				this.rules = {...this.rules, OneintegralValue: newRules}
-			}
-		},
+		// cgSwitch(e) {
+		// 	if (e) {
+		// 		// this.rules.OneintegralValue = {}
+		// 	} else {
+		// 		let newRules = { required: true, type: 'number', message: '请输入积分', trigger: 'change' }
+		// 		// this.rules = {...this.rules, OneintegralValue: newRules}
+		// 	}
+		// },
 		// 新增 下拉框 改变
 		cgSelect(e) {
 			console.log(e)
@@ -508,13 +508,8 @@ export default {
 						valueUnit: item.valueUnit,
 						preRuleCode: item.preRuleCode,
 						preList: preList,
+						integralValue: item.integralValue,
 					}
-					if (preList.length === 0) {
-						formDt.integralValue = item.integralValue
-					}
-					console.log(formDt)
-					console.log(this.PreList)
-					console.log(preList)
 					updateCollocation(formDt).then(res => {
 						console.log(res)
 						if (res.head.status === 0) {
