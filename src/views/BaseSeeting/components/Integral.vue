@@ -148,7 +148,6 @@
 						</el-form-item>
 						<!-- 已有积分 -->
 						<el-form-item
-							v-if="item.integralValue && !item.chain"
 							label="积分"
 							prop="integralValue"
 						>
