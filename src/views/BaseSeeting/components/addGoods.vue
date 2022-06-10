@@ -816,6 +816,9 @@ export default {
       // this.getStyleData()
       this.getStyleDataNew()
       this.getStyleWashing()
+      this.getGoodsCategory()
+      this.getStyleBarCode()
+      this.getStyleLength()
     }
   },
   mounted() {
