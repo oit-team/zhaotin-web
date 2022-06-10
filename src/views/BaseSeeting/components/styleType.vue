@@ -1,19 +1,23 @@
 <template>
-  <div>
+  <div style="height:100%">
     <!-- <div class="main container"> -->
       <!-- <div>商品中心</div> -->
-     <div class="table-h"> <TablePage v-bind="tablePageOption" ref="cateTable" auto>
-          <template slot="content:imgUrl" slot-scope="{ row }">
-            <template v-if="true">
-              <template v-if="row.imgUrl">
-                <el-image class="file-res" style="max-height:50px;" :src="row.imgUrl" fit="cover" />
-              </template>
-              <template v-else>
-                <span>无</span> 
+    <div class="main container" style="height: 100%;">
+      <div class="table-h" style="height: 100%;">
+        <TablePage v-bind="tablePageOption" ref="cateTable" auto>
+            <template slot="content:imgUrl" slot-scope="{ row }">
+              <template v-if="true">
+                <template v-if="row.imgUrl">
+                  <el-image class="file-res" style="max-height:50px;" :src="row.imgUrl" fit="cover" />
+                </template>
+                <template v-else>
+                  <span>无</span> 
+                </template>
               </template>
             </template>
-          </template>
-       </TablePage></div>
+         </TablePage>
+       </div>
+      </div>
       <!-- 出口 -->
       <router-view />
     <!-- </div> -->
@@ -131,16 +135,12 @@ export default {
 //     height: 600px;
 // }
 
-/deep/ .el-image__inner{
-  height: 50px;
-  width: auto;
-}
-
   .table-h {
     height: 600px;
   }
-  /deep/ .el-table--scrollable-x .el-table__body-wrapper {
-    overflow: auto;
+  /deep/ .el-table__body-wrapper {
+    overflow: auto!important;
+    overflow-y: scroll!important;
   }
   /deep/ .gutter {
     width: 22px !important;
@@ -150,9 +150,9 @@ export default {
     width: 22px !important;
   }
   /deep/ .el-table__fixed-right {
-      top: 0;
-      left: auto;
-      right: 18px;
+    top: 0;
+    left: auto;
+    right: 18px;
   }
   /deep/ .el-image__inner{
     height: 50px;

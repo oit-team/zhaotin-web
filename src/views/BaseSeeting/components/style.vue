@@ -655,7 +655,7 @@ export default {
       if (!returnRes) {
         this.$message({
           type: 'warning',
-          message: '发布前请添加各颜色的商品图片、细节图片、商品尺码',
+          message: '发布前请添加各颜色的商品图片、商品尺码',
         })
       }
       return returnRes
@@ -715,8 +715,9 @@ export default {
   .table-h {
     height: 600px;
   }
-  /deep/ .el-table--scrollable-x .el-table__body-wrapper {
-    overflow: auto;
+  /deep/ .el-table__body-wrapper {
+    overflow: auto!important;
+    overflow-y: scroll!important;
   }
   /deep/ .gutter {
     width: 22px !important;

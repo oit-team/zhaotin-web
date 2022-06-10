@@ -133,7 +133,7 @@
                 </div>
                 <div class="fileInfoBox right ml-8">
                   <!-- 商品视频 -->
-                  <el-form-item label="商品视频">
+        <!--          <el-form-item label="商品视频">
                     <el-upload
                       :action="uploadUrl"
                       :data="uploadData"
@@ -159,9 +159,23 @@
                       <i v-if="!ruleForm.styleVideo&&!uploadVideoFlag" class="el-icon-plus"></i>
                     </el-upload>
                     <div v-if="ruleForm.styleVideo" style="margin-top:10px"> <el-button @click="delVideo">删除视频</el-button> </div>
+                  </el-form-item> -->
+                 
+                  <el-form-item label="商品视频">
+                    <vc-upload v-bind="uploadOptionVide" :class="ruleForm.styleVideo?'el-upload-video':''"  @onRemove='onRemoveVideoImg' ref="uploadVideoImg">
+                      <video
+                        style=""
+                        v-if='ruleForm.styleVideo'
+                        class="avatar video-avatar"
+                        :src="ruleForm.styleVideo"
+                        controls="controls">
+                        您的浏览器不支持视频播放
+                      </video>
+                      <i v-if="!ruleForm.styleVideo&&!uploadVideoFlag" class="el-icon-plus"></i>
+                    </vc-upload>
+                    <div v-if="ruleForm.styleVideo" style="margin-top:10px"> <el-button @click="delVideo">删除视频</el-button> </div>
                   </el-form-item>
                   <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
-                  
                   <el-form-item label="视频贴片">
                     <vc-upload v-bind="uploadOptionVideImg" @onRemove='onRemoveVideoImg' ref="uploadVideoImg">
                       <i class="el-icon-plus"></i>
@@ -706,6 +720,29 @@ export default {
           this.uploadList = fileList
           this.selectedColorNameXiJie[this.colorNum] = this.$refs.uploadxijieImage.uploadFiles
           // this.selectedColorName[this.colorNum].xijieUrl = this.uploadList.response.data.thumbUrl
+        },
+      }
+    },
+    uploadOptionVide() {
+      return {
+        showFileList: true,
+        multiple: true,
+        typeOption: {
+          '.mp4,.mov': {
+            data: {
+              fileType: 1,
+            },
+          },
+        },
+        listType: 'picture-card',
+        showFileList: false,
+        maxSize: 1024 * 20,
+        chunkSize: 1024 * 2,
+        check: true,
+        accept: '.mp4,.mov',
+        onSuccess: (file, fileList) => {
+          console.log(file)
+          this.ruleForm.styleVideo = file.data.fileUrl
         },
       }
     },
@@ -1313,7 +1350,7 @@ export default {
       if (!returnRes) {
         _this.$message({
           type: 'warning',
-          message: '发布前请添加各颜色的商品图片、细节图片、商品尺码',
+          message: '发布前请添加各颜色的商品图片、商品尺码',
         })
       }
       return returnRes 
