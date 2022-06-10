@@ -29,7 +29,7 @@
       </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
-        <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
+        <span v-for="(item,index) in sortList" :key='index'>{{item.dictitemOrderkey}},</span>
       </div>
       <!-- <el-form-item v-if="cateGoryVisibilty" label="类别图片">
           <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
@@ -157,11 +157,15 @@ export default {
 		},
     // 查询所有的类别排序字段
     querySortList(){
-      const con = {}
+      const con = {
+        userId: sessionStorage.userId,
+        dictCode: "ACTEGORY",
+        dictitemCode:'ACTEGORY',
+        brandId: sessionStorage.brandId
+      }
       getSizeSortList(con).then((res) => {
-        console.log(res)
           if(res.head.status === 0) {
-            this.sortList = res.body.resultList
+           this.sortList = res.body.result
           }
       })
     },

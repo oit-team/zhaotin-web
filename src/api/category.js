@@ -36,7 +36,7 @@ export function sort(params) {
 }
 // 查询尺码已存在的排序
 export function getSizeSortList(params) {
-  return post('/goods/size/getSizeSortList', params, {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
     mod: 'home',
     cmd: 100006,
   })

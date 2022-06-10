@@ -122,6 +122,7 @@
                       <el-form-item label="">
                         <quill
                       	style="width:100%;"
+                        ref="service"
                       	:value="ruleForm.service"
                       	:editor-setting="editorSetting"
                       	:height="&quot;150px&quot;"
@@ -189,6 +190,7 @@
                           <quill
                             style="width:100%;"
                             :value="ruleForm.sellingPointFabric"
+                            ref="sellingPointFabric"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
                             @changeVal="changeSellingPointFabric"
@@ -198,6 +200,7 @@
                           <quill
                             style="width:100%;"
                             :value="ruleForm.designSellingPoint"
+                            ref="designSellingPoint"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
                             @changeVal="changeDesignSellingPoint"
@@ -207,6 +210,7 @@
                           <quill
                             style="width:100%;"
                             :value="ruleForm.wearSellingPoint"
+                            ref="wearSellingPoint"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
                             @changeVal="changeWearSellingPoint"
@@ -431,7 +435,7 @@
 <script>
 import quill from '@/views/common/quillEditor'
 import { addQuillTitle } from '@/assets/js/js/quill-title'
-import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo, getStyleData } from '@/api/goods'
+import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo, getStyleData, getStyleById} from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
 import MD5 from 'crypto-js/md5'
 // import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
@@ -741,7 +745,6 @@ export default {
         check: true,
         accept: '.mp4,.mov',
         onSuccess: (file, fileList) => {
-          console.log(file)
           this.ruleForm.styleVideo = file.data.fileUrl
         },
       }
@@ -803,43 +806,10 @@ export default {
       }else {
         this.title = '编辑'
       }
+      this.getGoodsInfo(this.$route.query.item.row)
+      // 获取商品详情
       let res = this.$route.query.item.row;
-      res.styleData = JSON.parse(res.styleData)
-      if (res.styleData) {
-        res.styleData.forEach((item) => {
-          item.options.forEach((Item) => {
-            if (Item.status == 1) {
-              item.checked = Item.option
-            }
-          })
-        })
-      }
-      this.ruleForm = this.$route.query.item.row
-      //解决富文本框聚焦页面滚动问题
-      this.$nextTick(function() {
-        this.$parent.$refs.scrollbarBox.scrollTo(0,0);
-      });
-      this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
-      this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
-      this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
-      if (!this.ruleForm.styleData) {
-        this.ruleForm.styleData = []
-        // this.getStyleData()
-        this.getStyleDataNew()
-      }
-      if (!this.ruleForm.styleWashing) {
-        this.ruleForm.styleWashing = []
-        this.getStyleWashing()
-      }
-      if (this.ruleForm.styleLabel) {
-        this.labelList = this.ruleForm.styleLabel.split(',')
-      }
-      if (this.ruleForm.styleVideo) {
-        this.videoList.push({url: this.ruleForm.styleVideo})
-      }
-      if (this.ruleForm.styleVideoPatch) {
-        this.VideoImgList.push({url: this.ruleForm.styleVideoPatch})
-      }
+      
     //   this.menuIds = '1'
     } else {
       this.title = '新增'
@@ -855,11 +825,69 @@ export default {
     this.uploadUrl =  BASE_URL + '/system/file/uploadFile'
     addQuillTitle()
     // this.getBandAndSeries()
-    this.getGoodsCategory()
-    this.getStyleBarCode()
-    this.getStyleLength()
   },
   methods: {
+    getGoodsInfo(row) {
+      const con = {
+      	styleId: row.styleId,
+      }
+      const _this = this;
+      getStyleById(con).then((res) => {
+        if (res.head.status == 0) {
+          res = res.body.resultList
+          res.styleData = JSON.parse(res.styleData)
+          if (res.styleData) {
+            res.styleData.forEach((item) => {
+              item.options.forEach((Item) => {
+                if (Item.status == 1) {
+                  item.checked = Item.option
+                }
+              })
+            })
+          }
+          this.ruleForm = res
+          this.$refs.service.txt = this.ruleForm.service
+          this.$refs.sellingPointFabric.txt = this.ruleForm.sellingPointFabric
+          this.$refs.designSellingPoint.txt = this.ruleForm.designSellingPoint
+          this.$refs.wearSellingPoint.txt = this.ruleForm.wearSellingPoint
+          //解决富文本框聚焦页面滚动问题
+          this.$nextTick(function() {
+            this.$parent.$refs.scrollbarBox.scrollTo(0,0);
+          });
+          this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
+          this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
+          this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
+          if (!this.ruleForm.styleData) {
+            this.ruleForm.styleData = []
+            // this.getStyleData()
+            this.getStyleDataNew()
+          }
+          if (!this.ruleForm.styleWashing) {
+            this.ruleForm.styleWashing = []
+            this.getStyleWashing()
+          }
+          if (this.ruleForm.styleLabel) {
+            this.labelList = this.ruleForm.styleLabel.split(',')
+          }
+          if (this.ruleForm.styleVideo) {
+            this.videoList.push({url: this.ruleForm.styleVideo})
+          }
+          if (this.ruleForm.styleVideoPatch) {
+            this.VideoImgList.push({url: this.ruleForm.styleVideoPatch})
+          }
+          this.getGoodsCategory()
+          this.getStyleBarCode()
+          this.getStyleLength()
+        } else {
+          this.$message({
+            message: res.head.msg,
+            type: 'warning',
+          })
+        }
+      }).catch(err=>{
+        
+      })
+    },
     onRemove(file) {
       this.selectedColorName[this.colorNum] = this.selectedColorName[this.colorNum].filter( item => item.url != file.url)
     },
