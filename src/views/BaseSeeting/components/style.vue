@@ -634,14 +634,14 @@ export default {
     checkstyleColor (row) {
       console.log(row)
       let returnRes = true
-      if (row.styleColorList.length == 0) {
+      if (row.styleColor == '') {
         this.$message({
           type: 'warning',
           message: '发布前请上传颜色',
         })
         return false
       } else {
-        row.styleColorList.forEach((item,index) => {
+        /*row.styleColorList.forEach((item,index) => {
           console.log(item)
           if (!item.styleSize || item.styleSize.length == 0) {
             //尺码未设置
@@ -650,7 +650,7 @@ export default {
             returnRes = false 
             //图片未上传
           }
-        })
+        })*/
       }
       if (!returnRes) {
         this.$message({
