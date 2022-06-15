@@ -212,10 +212,7 @@ export default {
   computed: {
   },
   watch: {
-    inputVal(val) {
-      console.log(val)
-    },
-    // styleLength(val) {
+    // inputVal(val) {
     //   console.log(val)
     // },
   },
@@ -284,20 +281,20 @@ export default {
     },
     scrollEvent() {
       setTimeout(() => {
-        if (this.isUpdate) {
-          const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
-          if (data === 0) {
-            this.addData()
-            this.$forceUpdate()
-          }
-          if (this.$refs.content.getBoundingClientRect().y <= 0) {
-            this.isTop = true
-            this.$forceUpdate
-          } else {
-            this.isTop = false
-            this.$forceUpdate
-          }
+        // if (this.isUpdate) {
+        const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
+        if (data >= -50) {
+          this.addData()
+          this.$forceUpdate()
         }
+        if (this.$refs.content.getBoundingClientRect().y <= 0) {
+          this.isTop = true
+          this.$forceUpdate
+        } else {
+          this.isTop = false
+          this.$forceUpdate
+        }
+        // }
       }, 500)
     },
     // 二级分类
@@ -611,10 +608,12 @@ export default {
       .icon-shipin{
         font-size: 28px;
         color: #FF9606;
+        background-color: #fff;
+        border-radius: 5px;
       }
     }
     .zt-item__line{
-      display: flex;
+      // display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 8px 14px;

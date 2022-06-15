@@ -187,7 +187,7 @@
       <!-- center 产品详情 -->
       <div class="zt-content__data">
         <div class="zt-content__title">
-          产品信息
+          商品信息
         </div>
         <!-- 售后服务 -->
         <div class="zt-content__data1">
@@ -198,7 +198,7 @@
             </div>
           </div>
           <div class="zt-data1__flex">
-            <div class="zt-content__label">属性</div>
+            <div class="zt-content__label">基础信息</div>
             <div class="zt-content__info">
               <!-- <div class="zt-info__flex" style="white-space:pre-wrap">
                 {{ infoData.styleAttribute }}
@@ -221,7 +221,7 @@
         <el-divider />
         <!-- 产品卖点 -->
         <div class="zt-content__data2">
-          <div class="zt-content__label">产品卖点</div>
+          <div class="zt-content__label">商品卖点</div>
           <div class="zt-content-flex">
             <div class="zt-content__info">
               <div class="zt-data2__flex">
@@ -300,7 +300,7 @@
         <el-divider />
         <!-- 服装材料信息 -->
         <div class="zt-content__data4">
-          <div class="zt-content__label">服装信息</div>
+          <div class="zt-content__label">商品属性</div>
           <div class="zt-content__info">
             <div class="zt-info__item" v-for="(item, index) in infoData.styleData" :key="index">
               <div class="zt-item__label">{{ item.name }}</div>
@@ -351,7 +351,7 @@
               <i class="el-icon-video-camera-solid"></i>
             </div>
             <div class="zt-item__line">{{ item.styleName }}</div>
-            <div class="zt-item__line">
+            <div class="zt-item__line flex">
               <div class="zt-price__l">{{ item.styleNo }}</div>
               <div class="zt-price__r">￥<div class="zt-item__price">{{ item.tradePrice }}</div></div>
             </div>
@@ -1064,7 +1064,7 @@ video::-webkit-media-controls-timeline {
           }
         }
         .zt-item__line{
-          display: flex;
+          // display: flex;
           justify-content: space-between;
           align-items: center;
           padding: 8px 14px;

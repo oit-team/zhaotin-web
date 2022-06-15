@@ -163,7 +163,7 @@
                   </el-form-item> -->
                  
                   <el-form-item label="商品视频">
-                    <vc-upload v-bind="uploadOptionVide" :class="ruleForm.styleVideo?'el-upload-video':''"  @onRemove='onRemoveVideoImg' ref="uploadVideoImg">
+                    <vc-upload v-bind="uploadOptionVide" :class="ruleForm.styleVideo?'el-upload-video':''"  :on-remove='onRemoveVideoImg' ref="uploadVideoImg">
                       <video
                         style=""
                         v-if='ruleForm.styleVideo'
@@ -178,7 +178,7 @@
                   </el-form-item>
                   <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
                   <el-form-item label="视频贴片">
-                    <vc-upload v-bind="uploadOptionVideImg" @onRemove='onRemoveVideoImg' ref="uploadVideoImg">
+                    <vc-upload v-bind="uploadOptionVideImg" :on-remove='onRemoveVideoImg' ref="uploadVideoImg">
                       <i class="el-icon-plus"></i>
                     </vc-upload>
                   </el-form-item>
@@ -338,14 +338,14 @@
                   <!-- 上传图片 -->
                   <div class="flex flex-col" v-if="uploadImgFlag">
                     <el-form-item label="商品图片">
-                      <vc-upload v-bind="uploadOptionimg" @onRemove='onRemove' ref="uploadImage">
+                      <vc-upload v-bind="uploadOptionimg" :on-remove='onRemove' ref="uploadImage">
                         <i class="el-icon-plus"></i>
                       </vc-upload>
                     </el-form-item>
                     <p class="tip">*最多可以上传6张图片，推荐格式jpg或png</p>
 
                     <el-form-item label="商品细节">
-                      <vc-upload v-bind="uploadOptionxijie" @onRemove='onRemoveXj' ref="uploadxijieImage">
+                      <vc-upload v-bind="uploadOptionxijie" :on-remove='onRemoveXj' ref="uploadxijieImage">
                         <i class="el-icon-plus"></i>
                       </vc-upload>
                     </el-form-item>

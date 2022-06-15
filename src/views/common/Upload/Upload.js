@@ -274,7 +274,7 @@ export default {
       this.$refs.uploadCore.clearFiles()
     },
     handleRemove(file) {
-      this.emitEvent('onRemove', file)
+      this.emitEvent('on-remove', file)
       this.abort(file)
     },
     handlePreview(file) {
@@ -284,7 +284,7 @@ export default {
       // this.emitEvent('onSuccess', ...e)
     },
     handleError(...e) {
-      this.emitEvent('onError', ...e)
+      this.emitEvent('on-error', ...e)
       if (typeof this.onError !== 'function') {
         // console.error(...e)//
         this.$message.error(`${e[1].name} 上传失败，请重试！`)
@@ -296,9 +296,11 @@ export default {
      * @param params
      * @return {boolean}
      */
-    emitEvent(name, params) {
+    emitEvent(name, ...params) {
       if (typeof this[name] === 'function') {
         return this[name](...params)
+      } else if (typeof this.$attrs[name] === 'function') {
+        return this.$attrs[name](...params)
       }
     },
     previewFile(file) {

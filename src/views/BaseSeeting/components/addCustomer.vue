@@ -90,6 +90,16 @@
               placeholder="请选择日期"
             />
           </el-form-item>
+          <el-form-item label="联系人及联系方式" label-width="100%" prop="contactData">
+            <el-input
+              type="textarea"
+              placeholder="请输入联系人及联系方式"
+              style="width: 100%"
+              v-model="customerForm.contactData"
+              :height="'280px'"
+            >
+            </el-input>
+          </el-form-item>
           <el-form-item label="大区选择" label-width="100%" prop="orgName">
             <el-select
               v-model="orgName"
@@ -299,16 +309,6 @@
             </el-input>
           </el-form-item>
 
-           <el-form-item label="联系人及联系方式" label-width="100%" prop="contactData">
-              <el-input
-                 type="textarea"
-                 placeholder="请输入联系人及联系方式"
-                 style="width: 100%"
-                 v-model="customerForm.contactData"
-                 :height="'280px'"
-               >
-               </el-input>
-          </el-form-item>
             </el-collapse-item>
           </el-collapse>
 
@@ -406,20 +406,20 @@ export default {
           { required: true, message: "请填写联系人姓名", trigger: "blur" },
         ],
         customerAddress: [
-          { required: true, message: "请输入联系地址", trigger: "blur" },
+          { required: false, message: "请输入联系地址", trigger: "blur" },
         ],
         customerType: [
           { required: true, message: "请选择客户类型", trigger: "blur" },
         ],
         orgName: [{ required: true, message: "请选择大区", trigger: "blur" }],
         provinces: [{ required: true, message: "请选择省份", trigger: "blur" }],
-        city: [{ required: true, message: "请选择城市", trigger: "blur" }],
+        city: [{ required: false, message: "请选择城市", trigger: "blur" }],
         realName: [
           { required: true, message: "请输入真实姓名", trigger: "blur" },
         ],
-        documentaryName: [{ required: true, message: "请选择跟单人员", trigger: "blur" }],
-        marketName: [{ required: true, message: "请选择市场人员", trigger: "blur" }],
-        managerName: [{ required: true, message: "请选择客户经理", trigger: "blur" }],
+        documentaryName: [{ required: false, message: "请选择跟单人员", trigger: "blur" }],
+        marketName: [{ required: false, message: "请选择市场人员", trigger: "blur" }],
+        managerName: [{ required: false, message: "请选择客户经理", trigger: "blur" }],
       },
     };
   },
