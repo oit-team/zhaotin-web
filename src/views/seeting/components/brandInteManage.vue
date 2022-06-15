@@ -2,7 +2,7 @@
   <div class="pageCommonStyle" id="brandInteManage">
     <div class="leftTreeCon">
       <!-- 操作按钮 -->
-      <div class="btnBox flex">
+      <div class="btnBox flex justify-center">
         <el-tooltip
           class="item"
           effect="dark"
@@ -428,7 +428,6 @@ export default {
     },
   },
   created() {
-    this.getTreeOrgList();
   },
   methods: {
     // 获取用户列表
@@ -444,6 +443,7 @@ export default {
         this.data = res.body;
         this.chargeList = res.body.resultList;
       });
+      this.getTreeOrgList()
     },
     // 更换区域负责人
     changeAreaManger(val) {
@@ -569,12 +569,21 @@ export default {
       const res = await getTreeOrgList({
         brandId: sessionStorage.brandId,
       });
+      res.body.orgList.forEach(item => {
+        item.osName = `${item.osName}(${item.member})`
+        if (item.childrenList) {
+          item.childrenList.forEach(e => {
+            e.osName = `${e.osName}(${e.member})`
+          })
+        }
+      })
       this.orgList = [{
-        osName:'全部',
+        osName:`全部(${this.data.count})`,
         menuId:'allMenu',
         brandId:'allMenu',
         id:'',
         sort:'',
+        isTuo: 1,
         childrenList:res.body.orgList
       }]
       this.$nextTick(() => {
@@ -593,7 +602,6 @@ export default {
     // 搜索方法
     changeOperate(val) {
       this.showPanel = !this.showPanel;
-      // console.log(val)
     },
     // 节点被点击时的回调
     async handleNodeClick(MouseEvent, object, Node, VueComponent) {
@@ -632,29 +640,48 @@ export default {
           sort = dropNode.data.sort;
         } else if (dropType === "after") {
           sort = dropNode.data.sort;
+        } else if (dropType === 'none') {
+          this.$message('暂不支持该操作')
         }
       }
     },
     // 拖拽成功完成时触发的事件
-    handleDrop() {},
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log(dropNode.level)
+      let path = ''
+      if (dropNode.level === 2) {
+        path = '0'
+      } else if (dropNode.level >= 2){
+        path = `${dropNode.data.path},${dropNode.data.id}`
+      }
+      console.log(path)
+      const con = {
+        id: this.nodeInfo.id,
+        isShop: "0",
+        orgStId: path,
+        beforeSort: 1,
+        dropNodeId: dropNode.data.id,
+        sort: 1,
+      }
+      updateShopOrOrgById(con).then(res => {
+        this.getTreeOrgList()
+      })
+    },
     // 节点拖拽处理函数开始================================
     // 拖拽时判定目标节点能否被放置。
     // type 参数有三种情况：'prev'、'inner' 和 'next'，分别表示放置在目标节点前、插入至目标节点和放置在目标节点后
     allowDrop(draggingNode, dropNode, type) {
-      /// / console.log("--------拖拽时判定目标节点能否被放置。--------",draggingNode, dropNode, type)
-      if (dropNode.data.isShop === "2") {
-        return type !== "before" && type !== "after"; // 不能拖到节点上下
+      if (dropNode.data.isTuo) {
+        return false
       }
-      if (dropNode.data.isShop === "1") {
-        // return;
-        return type !== "inner"; // 不能拖到节点里面去
-      }
-      return true;
+      return true
     },
     // 判断节点能否被拖拽，只有一个参数
     allowDrag(draggingNode) {
-      // // console.log("-------判断节点能否被拖拽-------",draggingNode)
-      return draggingNode.data.isShop !== "2"; // true 可拖拽 false 不可拖拽 可排除不可被拖拽的情况
+      if (draggingNode.data.isTuo === '1') {
+        return false
+      }
+      return true
     },
     // 当某一节点被鼠标右键点击时会触发该事件
     nodeRightClick(MouseEvent, object, Node, VueComponent) {
@@ -665,7 +692,6 @@ export default {
     },
     // 树节点搜索过滤
     filterNode(value, data) {
-      // // console.log("--------------",value,data)
       if (!value) return true;
       return data.osName.indexOf(value) !== -1;
     },
@@ -714,7 +740,6 @@ export default {
           this.exportInfoList = res.body.exportTitle;
           // 实现点击导出默认全选效果
           for (let i = 0; i < this.exportInfoList.length; i++) {
-            // console.log(this.exportInfoList[i]);
             this.tempCheckList.push(this.exportInfoList[i].columnDesc);
           }
           this.checkList = this.tempCheckList;
@@ -845,15 +870,12 @@ export default {
     },
     // 当页勾选以及取消
     changeSelectRole(selection, row) {
-      //   console.log(123123123)
       // let fitemIndex = this.roleId.findIndex((item) => {
       //   return item == row.roleId;
       // });
       // if (fitemIndex < 0) {
       //   // this.roleId.push(row.roleId);
       // } else {
-       
-      //   console.log(fitemIndex)
       //   // this.roleId.splice(fitemIndex, 1);
       // }
       

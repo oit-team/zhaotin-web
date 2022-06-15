@@ -1491,6 +1491,7 @@ export default {
       this.setImgInfo() 
     },
     setImgInfo() {
+      console.log(456456)
       this.colorList = [];
       this.activeGoodsSize = []
       this.selectedColorName = [];
@@ -1523,6 +1524,7 @@ export default {
         }
         if (item.styleImgDetail) {
           item.styleImgDetail.forEach((Item,Index) => {
+            console.log(Item)
             imgDetalList.push({
               url:Item.resUrl
             })
