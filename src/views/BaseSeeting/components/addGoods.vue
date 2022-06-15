@@ -122,6 +122,7 @@
                       <el-form-item label="">
                         <quill
                       	style="width:100%;"
+                        ref="service"
                       	:value="ruleForm.service"
                       	:editor-setting="editorSetting"
                       	:height="&quot;150px&quot;"
@@ -133,7 +134,7 @@
                 </div>
                 <div class="fileInfoBox right ml-8">
                   <!-- 商品视频 -->
-                  <el-form-item label="商品视频">
+        <!--          <el-form-item label="商品视频">
                     <el-upload
                       :action="uploadUrl"
                       :data="uploadData"
@@ -159,9 +160,23 @@
                       <i v-if="!ruleForm.styleVideo&&!uploadVideoFlag" class="el-icon-plus"></i>
                     </el-upload>
                     <div v-if="ruleForm.styleVideo" style="margin-top:10px"> <el-button @click="delVideo">删除视频</el-button> </div>
+                  </el-form-item> -->
+                 
+                  <el-form-item label="商品视频">
+                    <vc-upload v-bind="uploadOptionVide" :class="ruleForm.styleVideo?'el-upload-video':''"  @onRemove='onRemoveVideoImg' ref="uploadVideoImg">
+                      <video
+                        style=""
+                        v-if='ruleForm.styleVideo'
+                        class="avatar video-avatar"
+                        :src="ruleForm.styleVideo"
+                        controls="controls">
+                        您的浏览器不支持视频播放
+                      </video>
+                      <i v-if="!ruleForm.styleVideo&&!uploadVideoFlag" class="el-icon-plus"></i>
+                    </vc-upload>
+                    <div v-if="ruleForm.styleVideo" style="margin-top:10px"> <el-button @click="delVideo">删除视频</el-button> </div>
                   </el-form-item>
                   <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
-                  
                   <el-form-item label="视频贴片">
                     <vc-upload v-bind="uploadOptionVideImg" @onRemove='onRemoveVideoImg' ref="uploadVideoImg">
                       <i class="el-icon-plus"></i>
@@ -175,6 +190,7 @@
                           <quill
                             style="width:100%;"
                             :value="ruleForm.sellingPointFabric"
+                            ref="sellingPointFabric"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
                             @changeVal="changeSellingPointFabric"
@@ -184,6 +200,7 @@
                           <quill
                             style="width:100%;"
                             :value="ruleForm.designSellingPoint"
+                            ref="designSellingPoint"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
                             @changeVal="changeDesignSellingPoint"
@@ -193,6 +210,7 @@
                           <quill
                             style="width:100%;"
                             :value="ruleForm.wearSellingPoint"
+                            ref="wearSellingPoint"
                             :editor-setting="editorSetting"
                             :height="&quot;150px&quot;"
                             @changeVal="changeWearSellingPoint"
@@ -417,7 +435,7 @@
 <script>
 import quill from '@/views/common/quillEditor'
 import { addQuillTitle } from '@/assets/js/js/quill-title'
-import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo, getStyleData } from '@/api/goods'
+import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo, getStyleData, getStyleById} from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
 import MD5 from 'crypto-js/md5'
 // import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
@@ -709,6 +727,28 @@ export default {
         },
       }
     },
+    uploadOptionVide() {
+      return {
+        showFileList: true,
+        multiple: true,
+        typeOption: {
+          '.mp4,.mov': {
+            data: {
+              fileType: 1,
+            },
+          },
+        },
+        listType: 'picture-card',
+        showFileList: false,
+        maxSize: 1024 * 20,
+        chunkSize: 1024 * 2,
+        check: true,
+        accept: '.mp4,.mov',
+        onSuccess: (file, fileList) => {
+          this.ruleForm.styleVideo = file.data.fileUrl
+        },
+      }
+    },
     //上传视频贴片
     uploadOptionVideImg() {
       return {
@@ -766,49 +806,19 @@ export default {
       }else {
         this.title = '编辑'
       }
+      this.getGoodsInfo(this.$route.query.item.row)
+      // 获取商品详情
       let res = this.$route.query.item.row;
-      res.styleData = JSON.parse(res.styleData)
-      if (res.styleData) {
-        res.styleData.forEach((item) => {
-          item.options.forEach((Item) => {
-            if (Item.status == 1) {
-              item.checked = Item.option
-            }
-          })
-        })
-      }
-      this.ruleForm = this.$route.query.item.row
-      //解决富文本框聚焦页面滚动问题
-      this.$nextTick(function() {
-        this.$parent.$refs.scrollbarBox.scrollTo(0,0);
-      });
-      this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
-      this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
-      this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
-      if (!this.ruleForm.styleData) {
-        this.ruleForm.styleData = []
-        // this.getStyleData()
-        this.getStyleDataNew()
-      }
-      if (!this.ruleForm.styleWashing) {
-        this.ruleForm.styleWashing = []
-        this.getStyleWashing()
-      }
-      if (this.ruleForm.styleLabel) {
-        this.labelList = this.ruleForm.styleLabel.split(',')
-      }
-      if (this.ruleForm.styleVideo) {
-        this.videoList.push({url: this.ruleForm.styleVideo})
-      }
-      if (this.ruleForm.styleVideoPatch) {
-        this.VideoImgList.push({url: this.ruleForm.styleVideoPatch})
-      }
+      
     //   this.menuIds = '1'
     } else {
       this.title = '新增'
       // this.getStyleData()
       this.getStyleDataNew()
       this.getStyleWashing()
+      this.getGoodsCategory()
+      this.getStyleBarCode()
+      this.getStyleLength()
     }
   },
   mounted() {
@@ -818,11 +828,69 @@ export default {
     this.uploadUrl =  BASE_URL + '/system/file/uploadFile'
     addQuillTitle()
     // this.getBandAndSeries()
-    this.getGoodsCategory()
-    this.getStyleBarCode()
-    this.getStyleLength()
   },
   methods: {
+    getGoodsInfo(row) {
+      const con = {
+      	styleId: row.styleId,
+      }
+      const _this = this;
+      getStyleById(con).then((res) => {
+        if (res.head.status == 0) {
+          res = res.body.resultList
+          res.styleData = JSON.parse(res.styleData)
+          if (res.styleData) {
+            res.styleData.forEach((item) => {
+              item.options.forEach((Item) => {
+                if (Item.status == 1) {
+                  item.checked = Item.option
+                }
+              })
+            })
+          }
+          this.ruleForm = res
+          this.$refs.service.txt = this.ruleForm.service
+          this.$refs.sellingPointFabric.txt = this.ruleForm.sellingPointFabric
+          this.$refs.designSellingPoint.txt = this.ruleForm.designSellingPoint
+          this.$refs.wearSellingPoint.txt = this.ruleForm.wearSellingPoint
+          //解决富文本框聚焦页面滚动问题
+          this.$nextTick(function() {
+            this.$parent.$refs.scrollbarBox.scrollTo(0,0);
+          });
+          this.ruleForm.styleData = JSON.parse(JSON.stringify(res.styleData))
+          this.ruleForm.styleWashing = JSON.parse(this.ruleForm.styleWashing)
+          this.ruleForm.seriesId = Number(this.ruleForm.seriesId)
+          if (!this.ruleForm.styleData) {
+            this.ruleForm.styleData = []
+            // this.getStyleData()
+            this.getStyleDataNew()
+          }
+          if (!this.ruleForm.styleWashing) {
+            this.ruleForm.styleWashing = []
+            this.getStyleWashing()
+          }
+          if (this.ruleForm.styleLabel) {
+            this.labelList = this.ruleForm.styleLabel.split(',')
+          }
+          if (this.ruleForm.styleVideo) {
+            this.videoList.push({url: this.ruleForm.styleVideo})
+          }
+          if (this.ruleForm.styleVideoPatch) {
+            this.VideoImgList.push({url: this.ruleForm.styleVideoPatch})
+          }
+          this.getGoodsCategory()
+          this.getStyleBarCode()
+          this.getStyleLength()
+        } else {
+          this.$message({
+            message: res.head.msg,
+            type: 'warning',
+          })
+        }
+      }).catch(err=>{
+        
+      })
+    },
     onRemove(file) {
       this.selectedColorName[this.colorNum] = this.selectedColorName[this.colorNum].filter( item => item.url != file.url)
     },
@@ -1313,7 +1381,7 @@ export default {
       if (!returnRes) {
         _this.$message({
           type: 'warning',
-          message: '发布前请添加各颜色的商品图片、细节图片、商品尺码',
+          message: '发布前请添加各颜色的商品图片、商品尺码',
         })
       }
       return returnRes 

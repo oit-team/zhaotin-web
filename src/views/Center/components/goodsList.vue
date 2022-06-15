@@ -128,12 +128,12 @@
           :src="item.resUrl"
           fit="contain"
         />
-        <div class="zt-video__b" v-if="item.styleVideo">
+        <div class="zt-video__b" v-if="item.styleIsVideo">
           <!-- <i class="el-icon-video-camera-solid"></i> -->
           <i class="iconfont icon-shipin"></i>
         </div>
         <div class="zt-item__line">{{ item.styleName }}</div>
-        <div class="zt-item__line">
+        <div class="zt-item__line flex">
           <div class="zt-price__l">{{ item.styleNo }}</div>
           <div class="zt-price__r">￥<div class="zt-item__price">{{ item.tradePrice }}</div></div>
         </div>

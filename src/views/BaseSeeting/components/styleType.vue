@@ -1,18 +1,23 @@
 <template>
-  <div>
+  <div style="height:100%">
     <!-- <div class="main container"> -->
       <!-- <div>商品中心</div> -->
-     <div> <TablePage v-bind="tablePageOption" ref="cateTable" auto>
+    <div class="main container" style="height: 100%;">
+      <div class="table-h" style="height: 100%;">
+        <TablePage v-bind="tablePageOption" ref="cateTable" auto>
             <template slot="content:imgUrl" slot-scope="{ row }">
-            <!-- 商品图片 -->
-  <!--         <template v-if="row.imgUrl" class="flex items-center">
-            <div class="imgBox"><el-image style="height:50px" class="w-full h-full" :src="row.imgUrl" @load="onImageLoad"/></div>
-            </template> -->
-            <template v-if="true">
-              <el-image class="file-res" style="max-height:50px;" :src="row.imgUrl" fit="cover" />
+              <template v-if="true">
+                <template v-if="row.imgUrl">
+                  <el-image class="file-res" style="max-height:50px;" :src="row.imgUrl" fit="cover" />
+                </template>
+                <template v-else>
+                  <span>无</span> 
+                </template>
+              </template>
             </template>
-          </template>
-       </TablePage></div>
+         </TablePage>
+       </div>
+      </div>
       <!-- 出口 -->
       <router-view />
     <!-- </div> -->
@@ -126,13 +131,31 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/ .el-table__body-wrapper {
+// /deep/ .el-table__body-wrapper {
+//     height: 600px;
+// }
+
+  .table-h {
     height: 600px;
-}
-
-/deep/ .el-image__inner{
-  height: 50px;
-  width: auto;
-}
-
+  }
+  /deep/ .el-table__body-wrapper {
+    overflow: auto!important;
+    overflow-y: scroll!important;
+  }
+  /deep/ .gutter {
+    width: 22px !important;
+    display: inline-block !important;
+  }
+  /deep/ .el-table__fixed-right-patch {
+    width: 22px !important;
+  }
+  /deep/ .el-table__fixed-right {
+    top: 0;
+    left: auto;
+    right: 18px;
+  }
+  /deep/ .el-image__inner{
+    height: 50px;
+    width: auto;
+  }
 </style>

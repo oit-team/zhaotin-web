@@ -107,12 +107,7 @@ export default {
   created(){
     if(this.$route.query.item){
       this.editFlag = false;
-      // this.loadInfo(this.$route.query.item.row)
-      this.seasonForm.seasonName = this.$route.query.item.row.seasonName
-      this.seasonForm.season = this.$route.query.item.row.season
-      this.seasonForm.isStyleRecommended = this.$route.query.item.row.isStyleRecommended.toString()
-      this.seasonForm.id = this.$route.query.item.row.id
-      this.seasonForm.seasonTime = [this.$route.query.item.row.seasonStartTime,this.$route.query.item.row.seasonEndTime]
+      this.loadInfo(this.$route.query.item.row)
       
     }else{
       this.editFlag = true;
@@ -135,7 +130,18 @@ export default {
           seasonId: row.id
         }
         getSeasonById(con).then((res) => {
-          console.log(res)
+          if (res.head.status == 0) {
+            this.seasonForm.seasonName = res.body.resultList.seasonName
+            this.seasonForm.season = res.body.resultList.season
+            this.seasonForm.isStyleRecommended = res.body.resultList.isStyleRecommended.toString()
+            this.seasonForm.id = res.body.resultList.id
+            this.seasonForm.seasonTime = [res.body.resultList.seasonStartTime,res.body.resultList.seasonEndTime]
+          } else {
+            this.$message({
+              message: res.head.msg,
+              type: 'warning',
+            })
+          }
         })
       }
     },

@@ -25,7 +25,7 @@
        </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
-        <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
+        <span v-for="(item,index) in sortList" :key='index'>{{item.dictitemOrderkey}},</span>
       </div>
       <el-form-item>
         <el-button size="small" icon="el-icon-check" type="primary" @click="submitForm('cateGoryForm')">保存</el-button>
@@ -126,20 +126,17 @@ export default {
     },
     // 查询所有的类别排序字段
     querySortList(){
-      // const con = {
-      //   userId: sessionStorage.userId,
-      //   dictCode: "ACTEGORY",
-      //   dictitemCode:'ACTEGORY',
-      //   dictitemOrderkey: this.cateGoryForm.dictitemOrderkey,
-      //   brandId: sessionStorage.brandId
-      // }
-      const con = {}
-        getSizeSortList(con).then((res) => {
-          console.log(res)
-            if(res.head.status === 0) {
-             this.sortList = res.body.resultList
-            }
-        })
+      const con = {
+        userId: sessionStorage.userId,
+        dictCode: "ACTEGORY",
+        dictitemCode:'ACTEGORY',
+        brandId: sessionStorage.brandId
+      }
+      getSizeSortList(con).then((res) => {
+          if(res.head.status === 0) {
+           this.sortList = res.body.result
+          }
+      })
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();

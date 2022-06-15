@@ -538,10 +538,23 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/ .el-table__body-wrapper {
-    height: 500px;
-}
-.ErrorInfo{
-  padding:0 20px;
-}
+  .table-h {
+    height: 600px;
+  }
+  /deep/ .el-table__body-wrapper {
+    overflow: auto!important;
+    overflow-y: scroll!important;
+  }
+  /deep/ .gutter {
+    width: 22px !important;
+    display: inline-block !important;
+  }
+  /deep/ .el-table__fixed-right-patch {
+    width: 22px !important;
+  }
+  /deep/ .el-table__fixed-right {
+    top: 0;
+    left: auto;
+    right: 18px;
+  }
 </style>

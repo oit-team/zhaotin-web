@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="height:100%;position:absolute;width:100%">
     <HeaderNav class="mb-4" />
-    <div class="main container">
+    <div class="main container" style="height:100%;height:calc(100% - 88px)">
       <div class="table_height">
         <TablePage v-bind="tablePageOption" auto />
       </div>
@@ -120,6 +120,7 @@ export default {
 
 <style lang="less" scoped>
 .table_height {
-  height: 680px;
+  // height: 680px;
+  height: 100%;
 }
 </style>

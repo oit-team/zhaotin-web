@@ -634,14 +634,14 @@ export default {
     checkstyleColor (row) {
       console.log(row)
       let returnRes = true
-      if (row.styleColorList.length == 0) {
+      if (row.styleColor == '') {
         this.$message({
           type: 'warning',
           message: '发布前请上传颜色',
         })
         return false
       } else {
-        row.styleColorList.forEach((item,index) => {
+        /*row.styleColorList.forEach((item,index) => {
           console.log(item)
           if (!item.styleSize || item.styleSize.length == 0) {
             //尺码未设置
@@ -650,12 +650,12 @@ export default {
             returnRes = false 
             //图片未上传
           }
-        })
+        })*/
       }
       if (!returnRes) {
         this.$message({
           type: 'warning',
-          message: '发布前请添加各颜色的商品图片、细节图片、商品尺码',
+          message: '发布前请添加各颜色的商品图片、商品尺码',
         })
       }
       return returnRes
@@ -715,8 +715,9 @@ export default {
   .table-h {
     height: 600px;
   }
-  /deep/ .el-table--scrollable-x .el-table__body-wrapper {
-    overflow: auto;
+  /deep/ .el-table__body-wrapper {
+    overflow: auto!important;
+    overflow-y: scroll!important;
   }
   /deep/ .gutter {
     width: 22px !important;
