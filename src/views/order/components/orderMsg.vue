@@ -2,17 +2,21 @@
   <div>
     <HeaderNav class="mb-4" />
     <div class="main container">
-      <div class="">
-        <el-page-header
-          @back="$router.back()"
-          content="订单详情"
-        />
+      <div>
+        <div class="flex justify-between items-center">
+          <el-page-header
+            @back="$router.back()"
+            content="订单详情"
+          />
+          <el-button type="primary" @click="isSet = !isSet">{{ isSet? '完成':'修改' }}</el-button>
+        </div>
         <div class="flex justify-between px-14">
           <div class="font-extrabold">单号：{{ orderNo }}</div>
           <div class="font-extrabold">下单时间: {{ orderTime }}</div>
           <div class="font-extrabold">订单类型: {{ orderTypeName }}</div>
           <div class="font-extrabold">件数: {{ Numb }}件</div>
-          <div class="font-extrabold">总金额: <span class="zt-red">￥{{ priceAll }}</span></div>
+          <div class="font-extrabold" v-if="!isSet">总金额: <span class="zt-red">￥{{ priceAll }}</span></div>
+          <div class="font-extrabold flex" v-else>总金额: <el-input v-model="priceAll" size="mini" placeholder="￥" /></div>
         </div>
         <!-- <el-table
           :data="orderInfoList"
@@ -135,6 +139,7 @@ export default {
       Numb: 0,
       priceAll: 0,
       dataInfo: {},
+      isSet: false,
     }
   },
   created() {
@@ -175,7 +180,7 @@ export default {
         }
       }
     },
-    // 推荐区  图片点击事件
+    // 图片点击事件
     todetails(id) {
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },

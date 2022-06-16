@@ -4,6 +4,17 @@
       <!-- <div>商品中心</div> -->
       <div class="table-h" style="height: 100%;">
         <TablePage v-bind="tablePageOption" auto ref="page">
+          <template #actions:upd>
+            <el-dropdown class="ml-2">
+              <el-button type="primary">
+                上/下架<i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="updGoods(0)">商品上架</el-dropdown-item>
+                <el-dropdown-item @click.native="updGoods(1)">商品下架</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
           <!-- <el-drawer :visible.sync="drawerVisible" size="40%"> -->
           <template slot="content:resUrl" slot-scope="{ row }">
             <!-- 商品图片 -->
@@ -221,6 +232,21 @@ export default {
             type: 'primary',
             click: () => this.export(),
           },
+          {
+            slot: 'upd',
+          },
+          // {
+          //   name: '上/下架',
+          //   type: 'primary',
+          //   icon: 'el-icon-arrow-down',
+          //   click: () => this.upDrop()
+          // },
+          // {
+          //   name: '商品下架',
+          //   type: 'primary',
+          //   icon: 'el-icon-bottom',
+          //   click: () => this.updateStyleStatusById()
+          // },
           // {
           //   name: '导入库存',
           //   icon: 'el-icon-download',
@@ -229,6 +255,7 @@ export default {
           // },
         ],
         table: {
+          selection: true,
           data: this.data.resultList,
           actions: {
             width: 180,
@@ -271,14 +298,14 @@ export default {
                   query: { item: scope , flag : 0},
                 }),
               },
-              {
-                tip: ({ row }) => ["商品上架", "商品下架"][row.status],
-                type: ({ row }) => "warning",
-                icon: ({ row }) => ["el-icon-top"][row.status] || "el-icon-bottom",
-                click: ({ row }) => {
-                  this.updateStyleStatusById(row)
-                },
-              },
+              // {
+              //   tip: ({ row }) => ["商品上架", "商品下架"][row.status],
+              //   type: ({ row }) => "warning",
+              //   icon: ({ row }) => ["el-icon-top"][row.status] || "el-icon-bottom",
+              //   click: ({ row }) => {
+              //     this.updateStyleStatusById(row)
+              //   },
+              // },
               // {
               //   tip: '库存分布',
               //   // type: 'danger',
@@ -493,6 +520,9 @@ export default {
       this.fileList = fileList
       // console.log("this.fileList===",this.fileList)
     },
+    upDrop() {
+      // this.
+    },
     // 限制每次只能上传一个文件
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
@@ -581,7 +611,7 @@ export default {
     },
     // 获取选中项的值
     changeChecked(val) {
-      // console.log("复选框变化后的值===",val);
+      console.log("复选框变化后的值===",val);
       this.checkList = val
     },
     // 确认导出商品按钮
@@ -706,6 +736,89 @@ export default {
           message: '已取消',
         })
       })
+    },
+    // openDrop() {
+    //   if (this.$refs.page.checkSelected()) {
+    //     this.$refs.carouselList.open()
+    //   }
+    // },
+    handleCommand(command) {
+      console.log(command)
+      let status = command
+      let msg = command === 1?'下架':'上架'
+      this.$confirm(`确认${msg}已选择的商品吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        const con = {
+          sId: styleId,
+          status: status
+        }
+        // if (status == 1 && !this.checkstyleColor()) {
+        //   return;
+        // }
+        // updateStyleStatusById(con).then((res) => {
+        //   if (res.head.status == 0) {
+        //     this.$message({
+        //       type: 'success',
+        //       message: res.head.msg,
+        //     })
+        //     // row.status = status
+        //   } else {
+        //     this.$message({
+        //       type: 'error',
+        //       message: res.head.msg,
+        //     })
+        //   }
+        // }).catch((err) => {
+        //   console.log(err)
+        // })
+      }).catch(() => {
+        this.$message({
+          message: '已取消',
+        })
+      })
+    },
+    updGoods(id) {
+      let status = id === 1? '0' : '1'
+      let msg = id === 1 ? '下架' : '上架'
+      console.log(status)
+      console.log(msg)
+      console.log(this.$refs.page.selected)
+      const con = {
+        sId: [],
+        status: status,
+      }
+      this.$confirm(`确认${msg}该商品?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        this.$refs.page.selected.forEach(e => {
+          const list = {
+            styleId: e.styleId,
+            styleNo: e.styleNo,
+          }
+          con.sId.push(list)
+        })
+        updateStyleStatusById(con).then((res) => {
+          if (res.head.status == 0) {
+            this.$message({
+              type: 'success',
+              message: res.head.msg,
+            })
+            row.status = status
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.head.msg,
+            })
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+      }).catch(() => {})
     },
   },
 
