@@ -54,7 +54,7 @@
           icon-class="el-icon-s-shop"
           :highlight-current="true"
           :props="{ children: 'childrenList', label: 'osName' }"
-          node-key="menuId"
+          node-key="id"
           :current-node-key="curCheckedKey"
           :default-expanded-keys="defaultOpenArr"
           @node-drag-start="handleDragStart"
@@ -578,13 +578,13 @@ export default {
         }
       })
       this.orgList = [{
-        osName:`全部(${this.data.count})`,
+        osName:`全部(${this.data.allUsersNumber})`,
         menuId:'allMenu',
         brandId:'allMenu',
         id:'',
         sort:'',
         isTuo: 1,
-        childrenList:res.body.orgList
+        childrenList:res.body.orgList,
       }]
       this.$nextTick(() => {
         this.$refs.tree.setCurrentKey('allMenu'); 
@@ -620,10 +620,14 @@ export default {
       getCustomer(con).then((res) => {
         this.data = res.body;
         this.chargeList = res.body.resultList;
+        this.$forceUpdate()
       });
     },
     // 节点开始拖拽时触发的事件
-    handleDragStart() {},
+    handleDragStart(node, ev) {
+      console.log(node)
+      this.nodeInfo = node.data
+    },
     // 拖拽进入其他节点时触发的事件
     handleDragEnter() {},
     // 拖拽离开某个节点时触发的事件
@@ -647,14 +651,12 @@ export default {
     },
     // 拖拽成功完成时触发的事件
     handleDrop(draggingNode, dropNode, dropType, ev) {
-      console.log(dropNode.level)
-      let path = ''
-      if (dropNode.level === 2) {
-        path = '0'
-      } else if (dropNode.level >= 2){
+      let path = '0'
+      if (dropNode.level > 2){
         path = `${dropNode.data.path},${dropNode.data.id}`
+      } else if (dropNode.level === 2 && dropType !== 'before') {
+        path = `0,${dropNode.data.id}`
       }
-      console.log(path)
       const con = {
         id: this.nodeInfo.id,
         isShop: "0",
