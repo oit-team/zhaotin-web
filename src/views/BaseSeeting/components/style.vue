@@ -180,7 +180,7 @@
       wrapper-closable
     >
       <div v-for="item in errorList" class="mb-4" :key="item.recordId">
-        <p>{{ item }}</p>
+        <div v-html="item"></div>
         <el-divider />
       </div>
     </el-drawer>

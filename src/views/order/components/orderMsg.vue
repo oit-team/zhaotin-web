@@ -206,16 +206,15 @@ export default {
           that.orderTypeName = res.body.resultList.orderTypeName
           that.orderTime = res.body.resultList.orderTime
           that.orderInfoList = res.body.resultList.orderStyleList
-          // that.priceAll = res.body.resultList.totalOrderAmount
+          that.priceAll = res.body.resultList.totalOrderAmount
           that.orderInfoList.forEach(e => {
             e.style.forEach(i => {
               that.$set(i, 'openList', true)
-              i.styleSize.forEach(item => {
-                that.Numb += Number(item.sizeNumber + 0)
-              })
+              // i.styleSize.forEach(item => {
+              //   that.Numb += Number(item.sizeNumber + 0)
+              // })
             })
           })
-          this.cgpriceAll()
         }
       })
     },
@@ -317,12 +316,12 @@ export default {
     handleClose(done) {
       this.$refs.bValidateForm.validate((valid) => {
         if (valid) {
-          this.cgpriceAll()
           this.$confirm('是否提交当前修改？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning',
           }).then(() => {
+            console.log(this.priceAll)
             const con = {
               orderId: this.orderId,
               totalOrderAmount: this.priceAll,
@@ -331,13 +330,12 @@ export default {
               orderNo: this.orderNo,
               styleList: this.priceList,
             }
-            console.log()
             updateOrder(con).then(() => {
               this.$message.success('修改成功')
               setTimeout(() => {
                 this.$router.back()
               }, 1000)
-            }).catch((ref) => {
+            }).catch(() => {
               // console.log(ref)
             })
             // console.log('确定')
