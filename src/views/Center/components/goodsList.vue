@@ -259,7 +259,6 @@ export default {
     },
     // 页面 触底加载
     async addData() {
-      console.log(111)
       const that = this
       if (that.isUpdate === true) {
         that.fullscreenLoading = true
