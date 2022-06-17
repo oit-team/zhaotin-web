@@ -59,7 +59,9 @@
           <el-checkbox
             v-model="checkedAll"
             @change="toggleSelection"
-          >全选</el-checkbox>
+          >
+            全选
+          </el-checkbox>
           <div class="zt-left__btn" @click="deleteAll"><i class="el-icon-delete"></i>批量删除</div>
         </div>
         <div class="zt-footer__right">
@@ -253,8 +255,6 @@ export default {
         })
       })
       that.priceList = list
-      console.log(list)
-      console.log(that.priceList)
       const res = await CalculatePrice({
         styleList: list,
       })
@@ -351,7 +351,6 @@ export default {
           that.priceList = []
           that.priceAll = 0
         }
-        console.log(list)
         const res = await changeShoppingCart({
           styleList: list,
         })
@@ -485,32 +484,15 @@ export default {
     border: 1px solid #c9a76e;
   }
   .zt-cart__name{
-    // width: 300px;
-    // padding: 0 10px;
     p{
       color: #909193;
       font-size: 14px;
     }
   }
-  .zt-cart__color{
-    // width: 150px;
-    // padding: 0 20px;
-  }
-  .zt-cart__price{
-    // width: 100px;
-    // padding: 0 20px;
-  }
-  .zt-cart__num{
-    // width: 100px;
-    // padding: 0 20px;
-  }
   .zt-cart__allPrice{
-    // width: 100px;
-    // padding: 0 20px;
     color: #c9a76e;
   }
   .zt-cart__set{
-    // width: 100px;
     padding: 0 20px;
   }
   .zt-cart__set:hover{
@@ -518,8 +500,6 @@ export default {
   }
 }
 .zt-footer{
-  // position: fixed;
-  // bottom: 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;

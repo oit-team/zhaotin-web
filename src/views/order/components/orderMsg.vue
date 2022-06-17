@@ -134,8 +134,8 @@
             <p>操作人：{{ item.operationName || '无' }}</p><p>{{ item.operationTime }}</p>
           </div>
           <div v-if="item.operationType !== 1">
-            <p class="my-2"><span class="text-red-600">修改前数据：</span>{{ item.afterModificationData }}</p>
-            <p class="my-2"><span class="text-blue-500">修改后数据：</span>{{ item.beforeModificationData }}</p>
+            <p class="my-2"><span class="text-red-600">修改前数据：</span>{{ item.beforeModificationData }}</p>
+            <p class="my-2"><span class="text-blue-500">修改后数据：</span>{{ item.afterModificationData }}</p>
           </div>
           <div v-else>
             <p class="my-2 text-red-600">删除订单</p>
@@ -245,13 +245,12 @@ export default {
           orderNo: this.orderNo,
           isCancel: '1',
         }
-        updateOrder(con).then(res => {
+        updateOrder(con).then(() => {
           this.$message.success('删除成功')
           setTimeout(() => {
             this.$router.back()
           }, 1000)
-        }).catch((ref) => {
-          console.log(ref)
+        }).catch(() => {
         })
       }).catch(() => {
       })
@@ -321,7 +320,6 @@ export default {
             cancelButtonText: '取消',
             type: 'warning',
           }).then(() => {
-            console.log(this.priceAll)
             const con = {
               orderId: this.orderId,
               totalOrderAmount: this.priceAll,
@@ -333,15 +331,12 @@ export default {
             updateOrder(con).then(() => {
               this.$message.success('修改成功')
               setTimeout(() => {
-                this.$router.back()
+                done()
+                this.isSet = false
               }, 1000)
             }).catch(() => {
-              // console.log(ref)
             })
-            // console.log('确定')
-            // done()
           }).catch(() => {
-            console.log('取消')
             done()
           })
         } else {

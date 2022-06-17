@@ -31,7 +31,9 @@
           <div
             :class="selectB===0?'selectB':'zt-bottom__item'"
             @click="selectItem(0)"
-          >默认</div>
+          >
+            默认
+          </div>
           <div
             :class="selectB===1?'selectB':'zt-bottom__item'"
             @click="shouDjiantou = !shouDjiantou,selectItem(1)"
@@ -429,7 +431,7 @@ export default {
         window.scrollTo('0', '0')
       }
     },
-    radioText(val) {
+    radioText() {
       if (this.radio1 === this.radio2) {
         this.formData.orderType = '1'
         this.loadData()

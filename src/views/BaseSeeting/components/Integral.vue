@@ -577,19 +577,11 @@ body > .el-container {
 				right: 0;
 			}
 		}
-		.card-content{}
 		.card-food{
 			padding: 10px 0;
 			text-align: right;
 			box-sizing: border-box;
 		}
-	}
-	.content-form{
-		// padding: 20px 10px 0 10px;
-		// border: 1px solid #ccc;
-		// border-radius: 5px;
-		// margin: 10px 0;
-		// box-sizing: border-box;
 	}
 	.el-form-item{
 		width: fit-content;
