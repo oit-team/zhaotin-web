@@ -246,7 +246,7 @@ export default {
           isCancel: '1',
         }
         updateOrder(con).then(() => {
-          this.$message.success('删除成功')
+          this.$message.success('取消订单成功')
           setTimeout(() => {
             this.$router.back()
           }, 1000)
@@ -357,7 +357,7 @@ export default {
     // 删除 尺码
     deleteSize(id, idn, idm) {
       const that = this
-      this.$confirm('此操作将删除该商品, 是否继续?', '提示', {
+      this.$confirm('是否删除该尺码?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
@@ -383,10 +383,6 @@ export default {
         that.priceList = list
         that.cgpriceAll()
       }).catch(() => {
-        that.$message({
-          type: 'info',
-          message: '已取消删除',
-        })
       })
     },
   },
