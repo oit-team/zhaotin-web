@@ -106,7 +106,6 @@
             <div class="zt-price">
               服务
               <div class="zt-price__data zt-hei" v-html="infoData.service">
-                <!-- {{ infoData.service }} -->
               </div>
             </div>
           </div>
@@ -274,27 +273,6 @@
                 </div>
               </div>
             </div>
-            <!-- <el-table
-              :data="infoData.styleSizeList"
-              height="250"
-              border
-              style="width: 100%"
-            >
-              <el-table-column
-                prop="sizeName"
-                label="尺寸"
-                width="120"
-                align="center"
-              />
-              <el-table-column
-                v-for="(item, index) in titleMap"
-                :key="index"
-                prop="sizeConfig"
-                :label="item"
-                width="120"
-                align="center"
-              />
-            </el-table> -->
           </div>
         </div>
         <el-divider />
@@ -591,14 +569,14 @@ export default {
         that.$store.commit('order/addOrderStorage', that.infoData)
         that.$router.push('/styleCenter/orderGoods')
       } else {
-        that.$message.error('请选择需要购买的商品数量')
+        that.$message.error('请选择购买的尺码和数量')
       }
     },
     // 加入购物车
     async toorder() {
       this.cart()
       if (this.allList && this.allList.length === 0) {
-        this.$message.error('请选择购买的商品数量')
+        this.$message.error('请选择购买的尺码和数量')
       } else {
         const res = await addCart({
           styleList: this.allList,

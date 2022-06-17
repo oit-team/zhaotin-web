@@ -461,7 +461,7 @@ export default {
 }
 .zt-tabs__top{
   width: 100%;
-  font-size: 18px;
+  font-size: 16px;
   background-color: #ECE8E5;
   box-sizing: border-box;
 }

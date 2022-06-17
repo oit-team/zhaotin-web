@@ -833,6 +833,7 @@ export default {
     getGoodsInfo(row) {
       const con = {
       	styleId: row.styleId,
+        whetherBeDelete: '1',
       }
       const _this = this;
       getStyleById(con).then((res) => {
@@ -1654,7 +1655,7 @@ export default {
       getStyleData(con).then((res) => {
         if (res.head.status == 0) {
           _this.ruleForm.styleData = JSON.parse(res.body.result[0].dicttimeDisplayName)
-        } else {
+        } else {whetherBeDelete
           this.$message.error(res.head.msg);
         }
       }).catch((err) => {

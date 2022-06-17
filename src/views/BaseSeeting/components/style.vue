@@ -170,6 +170,20 @@
         </div>
       </div>
     </el-drawer>
+
+    <!-- 上架失败 -->
+    <el-drawer
+      title="上/下架失败"
+      :visible.sync="drawerUpd"
+      direction="rtl"
+      ref="drawerUpd"
+      wrapper-closable
+    >
+      <div v-for="item in errorList" class="mb-4" :key="item.recordId">
+        <p>{{ item }}</p>
+        <el-divider />
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -205,6 +219,9 @@ export default {
       failureCount: null,
       importErrData: null, // 导入失败数据列表
       errMessage: null,
+      errorList: [],
+
+      drawerUpd: false,
     }
   },
 
@@ -308,7 +325,6 @@ export default {
     },
   },
   created() {
-      
   },
   activated() {
     this.$refs.page.loadData()
@@ -713,9 +729,6 @@ export default {
     updGoods(id) {
       let status = id === 1? '0' : '1'
       let msg = id === 1 ? '下架' : '上架'
-      console.log(status)
-      console.log(msg)
-      console.log(this.$refs.page.selected)
       const con = {
         sId: [],
         status: status,
@@ -733,28 +746,24 @@ export default {
           con.sId.push(list)
         })
         updateStyleStatusById(con).then((res) => {
+          this.errorList = JSON.parse(JSON.stringify(res.body.errorList))
+          // 否则成功
           if (res.body.errorList.length === 0) {
             this.$message({
               type: 'success',
               message: res.head.msg,
             })
-            row.status = status
           } else {
-            let msg = ''
-            res.body.errorList.forEach(e => {
-              msg = msg + e
-            })
-            const reg = /[;；]/g
-            msg = msg.replace(reg, "$&\r\n")
-            this.$notify.error({
-              title: '失败',
-              message: msg,
-              duration: 0,
-            })
+            // 如果有失败的数据  则弹出--抽屉
+            this.drawerUpd = true
           }
+        })
+        setTimeout(() => {
+          this.$refs.page.loadData()
+          this.$forceUpdate()
+        }, 1000)
         }).catch((err) => {
           console.log(err)
-        })
       }).catch(() => {})
     },
   },
@@ -785,6 +794,10 @@ export default {
   /deep/ .el-image__inner{
     height: 50px;
     width: auto;
+  }
+  
+  ::v-deep .el-drawer__body{
+    padding: 20px;
   }
   .ErrorInfo{
     padding:0 20px;
