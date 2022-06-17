@@ -1655,7 +1655,7 @@ export default {
       getStyleData(con).then((res) => {
         if (res.head.status == 0) {
           _this.ruleForm.styleData = JSON.parse(res.body.result[0].dicttimeDisplayName)
-        } else {whetherBeDelete
+        } else {
           this.$message.error(res.head.msg);
         }
       }).catch((err) => {

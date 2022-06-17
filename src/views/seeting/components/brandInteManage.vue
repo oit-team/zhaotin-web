@@ -625,7 +625,7 @@ export default {
     },
     // 节点开始拖拽时触发的事件
     handleDragStart(node, ev) {
-      console.log(node)
+      // console.log(node)
       this.nodeInfo = node.data
     },
     // 拖拽进入其他节点时触发的事件
