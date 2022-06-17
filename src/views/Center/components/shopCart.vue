@@ -252,11 +252,6 @@ export default {
           }
           list.unshift(dataL)
         })
-        // if (dataL.styleSize && dataL.styleSize.length !== 0) {
-        //   list.unshift(dataL)
-        // } else {
-        //   []
-        // }
       })
       that.priceList = list
       console.log(list)
@@ -267,14 +262,6 @@ export default {
       if (res.head.status === 0) {
         that.priceAll = res.body.styleTotalPrice
       }
-      // that.formData.styleList.forEach(e => {
-      //   e.style.forEach(i => {
-      //     if (i.checked === true) {
-      //       that.priceAll += i.styleNumber * i.stylePrice
-      //     }
-      //   })
-      // })
-      // }
     },
     //  颜色 check   二级选择框
     itemChecked(id) {
@@ -321,22 +308,21 @@ export default {
       }).then(async () => {
         that.formData.styleList[id].style[idn].styleSize.splice(idm, 1)
         if (that.formData.styleList[id].style[idn].styleSize && that.formData.styleList[id].style[idn].styleSize.length === 0) {
-          console.log(that.formData.styleList)
+          // console.log(that.formData.styleList)
           that.formData.styleList[id].style.splice(idn, 1)
           that.$forceUpdate
         }
         if (that.formData.styleList[id].style && that.formData.styleList[id].style.length === 0) {
-          console.log(that.formData.styleList)
+          // console.log(that.formData.styleList)
           that.formData.styleList.splice(id, 1)
           that.$forceUpdate
         }
-        console.log(that.formData.styleList)
+        // console.log(that.formData.styleList)
         const list = []
         if (that.formData.styleList && that.formData.styleList.length !== 0) {
           let dataL = {}
           that.formData.styleList.forEach(e => {
             e.style.forEach(i => {
-              console.log(i)
               dataL = {
                 styleId: i.styleId,
                 styleNo: e.styleNo,
@@ -346,13 +332,13 @@ export default {
               }
               i.styleSize.forEach(n => {
                 dataL.styleSize.unshift(n)
-                console.log(dataL)
+                // console.log(dataL)
               })
               list.unshift(dataL)
-              console.log(list)
+              // console.log(list)
             })
             // list.unshift(dataL)
-            console.log(list)
+            // console.log(list)
             that.priceList = list
             // if (dataL.styleSize && dataL.styleSize.length !== 0) {
             //   list.unshift(dataL)

@@ -236,18 +236,6 @@ export default {
             slot: 'upd',
           },
           // {
-          //   name: '上/下架',
-          //   type: 'primary',
-          //   icon: 'el-icon-arrow-down',
-          //   click: () => this.upDrop()
-          // },
-          // {
-          //   name: '商品下架',
-          //   type: 'primary',
-          //   icon: 'el-icon-bottom',
-          //   click: () => this.updateStyleStatusById()
-          // },
-          // {
           //   name: '导入库存',
           //   icon: 'el-icon-download',
           //   type: 'primary',
@@ -298,14 +286,6 @@ export default {
                   query: { item: scope , flag : 0},
                 }),
               },
-              // {
-              //   tip: ({ row }) => ["商品上架", "商品下架"][row.status],
-              //   type: ({ row }) => "warning",
-              //   icon: ({ row }) => ["el-icon-top"][row.status] || "el-icon-bottom",
-              //   click: ({ row }) => {
-              //     this.updateStyleStatusById(row)
-              //   },
-              // },
               // {
               //   tip: '库存分布',
               //   // type: 'danger',
@@ -691,57 +671,7 @@ export default {
       return returnRes
       
     },
-    
-    // 商品上下架
-    updateStyleStatusById(row) {
-      let status = row.status
-      let msg = '';
-      if (row.status == 1){
-        status = 0
-        msg = '下架'
-      } else {
-        status = 1
-        msg = '上架'
-      }
-      this.$confirm(`确认${msg}该商品?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(() => {
-        const con = {
-          sId: row.styleId,
-          status: status
-        }
-        if (status == 1 && !this.checkstyleColor(row)) {
-          return;
-        }
-        updateStyleStatusById(con).then((res) => {
-          if (res.head.status == 0) {
-            this.$message({
-              type: 'success',
-              message: res.head.msg,
-            })
-            row.status = status
-          } else {
-            this.$message({
-              type: 'error',
-              message: res.head.msg,
-            })
-          }
-        }).catch((err) => {
-          console.log(err)
-        })
-      }).catch(() => {
-        this.$message({
-          message: '已取消',
-        })
-      })
-    },
-    // openDrop() {
-    //   if (this.$refs.page.checkSelected()) {
-    //     this.$refs.carouselList.open()
-    //   }
-    // },
+
     handleCommand(command) {
       console.log(command)
       let status = command
@@ -803,16 +733,23 @@ export default {
           con.sId.push(list)
         })
         updateStyleStatusById(con).then((res) => {
-          if (res.head.status == 0) {
+          if (res.body.errorList.length === 0) {
             this.$message({
               type: 'success',
               message: res.head.msg,
             })
             row.status = status
           } else {
-            this.$message({
-              type: 'error',
-              message: res.head.msg,
+            let msg = ''
+            res.body.errorList.forEach(e => {
+              msg = msg + e
+            })
+            const reg = /[;；]/g
+            msg = msg.replace(reg, "$&\r\n")
+            this.$notify.error({
+              title: '失败',
+              message: msg,
+              duration: 0,
             })
           }
         }).catch((err) => {

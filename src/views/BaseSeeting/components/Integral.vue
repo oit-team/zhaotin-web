@@ -71,7 +71,7 @@
 							</el-form-item>
 							<!-- 联动规则  切换状态-->
 							<el-form-item prop="chain" label="联动规则" v-if="leftTab.remark === '1'">
-								<el-switch v-model="form.chain" @change="cgSwitch"></el-switch>
+								<el-switch v-model="form.chain"></el-switch>
 							</el-form-item>
 							<div v-if="form.chain">
 								<el-form-item label="规则类型" prop="preRuleCode">
@@ -176,7 +176,7 @@
 						<div v-show="!item.preList && !item.disab && leftTab.remark === '1'">
 							<!-- 联动规则  切换状态-->
 							<el-form-item prop="chain" label="联动规则">
-								<el-switch v-model="item.chain" @change="cgSwitch"></el-switch>
+								<el-switch v-model="item.chain"></el-switch>
 							</el-form-item>
 							<div v-if="item.chain">
 								<el-form-item label="规则类型" prop="preRuleCode">

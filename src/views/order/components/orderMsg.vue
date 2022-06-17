@@ -2,65 +2,31 @@
   <div>
     <HeaderNav class="mb-4" />
     <div class="main container">
+      <!-- 头部 -->
       <div>
-        <div class="flex justify-between items-center">
-          <el-page-header
-            @back="$router.back()"
-            content="订单详情"
-          />
-          <el-button type="primary" @click="isSet = !isSet">{{ isSet? '完成':'修改' }}</el-button>
+        <el-page-header
+          @back="$router.back()"
+          content="订单详情"
+        />
+        <div class="flex justify-between items-center mb-2">
+          <el-button type="primary" plain size="small" @click="getNote">修改记录</el-button>
+          <div>
+            <el-button type="danger" size="small" @click="deleteOrder">取消订单</el-button>
+            <el-button v-if="isUpdate" type="primary" size="small" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
+          </div>
         </div>
-        <div class="flex justify-between px-14">
+        <div class="flex justify-between px-14 zt-head">
           <div class="font-extrabold">单号：{{ orderNo }}</div>
           <div class="font-extrabold">下单时间: {{ orderTime }}</div>
           <div class="font-extrabold">订单类型: {{ orderTypeName }}</div>
           <div class="font-extrabold">件数: {{ Numb }}件</div>
-          <div class="font-extrabold" v-if="!isSet">总金额: <span class="zt-red">￥{{ priceAll }}</span></div>
-          <div class="font-extrabold flex" v-else>总金额: <el-input v-model="priceAll" size="mini" placeholder="￥" /></div>
+          <div class="font-extrabold" v-show="!isSet">总金额: <span class="zt-red">￥{{ priceAll }}</span></div>
+          <div class="font-extrabold flex" v-show="isSet">
+            总金额:
+            <el-input v-model="priceAll" class="ml-2" size="mini" placeholder="￥" />
+          </div>
         </div>
-        <!-- <el-table
-          :data="orderInfoList"
-          style="width: 100%"
-          class="font-extrabold text-xl"
-          cell-class-name="testclass"
-          :cell-style="cellStyle"
-        >
-          <el-table-column type="expand">
-            <template slot-scope="props">
-              <div class="flex container flex-wrap ml-4">
-                <div v-for="item in props.row.style" :key="item.id" label-position="left" inline class="flex items-center justify-center">
-                  <div>
-                    <div class="border border-solid border-gray-300 flex items-center"><img class="w-32 h-44" :src="item.imgUrl" alt="" /></div>
-                  </div>
-                  <div class="flex flex-col items-center">
-                    <div>
-                      <span>{{ item.styleColor }}</span>
-                    </div>
-                    <div class="" v-for="items in item.styleSize" :key="items.index">
-                      <span>尺码*数量: {{ items.sizeName }} * {{ items.sizeNumber }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="商品名称"
-            prop="styleName"
-          />
-          <el-table-column
-            label="商品单价"
-            prop="stylePrice"
-          />
-          <el-table-column
-            label="商品总价"
-            prop="styleTotal"
-          />
-          <el-table-column
-            label="商品总数"
-            prop="styleNumber"
-          />
-        </el-table> -->
+        <!-- ----- -->
         <div class="zt-content">
           <div class="zt-content__item" v-for="(item, index) in orderInfoList" :key="index">
             <div class="zt-cart__title">
@@ -86,8 +52,8 @@
                 <el-col :span="3">
                   <el-button type="primary" @click="itemN.openList = !itemN.openList">
                     {{ itemN.openList?'收起':'展开' }}
-                    <i v-if="itemN.openList" class="el-icon-caret-bottom el-icon--right"></i>
-                    <i v-else class="el-icon-caret-top el-icon--right"></i>
+                    <i v-show="itemN.openList" class="el-icon-caret-bottom el-icon--right"></i>
+                    <i v-show="!itemN.openList" class="el-icon-caret-top el-icon--right"></i>
                   </el-button>
                 </el-col>
               </el-row>
@@ -95,10 +61,12 @@
                 <div class="zt-size__item" v-for="(itemM, indexM) in itemN.styleSize" :key="indexM">
                   <div class="zt-size__size">所选尺码：{{ itemM.sizeName }}</div>
                   <div class="zt-size__size">单价：￥{{ itemN.stylePrice }}</div>
-                  <div class="zt-size__size">x {{ itemM.sizeNumber }}</div>
-                  <!-- <div class="zt-size__size"><el-input-number disabled size="mini" :min="1" v-model="itemM.sizeNumber" /></div> -->
+                  <div class="zt-size__size" v-show="!isSet">x {{ itemM.sizeNumber }}</div>
+                  <div class="zt-size__size" v-show="isSet">
+                    <el-input-number size="small" v-model="itemM.sizeNumber" @change="handleChange(index)" :min="1" />
+                  </div>
                   <div class="zt-size__size">小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}</div>
-                  <!-- <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div> -->
+                  <div class="zt-size__size" v-show="isSet" @click="deleteSize(index,indexN,indexM)">删除</div>
                 </div>
               </div>
             </div>
@@ -115,15 +83,72 @@
           </div>
         </div>
       </div>
+
       <!-- 出口 -->
       <router-view />
     </div>
+    <el-drawer
+      title="提交修改"
+      :visible.sync="drawer"
+      :direction="direction"
+      :before-close="handleClose"
+      :wrapper-closable="false"
+      ref="drawerSet"
+    >
+      <div class="demo-drawer__content">
+        <el-form :model="bValidateForm" class="flex-1" ref="bValidateForm" label-width="60px">
+          <el-form-item
+            label="原因"
+            prop="cause"
+            :rules="[{
+              required: true, message: '请输入修改原因'
+            }]"
+          >
+            <el-input
+              type="textarea"
+              :rows="3"
+              placeholder="请输入修改原因"
+              v-model="bValidateForm.cause"
+            />
+          </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer flex">
+          <el-button @click="cancelForm" class="flex-1">取 消</el-button>
+          <el-button type="primary" @click="confirmSet" class="flex-1" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+        </div>
+      </div>
+    </el-drawer>
+    <el-drawer
+      title="修改记录"
+      :visible.sync="drawerNote"
+      :direction="direction"
+      ref="drawerNote"
+      wrapper-closable
+    >
+      <div v-if="updateRecord.length === 0">
+        <el-empty description="暂无修改" />
+      </div>
+      <div v-else>
+        <div v-for="item in updateRecord" class="mb-4" :key="item.recordId">
+          <div class="flex justify-between">
+            <p>操作人：{{ item.operationName || '无' }}</p><p>{{ item.operationTime }}</p>
+          </div>
+          <p class="my-2"><span class="text-red-600">修改前数据：</span>{{ item.afterModificationData }}</p>
+          <p class="my-2"><span class="text-blue-500">修改后数据：</span>{{ item.beforeModificationData }}</p>
+          <p>备注：{{ item.orderDescribe }}</p>
+        </div>
+        <el-divider />
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-import { getOrderById } from '@/api/order'
+import { getOrderById, updateOrder, getOrderUpdateRecord } from '@/api/order'
+import {
+  CalculatePrice,
+} from '@/api/orderCart'
 
 export default {
   components: {
@@ -140,9 +165,23 @@ export default {
       priceAll: 0,
       dataInfo: {},
       isSet: false,
+      priceList: [],
+      drawer: false,
+      direction: 'rtl',
+      drawerNote: false,
+      textarea: '', // 修改订单原因
+      bValidateForm: {
+        cause: '',
+      },
+      loading: false,
+      updateRecord: [], // 修改记录
+      isUpdate: false,
     }
   },
   created() {
+    if (this.$route.query.stype && this.$route.query.stype === 'update') {
+      this.isUpdate = true
+    }
     if (this.$route.query.item) {
       this.orderId = this.$route.query.item.row.orderId
       this.orderInfo()
@@ -162,14 +201,16 @@ export default {
           that.orderTypeName = res.body.resultList.orderTypeName
           that.orderTime = res.body.resultList.orderTime
           that.orderInfoList = res.body.resultList.orderStyleList
-          that.priceAll = res.body.resultList.totalOrderAmount
-
+          // that.priceAll = res.body.resultList.totalOrderAmount
           that.orderInfoList.forEach(e => {
-            that.Numb += e.styleNumber
             e.style.forEach(i => {
               that.$set(i, 'openList', true)
+              i.styleSize.forEach(item => {
+                that.Numb += Number(item.sizeNumber + 0)
+              })
             })
           })
+          this.cgpriceAll()
         }
       })
     },
@@ -183,6 +224,167 @@ export default {
     // 图片点击事件
     todetails(id) {
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
+    },
+    // 取消订单
+    deleteOrder() {
+      this.$confirm('是否取消该订单?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        const con = {
+          orderId: this.orderId,
+          isCancel: '1',
+        }
+        updateOrder(con).then(res => {
+          this.$message.success('删除成功')
+          setTimeout(() => {
+            this.$router.back()
+          }, 1000)
+        }).catch((ref) => {
+          console.log(ref)
+        })
+      }).catch(() => {
+      })
+    },
+    // 计算总价
+    async cgpriceAll() {
+      const that = this
+      const list = []
+      let dataL = {}
+      that.orderInfoList.forEach(e => {
+        e.style.forEach(i => {
+          dataL = {
+            styleId: i.styleId,
+            styleNo: e.styleNo,
+            styleColor: i.id,
+            styleSize: [],
+          }
+          i.styleSize.forEach(n => {
+            dataL.styleSize.unshift(n)
+          })
+          list.unshift(dataL)
+        })
+      })
+      that.priceList = list
+      const res = await CalculatePrice({
+        styleList: list,
+      })
+      if (res.head.status === 0) {
+        that.priceAll = res.body.styleTotalPrice
+      }
+    },
+    // 数量改变
+    async handleChange() {
+      this.Numb = 0
+      this.orderInfoList.forEach(e => {
+        e.style.forEach(i => {
+          i.styleSize.forEach(item => {
+            this.Numb += Number(item.sizeNumber + 0)
+          })
+        })
+      })
+      this.cgpriceAll()
+    },
+    // 点击修改
+    sett() {
+      if (this.isSet) {
+        this.drawer = true
+      } else {
+        this.isSet = true
+      }
+    },
+    // 抽屉 -- 取消
+    cancelForm() {
+      this.loading = false
+      this.drawer = false
+    },
+    // 修改  提交按钮
+    confirmSet() {
+      this.$refs.drawerSet.closeDrawer()
+    },
+    // 关闭--抽屉  --之前
+    handleClose(done) {
+      this.$refs.bValidateForm.validate((valid) => {
+        if (valid) {
+          this.cgpriceAll()
+          this.$confirm('是否提交当前修改？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }).then(() => {
+            const con = {
+              orderId: this.orderId,
+              totalOrderAmount: this.priceAll,
+              isCancel: '0',
+              orderDescribe: this.bValidateForm.cause,
+              orderNo: this.orderNo,
+              styleList: this.priceList,
+            }
+            console.log()
+            updateOrder(con).then(() => {
+              this.$message.success('修改成功')
+              setTimeout(() => {
+                this.$router.back()
+              }, 1000)
+            }).catch((ref) => {
+              // console.log(ref)
+            })
+            // console.log('确定')
+            // done()
+          }).catch(() => {
+            console.log('取消')
+            done()
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    getNote() {
+      const con = {
+        orderNo: this.orderNo,
+      }
+      getOrderUpdateRecord(con).then((res) => {
+        this.updateRecord = JSON.parse(JSON.stringify(res.body.resultList))
+        this.$forceUpdate
+      })
+      this.drawerNote = true
+    },
+    // 删除 尺码
+    deleteSize(id, idn, idm) {
+      const that = this
+      this.$confirm('此操作将删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async () => {
+        that.orderInfoList[id].style[idn].styleSize.splice(idm, 1)
+        const list = []
+        let dataL = {}
+        that.orderInfoList.forEach(e => {
+          e.style.forEach(i => {
+            dataL = {
+              styleId: i.styleId,
+              styleNo: e.styleNo,
+              styleColor: i.id,
+              styleSize: [],
+            }
+            i.styleSize.forEach(n => {
+              dataL.styleSize.unshift(n)
+            })
+            list.unshift(dataL)
+          })
+          that.priceList = list
+        })
+        that.priceList = list
+        that.cgpriceAll()
+      }).catch(() => {
+        that.$message({
+          type: 'info',
+          message: '已取消删除',
+        })
+      })
     },
   },
 }
@@ -225,12 +427,21 @@ export default {
     margin: 28px 0;
     line-height: 22px;
   }
+  /deep/.el-card__body{
+    padding-bottom: 0;
+  }
+  ::v-deep .el-drawer__body{
+    padding: 20px;
+  }
   /deep/.el-page-header__content {
     display: flex;
     align-items: center;
     font-size: 16px;
     margin: 28px 0;
     line-height: 22px;
+  }
+  .zt-head ::v-deep .el-input--mini{
+    width: auto;
   }
 .zt-content{
   background-color: #f5f5f5;
@@ -355,6 +566,11 @@ export default {
       cursor: pointer;
     }
   }
+}
+.demo-drawer__content{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .zt-red{
   color: #FF0000;

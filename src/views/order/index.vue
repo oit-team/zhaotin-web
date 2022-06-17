@@ -52,7 +52,10 @@ export default {
               icon: 'el-icon-edit',
               click: (scope) => this.$router.push({
                 path: '/order/orderMsg',
-                query: { item: scope },
+                query: {
+                  item: scope,
+                  stype: item.operationKey,
+                },
               }),
             })
           } else if (item.operationKey === 'delete') {

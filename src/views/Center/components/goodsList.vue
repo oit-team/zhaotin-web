@@ -245,11 +245,11 @@ export default {
         })
         if (res.body.resultList.length === 0) {
           that.isUpdate = false
-          window.removeEventListener('scroll', this.scrollEvent)
+          // window.removeEventListener('scroll', this.scrollEvent)
           that.showEmp = true
         } else {
           that.isUpdate = true
-          window.addEventListener('scroll', this.scrollEvent)
+          // window.addEventListener('scroll', this.scrollEvent)
           that.showEmp = false
         }
         that.dataList = res.body.resultList
@@ -270,7 +270,7 @@ export default {
         })
         if (res.body.resultList.length === 0) {
           that.isUpdate = false
-          window.removeEventListener('scroll', this.scrollEvent)
+          // window.removeEventListener('scroll', this.scrollEvent)
           that.formData.pageNum = 1
         } else {
           that.isUpdate = true
@@ -281,20 +281,19 @@ export default {
     },
     scrollEvent() {
       setTimeout(() => {
-        // if (this.isUpdate) {
         const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
         if (data >= -50) {
           this.addData()
           this.$forceUpdate()
         }
-        if (this.$refs.content.getBoundingClientRect().y <= 0) {
+        if (this.$refs.content.getBoundingClientRect().y <= -50) {
           this.isTop = true
           this.$forceUpdate
         } else {
           this.isTop = false
           this.$forceUpdate
         }
-        // }
+        // console.log(this.isTop)
       }, 500)
     },
     // 二级分类
@@ -648,6 +647,7 @@ export default {
   margin-left: 580px;
   transform: translate(100%, 0px);
   z-index: 100;
+  transition: 0.3s;
 }
 .nav-R{
   position: fixed;
@@ -655,6 +655,7 @@ export default {
   top: 10%;
   transform: translate(100%, 0px);
 }
+
 .zt-flex{
   text-align: center;
   color: #fff;

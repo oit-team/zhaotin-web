@@ -165,7 +165,7 @@ export default {
     queryData: {},
     innerPager: {
       index: 0,
-      sizes: [10, 20, 30, 50],
+      sizes: [10, 20, 30, 50, 100],
       size: 20,
       total: 0,
     },
