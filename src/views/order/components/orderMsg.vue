@@ -4,14 +4,14 @@
     <div class="main container">
       <!-- 头部 -->
       <div>
-        <el-page-header
-          @back="$router.back()"
-          content="订单详情"
-        />
         <div class="flex justify-between items-center mb-2">
-          <el-button type="primary" plain size="small" @click="getNote">修改记录</el-button>
+          <el-page-header
+            @back="$router.back()"
+            content="订单详情"
+          />
           <div>
-            <el-button v-if="$route.query.item.row.orderState !== '2'" type="danger" size="small" @click="deleteOrder">取消订单</el-button>
+            <el-button v-if="isUpdate && $route.query.item.row.orderState !== '2'" type="danger" size="small" @click="deleteOrder">取消订单</el-button>
+            <el-button type="primary" plain size="small" @click="getNote">修改记录</el-button>
             <el-button v-if="isUpdate" type="primary" size="small" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
           </div>
         </div>

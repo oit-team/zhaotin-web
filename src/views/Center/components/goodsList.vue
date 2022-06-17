@@ -259,6 +259,7 @@ export default {
     },
     // 页面 触底加载
     async addData() {
+      console.log(111)
       const that = this
       if (that.isUpdate === true) {
         that.fullscreenLoading = true
@@ -272,7 +273,6 @@ export default {
         })
         if (res.body.resultList.length === 0) {
           that.isUpdate = false
-          // window.removeEventListener('scroll', this.scrollEvent)
           that.formData.pageNum = 1
         } else {
           that.isUpdate = true
@@ -282,21 +282,20 @@ export default {
       }
     },
     scrollEvent() {
-      setTimeout(() => {
-        const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
-        if (data >= -50) {
-          this.addData()
-          this.$forceUpdate()
-        }
-        if (this.$refs.content.getBoundingClientRect().y <= -50) {
-          this.isTop = true
-          this.$forceUpdate
-        } else {
-          this.isTop = false
-          this.$forceUpdate
-        }
-        // console.log(this.isTop)
-      }, 500)
+      // setTimeout(() => {
+      const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
+      if (data >= -100 && data <= -50) {
+        this.addData()
+        this.$forceUpdate()
+      }
+      if (this.$refs.content.getBoundingClientRect().y <= -50) {
+        this.isTop = true
+        this.$forceUpdate
+      } else {
+        this.isTop = false
+        this.$forceUpdate
+      }
+      // }, 500)
     },
     // 二级分类
     async classData() {
