@@ -17,12 +17,11 @@
                 <el-checkbox v-model="itemN.checked" :span="2" @change="itemChecked(index, indexN)" />
               </el-col>
               <el-col :span="3">
-              <!-- <div class="zt-cart__image"> -->
                 <el-image
                   style="width: 100px; height: 100px"
                   :src="itemN.imgUrl"
                   fit="contain"
-                  @click="todetails(item.styleId)"
+                  @click="todetails(item, item.styleId)"
                 />
               <!-- </div> -->
               </el-col>
@@ -409,8 +408,12 @@ export default {
       }
       that.$store.commit('order/addOrderStorage', data2)
     },
-    // 推荐区  图片点击事件
-    todetails(id) {
+    // 图片点击事件
+    todetails(item, id) {
+      if (item.status === 0) {
+        this.$message.warning('该商品未上架')
+        return false
+      }
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
   },

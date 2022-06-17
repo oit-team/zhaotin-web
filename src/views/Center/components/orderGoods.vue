@@ -75,7 +75,7 @@
                 style="width: 100px; height: 100px"
                 :src="itemN.imgUrl"
                 fit="contain"
-                @click="todetails(item.styleId)"
+                @click="todetails(item, item.styleId)"
               />
             <!-- </div> -->
             </el-col>
@@ -541,7 +541,11 @@ export default {
       })
     },
     // 图片点击事件
-    todetails(id) {
+    todetails(item, id) {
+      if (item.status === 0) {
+        this.$message.warning('该商品未上架')
+        return false
+      }
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
   },

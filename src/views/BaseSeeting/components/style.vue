@@ -173,7 +173,7 @@
 
     <!-- 上架失败 -->
     <el-drawer
-      title="上/下架失败"
+      title="上/下架日志信息"
       :visible.sync="drawerUpd"
       direction="rtl"
       ref="drawerUpd"

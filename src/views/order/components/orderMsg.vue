@@ -11,7 +11,7 @@
         <div class="flex justify-between items-center mb-2">
           <el-button type="primary" plain size="small" @click="getNote">修改记录</el-button>
           <div>
-            <el-button type="danger" size="small" @click="deleteOrder">取消订单</el-button>
+            <el-button v-if="$route.query.item.row.orderState !== '2'" type="danger" size="small" @click="deleteOrder">取消订单</el-button>
             <el-button v-if="isUpdate" type="primary" size="small" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
           </div>
         </div>
@@ -39,7 +39,7 @@
                     style="width: 100px; height: 100px"
                     :src="itemN.imgUrl"
                     fit="contain"
-                    @click="todetails(item.styleId)"
+                    @click="todetails(item, item.styleId)"
                   />
                 </el-col>
                 <el-col :span="10">
@@ -129,15 +129,20 @@
         <el-empty description="暂无修改" />
       </div>
       <div v-else>
-        <div v-for="item in updateRecord" class="mb-4" :key="item.recordId">
+        <div v-for="item in updateRecord" class="mb-4 text-sm" :key="item.recordId">
           <div class="flex justify-between">
             <p>操作人：{{ item.operationName || '无' }}</p><p>{{ item.operationTime }}</p>
           </div>
-          <p class="my-2"><span class="text-red-600">修改前数据：</span>{{ item.afterModificationData }}</p>
-          <p class="my-2"><span class="text-blue-500">修改后数据：</span>{{ item.beforeModificationData }}</p>
-          <p>备注：{{ item.orderDescribe }}</p>
+          <div v-if="item.operationType !== 1">
+            <p class="my-2"><span class="text-red-600">修改前数据：</span>{{ item.afterModificationData }}</p>
+            <p class="my-2"><span class="text-blue-500">修改后数据：</span>{{ item.beforeModificationData }}</p>
+          </div>
+          <div v-else>
+            <p class="my-2 text-red-600">删除订单</p>
+          </div>
+          <p>修改原因：{{ item.orderDescribe }}</p>
+          <el-divider class="!my-2" />
         </div>
-        <el-divider />
       </div>
     </el-drawer>
   </div>
@@ -179,7 +184,7 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.stype && this.$route.query.stype === 'update') {
+    if (this.$route.query.stype && this.$route.query.stype === 'update' && this.$route.query.item.row.orderState !== '2') {
       this.isUpdate = true
     }
     if (this.$route.query.item) {
@@ -222,7 +227,11 @@ export default {
       }
     },
     // 图片点击事件
-    todetails(id) {
+    todetails(item, id) {
+      if (item.status === 0) {
+        this.$message.warning('该商品未上架')
+        return false
+      }
       this.$router.push(`/styleCenter/goodsDetails?id=${id}`)
     },
     // 取消订单
@@ -234,6 +243,7 @@ export default {
       }).then(() => {
         const con = {
           orderId: this.orderId,
+          orderNo: this.orderNo,
           isCancel: '1',
         }
         updateOrder(con).then(res => {

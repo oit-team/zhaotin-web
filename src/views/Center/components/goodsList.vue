@@ -419,13 +419,6 @@ export default {
     },
     todetails(id) {
       this.$router.push(`/styleCenter/goodsDetails?id=${id}&orderType=${this.formData.orderType}`)
-      // this.$router.push({
-      //   name: 'goodsDetails',
-      //   params: {
-      //     id,
-      //     orderType: this.formData.orderType,
-      //   },
-      // })
     },
     toCart() {
       this.$router.push('/styleCenter/shopCart')
