@@ -10,9 +10,11 @@
             content="订单详情"
           />
           <div>
-            <el-button v-if="isUpdate && $route.query.item.row.orderState !== '2'" type="danger" size="small" @click="deleteOrder">取消订单</el-button>
-            <el-button type="primary" plain size="small" @click="getNote">修改记录</el-button>
-            <el-button v-if="isUpdate" type="primary" size="small" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
+            <el-button v-if="isUpdate" type="text" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
+            <el-divider direction="vertical" />
+            <el-button class="!text-red-600" v-if="isUpdate && $route.query.item.row.orderState !== '2'" type="text" @click="deleteOrder">取消订单</el-button>
+            <el-divider direction="vertical" />
+            <el-button class="!text-slate-500" type="text" @click="getNote">修改记录</el-button>
           </div>
         </div>
         <div class="flex justify-between px-14 zt-head">
@@ -138,7 +140,7 @@
             <p class="my-2"><span class="text-blue-500">修改后数据：</span>{{ item.afterModificationData }}</p>
           </div>
           <div v-else>
-            <p class="my-2 text-red-600">删除订单</p>
+            <p class="my-2 text-red-600">取消订单</p>
           </div>
           <p>修改原因：{{ item.orderDescribe }}</p>
           <el-divider class="!my-2" />
@@ -210,9 +212,9 @@ export default {
           that.orderInfoList.forEach(e => {
             e.style.forEach(i => {
               that.$set(i, 'openList', true)
-              // i.styleSize.forEach(item => {
-              //   that.Numb += Number(item.sizeNumber + 0)
-              // })
+              i.styleSize.forEach(item => {
+                that.Numb += Number(item.sizeNumber + 0)
+              })
             })
           })
         }

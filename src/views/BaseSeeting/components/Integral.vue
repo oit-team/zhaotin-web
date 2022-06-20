@@ -18,7 +18,7 @@
 					</div>
 				</div>
 			</el-aside>
-			<el-container class="zt-content">
+			<el-main class="zt-content">
   			<el-button
 					size="small"
 					icon="el-icon-plus"
@@ -211,7 +211,7 @@
 						</el-form-item>
 					</el-form>
 				</el-card>
-			</el-container>
+			</el-main>
 		</el-container>
 	</div>
 </template>
@@ -514,7 +514,6 @@ export default {
 						if (res.head.status === 0) {
 							this.$message.success('修改成功')
 							this.getCollocation()
-							this.$forceUpdate
 						} else {
 							this.$message.warning(res.head.msg)
 						}

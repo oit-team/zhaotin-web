@@ -31,11 +31,14 @@
                   id="player"
                   playsinline
                   controls
+                  ref="styleVideo"
                   :poster="infoData.styleVideoPatch"
                 >
                   <source :src="infoData.styleVideo" type="video/mp4" />
                   <track kind="captions" label="English captions" src="" srclang="en" default />
                 </video>
+                <!-- <i class="el-icon-video-play video-icon" v-show="isPlay"></i>
+                <i class="el-icon-video-pause video-icon" v-show="!isPlay"></i> -->
               </div>
             </el-carousel-item>
             <el-carousel-item
@@ -113,27 +116,27 @@
           <div class="zt-data__data">
             <div class="zt-data__color">
               <div class="zt-data__label">颜色</div>
-              <div v-for="(item, index) in infoData.styleColorList" :key="index">
-                <div
-                  class="zt-color__item"
-                  @click="colorIndex = index,colorcgId(index)"
-                  :class="colorIndex===index?'zt-color__select':''"
-                >
-                  <div v-if="item.styleImg">
-                    <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
-                      <el-image
-                        :src="item.colorImg"
-                        fit="contain"
-                      />
-                    </el-badge>
+              <div
+                class="zt-color__item"
+                v-for="(item, index) in infoData.styleColorList"
+                :key="index"
+                @click="colorIndex = index,colorcgId(index)"
+                :class="colorIndex===index?'zt-color__select':''"
+              >
+                <template v-if="item.styleImg">
+                  <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
                     <el-image
-                      v-show="item.num === 0"
                       :src="item.colorImg"
                       fit="contain"
                     />
-                    <div class="zt-color__name">{{ item.styleColor }}</div>
-                  </div>
-                </div>
+                  </el-badge>
+                  <el-image
+                    v-show="item.num === 0"
+                    :src="item.colorImg"
+                    fit="contain"
+                  />
+                  <div class="zt-color__name">{{ item.styleColor }}</div>
+                </template>
               </div>
             </div>
             <div class="zt-data__size">
@@ -392,6 +395,7 @@ export default {
       orderType: '',
       sizeConfig: [],
       titleMap: [],
+      isPlay: true,
     }
   },
   created() {
@@ -403,6 +407,10 @@ export default {
       this.infoData = this.$store.state.order.detailData
     }
   },
+  // mounted() {
+  //   this.$refs.styleVideo.addEventListener('play', this.videoPlay)
+  //   this.$refs.styleVideo.addEventListener('pause', this.videoPause)
+  // },
   beforeDestroy() {
     if (this.$route.path === '/styleCenter/orderGoods') {
       this.$store.commit('order/cgStart', false)
@@ -492,6 +500,14 @@ export default {
     setCarouselItem(index) {
       this.$refs.carousel.setActiveItem(index)
     },
+    videoPlay() {
+      this.isPlay = true
+      this.$refs.styleVideo.play()
+    },
+    videoPause() {
+      this.isPlay = false
+      this.$refs.styleVideo.pause()
+    },
     // 商品数量
     handleChange(value) {
       if (value >= 0) {
@@ -518,13 +534,12 @@ export default {
     colorcgId(id) {
       this.sizeIndex = 0
       this.num = this.infoData.styleColorList[id].styleSize[this.sizeIndex].num
-      this.$forceUpdate()
+      this.$forceUpdate
     },
     // 推荐区  图片点击事件
     todetails(id) {
       this.goodsId = id
       this.getData()
-      this.$forceUpdate()
       window.scrollTo('0', '0')
     },
     // 点击订购
@@ -786,26 +801,29 @@ video::-webkit-media-controls-timeline {
             position: relative;
             margin-left: 20px;
             border-radius: 10px;
+            height: 80px;
+            box-sizing: border-box;
             border: 1px solid #ECE8E5;
             .el-image{
               width: 80px;
               height: 80px;
               border-radius: 10px;
+              border: 1px solid #ECE8E5;
             }
             .zt-color__name{
               position: absolute;
-              bottom: 0;
+              bottom: 6px;
               width: 100%;
               text-align: center;
               background: #000;
               opacity: .6;
               font-size: 14px;
-              border-radius: 0 0 5px 5px;
+              border-radius: 0 0 10px 10px;
               color: #fff;
             }
           }
           .zt-color__select{
-            border: 1px solid #CDA46C;
+            border-color: #CDA46C;
           }
         }
         .zt-data__size{
@@ -1020,13 +1038,15 @@ video::-webkit-media-controls-timeline {
         width: 230px;
         color: #333333;
         font-size: 14px;
-        margin: 0 0 10px 15px;
+        flex: 1;
+        margin: 0 0 10px 5px;
+        border-radius: 5px;
         border: 1px solid #ECE8E5;
+        box-sizing: border-box;
         .zt-good__image{
           width: 230px;
           height: 300px;
-          border-radius: 10px;
-          border: 1px solid #F2F2F2;
+          border-bottom: 1px solid #F2F2F2;
         }
         .zt-video__b{
           position: absolute;
@@ -1075,6 +1095,27 @@ video::-webkit-media-controls-timeline {
         border: 1px solid #F2F2F2;
       }
     }
+  }
+}
+::v-deep .zt-swiper__item{
+  position: relative;
+}
+.video-icon{
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  color: #fff;
+  transform: translate(-50%, 0);
+  z-index: 10;
+  font-size: 50px;
+}
+.el-icon-video-pause{
+  opacity: 0;
+  transition: all 0.4s;
+}
+.video-icon:hover{
+  .el-icon-video-pause{
+    opacity: 0.85;
   }
 }
 .data3-form{

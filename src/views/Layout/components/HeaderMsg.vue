@@ -2,12 +2,11 @@
   <div class="container h-12 flex">
     <div class="h-12 flex">
       <div class="mr-2 zt-config"><i class="iconfont icon-tongzhi"></i>公告:</div>
-      <el-tooltip class="item" effect="light" :content="configT[0]" placement="top-start">
-        <!-- underline -->
-        <div class="h-12 flex flex-col justify-center text-yellow-600 leading-8 w-255 zt-config__fig" ref="pconfit">
-          <div class="zt-fig" ref="configw" :style="{'--mL':mL}">{{ configT[0] }}</div>
-        </div>
-      </el-tooltip>
+      <!-- <el-tooltip class="item" effect="light" :content="configT[0]" placement="top-start"> -->
+      <div class="h-12 flex flex-col justify-center text-yellow-600 leading-8 w-255 zt-config__fig" ref="pconfit">
+        <div class="zt-fig" ref="configw" :style="{'--mL':mL}">{{ configT[0] }}</div>
+      </div>
+      <!-- </el-tooltip> -->
     </div>
     <div class="flex-1 flex items-center px-32">
       <el-input
@@ -149,15 +148,13 @@ export default {
   cursor: pointer;
 }
 .zt-fig{
-  /* width: 255px; */
-  // font-size: 16px;
-  // overflow-x: auto;
-  // overflow-y: hidden;
-  animation-name: config;
-  animation-duration: 30s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-direction: normal;
+  // animation-name: config;
+  // animation-duration: 30s;
+  // animation-timing-function: linear;
+  // animation-iteration-count: infinite;
+  // animation-direction: normal;
+  -webkit-animation: 30s config linear infinite normal;
+  animation: 30s config linear infinite normal;
 }
 .zt-fig::-webkit-scrollbar {
   display: none;

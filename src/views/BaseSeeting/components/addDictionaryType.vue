@@ -8,6 +8,7 @@
 					:disabled="!editFlag"
 					v-model="cateGoryForm.dictCode"
 					placeholder="请选择词典类型" 
+          @change="querySortList"
 				>
           <el-option
             v-for="item in Dlist"
@@ -29,23 +30,13 @@
       </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
-        <span v-for="(item,index) in sortList" :key='index'>{{item.dictitemOrderkey}},</span>
+        <span v-for="(item,index) in sortList" :key='index'>{{item.dictitemOrderkey}}、</span>
       </div>
-      <!-- <el-form-item v-if="cateGoryVisibilty" label="类别图片">
-          <span class="text-base text-red-500">*该图片仅作展示，如需修改类别图片重新上传即可</span>
-          <div class="w-24 h-24 mb-12">
-            <el-image :src="imgUrl" fit="cover" />
-          </div>
-       </el-form-item> -->
       <el-form-item label="图片">
         <vc-upload v-bind="uploadOptionCateGory" ref="uploadImage">
           <i class="el-icon-plus"></i>
         </vc-upload>
       </el-form-item>
-      <!-- <div class="tip">
-        <p>*排序请勿重复,已存在排序号如下:</p>
-        <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
-      </div> -->
       <el-form-item>
         <el-button size="small" icon="el-icon-check" type="primary" @click="submitForm('cateGoryForm')">保存</el-button>
         <el-button size="small" icon="el-icon-refresh" @click="resetForm('cateGoryForm')">重置</el-button>
@@ -159,8 +150,8 @@ export default {
     querySortList(){
       const con = {
         userId: sessionStorage.userId,
-        dictCode: "ACTEGORY",
-        dictitemCode:'ACTEGORY',
+        dictCode: this.cateGoryForm.dictCode || "ACTEGORY",
+        dictitemCode: this.cateGoryForm.dictCode || 'ACTEGORY',
         brandId: sessionStorage.brandId
       }
       getSizeSortList(con).then((res) => {

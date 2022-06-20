@@ -47,7 +47,21 @@
         :rules="textRules"
       >
         <el-form-item label="原因" prop="class">
-          <el-select v-model="textForm.class" placeholder="请选择下单原因">
+          <!-- <el-select v-model="textForm.class" placeholder="请选择下单原因">
+            <el-option
+              v-for="item in reasonList"
+              :key="item.dictitemCode"
+              :label="item.dicttimeDisplayName"
+              :value="item.dicttimeDisplayName"
+            />
+          </el-select> -->
+          <el-select
+            v-model="textForm.class"
+            filterable
+            allow-create
+            default-first-option
+            placeholder="请选择下单原因"
+          >
             <el-option
               v-for="item in reasonList"
               :key="item.dictitemCode"

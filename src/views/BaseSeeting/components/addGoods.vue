@@ -241,7 +241,7 @@
                       <el-table-column label="尺码\部位">
                         <template slot-scope="scope">
                           <span>
-                            {{ scope.row.SIZE_NAME }}
+                            {{ scope.row.DISPLAYNAME }}
                           </span>
                         </template>
                       </el-table-column>
@@ -361,7 +361,7 @@
                 <div v-if="activeGoodsShow" class="goodsSizeBox">
                   <div v-if="sizeInfo">
                     <div style="margin:20px 0px;">
-                      <span style="margin-right:20px;">商品库存</span>
+                      <span style="margin-right:20px;">拥有尺码</span>
                     </div>
                     <el-table
                       style="width: 100%"
@@ -375,7 +375,7 @@
                       <el-table-column label="尺码\部位">
                         <template slot-scope="scope">
                           <span>
-                            {{ scope.row.SIZE_NAME }}
+                            {{ scope.row.DISPLAYNAME }}
                           </span>
                         </template>
                       </el-table-column>
@@ -1136,10 +1136,11 @@ export default {
         if (res.head.status == 0) {
           if (res.body) {
             this.sizeInfo = res.body
+            console.log(this.sizeInfo)
             this.sizeTableList = res.body.resultMap
             this.sizeTableList.forEach(el => {
               el.userId = sessionStorage.userId
-              const temp = el.SIZE_NAME
+              const temp = el.DISPLAYNAME
               el.sizeName = temp // 入参时需要将大写（SIZE_NAME）改为小写（sizeName）
               if (el.ID) {
                 const tempId = el.ID
@@ -1271,10 +1272,10 @@ export default {
         sizeList.push({
           sizeConfig: sizeConfig,
           ID: item.SIZEID,
-          SIZE_NAME: item.SIZE_NAME,
+          SIZE_NAME: item.DISPLAYNAME,
           userId: item.userId,
           sort: 1,
-          sizeName: item.SIZE_NAME
+          sizeName: item.DISPLAYNAME
         })
       })
       return sizeList
@@ -1335,7 +1336,7 @@ export default {
             sizeList.push({
               sizeValue: sizeConfig,
               sort: 1,
-              sizeName: item.SIZE_NAME,
+              sizeName: item.DISPLAYNAME,
               sizeKey: sizeKey,
             })
           })
