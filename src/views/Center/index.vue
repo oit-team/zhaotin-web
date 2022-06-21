@@ -54,14 +54,15 @@ export default {
   methods: {
     searchVal(val) {
       this.VAL = val || ''
-      this.$refs.child.reLoad()
+      this.$nextTick(() => {
+        this.$refs.child.reLoad()
+      })
     },
     cgcart() {
       this.$refs.msg.getData()
     },
     getstyleLength(val) {
       this.styleLength = val
-      console.log(val)
     },
   },
 }
