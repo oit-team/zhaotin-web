@@ -114,10 +114,8 @@ export default {
       if (res.head.status === 0) {
         if (that.formData.styleList && that.formData.styleList.length === 0) {
           that.showemp = true
-          that.$forceUpdate
         } else {
           that.showemp = false
-          that.$forceUpdate
         }
       }
       that.formData.styleList.forEach(e => {
@@ -309,12 +307,10 @@ export default {
         if (that.formData.styleList[id].style[idn].styleSize && that.formData.styleList[id].style[idn].styleSize.length === 0) {
           // console.log(that.formData.styleList)
           that.formData.styleList[id].style.splice(idn, 1)
-          that.$forceUpdate
         }
         if (that.formData.styleList[id].style && that.formData.styleList[id].style.length === 0) {
           // console.log(that.formData.styleList)
           that.formData.styleList.splice(id, 1)
-          that.$forceUpdate
         }
         // console.log(that.formData.styleList)
         const list = []

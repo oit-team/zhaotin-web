@@ -315,10 +315,8 @@ export default {
       that.siteList = res.body.resultList
       if (that.siteList && that.siteList.length === 0) {
         that.showEmp = true
-        this.$forceUpdate
       } else {
         that.showEmp = false
-        this.$forceUpdate
       }
       that.priceA()
     },
@@ -469,7 +467,6 @@ export default {
               type: 'success',
             })
             that.getData()
-            that.$forceUpdate
           } else {
             this.$message.error(res.head.msg)
           }
@@ -504,7 +501,6 @@ export default {
               type: 'success',
             })
             that.getData()
-            that.$forceUpdate
           } else {
             this.$message.error(res.head.msg)
           }

@@ -516,21 +516,18 @@ export default {
           })
           e.num = n
         })
-        this.$forceUpdate
       } else {
         this.$message('请填写正确数字')
       }
     },
-    // 切换大小
+    // 切换尺码大小
     checkSize(id) {
       this.num = this.infoData.styleColorList[this.colorIndex].styleSize[id].num
-      this.$forceUpdate
     },
     // 切换颜色
     colorcgId(id) {
       this.sizeIndex = 0
       this.num = this.infoData.styleColorList[id].styleSize[this.sizeIndex].num
-      this.$forceUpdate
     },
     // 推荐区  图片点击事件
     todetails(id) {

@@ -297,20 +297,16 @@ export default {
 						that.ruleList.forEach(e => {
 							that.$set(e, 'disab', true)
 							that.$set(e, 'chain', false)
-							that.$forceUpdate()
 							if (e.preRuleCode) {
 								that.tabsS = JSON.parse(JSON.stringify(that.tabs))
 								that.tabsS.forEach(i => {
 									if (i.dictitemCode === e.preRuleCode) {
 										this.$set(e, 'preRuleName', i.dicttimeDisplayName)
-										that.$forceUpdate()
 									}
 								})
 							}
 						})
-						that.$forceUpdate
 					} else {
-						
 					}
 				}
 			})
@@ -361,7 +357,6 @@ export default {
 			that.ruleList.forEach(e => {
 				that.$set(e, 'disab', true)
 				that.$set(e, 'chain', false)
-				that.$forceUpdate()
 			})
 		},
 		// 新增 提交
@@ -457,7 +452,6 @@ export default {
 				that.preRuleCode = ''
 				that.PreList = []
 				that.getCollocation()
-				that.$forceUpdate
 			} else {
 				that.tabsS = JSON.parse(JSON.stringify(that.tabs))
 				that.tabsS.forEach((e, index) => {

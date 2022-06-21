@@ -620,7 +620,6 @@ export default {
       getCustomer(con).then((res) => {
         this.data = res.body;
         this.chargeList = res.body.resultList;
-        this.$forceUpdate()
       });
     },
     // 节点开始拖拽时触发的事件

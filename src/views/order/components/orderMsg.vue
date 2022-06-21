@@ -121,7 +121,7 @@
       </div>
     </el-drawer>
     <el-drawer
-      title="修改记录"
+      title="订单修改日志"
       :visible.sync="drawerNote"
       :direction="direction"
       ref="drawerNote"
@@ -346,13 +346,13 @@ export default {
         }
       })
     },
+    // 获取修改日志
     getNote() {
       const con = {
         orderNo: this.orderNo,
       }
       getOrderUpdateRecord(con).then((res) => {
         this.updateRecord = JSON.parse(JSON.stringify(res.body.resultList))
-        this.$forceUpdate
       })
       this.drawerNote = true
     },
