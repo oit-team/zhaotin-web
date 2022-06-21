@@ -285,7 +285,6 @@ export default {
       this.selectB = id
       if (id === 0) {
         this.$nextTick(() => {
-          this.formData.styleCategory = ''
           this.formData.shelfTimeSort = ''
           this.formData.tradePriceSort = ''
           this.reLoad()

@@ -10,11 +10,11 @@
             content="订单详情"
           />
           <div>
-            <el-button v-if="isUpdate" type="text" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
-            <el-divider direction="vertical" />
-            <el-button class="!text-red-600" v-if="isUpdate && $route.query.item.row.orderState !== '2'" type="text" @click="deleteOrder">取消订单</el-button>
-            <el-divider direction="vertical" />
-            <el-button class="!text-slate-500" type="text" @click="getNote">修改记录</el-button>
+            <el-button class="!text-amber-500" v-if="isUpdate && $route.query.item.row.orderState !== 2" type="text" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
+            <el-divider v-if="isUpdate && $route.query.item.row.orderState !== 2" direction="vertical" />
+            <el-button class="!text-rose-500" v-if="isUpdate && $route.query.item.row.orderState !== 2" type="text" @click="deleteOrder">取消订单</el-button>
+            <el-divider v-if="isUpdate && $route.query.item.row.orderState !== 2" direction="vertical" />
+            <el-button type="text" @click="getNote">修改记录</el-button>
           </div>
         </div>
         <div class="flex justify-between px-14 zt-head">

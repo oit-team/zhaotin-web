@@ -115,7 +115,7 @@ export default {
         onSuccess: (file, fileList) => {
           // this.imgUrl = this.uploadList.response.data.fileUrl
           this.imgList = this.$refs.uploadImage.uploadFiles
-          console.log(this.imgList)
+          // console.log(this.imgList)
         },
       }
     },
@@ -172,7 +172,7 @@ export default {
           }).catch(err=>{
           });
         } else {
-          console.log('error submit!!');
+          // console.log('error submit!!');
           return false;
         }
       });
@@ -193,7 +193,7 @@ export default {
            imgUrl:imgUrlArr.toString()
           }
       if(!this.editFlag){  // 编辑
-      console.log(this.$route.query.item.row.imgUrl);
+      // console.log(this.$route.query.item.row.imgUrl);
       
        updateCateGory(con).then((res) => {
            if(res.head.status === 0) {

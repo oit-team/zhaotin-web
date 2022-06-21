@@ -19,11 +19,14 @@
         <el-button class="search" slot="append" @click="cgVal(inputVal)">搜索</el-button>
       </el-input>
     </div>
-    <!-- <div class="w-60 flex items-center"> -->
-    <div>
+    <div class="mr-10">
+      <!-- <div> -->
       <el-badge :value="listLength" class="item">
-        <!-- <el-button icon="el-icon-s-order" @click="toCart" plain round>订货清单</el-button> -->
-        <div class="item-order" @click="toCart"><i class="el-icon-s-order"></i>订货清单</div>
+        <div class="item-order flex items-center" @click="toCart">
+          <i class="el-icon-s-order !text-lg mr-1"></i>
+          订货清单
+          <!-- <div class="rounded-full text-sm text-stone-50 ml-2 content-center bg-red-500 px-2 h-max">{{ listLength }}</div> -->
+        </div>
       </el-badge>
     </div>
   </div>
