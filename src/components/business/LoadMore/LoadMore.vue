@@ -110,6 +110,10 @@ export default {
       }
       this.$emit('click', e)
     },
+    reset() {
+      this.status = LOAD_STATUS.INACTIVE
+      return this
+    },
   },
 }
 </script>

@@ -759,7 +759,6 @@ export default {
         })
         setTimeout(() => {
           this.$refs.page.loadData()
-          this.$forceUpdate()
         }, 1000)
         }).catch((err) => {
           console.log(err)

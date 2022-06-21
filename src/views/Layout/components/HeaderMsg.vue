@@ -19,7 +19,8 @@
         <el-button class="search" slot="append" @click="cgVal(inputVal)">搜索</el-button>
       </el-input>
     </div>
-    <div class="w-60 flex items-center">
+    <!-- <div class="w-60 flex items-center"> -->
+    <div>
       <el-badge :value="listLength" class="item">
         <!-- <el-button icon="el-icon-s-order" @click="toCart" plain round>订货清单</el-button> -->
         <div class="item-order" @click="toCart"><i class="el-icon-s-order"></i>订货清单</div>
@@ -74,14 +75,13 @@ export default {
       const list = this.$store.state.orderStorage
       if (list) {
         this.listLength = list.length
-        this.$forceUpdate
       }
     },
     async getData() {
-      const that = this
       const res = await getShoppingCart({})
-      that.FormData = res.body.resultList
-      that.listLength = that.FormData.styleList.length
+      this.FormData = res.body.resultList
+      this.listLength = this.FormData.styleList.length
+      this.$emit('getlength', this.listLength)
     },
   },
 }

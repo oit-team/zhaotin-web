@@ -346,15 +346,11 @@
 </template>
 
 <script>
-// import Tabs from '@/components/tabs/tabs'
 import { getGoodsDetailes, getProductList } from '@/api/product'
 import { addCart } from '@/api/orderCart'
 
 export default {
   name: 'GoodsDetails',
-  components: {
-    // Tabs,
-  },
   data() {
     return {
       goodsId: '',
@@ -812,7 +808,7 @@ video::-webkit-media-controls-timeline {
             }
             .zt-color__name{
               position: absolute;
-              bottom: 6px;
+              bottom: -1px;
               width: 100%;
               text-align: center;
               background: #000;
@@ -1035,11 +1031,10 @@ video::-webkit-media-controls-timeline {
       }
       .zt-content__item{
         position: relative;
-        width: 230px;
+        width: 232px;
         color: #333333;
         font-size: 14px;
-        flex: 1;
-        margin: 0 0 10px 5px;
+        margin: 0 0 10px 15px;
         border-radius: 5px;
         border: 1px solid #ECE8E5;
         box-sizing: border-box;

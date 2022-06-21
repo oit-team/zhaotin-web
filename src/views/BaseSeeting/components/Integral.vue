@@ -18,7 +18,7 @@
 					</div>
 				</div>
 			</el-aside>
-			<el-main class="zt-content">
+			<el-container class="zt-content">
   			<el-button
 					size="small"
 					icon="el-icon-plus"
@@ -211,7 +211,7 @@
 						</el-form-item>
 					</el-form>
 				</el-card>
-			</el-main>
+			</el-container>
 		</el-container>
 	</div>
 </template>

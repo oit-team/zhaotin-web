@@ -1,19 +1,15 @@
 <template>
   <div>
     <HeaderNav class="mb-4" />
-    <HeaderMsg @searchVal="searchVal" ref="msg" />
+    <HeaderMsg @searchVal="searchVal" @getlength="getstyleLength" ref="msg" />
     <div class="container main">
-      <!-- <keep-alive>
-        <router-view v-if="$route.meta.keepAlive" :input-val="VAL" :style-length="styleLength" ref="child" />
-      </keep-alive> -->
-      <router-view :input-val="VAL" ref="child" />
+      <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
     </div>
   </div>
 </template>
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-// import { getGoodsSizeInfo } from '@/api/goods'
 import HeaderMsg from '../Layout/components/HeaderMsg'
 
 export default {
@@ -27,7 +23,7 @@ export default {
       ishome: true,
       bran: sessionStorage.getItem('brandId'),
       Uid: sessionStorage.getItem('userId'),
-      // styleLength: '',
+      styleLength: '',
       VAL: '',
     }
   },
@@ -55,25 +51,17 @@ export default {
       }
     },
   },
-  created() {
-    // const v = this.$store.state.order.cacheView
-    // console.log(v)
-    // if (v && v.length !== 0) {
-    //   this.views.push(...v)
-    // }
-    // console.log(this.views)
-  },
   methods: {
     searchVal(val) {
-      const that = this
-      that.VAL = val || ''
-      that.$nextTick(() => {
-        that.$refs.child.loadData()
-        that.$forceUpdate()
-      })
+      this.VAL = val || ''
+      this.$refs.child.reLoad()
     },
     cgcart() {
       this.$refs.msg.getData()
+    },
+    getstyleLength(val) {
+      this.styleLength = val
+      console.log(val)
     },
   },
 }

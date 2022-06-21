@@ -1,9 +1,7 @@
 <template>
   <div id="Mpage" class="zt-page">
     <div class="zt-tabs__top">
-      <!-- <div class="container"> -->
       <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
-      <!-- </div> -->
     </div>
     <div class="zt-tabs">
       <div class="zt-tabs__center">
@@ -14,17 +12,10 @@
         />
         <div class="zt-radio">
           <div class="zt-radio__label">最近一年:</div>
-          <!-- <el-radio-group v-model="radio" @change="radioText">
-            <el-radio label="1">未下款</el-radio>
-            <el-radio label="2">已下款</el-radio>
-          </el-radio-group> -->
-          <!-- <el-checkbox-group @change="radioText"> -->
           <el-checkbox v-model="radio1" @change="radioText">未下款</el-checkbox>
           <el-checkbox v-model="radio2" @change="radioText">已下款</el-checkbox>
-          <!-- </el-checkbox-group> -->
         </div>
       </div>
-      <!-- <el-divider /> -->
       <div class="zt-tabs__bottom">
         <div class="zt-bottom__label">排序:</div>
         <div class="zt-bottom__tab">
@@ -80,73 +71,51 @@
       </div>
       <el-divider />
     </div>
-    <el-empty v-show="showEmp" description="暂无相关数据">
-      <div class="nav-r" :class="isTop?'nav-R':''">
-        <!-- <div class="addorder zt-flex">
-          <i class="el-icon-document-add"></i>
-          <div>快速补货</div>
-        </div> -->
+    <el-empty v-show="showEmp" description="暂无相关数据" />
+    <div class="relative">
+      <div class="nav-r" ref="nav-r">
         <div class="orderCart zt-flex" @click="toCart">
-          <i class="el-icon-s-order"></i>
-          <div>订货清单</div>
+          <el-badge :value="styleLength" class="item">
+            <div>
+              <i class="el-icon-s-order"></i>
+              <div>订货清单</div>
+            </div>
+          </el-badge>
         </div>
-        <!-- <div class="service zt-flex">
-          <i class="el-icon-chat-line-round"></i>
-          <div>在线客服</div>
-        </div> -->
         <div class="totop zt-flex" @click="backTop">
           <i class="el-icon-arrow-up"></i>
           <div>返回顶部</div>
         </div>
       </div>
-    </el-empty>
-    <div v-show="!showEmp" v-loading="fullscreenLoading" ref="content" class="zt-content">
-      <div class="nav-r" :class="isTop?'nav-R':''">
-        <!-- <div class="addorder zt-flex">
-          <i class="el-icon-document-add"></i>
-          <div>快速补货</div>
-        </div> -->
-        <div class="orderCart zt-flex" @click="toCart">
-          <i class="el-icon-s-order"></i>
-          <div>订货清单</div>
-        </div>
-        <!-- <div class="service zt-flex">
-          <i class="el-icon-chat-line-round"></i>
-          <div>在线客服</div>
-        </div> -->
-        <div class="totop zt-flex" @click="backTop">
-          <i class="el-icon-arrow-up"></i>
-          <div>返回顶部</div>
-        </div>
-      </div>
-      <div
-        v-for="(item, index) in dataList"
-        :key="index"
-        class="zt-content__item"
-        @click="todetails(item.styleId)"
-      >
-        <el-image
-          class="zt-good__image"
-          :src="item.resUrl"
-          fit="contain"
-        />
-        <div v-if="item.styleIsVideo" class="zt-video__b">
-          <i class="iconfont icon-shipin"></i>
-        </div>
-        <div class="zt-item__line">{{ item.styleName }}</div>
-        <div class="zt-item__line flex">
-          <div class="zt-price__l">{{ item.styleNo }}</div>
-          <div class="zt-price__r">￥
-            <div class="zt-item__price">{{ item.tradePrice }}</div>
+      <div v-show="!showEmp" v-loading="fullscreenLoading" ref="content" class="zt-content">
+        <div
+          v-for="(item, index) in dataList"
+          :key="index"
+          class="zt-content__item"
+          @click="todetails(item.styleId)"
+        >
+          <el-image
+            class="zt-good__image"
+            :src="item.resUrl"
+            fit="contain"
+          />
+          <div v-if="item.styleIsVideo" class="zt-video__b">
+            <i class="iconfont icon-shipin"></i>
           </div>
+          <div class="zt-item__line">{{ item.styleName }}</div>
+          <div class="zt-item__line flex">
+            <div class="zt-price__l">{{ item.styleNo }}</div>
+            <div class="zt-price__r">￥
+              <div class="zt-item__price">{{ item.tradePrice }}</div>
+            </div>
+          </div>
+          <!-- <el-divider /> -->
+          <!-- <div class="zt-item__line top-line">已售50000件</div> -->
         </div>
-        <!-- <el-divider /> -->
-        <!-- <div class="zt-item__line top-line">已售50000件</div> -->
       </div>
     </div>
-    <LoadMore @load="test">
+    <LoadMore @load="load" ref="loadMore" first-load v-show="!showEmp && !fullscreenLoading">
       <template v-slot="scope">
-        <!-- <div>{{ scope }}</div> -->
         <el-divider v-if="scope.next">加载更多</el-divider>
         <el-divider v-if="scope.loading"><i class="el-icon-loading text-xl"></i></el-divider>
         <el-divider v-if="scope.done">已经到底了</el-divider>
@@ -161,6 +130,7 @@ import { getProductList } from '@/api/product'
 import { getGoodsSizeInfo, getGoodsSizeClass } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
 import LoadMore from '@/components/business/LoadMore'
+import { throttle } from 'lodash'
 
 export default {
   name: 'GoodsList',
@@ -170,25 +140,19 @@ export default {
   },
   props: {
     inputVal: String,
-    // styleLength: String,
+    styleLength: [String, Number],
   },
   data() {
     return {
-      data: {},
       input1: '',
       input2: '',
       tabList1: [],
       dataList: [],
       labelText1: '筛选',
       labelText2: '排序',
-      showLabel: false,
       ishome: true,
-      bran: sessionStorage.getItem('brandId'),
-      Uid: sessionStorage.getItem('userId'),
       selectB: 0,
-      goodsLength: 0,
       styleCategory: '',
-      goodsId: '',
       formData: {
         styleNo: '', // 商品编号
         pageNum: 1,
@@ -218,130 +182,62 @@ export default {
       fullscreenLoading: false,
       tabList: [],
       // styleLength: '',
-      isUpdate: true,
-      isTop: false,
+      // isUpdate: true,
+      // isTop: false,
     }
   },
   computed: {},
   watch: {
-    // inputVal(val) {
-    //   console.log(val)
-    // },
   },
   created() {
-    this.loadData()
     this.classData()
     this.classData2()
   },
   mounted() {
-    if (this.isUpdate) {
-      // window.addEventListener('scroll', this.scrollEvent)
-    } else {
-      window.removeEventListener('scroll', this.scrollEvent)
-      this.formData.pageNum = 1
-    }
+    // if (this.isUpdate) {
+    // } else {
+    //   window.removeEventListener('scroll', this.scrollEvent)
+    //   this.formData.pageNum = 1
+    // }
   },
-  beforeDestroy() {
-    window.removeEventListener('scroll', this.scrollEvent)
-  },
+  // beforeDestroy() {
+  //   window.removeEventListener('scroll', this.scrollEvent)
+  // },
   methods: {
-    test($state) {
-      console.log($state)
-      setTimeout(async () => {
+    load($state) {
+      if (this.formData.pageNum === 1) {
+        this.fullscreenLoading = true
+      }
+      this.formData.styleSearch = this.inputVal || ''
+      getProductList({
+        ...this.formData,
+      }).then(res => {
+        const result = res.body.resultList
+        if (this.formData.pageNum === 1) {
+          this.dataList = result
+          this.showEmp = !this.dataList.length
+        } else {
+          this.dataList.push(...result)
+        }
+
+        this.dataList.length >= res.body.totalCount ? $state.done() : $state.next()
         this.formData.pageNum++
-        getProductList({
-          ...this.formData,
-        }).then(res => {
-          if (res.body.resultList.length === 0) {
-            this.isUpdate = false
-            // this.formData.pageNum = 1
-            $state.done()
-          } else {
-            $state.next()
-            this.isUpdate = true
-            this.dataList.push(...res.body.resultList)
-            this.$forceUpdate
-          }
-        }).catch(() => {
-          $state.fail()
-        })
-        // const r = Math.random() * 10
-        // console.log(r)
-        // if (r < 5) {
-        //   $state.next()
-        // } else if (r < 7) {
-        //   $state.fail()
-        // } else {
-        //   $state.done()
-        // }
-      }, 1000)
+      }).catch(() => {
+        $state.fail()
+      }).finally(() => {
+        this.fullscreenLoading = false
+      })
     },
-    async loadData() {
-      const that = this
-      that.fullscreenLoading = true
-      setTimeout(async () => {
-        that.fullscreenLoading = false
-        that.formData.pageNum = 1
-        that.formData.styleSearch = that.inputVal || ''
-        const res = await getProductList({
-          ...that.formData,
-        })
-        if (res.body.resultList.length === 0) {
-          that.isUpdate = false
-          // window.removeEventListener('scroll', this.scrollEvent)
-          that.showEmp = true
-        } else {
-          that.isUpdate = true
-          // window.addEventListener('scroll', this.scrollEvent)
-          that.showEmp = false
-        }
-        that.dataList = res.body.resultList
-      }, 1000)
-    },
-    // 页面 触底加载
-    async addData() {
-      const that = this
-      if (that.isUpdate === true) {
-        that.fullscreenLoading = true
-        setTimeout(() => {
-          that.fullscreenLoading = false
-        }, 1000)
-        that.formData.pageNum++
-        // that.formData.styleLength = that.styleLength || ''
-        const res = await getProductList({
-          ...that.formData,
-        })
-        if (res.body.resultList.length === 0) {
-          that.isUpdate = false
-          that.formData.pageNum = 1
-        } else {
-          that.isUpdate = true
-          that.dataList.push(...res.body.resultList)
-          that.$forceUpdate
-        }
-      }
-    },
-    scrollEvent() {
-      // setTimeout(() => {
-      const data = window.innerHeight - this.$refs.content.getBoundingClientRect().y - this.$refs.content.getBoundingClientRect().height
-      if (data >= -100 && data <= -50) {
-        this.addData()
-        this.$forceUpdate()
-      }
-      if (this.$refs.content.getBoundingClientRect().y <= -50) {
-        this.isTop = true
-        this.$forceUpdate
-      } else {
-        this.isTop = false
-        this.$forceUpdate
-      }
-      // }, 500)
+    reLoad() {
+      this.formData.pageNum = 1
+      // this.$refs.loadMore.reset().load()
+      this.$refs.loadMore.load()
     },
     // 二级分类
     async classData() {
       const res = await getGoodsSizeInfo({
-        brandId: this.bran,
-        userId: this.Uid,
+        brandId: sessionStorage.getItem('brandId'),
+        userId: sessionStorage.getItem('userId'),
         type: 'STYLE_LENGTH',
       })
       this.tabList = res.body.result
@@ -351,7 +247,7 @@ export default {
       }
       this.tabList.unshift(all)
     },
-    // 顶部分类
+    // 获取顶部分类列表
     async classData2() {
       const res = await getGoodsSizeClass({
         dictCode: 'SYSTEM_CONFIG',
@@ -369,72 +265,64 @@ export default {
     },
     // 点击二级tab
     checkTab(index) {
-      const that = this
       let con = ''
       if (index !== 0) {
-        con = that.tabList[index].dicttimeDisplayName
+        con = this.tabList[index].dicttimeDisplayName
       } else {
         con = ''
       }
-      that.$nextTick(() => {
-        that.formData.styleLength = con
-        this.loadData()
-        that.$forceUpdate()
+      this.$nextTick(() => {
+        this.showEmp = false
+        this.formData.styleLength = con
+        this.reLoad()
       })
     },
     // 点击顶部 tab
     checkTab1(index) {
-      const that = this
       let con = ''
       if (index !== 0) {
-        con = that.tabList1[index].categoryName
+        con = this.tabList1[index].categoryName
       } else {
         con = ''
       }
-      that.$nextTick(() => {
-        that.formData.styleCategory = con
-        that.loadData()
-        that.$forceUpdate()
+      this.$nextTick(() => {
+        this.showEmp = false
+        this.formData.styleCategory = con
+        this.reLoad()
       })
     },
     selectItem(id) {
-      const that = this
-      that.selectB = id
+      this.selectB = id
       if (id === 0) {
-        that.$nextTick(() => {
-          that.formData.styleCategory = ''
-          that.formData.shelfTimeSort = ''
-          that.formData.tradePriceSort = ''
-          that.loadData()
-          that.$forceUpdate()
+        this.$nextTick(() => {
+          this.formData.styleCategory = ''
+          this.formData.shelfTimeSort = ''
+          this.formData.tradePriceSort = ''
+          this.reLoad()
         })
       } else if (id === 1 && !this.shouDjiantou) {
-        that.$nextTick(() => {
-          that.formData.shelfTimeSort = '1'
-          that.formData.tradePriceSort = ''
-          that.loadData()
-          that.$forceUpdate()
+        this.$nextTick(() => {
+          this.formData.shelfTimeSort = '1'
+          this.formData.tradePriceSort = ''
+          this.reLoad()
         })
-      } else if (id === 1 && that.shouDjiantou) {
-        that.$nextTick(() => {
-          that.formData.shelfTimeSort = '0'
-          that.formData.tradePriceSort = ''
-          that.loadData()
-          that.$forceUpdate()
+      } else if (id === 1 && this.shouDjiantou) {
+        this.$nextTick(() => {
+          this.formData.shelfTimeSort = '0'
+          this.formData.tradePriceSort = ''
+          this.reLoad()
         })
-      } else if (id === 3 && that.priceTF) {
-        that.$nextTick(() => {
-          that.formData.tradePriceSort = '1'
-          that.formData.shelfTimeSort = ''
-          that.loadData()
-          that.$forceUpdate()
+      } else if (id === 3 && this.priceTF) {
+        this.$nextTick(() => {
+          this.formData.tradePriceSort = '1'
+          this.formData.shelfTimeSort = ''
+          this.reLoad()
         })
-      } else if (id === 3 && !that.priceTF) {
-        that.$nextTick(() => {
-          that.formData.tradePriceSort = '0'
-          that.formData.shelfTimeSort = ''
-          that.loadData()
-          that.$forceUpdate()
+      } else if (id === 3 && !this.priceTF) {
+        this.$nextTick(() => {
+          this.formData.tradePriceSort = '0'
+          this.formData.shelfTimeSort = ''
+          this.reLoad()
         })
       }
     },
@@ -446,16 +334,16 @@ export default {
         if (this.input1 < this.input2) {
           this.formData.startTradePrice = this.input1
           this.formData.endTradePrice = this.input2
-          this.loadData()
+          this.reLoad()
         } else {
           this.formData.startTradePrice = this.input2
           this.formData.endTradePrice = this.input1
-          this.loadData()
+          this.reLoad()
         }
       } else {
         this.formData.startTradePrice = ''
         this.formData.endTradePrice = ''
-        this.loadData()
+        this.reLoad()
       }
     },
     todetails(id) {
@@ -470,16 +358,17 @@ export default {
         window.scrollTo('0', '0')
       }
     },
+    // 最近一年
     radioText() {
       if (this.radio1 === this.radio2) {
         this.formData.orderType = '1'
-        this.loadData()
+        this.reLoad()
       } else if (this.radio1) {
         this.formData.orderType = '2'
-        this.loadData()
+        this.reLoad()
       } else if (this.radio2) {
         this.formData.orderType = '3'
-        this.loadData()
+        this.reLoad()
       }
     },
   },
@@ -651,7 +540,7 @@ export default {
   .zt-content__item {
     font-size: 14px;
     position: relative;
-    width: 230px;
+    width: 232px;
     height: 100%;
     margin: 0 0 10px 15px;
     color: #333333;
@@ -714,20 +603,12 @@ export default {
 }
 
 .nav-r {
-  position: absolute;
-  z-index: 100;
-  top: 0;
-  left: 50%;
-  margin-left: 580px;
-  transition: 0.3s;
-  transform: translate(100%, 0px);
-}
-
-.nav-R {
-  position: fixed;
-  // right: 17%;
-  top: 10%;
-  transform: translate(100%, 0px);
+  position: sticky;
+  top: 100px;
+  width: 70px;
+  height: 0;
+  float: right;
+  transform: translateX(140%);
 }
 
 .zt-flex {
