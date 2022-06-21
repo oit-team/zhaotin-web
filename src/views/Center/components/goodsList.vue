@@ -1,5 +1,5 @@
 <template>
-  <div class="zt-page" id="Mpage">
+  <div id="Mpage" class="zt-page">
     <div class="zt-tabs__top">
       <!-- <div class="container"> -->
       <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
@@ -59,17 +59,17 @@
           </div>
           <div class="zt-bottom__price">
             <el-input
+              v-model="input1"
               class="zt-Binp"
               size="small"
               placeholder="￥"
-              v-model="input1"
             />
             -
             <el-input
+              v-model="input2"
               class="zt-Binp"
               size="small"
               placeholder="￥"
-              v-model="input2"
             />
             <!-- <div class="zt-price__sub" v-loading.fullscreen.lock="fullscreenLoading" @click="openLoading"> -->
             <div class="zt-price__sub" @click="priceC">
@@ -100,7 +100,7 @@
         </div>
       </div>
     </el-empty>
-    <div class="zt-content" v-loading="fullscreenLoading" v-show="!showEmp" ref="content">
+    <div v-show="!showEmp" v-loading="fullscreenLoading" ref="content" class="zt-content">
       <div class="nav-r" :class="isTop?'nav-R':''">
         <!-- <div class="addorder zt-flex">
           <i class="el-icon-document-add"></i>
@@ -120,9 +120,9 @@
         </div>
       </div>
       <div
-        class="zt-content__item"
         v-for="(item, index) in dataList"
         :key="index"
+        class="zt-content__item"
         @click="todetails(item.styleId)"
       >
         <el-image
@@ -130,20 +130,29 @@
           :src="item.resUrl"
           fit="contain"
         />
-        <div class="zt-video__b" v-if="item.styleIsVideo">
-          <!-- <i class="el-icon-video-camera-solid"></i> -->
+        <div v-if="item.styleIsVideo" class="zt-video__b">
           <i class="iconfont icon-shipin"></i>
         </div>
         <div class="zt-item__line">{{ item.styleName }}</div>
         <div class="zt-item__line flex">
           <div class="zt-price__l">{{ item.styleNo }}</div>
-          <div class="zt-price__r">￥<div class="zt-item__price">{{ item.tradePrice }}</div></div>
+          <div class="zt-price__r">￥
+            <div class="zt-item__price">{{ item.tradePrice }}</div>
+          </div>
         </div>
         <!-- <el-divider /> -->
         <!-- <div class="zt-item__line top-line">已售50000件</div> -->
       </div>
-      <el-divider v-if="!isUpdate">已经到底了</el-divider>
     </div>
+    <LoadMore @load="test">
+      <template v-slot="scope">
+        <!-- <div>{{ scope }}</div> -->
+        <el-divider v-if="scope.next">加载更多</el-divider>
+        <el-divider v-if="scope.loading"><i class="el-icon-loading text-xl"></i></el-divider>
+        <el-divider v-if="scope.done">已经到底了</el-divider>
+        <el-divider v-if="scope.fail">加载失败，请重试</el-divider>
+      </template>
+    </LoadMore>
   </div>
 </template>
 
@@ -151,11 +160,13 @@
 import { getProductList } from '@/api/product'
 import { getGoodsSizeInfo, getGoodsSizeClass } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
+import LoadMore from '@/components/business/LoadMore'
 
 export default {
   name: 'GoodsList',
   components: {
     Tabs,
+    LoadMore,
   },
   props: {
     inputVal: String,
@@ -211,8 +222,7 @@ export default {
       isTop: false,
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {
     // inputVal(val) {
     //   console.log(val)
@@ -225,7 +235,7 @@ export default {
   },
   mounted() {
     if (this.isUpdate) {
-      window.addEventListener('scroll', this.scrollEvent)
+      // window.addEventListener('scroll', this.scrollEvent)
     } else {
       window.removeEventListener('scroll', this.scrollEvent)
       this.formData.pageNum = 1
@@ -235,6 +245,37 @@ export default {
     window.removeEventListener('scroll', this.scrollEvent)
   },
   methods: {
+    test($state) {
+      console.log($state)
+      setTimeout(async () => {
+        this.formData.pageNum++
+        getProductList({
+          ...this.formData,
+        }).then(res => {
+          if (res.body.resultList.length === 0) {
+            this.isUpdate = false
+            // this.formData.pageNum = 1
+            $state.done()
+          } else {
+            $state.next()
+            this.isUpdate = true
+            this.dataList.push(...res.body.resultList)
+            this.$forceUpdate
+          }
+        }).catch(() => {
+          $state.fail()
+        })
+        // const r = Math.random() * 10
+        // console.log(r)
+        // if (r < 5) {
+        //   $state.next()
+        // } else if (r < 7) {
+        //   $state.fail()
+        // } else {
+        //   $state.done()
+        // }
+      }, 1000)
+    },
     async loadData() {
       const that = this
       that.fullscreenLoading = true
@@ -445,232 +486,275 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-.zt-page{
+<style lang="scss" scoped>
+.zt-page {
   height: 100%;
 }
-::v-deep .el-loading-spinner{
+
+::v-deep .el-loading-spinner {
   left: 50%;
 }
-.zt-tabs__top{
-  width: 100%;
+
+.zt-tabs__top {
   font-size: 16px;
-  background-color: #ECE8E5;
   box-sizing: border-box;
-}
-.zt-tabs{
   width: 100%;
+  background-color: #ECE8E5;
+}
+
+.zt-tabs {
   font-size: 16px;
+  width: 100%;
   color: #666666;
-  .zt-tabs__center{
+
+  .zt-tabs__center {
     display: flex;
     align-items: center;
-    width: 100%;
     box-sizing: border-box;
-    .ct-tabs{
+    width: 100%;
+
+    .ct-tabs {
       width: auto;
       margin-right: 50px;
     }
   }
-  .zt-tabs__center:hover{
+
+  .zt-tabs__center:hover {
     cursor: pointer;
   }
-  .zt-tabs__bottom{
+
+  .zt-tabs__bottom {
     display: flex;
     align-items: center;
+    box-sizing: border-box;
     width: 100%;
     padding: 10px 0;
-    box-sizing: border-box;
-    .zt-bottom__label{
+
+    .zt-bottom__label {
       margin-right: 20px;
     }
-    .zt-bottom__tab{
+
+    .zt-bottom__tab {
       display: flex;
       align-items: center;
-      .zt-bottom__item{
+
+      .zt-bottom__item {
         padding: 0 20px;
       }
-      .zt-bottom__item:hover{
+
+      .zt-bottom__item:hover {
         cursor: pointer;
       }
     }
-    .zt-bottom__price{
+
+    .zt-bottom__price {
       display: flex;
       align-items: center;
+      box-sizing: border-box;
       padding: 10px;
       border: 1px solid #CDA46C;
       border-radius: 30px;
-      box-sizing: border-box;
-      .zt-Binp{
+
+      .zt-Binp {
         width: 120px;
         margin: 0 15px;
       }
-      ::v-deep .el-input__inner{
+
+      ::v-deep .el-input__inner {
         width: 120px;
-        border-radius: 20px;
         border-color: #CDA46C;
-      }
-      .zt-price__sub{
-        width: 70px;
-        background-color: #CDA46C;
-        color: #fff;
-        text-align: center;
-        padding: 4px 0;
         border-radius: 20px;
       }
-      .zt-price__sub{
+
+      .zt-price__sub {
+        width: 70px;
+        padding: 4px 0;
+        text-align: center;
+        color: #fff;
+        border-radius: 20px;
+        background-color: #CDA46C;
+      }
+
+      .zt-price__sub {
         cursor: pointer;
       }
     }
-    .selectB{
+
+    .selectB {
       padding: 0 20px;
       color: #CDA46C;
     }
-    .selectB:hover{
+
+    .selectB:hover {
       cursor: pointer;
     }
   }
-  ::v-deep .el-divider--horizontal{
+
+  ::v-deep .el-divider--horizontal {
     margin: 15px 0;
   }
-  .zt-radio{
+
+  .zt-radio {
     display: flex;
     align-items: center;
-    .zt-radio__label{
+
+    .zt-radio__label {
       margin-right: 20px;
     }
   }
-  ::v-deep .el-radio{
+
+  ::v-deep .el-radio {
     font-size: 16px;
   }
-  ::v-deep .el-radio__label{
+
+  ::v-deep .el-radio__label {
     font-size: 16px;
   }
-  ::v-deep .is-checked + .el-radio__label{
+
+  ::v-deep .is-checked + .el-radio__label {
     color: #CDA46C;
   }
-  ::v-deep .is-checked .el-radio__inner{
+
+  ::v-deep .is-checked .el-radio__inner {
     border-color: #CDA46C;
     background: #CDA46C;
   }
-  ::v-deep .el-checkbox{
+
+  ::v-deep .el-checkbox {
     font-size: 16px;
   }
-  ::v-deep .el-checkbox__label{
+
+  ::v-deep .el-checkbox__label {
     font-size: 16px;
   }
-  ::v-deep .is-checked + .el-checkbox__label{
+
+  ::v-deep .is-checked + .el-checkbox__label {
     color: #CDA46C;
   }
-  ::v-deep .is-checked .el-checkbox__inner{
+
+  ::v-deep .is-checked .el-checkbox__inner {
     border-color: #CDA46C;
     background: #CDA46C;
   }
 }
-.zt-content{
+
+.zt-content {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   height: 100%;
   min-height: 50vh;
-  flex-wrap: wrap;
-  // overflow: auto;
-  .zt-content__item:hover{
+  .zt-content__item:hover {
     cursor: pointer;
   }
-  .zt-content__item{
+
+  .zt-content__item {
+    font-size: 14px;
     position: relative;
     width: 230px;
     height: 100%;
-    color: #333333;
-    font-size: 14px;
     margin: 0 0 10px 15px;
+    color: #333333;
+    border-radius: 5px;
     border: 1px solid #ECE8E5;
-    .zt-good__image{
+
+    .zt-good__image {
       width: 230px;
       height: 300px;
-      border-radius: 10px;
-      border: 1px solid #F2F2F2;
+      border-bottom: 1px solid #F2F2F2;
     }
-    .zt-video__b{
+
+    .zt-video__b {
       position: absolute;
       top: 10px;
       right: 10px;
-      border-radius: 5px;
       box-sizing: border-box;
-      .icon-shipin{
+      border-radius: 5px;
+
+      .icon-shipin {
         font-size: 28px;
         color: #FF9606;
-        background-color: #fff;
         border-radius: 5px;
+        background-color: #fff;
       }
     }
-    .zt-item__line{
+
+    .zt-item__line {
       // display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 14px;
       overflow: hidden;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      padding: 8px 14px;
       white-space: nowrap;
       text-overflow: ellipsis;
-      box-sizing: border-box;
     }
-    .zt-price__l{
+
+    .zt-price__l {
       // display: flex;
       // align-items: baseline;
       color: #FF0000;
     }
-    .zt-price__r{
+
+    .zt-price__r {
       display: flex;
       align-items: baseline;
       color: #FF0000;
     }
-    .zt-item__price{
-      color: #FF0000;
+
+    .zt-item__price {
       font-size: 24px;
+      color: #FF0000;
     }
   }
 }
-::v-deep .el-empty{
+
+::v-deep .el-empty {
   position: relative;
 }
-.nav-r{
+
+.nav-r {
   position: absolute;
-  left: 50%;
-  top: 0;
-  margin-left: 580px;
-  transform: translate(100%, 0px);
   z-index: 100;
+  top: 0;
+  left: 50%;
+  margin-left: 580px;
   transition: 0.3s;
+  transform: translate(100%, 0px);
 }
-.nav-R{
+
+.nav-R {
   position: fixed;
   // right: 17%;
   top: 10%;
   transform: translate(100%, 0px);
 }
 
-.zt-flex{
-  text-align: center;
-  color: #fff;
+.zt-flex {
   font-size: 14px;
-  border-radius: 10px;
-  background: linear-gradient(to bottom,#FFB902,#FF9606);
-  padding: 5px;
-  margin-bottom: 5px;
-  white-space: nowrap;
   box-sizing: border-box;
+  margin-bottom: 5px;
+  padding: 5px;
+  text-align: center;
+  white-space: nowrap;
+  color: #fff;
+  border-radius: 10px;
+  background: linear-gradient(to bottom, #FFB902, #FF9606);
 }
-.zt-flex:hover{
+
+.zt-flex:hover {
   cursor: pointer;
 }
+
 .el-icon-arrow-up,
 .el-icon-chat-line-round,
 .el-icon-s-order,
-.el-icon-document-add{
+.el-icon-document-add {
   font-size: 30px;
 }
-.top-line{
-  border-top: 1px solid #F2F2F2;
+
+.top-line {
   color: #999999;
+  border-top: 1px solid #F2F2F2;
 }
 </style>
