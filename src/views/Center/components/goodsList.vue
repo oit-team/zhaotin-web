@@ -71,7 +71,6 @@
       </div>
       <el-divider />
     </div>
-    <el-empty v-show="showEmp" description="暂无相关数据" />
     <div class="relative">
       <div class="nav-r" ref="nav-r">
         <div class="orderCart zt-flex" @click="toCart">
@@ -87,6 +86,7 @@
           <div>返回顶部</div>
         </div>
       </div>
+      <el-empty v-show="showEmp" description="暂无相关数据" />
       <div v-show="!showEmp" v-loading="fullscreenLoading" ref="content" class="zt-content">
         <div
           v-for="(item, index) in dataList"
@@ -193,16 +193,6 @@ export default {
     this.classData()
     this.classData2()
   },
-  mounted() {
-    // if (this.isUpdate) {
-    // } else {
-    //   window.removeEventListener('scroll', this.scrollEvent)
-    //   this.formData.pageNum = 1
-    // }
-  },
-  // beforeDestroy() {
-  //   window.removeEventListener('scroll', this.scrollEvent)
-  // },
   methods: {
     load($state) {
       if (this.formData.pageNum === 1) {
@@ -230,8 +220,8 @@ export default {
     },
     reLoad() {
       this.formData.pageNum = 1
-      // this.$refs.loadMore.reset().load()
-      this.$refs.loadMore.load()
+      this.$refs.loadMore.reset().load()
+      // this.$refs.loadMore.load()
     },
     // 二级分类
     async classData() {
@@ -580,8 +570,6 @@ export default {
     }
 
     .zt-price__l {
-      // display: flex;
-      // align-items: baseline;
       color: #FF0000;
     }
 
