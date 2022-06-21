@@ -150,7 +150,7 @@ export default {
         if (valid) {
           this.saveFunction();
         } else {
-          console.log('error submit!!');
+          // console.log('error submit!!');
           return false;
         }
       });

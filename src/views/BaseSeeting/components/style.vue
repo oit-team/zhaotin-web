@@ -329,9 +329,6 @@ export default {
     this.$refs.page.loadData()
   },
   methods: {
-    isDisabled(row) {
-      console.log(row)
-    },
     addGoods() {
       this.$router.push('/basls/style/addGoods')
     },
@@ -435,7 +432,6 @@ export default {
           type: 'warning',
           message: '正在导入中，请稍候',
         })
-        console.log(789)
         const formData = new FormData() //  用FormData存放上传文件
         // console.log("this.fileList====",this.fileList)
         formData.append('file', this.fileList[0].raw)
@@ -606,7 +602,7 @@ export default {
     },
     // 获取选中项的值
     changeChecked(val) {
-      console.log("复选框变化后的值===",val);
+      // console.log("复选框变化后的值===",val);
       this.checkList = val
     },
     // 确认导出商品按钮
@@ -645,8 +641,7 @@ export default {
           downloadElement.click(); //点击下载
           document.body.removeChild(downloadElement); //下载完成移除元素
           window.URL.revokeObjectURL(href); //释放掉blob对象
-        }).catch((err) => {
-          console.log(err)
+        }).catch(() => {
         })
       } else {
         this.$message({
@@ -657,7 +652,6 @@ export default {
     },
     //上架前判断该商品各个颜色是否都有图片和尺码
     checkstyleColor (row) {
-      console.log(row)
       let returnRes = true
       if (row.styleColor == '') {
         this.$message({
@@ -667,7 +661,6 @@ export default {
         return false
       } else {
         /*row.styleColorList.forEach((item,index) => {
-          console.log(item)
           if (!item.styleSize || item.styleSize.length == 0) {
             //尺码未设置
             returnRes = false 
@@ -688,7 +681,6 @@ export default {
     },
 
     handleCommand(command) {
-      console.log(command)
       let status = command
       let msg = command === 1?'下架':'上架'
       this.$confirm(`确认${msg}已选择的商品吗?`, '提示', {
@@ -760,8 +752,7 @@ export default {
         setTimeout(() => {
           this.$refs.page.loadData()
         }, 1000)
-        }).catch((err) => {
-          console.log(err)
+        }).catch(() => {
       }).catch(() => {})
     },
   },

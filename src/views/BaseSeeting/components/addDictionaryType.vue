@@ -143,7 +143,6 @@ export default {
     // 获取所有的类型
 		async getDList() {
 			const res = await getDictionaryList({})
-			console.log(res)
 			this.Dlist = res.body.result
 		},
     // 查询所有的类别排序字段
@@ -176,9 +175,7 @@ export default {
             // brandId: sessionStorage.brandId
             imgUrl: this.upImg,
           }
-					console.log(con)
           sort(con).then((res) => {
-						console.log(res)
             if(res.head.status === 0){
               if(res.body.result === 0){
                 this.saveFunction();
@@ -197,7 +194,6 @@ export default {
           }).catch(err=>{
           });
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
@@ -218,7 +214,6 @@ export default {
            imgUrl:imgUrlArr.toString()
           }
       if(!this.editFlag){  // 编辑
-      console.log(this.$route.query.item.row.imgUrl);
       
        updateCateGory(con).then((res) => {
            if(res.head.status === 0) {

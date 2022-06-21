@@ -325,7 +325,6 @@ export default {
     },
     // 保存类别相关联的信息
     saveCateRelatedInfo(){
-      console.log(this.state);
       let obj = {};
       let newArr =  Array.from(new Set(this.state))
       this.state = newArr;
@@ -352,7 +351,6 @@ export default {
         sizeId:checkList,
       }
       if(this.state.length){  // 编辑
-        console.log(con)
         // return;
       
         updateSizeConfInfo(con).then((res) => {
@@ -420,8 +418,7 @@ export default {
                   type: 'warning'
                 });
               }
-            }).catch(err=>{
-              console.log(err)
+            }).catch(() =>{
             });
           }else{
     
@@ -448,12 +445,10 @@ export default {
                   type: 'warning'
                 });
               }
-            }).catch(err=>{
-              console.log(err)
+            }).catch(() =>{
             });
           }
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
@@ -489,8 +484,7 @@ export default {
               type: 'warning'
             });
           }
-        }).catch(err=>{
-          console.log(err)
+        }).catch(() =>{
         });
       }).catch(() => {
         this.$message({

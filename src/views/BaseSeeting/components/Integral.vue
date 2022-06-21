@@ -275,7 +275,6 @@ export default {
         type: "RULE_TYPE_CODE",
         userId: sessionStorage.userId,
 			}).then(res => {
-				// console.log(res)
 				if (res.head.status === 0) {
 					that.tabs = res.body.result
 					// that.tabsS = res.body.result
@@ -334,7 +333,6 @@ export default {
 				deleteCollocation({
 					id: item.id,
 				}).then(res => {
-					console.log(res)
 					if (res.head.status === 0) {
 						this.$message({
 							type: 'success',
@@ -361,7 +359,6 @@ export default {
 				}
 			})
 			that.ruleList.forEach(e => {
-				console.log(e)
 				that.$set(e, 'disab', true)
 				that.$set(e, 'chain', false)
 				that.$forceUpdate()
@@ -371,7 +368,6 @@ export default {
 		submitForm(formName) {
 			const preList = []
 			this.form.preList.forEach(e => {
-				console.log(e)
 				const pre = {
 					preIntegralId: e.id,
 					integralValue: e.integralValue - 0,
@@ -401,7 +397,7 @@ export default {
 						}
 					})
 				} else {
-					console.log('error submit!!')
+					// console.log('error submit!!')
 					return false
 				}
 			})
@@ -433,12 +429,10 @@ export default {
 		// },
 		// 新增 下拉框 改变
 		cgSelect(e) {
-			console.log(e)
 			this.form.preRuleCode = e
 			getCollocation({
 				roleTypeCode: e,
 			}).then(res => {
-				console.log(res)
 				if (res.head.status === 0) {
 					this.form.preList = res.body.resultList
 				}
@@ -446,22 +440,18 @@ export default {
 		},
 		// 修改 下拉框 改变
 		cgSelect2(e) {
-			console.log(e)
 			this.preRuleCode = e
 			getCollocation({
 				roleTypeCode: e,
 			}).then(res => {
-				console.log(res)
 				if (res.head.status === 0) {
 					this.PreList = res.body.resultList
 				}
-				console.log(this.PreList)
 			})
 		},
 		// 编辑修改
 		cgdisab(item) {
 			const that = this
-			console.log(item)
 			that.$set(item, 'disab', !item.disab)
 			if (item.disab) {
 				that.preRuleCode = ''
@@ -484,7 +474,6 @@ export default {
 		subForm(formName, item) {
 			this.$refs[formName][0].validate((valid) => {
 				if (valid) {
-					// console.log(item)
 					if (item.preList) {
 						this.PreList = item.preList
 					}
@@ -510,7 +499,6 @@ export default {
 						integralValue: item.integralValue,
 					}
 					updateCollocation(formDt).then(res => {
-						console.log(res)
 						if (res.head.status === 0) {
 							this.$message.success('修改成功')
 							this.getCollocation()
@@ -519,7 +507,7 @@ export default {
 						}
 					})
 				} else {
-					console.log('提交失败')
+					this.$message.error('修改失败')
 					return false
 				}
 			})
