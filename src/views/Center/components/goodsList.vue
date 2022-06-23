@@ -105,7 +105,8 @@
           <div class="zt-item__line">{{ item.styleName }}</div>
           <div class="zt-item__line flex">
             <div class="zt-price__l">{{ item.styleNo }}</div>
-            <div class="zt-price__r">￥
+            <div class="zt-price__r">
+              ￥
               <div class="zt-item__price">{{ item.tradePrice }}</div>
             </div>
           </div>
@@ -115,7 +116,7 @@
       </div>
     </div>
     <LoadMore @load="load" ref="loadMore" first-load v-show="!showEmp && !fullscreenLoading">
-      <template v-slot="scope">
+      <template #default="scope">
         <el-divider v-if="scope.next">加载更多</el-divider>
         <el-divider v-if="scope.loading"><i class="el-icon-loading text-xl"></i></el-divider>
         <el-divider v-if="scope.done">已经到底了</el-divider>
@@ -130,7 +131,6 @@ import { getProductList } from '@/api/product'
 import { getGoodsSizeInfo, getGoodsSizeClass } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
 import LoadMore from '@/components/business/LoadMore'
-import { throttle } from 'lodash'
 
 export default {
   name: 'GoodsList',
@@ -252,6 +252,7 @@ export default {
         countNum: number1,
       }
       this.tabList1.unshift(all)
+      console.log(this.tabList1)
     },
     // 点击二级tab
     checkTab(index) {
@@ -583,10 +584,6 @@ export default {
       color: #FF0000;
     }
   }
-}
-
-::v-deep .el-empty {
-  position: relative;
 }
 
 .nav-r {
