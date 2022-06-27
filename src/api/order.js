@@ -21,10 +21,27 @@ export function updateOrder(params) {
     cmd: 40007,
   })
 }
+
 // 查询订单修改记录
 export function getOrderUpdateRecord(params) {
   return post('/order/orderInfo/getOrderUpdateRecord', params, {
     mod: 'home',
     cmd: 40007,
+  })
+}
+
+// 查询积分商品订单详情
+export function getOrderDetail(params) {
+  return post('/order/integralShop/getOrderDetail', params, {
+    mod: 'vue',
+    uuid: '0',
+  })
+}
+
+// 查询积分商品订单列表
+export function getOrderList(params) {
+  return post('/order/integralShop/getOrderList', params, {
+    mod: 'vue',
+    uuid: '0',
   })
 }

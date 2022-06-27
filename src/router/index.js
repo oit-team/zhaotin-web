@@ -46,6 +46,53 @@ const routes = [
     ],
   },
   {
+    // 积分商城
+    path: '/integral',
+    redirect: '/integral/goodsList',
+    component: () => import('@/views/Integral'),
+    children: [
+      {
+        path: '/integral/goodsList',
+        component: () => import('@/views/Integral/components/goodsList'),
+      },
+      {
+        path: '/integral/goodsDetails',
+        component: () => import('@/views/Integral/components/goodsDetails'),
+      },
+      // 兑换 页面
+      {
+        path: '/integral/redeem',
+        component: () => import('@/views/Integral/components/redeem'),
+      },
+    ],
+  },
+  {
+    path: '/pointsManage',
+    component: () => import('@/views/PointsManage'),
+    children: [
+      // 积分 商品 管理
+      {
+        path: '/pointsManage/goodsManage',
+        component: () => import('@/views/PointsManage/components/goodsManage'),
+      },
+      // 积分商品 详情/新增/修改
+      {
+        path: '/pointsManage/addIntegralGoods',
+        component: () => import('@/views/PointsManage/components/addIntegralGoods'),
+      },
+      // 积分订单管理
+      {
+        path: '/pointsManage/goodsOrder',
+        component: () => import('@/views/PointsManage/components/goodsOrder'),
+      },
+      // 查看订单详情
+      {
+        path: '/pointsManage/orderInfo',
+        component: () => import('@/views/PointsManage/components/orderInfo'),
+      },
+    ],
+  },
+  {
     // 商品中心
     path: '/styleCenter',
     component: Center,

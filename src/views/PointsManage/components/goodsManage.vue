@@ -1,9 +1,8 @@
 <template>
-  <div style="height: 100%;">
+  <div class="h-full my-10">
     <div class="main container" style="height: 100%;">
-      <!-- <div>商品中心</div> -->
-      <div class="table-h" style="height: 100%;">
-        <TablePage v-bind="tablePageOption" auto ref="page">
+      <div class="table-h">
+        <TablePage v-bind="tablePageOption" class="!min-h-screen-sm" auto ref="page">
           <template #actions:upd>
             <el-dropdown class="ml-2">
               <el-button type="primary">
@@ -15,45 +14,14 @@
               </el-dropdown-menu>
             </el-dropdown>
           </template>
-          <!-- <el-drawer :visible.sync="drawerVisible" size="40%"> -->
-          <template slot="content:resUrl" slot-scope="{ row }">
-            <!-- 商品图片 -->
-            <template v-if="row.resUrl">
-              <el-image class="file-res" style="max-height:50px;" :src="row.resUrl" fit="cover" />
-            </template>
-            <template v-else>
-              <span>无</span> 
-            </template>
-          </template>
-          <template slot="content:status" slot-scope="{ row }">
-            <!-- 商品图片 -->
-            <span v-if="row.status == 1" style="color:#67C23A">
-              已上架
-            </span>
-            <span v-else-if="row.status == 0" style="color:red">
-              未上架
-            </span>
-          </template>
-          <template slot="content:styleColor" slot-scope="{ row }">
-            <!-- 商品颜色 -->
-           <span v-if="row.styleColor">
-              {{row.styleColor}}
-            </span>
-            <span v-else>
-              无
-            </span>
-          </template>
-          <!-- </el-drawer> -->
         </TablePage>
       </div>
-      <!-- 出口 -->
-      <router-view />
     </div>
     <!-- 导入导出操作 -->
 
     <!-- 导入商品 -->
     <el-drawer
-      :title="importType==1?'导入商品':'导入商品库存'"
+      :title="importType===1?'导入商品':'导入商品库存'"
       :visible.sync="importFlag"
       direction="rtl"
       size="40%"
@@ -83,8 +51,8 @@
           </template>
         </el-upload>
         <div style="margin-top: 20px">
-          <el-button v-if="importType==1" size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
-          <el-button v-if="importType==2" size="small" type="success" @click="confirmImportStock">导入库存</el-button>
+          <el-button v-if="importType===1" size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
+          <el-button v-if="importType===2" size="small" type="success" @click="confirmImportStock">导入库存</el-button>
           <el-button size="small" @click="importGoodsClose">取消导入</el-button>
         </div>
       </div>
@@ -93,7 +61,7 @@
         <h3>{{ upDateCount }}</h3>
         <h3>{{ failureCount }}</h3>
         <h3>失败数据如下:</h3>
-        <p>{{errMessage}}</p>
+        <p>{{ errMessage }}</p>
         <ul class="errDataBox" style="text-align:left;">
           <li
             class="errDataItem"
@@ -154,7 +122,7 @@
         <h3>{{ upDateCount }}</h3>
         <h3>{{ failureCount }}</h3>
         <h3>失败数据如下:</h3>
-        <p>{{errMessage}}</p>
+        <p>{{ errMessage }}</p>
         <ul class="errDataBox" style="text-align:left;">
           <li
             class="errDataItem"
@@ -189,12 +157,11 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { getProductList } from '@/api/product'
-import { getDeleteStyleInfo, getExportInfo, getExportStyleInfo, addimporStyleInfo, updateStyleStatusById } from '@/api/goods'
+import { getIntegralGoodsList } from '@/api/integral'
 import axios from 'axios'
 
 export default {
-  name: 'Style',
+  name: 'GoodsManage',
   components: {
     TablePage,
   },
@@ -221,6 +188,11 @@ export default {
       errMessage: null,
       errorList: [],
       drawerUpd: false,
+
+      formData: {
+        pageNum: 1,
+        pageSize: 20,
+      },
     }
   },
 
@@ -233,34 +205,27 @@ export default {
             name: '新增商品',
             icon: 'el-icon-plus',
             type: 'success',
-            click: () => this.addGoods(),
+            click: () => this.$router.push('/pointsManage/addIntegralGoods'),
           },
-          {
-            name: '导入商品',
-            icon: 'el-icon-download',
-            // style:style="background:#4FD5AC;border-color: #4FD5AC;color:#fff;"
-            type: 'primary',
-            click: () => this.importGoods(),
-          },
-          {
-            name: '导出商品',
-            icon: 'el-icon-upload2',
-            type: 'primary',
-            click: () => this.export(),
-          },
+          // {
+          //   name: '导入商品',
+          //   icon: 'el-icon-download',
+          //   type: 'primary',
+          //   click: () => this.importGoods(),
+          // },
+          // {
+          //   name: '导出商品',
+          //   icon: 'el-icon-upload2',
+          //   type: 'primary',
+          //   click: () => this.export(),
+          // },
           {
             slot: 'upd',
           },
-          // {
-          //   name: '导入库存',
-          //   icon: 'el-icon-download',
-          //   type: 'primary',
-          //   click: () => this.importStock(),
-          // },
         ],
         table: {
           selection: true,
-          data: this.data.resultList,
+          data: this.data.integralGoodsList,
           actions: {
             width: 180,
             buttons: [
@@ -269,8 +234,8 @@ export default {
                 type: 'primary',
                 icon: 'el-icon-view',
                 click: (scope) => this.$router.push({
-                  path: '/basls/style/addGoods',
-                  query: { item: scope , flag: 1},
+                  path: '/pointsManage/addIntegralGoods',
+                  query: { item: scope, flag: 1 },
                 }),
               },
               {
@@ -279,9 +244,9 @@ export default {
                 icon: 'el-icon-delete',
                 click: this.deleteGoods,
                 disabled: ({ row }) => {
-                  if (row.status == '1') {  //1 是已上架
+                  if (row.status === '1') { // 1 是已上架
                     return true
-                  } else if (row.status == '0') {
+                  } if (row.status === '0') {
                     return false
                   }
                 },
@@ -291,32 +256,22 @@ export default {
                 type: 'success',
                 icon: 'el-icon-edit',
                 disabled: ({ row }) => {
-                  if (row.status == '1') {  //1 是已上架
+                  if (row.status === '1') { // 1 是已上架
                     return true
-                  } else if (row.status == '0') {
+                  } if (row.status === '0') {
                     return false
                   }
                 },
                 click: (scope) => this.$router.push({
-                  path: '/basls/style/addGoods',
-                  query: { item: scope , flag : 0},
+                  path: '/pointsManage/addIntegralGoods',
+                  query: { item: scope, flag: 0 },
                 }),
               },
-              // {
-              //   tip: '库存分布',
-              //   // type: 'danger',
-              //   icon: 'el-icon-s-data',
-              //   isShow: true,
-              //   click: ({ row }) => this.$router.push({
-              //     // path: '/system/addRole',
-              //     params: { item: row },
-              //   }),
-              // },
             ],
           },
         },
         pager: {
-          total: this.data.totalCount,
+          total: this.data.count,
         },
         selectionItem: true,
         selection: true,
@@ -325,20 +280,14 @@ export default {
   },
   created() {
   },
-  activated() {
-    this.$refs.page.loadData()
-  },
+  // activated() {
+  //   this.$refs.page.loadData()
+  // },
   methods: {
-    addGoods() {
-      this.$router.push('/basls/style/addGoods')
-    },
     async loadData(params) {
-      console.log(32888)
-      const res = await getProductList({
-        brandId: '1',
+      const res = await getIntegralGoodsList({
         ...params,
       })
-      // console.log(res)
       this.data = res.body
     },
     // 查询导出商品字段
@@ -348,62 +297,17 @@ export default {
         type: 'styleList',
         code: 'style',
       }
-      getExportInfo(con).then((res) => {
-        if (res.head.status == 0) {
-          this.exportInfoList = res.body.exportTitle
-          for (let i = 0; i < this.exportInfoList.length; i++) {
-            this.tempCheckList.push(this.exportInfoList[i].columnName)
-          }
-          this.checkList = this.tempCheckList
-          // console.log("默认全选===",this.checkList)
-        } else {
-          this.$message({
-            message: res.head.msg,
-            type: 'warning',
-          })
-        }
-      }).catch(err => {
-        // console.log(err)
-      })
     },
     // 删除商品
     deleteGoods(item) {
-      this.$confirm('确认删除该菜单?', '提示', {
+      this.$confirm('确认删除该商品?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
-        // console.log(item)
         const con = {
           styleId: item.row.styleId.toString(),
         }
-        getDeleteStyleInfo(con).then((res) => {
-          // console.log("delMenuById==========",res.data.body);
-          if (res.head.status === 0) {
-            this.data.resultList.splice(item.$index, 1)
-            if (this.total > 0) {
-              this.total -= 1
-            }
-            if (this.data.resultList.length === 0 && this.total > 0) {
-              this.pageNum -= 1
-              this.dynamicParam.forEach(el => {
-                if (el.key === 'pageNum') {
-                  el.value = this.pageNum
-                }
-              })
-            }
-            this.$message({
-              type: 'success',
-              message: '删除成功!',
-            })
-          } else {
-            this.$message({
-              message: res.data.head.msg,
-              type: 'warning',
-            })
-          }
-        }).catch(() => {
-        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -465,7 +369,7 @@ export default {
             } else {
               this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
                 confirmButtonText: '确定',
-                callback: action => {},
+                callback: () => {},
               })
             }
           } else {
@@ -497,7 +401,7 @@ export default {
         this.importGoodsClose()
       }).catch(() => {})
     },
-    handleExportClose () {
+    handleExportClose() {
       this.$confirm('确认关闭？').then(() => {
         this.exportModelFlag = false
       }).catch(() => {})
@@ -512,14 +416,11 @@ export default {
       this.fileList = fileList
       // console.log("this.fileList===",this.fileList)
     },
-    upDrop() {
-      // this.
-    },
     // 限制每次只能上传一个文件
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
-    // // 上传文件
+    // 上传文件
     uploadFile(file) {
       this.fileData.append('file', file.file)
       // console.log("this.fileData====",this.fileData)
@@ -538,7 +439,7 @@ export default {
           message: '正在导入中，请稍候',
           duration: '1000',
         })
-        const _this = this;
+        const _this = this
         const formData = new FormData() //  用FormData存放上传文件
         // console.log("this.fileList====",this.fileList)
         formData.append('file', this.fileList[0].raw)
@@ -550,12 +451,12 @@ export default {
           url: `${BASE_URL}/goods/style/addimporStyleInfo`,
           method: 'post',
           headers: {
-          'Content-Type': 'multipart/form-data',
-          token: sessionStorage.accessToken,
+            'Content-Type': 'multipart/form-data',
+            token: sessionStorage.accessToken,
           },
           data: formData,
         }).then((res) => {
-          if (res.status === 200 && res.data.head.status == 0) {
+          if (res.status === 200 && res.data.head.status === 0) {
             this.importResult = res.data.body
             this.addCount = res.data.body.addCount
             this.upDateCount = res.data.body.upDateCount
@@ -575,13 +476,13 @@ export default {
               })
             }
           } else {
-            this.ErrerInfoShow = true;
+            this.ErrerInfoShow = true
             this.errMessage = res.data.head.msg
             this.$message({
               type: 'error',
               message: '导入商品失败',
             })
-          } 
+          }
         }).catch((err) => {
           this.$message({
             type: 'error',
@@ -609,41 +510,42 @@ export default {
     // 确认导出商品按钮
     confirmExportGoods() {
       this.rowList = {}
-      if (this.checkList.length > 0) {
-        for(let i=0;i<this.checkList.length;i++){
-          for(let j=0;j<this.exportInfoList.length;j++){
-            if(this.checkList[i]==this.exportInfoList[j].columnName){
-              this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc;
-            }
-          }
-        }
-      }
+      // if (this.checkList.length > 0) {
+      //   for (let i=0;i<this.checkList.length;i++) {
+      //     for (let j=0;j<this.exportInfoList.length;j++) {
+      //       if(this.checkList[i]==this.exportInfoList[j].columnName){
+      //         this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc;
+      //       }
+      //     }
+      //   }
+      // }
       if (Object.keys(this.rowList).length > 0) {
         this.exportModelFlag = false
         const SearchData = this.$refs.page.$refs.search._data.form
         const con = {
-          pageNum:1,
-          pageSize:999,
-          rowList:this.rowList,
-          ...SearchData
+          pageNum: 1,
+          pageSize: 999,
+          rowList: this.rowList,
+          ...SearchData,
         }
-        getExportStyleInfo(con,{responseType: 'arraybuffer'}).then((res) => {
-          var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'}); //application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
-          var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
-          var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
-          var result = patt.exec(contentDisposition);
-          var filename = result[1];
-          var downloadElement = document.createElement('a');
-          var href = window.URL.createObjectURL(blob); //创建下载的链接
-          downloadElement.style.display = 'none';
-          downloadElement.href = href;
-          downloadElement.download = `商品列表-${filename}` ; //下载后文件名
-          document.body.appendChild(downloadElement);
-          downloadElement.click(); //点击下载
-          document.body.removeChild(downloadElement); //下载完成移除元素
-          window.URL.revokeObjectURL(href); //释放掉blob对象
-        }).catch(() => {
-        })
+        // getExportStyleInfo(con, { responseType: 'arraybuffer' }).then((res) => {
+        // application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
+        //   var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'})
+        //   var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
+        //   var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
+        //   var result = patt.exec(contentDisposition);
+        //   var filename = result[1];
+        //   var downloadElement = document.createElement('a');
+        //   var href = window.URL.createObjectURL(blob); //创建下载的链接
+        //   downloadElement.style.display = 'none';
+        //   downloadElement.href = href;
+        //   downloadElement.download = `商品列表-${filename}` ; //下载后文件名
+        //   document.body.appendChild(downloadElement);
+        //   downloadElement.click(); //点击下载
+        //   document.body.removeChild(downloadElement); //下载完成移除元素
+        //   window.URL.revokeObjectURL(href); //释放掉blob对象
+        // }).catch(() => {
+        // })
       } else {
         this.$message({
           type: 'warning',
@@ -651,25 +553,15 @@ export default {
         })
       }
     },
-    //上架前判断该商品各个颜色是否都有图片和尺码
-    checkstyleColor (row) {
-      let returnRes = true
-      if (row.styleColor == '') {
+    // 上架前判断该商品各个颜色是否都有图片和尺码
+    checkstyleColor(row) {
+      const returnRes = true
+      if (row.styleColor === '') {
         this.$message({
           type: 'warning',
           message: '发布前请上传颜色',
         })
         return false
-      } else {
-        /*row.styleColorList.forEach((item,index) => {
-          if (!item.styleSize || item.styleSize.length == 0) {
-            //尺码未设置
-            returnRes = false 
-          } else if (!item.styleImg || item.styleImg.length == 0){
-            returnRes = false 
-            //图片未上传
-          }
-        })*/
       }
       if (!returnRes) {
         this.$message({
@@ -678,83 +570,21 @@ export default {
         })
       }
       return returnRes
-      
     },
 
     handleCommand(command) {
-      let status = command
-      let msg = command === 1?'下架':'上架'
+      // const status = command
+      const msg = command === 1 ? '下架' : '上架'
       this.$confirm(`确认${msg}已选择的商品吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
-        const con = {
-          sId: styleId,
-          status: status
-        }
-        // if (status == 1 && !this.checkstyleColor()) {
-        //   return;
-        // }
-        // updateStyleStatusById(con).then((res) => {
-        //   if (res.head.status == 0) {
-        //     this.$message({
-        //       type: 'success',
-        //       message: res.head.msg,
-        //     })
-        //     // row.status = status
-        //   } else {
-        //     this.$message({
-        //       type: 'error',
-        //       message: res.head.msg,
-        //     })
-        //   }
-        // }).catch((err) => {
-        //   console.log(err)
-        // })
       }).catch(() => {
         this.$message({
           message: '已取消',
         })
       })
-    },
-    updGoods(id) {
-      let status = id === 1? '0' : '1'
-      let msg = id === 1 ? '下架' : '上架'
-      const con = {
-        sId: [],
-        status: status,
-      }
-      this.$confirm(`确认${msg}该商品?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(() => {
-        this.$refs.page.selected.forEach(e => {
-          const list = {
-            styleId: e.styleId,
-            styleNo: e.styleNo,
-          }
-          con.sId.push(list)
-        })
-        updateStyleStatusById(con).then((res) => {
-          this.errorList = JSON.parse(JSON.stringify(res.body.errorList))
-          // 否则成功
-          if (res.body.errorList.length === 0) {
-            this.$message({
-              type: 'success',
-              message: res.head.msg,
-            })
-          } else {
-            // 如果有失败的数据  则弹出--抽屉
-            this.drawerUpd = true
-          }
-        })
-        setTimeout(() => {
-          this.$refs.page.loadData()
-        }, 1000)
-        }).catch(() => {
-      }).catch(() => {})
     },
   },
 
@@ -762,7 +592,10 @@ export default {
 </script>
 <style lang="less" scoped>
   .table-h {
-    height: 600px;
+    min-height: 600px;
+  }
+  .table-page{
+    min-height: 600px;
   }
   /deep/ .el-table__body-wrapper {
     overflow: auto!important;
@@ -780,12 +613,12 @@ export default {
       left: auto;
       right: 18px;
   }
-  
+
   /deep/ .el-image__inner{
     height: 50px;
     width: auto;
   }
-  
+
   ::v-deep .el-drawer__body{
     padding: 20px;
   }

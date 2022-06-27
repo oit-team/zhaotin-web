@@ -2,14 +2,14 @@
   <div class="zt-page">
     <!-- 顶部面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right" class="zt-head">
-      <el-breadcrumb-item :to="{ path: '/styleCenter' }">商品中心</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/integral/goodsList' }">积分商城</el-breadcrumb-item>
       <el-breadcrumb-item>商品详情</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 主题内容 -->
     <!-- 返回内容为空 -->
     <div v-if="showResult">
       <el-empty :description="resultText">
-        <el-button type="primary" @click="$router.go(-1)">返回</el-button>
+        <el-button type="primary" @click="$router.back()">返回</el-button>
       </el-empty>
     </div>
     <div class="zt-content" v-else>
@@ -23,7 +23,7 @@
             :autoplay="false"
             indicator-position="none"
           >
-            <el-carousel-item v-if="infoData.styleVideo">
+            <el-carousel-item v-if="infoData.goodsVideo">
               <div class="zt-swiper__item">
                 <video
                   width="500px"
@@ -32,13 +32,11 @@
                   playsinline
                   controls
                   ref="styleVideo"
-                  :poster="infoData.styleVideoPatch"
+                  :poster="infoData.styleVideoPatch || goodsData.videoImage"
                 >
-                  <source :src="infoData.styleVideo" type="video/mp4" />
+                  <source :src="infoData.styleVideo || goodsData.video" type="video/mp4" />
                   <track kind="captions" label="English captions" src="" srclang="en" default />
                 </video>
-                <!-- <i class="el-icon-video-play video-icon" v-show="isPlay"></i>
-                <i class="el-icon-video-pause video-icon" v-show="!isPlay"></i> -->
               </div>
             </el-carousel-item>
             <el-carousel-item
@@ -77,13 +75,13 @@
             </div>
           </div>
         </div>
-        <div class="zt-head__data">
+        <div class="zt-head__data" v-if="infoData.goodsSort === 2">
           <!-- 商品名称 -->
           <div class="zt-data__head">
             <div class="zt-data__title">
-              <div class="zt-title">{{ infoData.styleName }}</div>
+              <div class="zt-title">{{ infoData.goodsName }}</div>
               <div class="zt-data__code">
-                <div>款号：{{ infoData.styleNo }}</div>
+                <div>款号：{{ infoData.goodsCode }}</div>
                 <div class="zt-jin zt-data__p">
                   推荐指数：
                   <el-rate
@@ -102,7 +100,7 @@
             <div class="zt-price">
               价格
               <div class="zt-price__data zt-red">
-                ￥<span class="zt-wt">{{ infoData.tradePrice }}</span>
+                <span class="zt-wt">{{ infoData.goodsPrice }}</span>
                 <!-- <div class="zt-hui">3件起订</div> -->
               </div>
             </div>
@@ -163,31 +161,43 @@
                 </div>
               </div>
             </div>
-            <div class="zt-data__size">
-              <div class="zt-data__label">数量</div>
-              <el-input-number
-                v-if="infoData.styleColorList && infoData.styleColorList.length !== 0"
-                size="small"
-                v-model="num"
-                @change="handleChange"
-                :min="0"
-              />
-              <!-- <div v-if="infoData.styleColorList">
-                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
-                  <el-input-number size="small" v-model="item.num" @change="handleChange" :min="1" :max="99" />
-                </div>
-              </div> -->
-            </div>
           </div>
           <!-- 购买 -->
           <div class="zt-data__btn">
-            <div class="zt-btn__hei" @click="toshoping">立即订购</div>
-            <div class="zt-btn__jin" @click="toorder"><i class="el-icon-plus"></i> 加入订货清单</div>
+            <div class="zt-btn__hei" @click="toRedeem">立即兑换</div>
+          </div>
+        </div>
+        <div class="zt-head__data" v-if="infoData.goodsSort === 1">
+          <!-- 商品名称 -->
+          <div class="zt-data__head">
+            <div class="zt-data__title">
+              <div class="zt-title">{{ infoData.goodsName }}</div>
+              <div class="zt-data__code">
+                <div>编号：{{ infoData.styleNo }}</div>
+              </div>
+            </div>
+            <div class="note">
+              <div class="my-5">兑换说明：{{ infoData.integralDesc }}</div>
+            </div>
+            <div class="zt-data__size flex">
+              <div class="zt-data__label w-20">数量:</div>
+              <el-input-number
+                size="small"
+                v-model="infoData.goodsNumber"
+                @change="handleChange"
+                :min="0"
+              />
+            </div>
+            <!-- 购买 -->
+            <div class="zt-data__btn">
+              <div></div>
+              <div class="zt-btn__hei" @click="toRedeem">立即兑换</div>
+            </div>
           </div>
         </div>
       </div>
       <!-- center 产品详情 -->
-      <div class="zt-content__data">
+      <div class="zt-content__data" v-if="infoData.goodsSort === 2">
         <div class="zt-content__title">
           商品信息
         </div>
@@ -297,7 +307,7 @@
         <div class="zt-content__data5">
           <div class="zt-content__label">洗涤说明</div>
           <div class="zt-content__list" v-if="infoData.styleWashing">
-            <div class="zt-content__info" v-for="(item, index) in infoData.styleWashing" :key="index">
+            <div class="zt-content__info" v-for="(item, index) in infoData.goodsWashing" :key="index">
               <!-- <div v-if="item.status === '1'"> -->
               <el-image
                 style="width: 80px; height: 80px"
@@ -310,44 +320,12 @@
           </div>
         </div>
       </div>
-      <!-- 底部 推荐区 -->
-      <div class="zt-content__footer">
-        <div class="zt-content__title">
-          季节推荐
-        </div>
-        <el-empty v-if="showEmp" description="暂无相关数据" />
-        <div class="zt-content" v-else>
-          <div
-            class="zt-content__item"
-            v-for="(item, index) in dataList"
-            :key="index"
-            @click="todetails(item.styleId)"
-          >
-            <el-image
-              class="zt-good__image"
-              :src="item.resUrl"
-              fit="contain"
-            />
-            <div class="zt-video__b" v-if="item.styleIsVideo">
-              <i class="el-icon-video-camera-solid"></i>
-            </div>
-            <div class="zt-item__line">{{ item.styleName }}</div>
-            <div class="zt-item__line flex">
-              <div class="zt-price__l">{{ item.styleNo }}</div>
-              <div class="zt-price__r">￥<div class="zt-item__price">{{ item.tradePrice }}</div></div>
-            </div>
-            <!-- <el-divider /> -->
-            <!-- <div class="zt-item__line top-line">已售50000件</div> -->
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getGoodsDetailes, getProductList } from '@/api/product'
-import { addCart } from '@/api/orderCart'
+import { getDetails } from '@/api/integral'
 
 export default {
   name: 'GoodsDetails',
@@ -357,32 +335,10 @@ export default {
       infoData: {},
       colors: ['#CDA46C', '#CDA46C', '#CDA46C'],
       num: 0,
-      dataList: [],
-      formData: {
-        styleNo: '', // 商品编号
-        pageNum: '1',
-        pageSize: '20',
-        styleId: '', // 商品id
-        styleLength: '', // 商品衣长
-        styleCategory: '', // 商品类别
-        endTradePrice: '', // 结束批发价
-        startTradePrice: '', // 开始批发价
-        startcreatTime: '', // 开始时间
-        endcreateTime: '', // 结束时间
-        styleName: '', // 商品名称
-        status: '1', // 商品状态
-        seriesId: '', // 季节id
-        shelfTimeSort: 0, // 批发价排序（0：从小到大 1是从大到小）
-        tradePriceSort: 0, // 上架时间排序（0：从小到大 1是从大到小）
-      },
-      goodsLength: 0,
+      redeemNote: '',
       imageIndex: 0, // 选择图片
       colorIndex: 0, // 选择颜色
       sizeIndex: 0, // 选择大小
-      allList: [],
-      styleData: {},
-      sizeData: {},
-      priceAll: 0,
       showResult: false,
       resultText: '',
       showEmp: false,
@@ -392,105 +348,106 @@ export default {
       sizeConfig: [],
       titleMap: [],
       isPlay: true,
+      goodsData: {},
     }
   },
   created() {
     this.goodsId = this.$route.query.id
-    this.orderType = this.$route.query.orderType
-    if (this.$store.state.order.isStart) {
+    // this.getData()
+    // // this.orderType = this.$route.query.orderType
+    // this.getData()
+    if (this.$store.state.integral.isStart) {
       this.getData()
     } else {
-      this.infoData = this.$store.state.order.detailData
+      this.infoData = this.$store.state.integral.detailData
     }
   },
-  // mounted() {
-  //   this.$refs.styleVideo.addEventListener('play', this.videoPlay)
-  //   this.$refs.styleVideo.addEventListener('pause', this.videoPause)
-  // },
   beforeDestroy() {
-    if (this.$route.path === '/styleCenter/orderGoods') {
-      this.$store.commit('order/cgStart', false)
-      this.$store.commit('order/cgDetail', this.infoData)
-    } else {
-      this.$store.commit('order/cgStart', true)
-    }
   },
   methods: {
     getData() {
-      const that = this
-      getGoodsDetailes({
-        styleId: that.goodsId,
+      getDetails({
+        goodsId: this.goodsId,
       }).then((res) => {
-        if (res.head.status === 0) {
-          that.infoData = res.body.resultList
-          that.infoData.styleData = JSON.parse(that.infoData.styleData)
-          that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
-          if (that.infoData.styleWashing) {
-            const list = []
-            that.infoData.styleWashing.forEach(e => {
-              if (e.status === 1) {
-                list.push(e)
-              }
-            })
-            that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
-          }
-          that.thumbnailList = [...that.infoData.imgUrlList, ...that.infoData.imgDetailUrlList]
-          that.titleMap = Object
-            .keys(that.infoData.titleMap)
-            .sort((prev, next) => (+prev.substring(3)) - (+next.substring(3)))
-            .map(key => that.infoData.titleMap[key])
-          that.infoData.styleSizeList.forEach(e => {
-            that.sizeConfig.push(e.sizeConfig)
-          })
-          that.formData.seriesId = String(res.body.resultList.seriesId)
-          that.$set(that.infoData, 'thumbnailList', that.thumbnailList)
-          // recommendationLevel : 推荐指数
-          that.infoData.recommendationLevel = Number(that.infoData.recommendationLevel)
-          // eslint-disable-next-line operator-assignment
-          that.infoData.recommendationLevel += 0
-          // 给数据中  加入数量
-          that.infoData.styleColorList.forEach(e => {
-            let n = 0
-            e.styleSize.forEach(i => {
-              i.num = 0
-              n += i.num
-              return n
-            })
-            e.num = n
-          })
-          that.styleData = {
-            styleId: 0,
-            styleColor: '', // 颜色
-            styleNo: that.infoData.styleNo,
-            styleSize: [],
-          }
-          // 将 视频封面 加到切换轮播的images中
-          if (that.infoData.styleVideoPatch !== null) {
-            const url = {
-              resUrl: that.infoData.styleVideoPatch,
+        console.log(res.body)
+        const state = res.body.resultList?.state || res.body.goodsDetails?.state
+        if (state === 1) {
+          if (res.body.resultList !== undefined && res.body.resultList !== null) {
+            console.log(546)
+            this.infoData = res.body.resultList
+            this.infoData.styleData = JSON.parse(this.infoData.styleData)
+            this.infoData.styleWashing = JSON.parse(this.infoData.styleWashing)
+            if (this.infoData.styleWashing) {
+              const list = []
+              this.infoData.styleWashing.forEach(e => {
+                if (e.status === 1) {
+                  list.push(e)
+                }
+              })
+              this.infoData.styleWashing = JSON.parse(JSON.stringify(list))
             }
-            that.infoData.imgUrlList.unshift(url)
+            this.thumbnailList = [...this.infoData.imgUrlList, ...this.infoData.imgDetailUrlList]
+            this.titleMap = Object
+              .keys(this.infoData.titleMap)
+              .sort((prev, next) => (+prev.substring(3)) - (+next.substring(3)))
+              .map(key => this.infoData.titleMap[key])
+            this.infoData.styleSizeList.forEach(e => {
+              this.sizeConfig.push(e.sizeConfig)
+            })
+            this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
+            // recommendationLevel : 推荐指数
+            this.infoData.recommendationLevel = Number(this.infoData.recommendationLevel)
+            // eslint-disable-next-line operator-assignment
+            this.infoData.recommendationLevel += 0
+            // 给数据中  加入数量
+            this.infoData.styleColorList.forEach(e => {
+              let n = 0
+              e.styleSize.forEach(i => {
+                i.num = 0
+                n += i.num
+                return n
+              })
+              e.num = n
+            })
+            this.styleData = {
+              styleId: 0,
+              styleColor: '', // 颜色
+              styleNo: this.infoData.styleNo,
+              styleSize: [],
+            }
+            // 将 视频封面 加到切换轮播的images中
+            if (this.infoData.styleVideoPatch !== null) {
+              const url = {
+                resUrl: this.infoData.styleVideoPatch,
+              }
+              this.infoData.imgUrlList.unshift(url)
+            }
+            if (this.infoData.imgDetailUrlList.length !== 0) {
+              this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
+            }
+            this.loadData()
+          } else {
+            this.infoData = res.body.goodsDetails
+            this.$set(this.infoData, 'goodsNumber', 0)
+            this.thumbnailList = [...this.infoData.imgUrlList, ...this.infoData.imgDetailUrlList]
+            this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
+            // 将 视频封面 加到切换轮播的images中
+            if (this.infoData.styleVideoPatch !== null) {
+              const url = {
+                resUrl: this.infoData.styleVideoPatch,
+              }
+              this.infoData.imgUrlList.unshift(url)
+            }
+            if (this.infoData.imgDetailUrlList.length !== 0) {
+              this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
+            }
           }
-          if (that.infoData.imgDetailUrlList.length !== 0) {
-            that.infoData.imgUrlList.push(...that.infoData.imgDetailUrlList)
-          }
-          that.loadData()
+          console.log(this.infoData)
+        } else {
+          this.$message.warning('该商品暂未上架')
         }
       }).catch(() => {
       })
-    },
-    async loadData() {
-      const that = this
-      const res = await getProductList({
-        ...that.formData,
-      })
-      that.dataList = res.body.resultList
-      if (res.body.resultList.length === 0) {
-        this.showEmp = true
-      } else {
-        this.showEmp = false
-      }
-      that.goodsLength = res.body.resultList.length
     },
     // 轮播图 切换出控制
     setCarouselItem(index) {
@@ -506,7 +463,7 @@ export default {
     },
     // 商品数量
     handleChange(value) {
-      if (value >= 0) {
+      if (value >= 0 && this.styleType === 2) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
         this.infoData.styleColorList.forEach(e => {
           let n = 0
@@ -516,8 +473,6 @@ export default {
           })
           e.num = n
         })
-      } else {
-        this.$message('请填写正确数字')
       }
     },
     // 切换尺码大小
@@ -529,107 +484,21 @@ export default {
       this.sizeIndex = 0
       this.num = this.infoData.styleColorList[id].styleSize[this.sizeIndex].num
     },
-    // 推荐区  图片点击事件
-    todetails(id) {
-      this.goodsId = id
-      this.getData()
-      window.scrollTo('0', '0')
-    },
-    // 点击订购
-    async toshoping() {
-      const that = this
-      const data = JSON.parse(JSON.stringify(that.infoData))
-      that.$store.commit('order/cgDetail', that.infoData)
-      // 新建  商品对象
-      const resultList = []
-      const resultListinfo = {
-        styleId: that.infoData.styleId,
-        styleNo: that.infoData.styleNo,
-        styleName: that.infoData.styleName,
-        userId: sessionStorage.getItem('userId'),
-        style: [], // 颜色集合
-      }
-      const data1 = []
-      data.styleColorList.forEach((item, index) => {
-        that.$set(item, 'openList', true)
-        that.$set(item, 'imgUrl', item.colorImg)
-        that.$set(item, 'styleNumber', item.num)
-        that.$set(item, 'styleId', that.infoData.styleId)
-        that.$set(item, 'stylePrice', that.infoData.tradePrice)
-        data1[index] = item
-        item.styleSize.forEach(i => {
-          that.$set(i, 'sizeNumber', i.num)
-          delete i.num
-          delete i.sort
-          delete i.sizeKey
-          delete i.sizeValue
-        })
-        data1[index].styleSize = item.styleSize.filter(i => {
-          return i.sizeNumber > 0
-        })
-      })
-      resultListinfo.style = data1.filter(item => {
-        return item.styleSize.length !== 0
-      })
-      resultList.push(resultListinfo)
-      if (resultListinfo.style.length > 0) {
-        that.$set(that.infoData, 'styleList', resultList)
-        that.$store.commit('order/addOrderStorage', that.infoData)
-        that.$router.push('/styleCenter/orderGoods')
+    // 点击 兑换
+    async toRedeem() {
+      console.log(this.infoData)
+      if (this.infoData.goodsNumber > 0 && this.infoData.goodsSort === 1) {
+        this.$store.commit('integral/addOrderStorage', this.infoData)
+        this.$router.push('/integral/redeem')
+      } else if (this.goodsData.goodsSort === 2) {
+        this.$store.commit('integral/addOrderStorage', this.goodsData)
+        this.$router.push('/integral/redeem')
       } else {
-        that.$message.error('请选择购买的尺码和数量')
+        this.$message.error('请填写购买商品的数量')
       }
-    },
-    // 加入购物车
-    async toorder() {
-      this.cart()
-      if (this.allList && this.allList.length === 0) {
-        this.$message.error('请选择购买的尺码和数量')
-      } else {
-        const res = await addCart({
-          styleList: this.allList,
-          cartStyleType: this.orderType,
-        })
-        if (res.head.status === 0) {
-          this.$message({
-            message: '成功加入购物清单',
-            type: 'success',
-          })
-          this.$parent.cgcart()
-        }
-      }
-    },
-    cart() {
-      const that = this
-      // that.infoData 返回的商品详情
-      that.infoData.styleColorList.forEach(e => {
-        // 如果 当前商品的数量 > 0 则说明有商品
-        if (e.num > 0) {
-          const styleData = {
-            styleId: that.goodsId,
-            styleColor: e.id, // 当前颜色id
-            styleNo: that.infoData.styleNo,
-            styleSize: [],
-          }
-          // 然后遍历当前颜色的尺码 如果L码有 num 则生成对象添加到当前的StyleSize 中
-          e.styleSize.forEach(i => {
-            if (i.num > 0) {
-              const sizeData = {
-                sizeName: i.sizeName,
-                sizeNumber: i.num,
-              }
-              styleData.styleSize.unshift(sizeData)
-            }
-          })
-          that.allList.unshift(styleData)
-        }
-      })
     },
     transformImgL() {
       this.imgMarginL += 50
-      // if (this.$refs.imagesL.scrollWidth > this.$refs.pimages.scrollWidth) {
-      //   this.imgMarginL += 50
-      // }
     },
     transformImgR() {
       if (this.$refs.pimages.clientWidth < this.$refs.pimages.scrollWidth) {
@@ -846,7 +715,7 @@ video::-webkit-media-controls-timeline {
       .zt-data__btn{
         display: flex;
         align-items: center;
-        margin-top: 20px;
+        margin-top: 40px;
         padding: 0 16px;
         box-sizing: border-box;
         .zt-btn__hei{
@@ -878,7 +747,7 @@ video::-webkit-media-controls-timeline {
     }
   }
   .zt-content__data{
-    margin-top: 50px;
+    margin: 50px 0;
     .zt-content__title{
       width: 100%;
       color: #CDA46C;
@@ -1038,7 +907,6 @@ video::-webkit-media-controls-timeline {
         .zt-good__image{
           width: 230px;
           height: 300px;
-          border-radius: 5px;
           border-bottom: 1px solid #F2F2F2;
         }
         .zt-video__b{

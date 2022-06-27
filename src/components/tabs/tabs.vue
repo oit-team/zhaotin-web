@@ -20,7 +20,7 @@
         :class="selectItem===index?'zt-tabs__homeSelect':'zt-tabs__homeItem'"
         @click="checkItem(index)"
       >
-        {{ item.categoryName }}({{ item.countNum }})
+        {{ item.categoryName }}({{ item.countNum || item.total || 0}})
       </div>
     </div>
     <!-- </div> -->
@@ -60,7 +60,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin: 10px 0;
+  // margin: 10px 0;
   box-sizing: border-box;
 }
 .zt-tabs__center1{

@@ -1,5 +1,5 @@
 <template>
-  <div id="Mpage" class="zt-page">
+  <div id="Mpage" class="zt-page overflow-x-hidden">
     <div class="zt-tabs__top">
       <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
     </div>
@@ -252,7 +252,6 @@ export default {
         countNum: number1,
       }
       this.tabList1.unshift(all)
-      console.log(this.tabList1)
     },
     // 点击二级tab
     checkTab(index) {
@@ -540,6 +539,7 @@ export default {
     .zt-good__image {
       width: 230px;
       height: 300px;
+      border-radius: 5px;
       border-bottom: 1px solid #F2F2F2;
     }
 

@@ -1,5 +1,6 @@
 <template>
   <div class="vc-load-more">
+    <!-- <div :style="`height: 1px; width: 100%; background: red; position: absolute; transform: translateY(-${offset}px)`"></div> -->
     <div ref="trigger" class="vc-load-more__trigger"></div>
     <div class="vc-load-more__tips">
       <div :class="statusClass" class="vc-load-more__status" @click="onClick">
