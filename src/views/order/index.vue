@@ -33,7 +33,7 @@ export default {
       const operation = JSON.parse(this.$store.state.menu.menuOperation)
       const buttons = []
       const actions = []
-      operation.forEach((item, index) => {
+      operation.forEach((item) => {
         if (item.statue === 1) {
           if (item.operationKey === 'selectById') {
             buttons.push({

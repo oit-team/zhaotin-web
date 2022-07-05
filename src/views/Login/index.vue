@@ -13,7 +13,14 @@
                 <el-input v-model.trim="formData.userName" clearable placeholder="请输入用户名" />
               </el-form-item>
               <el-form-item>
-                <el-input type="password" v-model.trim="formData.password" clearable placeholder="请输入密码" />
+                <el-input
+                  type="password"
+                  @change="login"
+                  ref="login"
+                  v-model.trim="formData.password"
+                  clearable
+                  placeholder="请输入密码"
+                />
               </el-form-item>
             </el-form>
             <div class="loginBtn">
@@ -40,6 +47,7 @@ export default {
   methods: {
     async login() {
       const encryPwd = CryptoJS.encrypt(this.formData.password)
+      this.$refs.login.$el.querySelector('input').blur()
       await reqLogin({
         userName: this.formData.userName,
         password: encryPwd,

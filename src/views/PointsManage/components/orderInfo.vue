@@ -118,7 +118,6 @@ export default {
         id: this.orderId,
       }).then(res => {
         this.goodsInfo = res.body.resultMap
-        console.log(this.goodsInfo)
       }).catch(() => {})
     },
   },

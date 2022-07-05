@@ -45,7 +45,15 @@
       >
       <div class="demo-drawer__content">
         <div class="btnListBox">
-          <el-checkbox v-for="(item,index) in btnList" :disabled="btnDisable" :label="item.operationValue" v-model="item.statue" :true-label="1" :false-label="0"></el-checkbox>
+          <el-checkbox
+            v-for="(item,index) in btnList"
+            :key="index"
+            :disabled="btnDisable"
+            :label="item.operationValue"
+            v-model="item.statue"
+            :true-label="1"
+            :false-label="0"
+          ></el-checkbox>
         </div>
       </div>
     </el-drawer>
