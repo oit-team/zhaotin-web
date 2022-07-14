@@ -62,28 +62,7 @@ export default {
   },
 
   mounted() {
-    const observer = new IntersectionObserver((entries) => {
-      const canTrigger = !this.firstLoad ? this.active : true
-
-      if (entries[0].isIntersecting && canTrigger) {
-        if (this.status === LOAD_STATUS.INACTIVE || this.status === LOAD_STATUS.FAIL) {
-          this.load()
-        }
-      }
-    }, {
-      root: this.root,
-      rootMargin: `${this.offset}px`,
-      threshold: [1],
-    })
-
-    observer.observe(this.$refs.trigger)
-
-    const rootEl = this.root ?? document
-    const onActive = () => {
-      this.active = true
-      rootEl.removeEventListener('scroll', onActive)
-    }
-    rootEl.addEventListener('scroll', onActive)
+    this.observerWay()
   },
 
   methods: {
@@ -115,6 +94,30 @@ export default {
       this.status = LOAD_STATUS.INACTIVE
       return this
     },
+    observerWay() {
+      const observer = new IntersectionObserver((entries) => {
+        const canTrigger = !this.firstLoad ? this.active : true
+
+        if (entries[0].isIntersecting && canTrigger) {
+          if (this.status === LOAD_STATUS.INACTIVE || this.status === LOAD_STATUS.FAIL) {
+            this.load()
+          }
+        }
+      }, {
+        root: this.root,
+        rootMargin: `${this.offset}px`,
+        threshold: [1],
+      })
+
+      observer.observe(this.$refs.trigger)
+
+      const rootEl = this.root ?? document
+      const onActive = () => {
+        this.active = true
+        rootEl.removeEventListener('scroll', onActive)
+      }
+      rootEl.addEventListener('scroll', onActive)
+    }
   },
 }
 </script>
