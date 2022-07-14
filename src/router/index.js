@@ -32,9 +32,9 @@ Vue.use(VueRouter)
 const VueRouterPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(to) {
   const history = this.currentRoute && this.currentRoute.fullPath
-  if (to === history) {
+  if (to === history)
     window.location.reload()
-  }
+
   return VueRouterPush.call(this, to).catch(err => err)
 }
 const routes = [

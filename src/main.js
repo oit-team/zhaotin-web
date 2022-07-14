@@ -56,9 +56,8 @@ const player = new Plyr('#player')
 
 router.afterEach(() => {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-  if (scrollTop !== 0) {
+  if (scrollTop !== 0)
     window.scrollTo('0', '0')
-  }
 })
 
 Vue.use(VueQuillEditor)
@@ -69,5 +68,5 @@ new Vue({
   i18n,
   player,
   ElementUI,
-  render: (h) => h(App),
+  render: h => h(App),
 }).$mount('#app')

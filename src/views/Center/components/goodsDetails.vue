@@ -2,36 +2,40 @@
   <div class="zt-page">
     <!-- 顶部面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right" class="zt-head">
-      <el-breadcrumb-item :to="{ path: '/styleCenter' }">商品中心</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/styleCenter' }">
+        商品中心
+      </el-breadcrumb-item>
       <el-breadcrumb-item>商品详情</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 主题内容 -->
     <!-- 返回内容为空 -->
     <div v-if="showResult">
       <el-empty :description="resultText">
-        <el-button type="primary" @click="$router.go(-1)">返回</el-button>
+        <el-button type="primary" @click="$router.go(-1)">
+          返回
+        </el-button>
       </el-empty>
     </div>
-    <div class="zt-content" v-else>
+    <div v-else class="zt-content">
       <!-- top  商品图片 信息区 -->
       <div class="zt-content__head">
         <div class="zt-head__swiper">
           <!-- 轮播图 -->
           <el-carousel
-            height="500px"
             ref="carousel"
+            height="500px"
             :autoplay="false"
             indicator-position="none"
           >
             <el-carousel-item v-if="infoData.styleVideo">
               <div class="zt-swiper__item">
                 <video
+                  id="player"
+                  ref="styleVideo"
                   width="500px"
                   height="500px"
-                  id="player"
                   playsinline
                   controls
-                  ref="styleVideo"
                   :poster="infoData.styleVideoPatch"
                 >
                   <source :src="infoData.styleVideo" type="video/mp4" />
@@ -52,23 +56,23 @@
               />
             </el-carousel-item>
           </el-carousel>
-          <div class="zt-head__images" ref="pimages">
-            <div class="zt-images__left" v-if="imgMarginL < 0" @click="transformImgL">
+          <div ref="pimages" class="zt-head__images">
+            <div v-if="imgMarginL < 0" class="zt-images__left" @click="transformImgL">
               <i class="el-icon-arrow-left"></i>
             </div>
-            <div class="zt-images__center" :style="'marginLeft:' + imgMarginL+ 'px'" ref="imagesL">
+            <div ref="imagesL" class="zt-images__center" :style="`marginLeft:${imgMarginL}px`">
               <div
-                class="zt-images__item"
                 v-for="(item, index) in infoData.imgUrlList"
                 :key="index"
-                @click="imageIndex=index,setCarouselItem(index)"
+                class="zt-images__item"
+                @click="imageIndex = index, setCarouselItem(index)"
               >
                 <el-image
                   fit="contain"
-                  :class="imageIndex===index?'zt-images__select':'zt-images__image'"
+                  :class="imageIndex === index ? 'zt-images__select' : 'zt-images__image'"
                   :src="item.resUrl"
                 />
-                <i v-if="index===0&&infoData.styleVideo" class="iconfont icon-qiehuanchanpin"></i>
+                <i v-if="index === 0 && infoData.styleVideo" class="iconfont icon-qiehuanchanpin"></i>
                 <!-- <i v-if="index===0&&infoData.styleVideo" class="el-icon-caret-right"></i> -->
               </div>
             </div>
@@ -81,7 +85,9 @@
           <!-- 商品名称 -->
           <div class="zt-data__head">
             <div class="zt-data__title">
-              <div class="zt-title">{{ infoData.styleName }}</div>
+              <div class="zt-title">
+                {{ infoData.styleName }}
+              </div>
               <div class="zt-data__code">
                 <div>款号：{{ infoData.styleNo }}</div>
                 <div class="zt-jin zt-data__p">
@@ -115,13 +121,15 @@
           <!-- 商品尺码信息 -->
           <div class="zt-data__data">
             <div class="zt-data__color">
-              <div class="zt-data__label">颜色</div>
+              <div class="zt-data__label">
+                颜色
+              </div>
               <div
-                class="zt-color__item"
                 v-for="(item, index) in infoData.styleColorList"
                 :key="index"
-                @click="colorIndex = index,colorcgId(index)"
-                :class="colorIndex===index?'zt-color__select':''"
+                class="zt-color__item"
+                :class="colorIndex === index ? 'zt-color__select' : ''"
+                @click="colorIndex = index, colorcgId(index)"
               >
                 <template v-if="item.styleImg">
                   <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
@@ -135,19 +143,23 @@
                     :src="item.colorImg"
                     fit="contain"
                   />
-                  <div class="zt-color__name">{{ item.styleColor }}</div>
+                  <div class="zt-color__name">
+                    {{ item.styleColor }}
+                  </div>
                 </template>
               </div>
             </div>
             <div class="zt-data__size">
-              <div class="zt-data__label">尺码</div>
+              <div class="zt-data__label">
+                尺码
+              </div>
               <div v-if="infoData.styleColorList && infoData.styleColorList.length !== 0" class="zt-data__info">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
                   <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
                     <div
                       class="zt-size__item"
-                      :class="sizeIndex===index?'zt-size__select':''"
-                      @click="sizeIndex = index,checkSize(index)"
+                      :class="sizeIndex === index ? 'zt-size__select' : ''"
+                      @click="sizeIndex = index, checkSize(index)"
                     >
                       {{ item.sizeName }}
                     </div>
@@ -155,8 +167,8 @@
                   <div
                     v-show="item.num === 0"
                     class="zt-size__item"
-                    :class="sizeIndex===index?'zt-size__select':''"
-                    @click="sizeIndex = index,checkSize(index)"
+                    :class="sizeIndex === index ? 'zt-size__select' : ''"
+                    @click="sizeIndex = index, checkSize(index)"
                   >
                     {{ item.sizeName }}
                   </div>
@@ -164,13 +176,15 @@
               </div>
             </div>
             <div class="zt-data__size">
-              <div class="zt-data__label">数量</div>
+              <div class="zt-data__label">
+                数量
+              </div>
               <el-input-number
                 v-if="infoData.styleColorList && infoData.styleColorList.length !== 0"
-                size="small"
                 v-model="num"
-                @change="handleChange"
+                size="small"
                 :min="0"
+                @change="handleChange"
               />
               <!-- <div v-if="infoData.styleColorList">
                 <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
@@ -181,8 +195,12 @@
           </div>
           <!-- 购买 -->
           <div class="zt-data__btn">
-            <div class="zt-btn__hei" @click="toshoping">立即订购</div>
-            <div class="zt-btn__jin" @click="toorder"><i class="el-icon-plus"></i> 加入订货清单</div>
+            <div class="zt-btn__hei" @click="toshoping">
+              立即订购
+            </div>
+            <div class="zt-btn__jin" @click="toorder">
+              <i class="el-icon-plus"></i> 加入订货清单
+            </div>
           </div>
         </div>
       </div>
@@ -194,28 +212,44 @@
         <!-- 售后服务 -->
         <div class="zt-content__data1">
           <div class="zt-data1__flex">
-            <div class="zt-content__label">售后服务</div>
+            <div class="zt-content__label">
+              售后服务
+            </div>
             <div class="zt-content__info">
               <p style="white-space:pre-wrap" v-html="infoData.service"></p>
             </div>
           </div>
           <div class="zt-data1__flex">
-            <div class="zt-content__label">基础信息</div>
+            <div class="zt-content__label">
+              基础信息
+            </div>
             <div class="zt-content__info">
               <!-- <div class="zt-info__flex" style="white-space:pre-wrap">
                 {{ infoData.styleAttribute }}
               </div> -->
               <div class="zt-info__flex">
-                <div class="zt-info__label">材质</div>
-                <div class="zt-info__info">{{ infoData.styleFabric }}</div>
+                <div class="zt-info__label">
+                  材质
+                </div>
+                <div class="zt-info__info">
+                  {{ infoData.styleFabric }}
+                </div>
               </div>
               <div class="zt-info__flex">
-                <div class="zt-info__label">版型</div>
-                <div class="zt-info__info">{{ infoData.styleFlowerPattern }}</div>
+                <div class="zt-info__label">
+                  版型
+                </div>
+                <div class="zt-info__info">
+                  {{ infoData.styleFlowerPattern }}
+                </div>
               </div>
               <div class="zt-info__flex">
-                <div class="zt-info__label">类别</div>
-                <div class="zt-info__info">{{ infoData.styleCategory }}</div>
+                <div class="zt-info__label">
+                  类别
+                </div>
+                <div class="zt-info__info">
+                  {{ infoData.styleCategory }}
+                </div>
               </div>
             </div>
           </div>
@@ -223,22 +257,30 @@
         <el-divider />
         <!-- 产品卖点 -->
         <div class="zt-content__data2">
-          <div class="zt-content__label">商品卖点</div>
+          <div class="zt-content__label">
+            商品卖点
+          </div>
           <div class="zt-content-flex">
             <div class="zt-content__info">
               <div class="zt-data2__flex">
-                <div class="zt-data2__label"><i class="iconfont icon-mianliaomaidian"></i>面料卖点</div>
+                <div class="zt-data2__label">
+                  <i class="iconfont icon-mianliaomaidian"></i>面料卖点
+                </div>
                 <!-- <div class="zt-data2__info">荷兰貂皮大衣</div> -->
                 <div class="zt-data2__info" v-html="infoData.sellingPointFabric">
                 </div>
               </div>
               <div class="zt-data2__flex">
-                <div class="zt-data2__label"><i class="iconfont icon-shejimaidian"></i>设计卖点</div>
+                <div class="zt-data2__label">
+                  <i class="iconfont icon-shejimaidian"></i>设计卖点
+                </div>
                 <div class="zt-data2__info" v-html="infoData.designSellingPoint">
                 </div>
               </div>
               <div class="zt-data2__flex">
-                <div class="zt-data2__label"><i class="iconfont icon-chuanzhuomaidian"></i>穿着卖点</div>
+                <div class="zt-data2__label">
+                  <i class="iconfont icon-chuanzhuomaidian"></i>穿着卖点
+                </div>
                 <div class="zt-data2__info" v-html="infoData.wearSellingPoint">
                 </div>
               </div>
@@ -248,29 +290,35 @@
         <el-divider />
         <!-- 服装尺寸 -->
         <div class="zt-content__data3">
-          <div class="zt-content__label">尺码信息</div>
+          <div class="zt-content__label">
+            尺码信息
+          </div>
           <div class="zt-content__info">
             <div class="data3-form">
               <div class="form-line">
-                <div class="form-line__item">尺码</div>
+                <div class="form-line__item">
+                  尺码
+                </div>
                 <div
-                  class="form-line__item"
                   v-for="(item, index) in titleMap"
                   :key="index"
+                  class="form-line__item"
                 >
                   {{ item }}
                 </div>
               </div>
               <div
-                class="form-line"
                 v-for="(item, index) in infoData.styleSizeList"
                 :key="index"
+                class="form-line"
               >
-                <div class="form-line__item">{{ item.sizeName }}</div>
+                <div class="form-line__item">
+                  {{ item.sizeName }}
+                </div>
                 <div
-                  class="form-line__item"
                   v-for="(iteM, indeX) in item.sizeConfig"
                   :key="indeX"
+                  class="form-line__item"
                 >
                   {{ iteM || '-' }}
                 </div>
@@ -281,12 +329,16 @@
         <el-divider />
         <!-- 服装材料信息 -->
         <div class="zt-content__data4">
-          <div class="zt-content__label">商品属性</div>
+          <div class="zt-content__label">
+            商品属性
+          </div>
           <div class="zt-content__info">
-            <div class="zt-info__item" v-for="(item, index) in infoData.styleData" :key="index">
-              <div class="zt-item__label">{{ item.name }}</div>
-              <div class="zt-item__item" v-for="(itemN, indexN) in item.options" :key="indexN">
-                <div :class="itemN.status === 1?'zt-item__select':'zt-item__item-item'">
+            <div v-for="(item, index) in infoData.styleData" :key="index" class="zt-info__item">
+              <div class="zt-item__label">
+                {{ item.name }}
+              </div>
+              <div v-for="(itemN, indexN) in item.options" :key="indexN" class="zt-item__item">
+                <div :class="itemN.status === 1 ? 'zt-item__select' : 'zt-item__item-item'">
                   {{ itemN.option }}
                 </div>
               </div>
@@ -295,9 +347,11 @@
         </div>
         <el-divider />
         <div class="zt-content__data5">
-          <div class="zt-content__label">洗涤说明</div>
-          <div class="zt-content__list" v-if="infoData.styleWashing">
-            <div class="zt-content__info" v-for="(item, index) in infoData.styleWashing" :key="index">
+          <div class="zt-content__label">
+            洗涤说明
+          </div>
+          <div v-if="infoData.styleWashing" class="zt-content__list">
+            <div v-for="(item, index) in infoData.styleWashing" :key="index" class="zt-content__info">
               <!-- <div v-if="item.status === '1'"> -->
               <el-image
                 style="width: 80px; height: 80px"
@@ -316,11 +370,11 @@
           季节推荐
         </div>
         <el-empty v-if="showEmp" description="暂无相关数据" />
-        <div class="zt-content" v-else>
+        <div v-else class="zt-content">
           <div
-            class="zt-content__item"
             v-for="(item, index) in dataList"
             :key="index"
+            class="zt-content__item"
             @click="todetails(item.styleId)"
           >
             <el-image
@@ -328,13 +382,21 @@
               :src="item.resUrl"
               fit="contain"
             />
-            <div class="zt-video__b" v-if="item.styleIsVideo">
+            <div v-if="item.styleIsVideo" class="zt-video__b">
               <i class="el-icon-video-camera-solid"></i>
             </div>
-            <div class="zt-item__line">{{ item.styleName }}</div>
+            <div class="zt-item__line">
+              {{ item.styleName }}
+            </div>
             <div class="zt-item__line flex">
-              <div class="zt-price__l">{{ item.styleNo }}</div>
-              <div class="zt-price__r">￥<div class="zt-item__price">{{ item.tradePrice }}</div></div>
+              <div class="zt-price__l">
+                {{ item.styleNo }}
+              </div>
+              <div class="zt-price__r">
+                ￥<div class="zt-item__price">
+                  {{ item.tradePrice }}
+                </div>
+              </div>
             </div>
             <!-- <el-divider /> -->
             <!-- <div class="zt-item__line top-line">已售50000件</div> -->
@@ -397,11 +459,10 @@ export default {
   created() {
     this.goodsId = this.$route.query.id
     this.orderType = this.$route.query.orderType
-    if (this.$store.state.order.isStart) {
+    if (this.$store.state.order.isStart)
       this.getData()
-    } else {
+    else
       this.infoData = this.$store.state.order.detailData
-    }
   },
   // mounted() {
   //   this.$refs.styleVideo.addEventListener('play', this.videoPlay)
@@ -427,10 +488,9 @@ export default {
           that.infoData.styleWashing = JSON.parse(that.infoData.styleWashing)
           if (that.infoData.styleWashing) {
             const list = []
-            that.infoData.styleWashing.forEach(e => {
-              if (e.status === 1) {
+            that.infoData.styleWashing.forEach((e) => {
+              if (e.status === 1)
                 list.push(e)
-              }
             })
             that.infoData.styleWashing = JSON.parse(JSON.stringify(list))
           }
@@ -439,7 +499,7 @@ export default {
             .keys(that.infoData.titleMap)
             .sort((prev, next) => (+prev.substring(3)) - (+next.substring(3)))
             .map(key => that.infoData.titleMap[key])
-          that.infoData.styleSizeList.forEach(e => {
+          that.infoData.styleSizeList.forEach((e) => {
             that.sizeConfig.push(e.sizeConfig)
           })
           that.formData.seriesId = String(res.body.resultList.seriesId)
@@ -449,9 +509,9 @@ export default {
           // eslint-disable-next-line operator-assignment
           that.infoData.recommendationLevel += 0
           // 给数据中  加入数量
-          that.infoData.styleColorList.forEach(e => {
+          that.infoData.styleColorList.forEach((e) => {
             let n = 0
-            e.styleSize.forEach(i => {
+            e.styleSize.forEach((i) => {
               i.num = 0
               n += i.num
               return n
@@ -471,9 +531,9 @@ export default {
             }
             that.infoData.imgUrlList.unshift(url)
           }
-          if (that.infoData.imgDetailUrlList.length !== 0) {
+          if (that.infoData.imgDetailUrlList.length !== 0)
             that.infoData.imgUrlList.push(...that.infoData.imgDetailUrlList)
-          }
+
           that.loadData()
         }
       }).catch(() => {
@@ -485,11 +545,11 @@ export default {
         ...that.formData,
       })
       that.dataList = res.body.resultList
-      if (res.body.resultList.length === 0) {
+      if (res.body.resultList.length === 0)
         this.showEmp = true
-      } else {
+      else
         this.showEmp = false
-      }
+
       that.goodsLength = res.body.resultList.length
     },
     // 轮播图 切换出控制
@@ -508,9 +568,9 @@ export default {
     handleChange(value) {
       if (value >= 0) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
-        this.infoData.styleColorList.forEach(e => {
+        this.infoData.styleColorList.forEach((e) => {
           let n = 0
-          e.styleSize.forEach(i => {
+          e.styleSize.forEach((i) => {
             n += i.num
             return n
           })
@@ -557,18 +617,18 @@ export default {
         that.$set(item, 'styleId', that.infoData.styleId)
         that.$set(item, 'stylePrice', that.infoData.tradePrice)
         data1[index] = item
-        item.styleSize.forEach(i => {
+        item.styleSize.forEach((i) => {
           that.$set(i, 'sizeNumber', i.num)
           delete i.num
           delete i.sort
           delete i.sizeKey
           delete i.sizeValue
         })
-        data1[index].styleSize = item.styleSize.filter(i => {
+        data1[index].styleSize = item.styleSize.filter((i) => {
           return i.sizeNumber > 0
         })
       })
-      resultListinfo.style = data1.filter(item => {
+      resultListinfo.style = data1.filter((item) => {
         return item.styleSize.length !== 0
       })
       resultList.push(resultListinfo)
@@ -602,7 +662,7 @@ export default {
     cart() {
       const that = this
       // that.infoData 返回的商品详情
-      that.infoData.styleColorList.forEach(e => {
+      that.infoData.styleColorList.forEach((e) => {
         // 如果 当前商品的数量 > 0 则说明有商品
         if (e.num > 0) {
           const styleData = {
@@ -612,7 +672,7 @@ export default {
             styleSize: [],
           }
           // 然后遍历当前颜色的尺码 如果L码有 num 则生成对象添加到当前的StyleSize 中
-          e.styleSize.forEach(i => {
+          e.styleSize.forEach((i) => {
             if (i.num > 0) {
               const sizeData = {
                 sizeName: i.sizeName,
@@ -632,9 +692,8 @@ export default {
       // }
     },
     transformImgR() {
-      if (this.$refs.pimages.clientWidth < this.$refs.pimages.scrollWidth) {
+      if (this.$refs.pimages.clientWidth < this.$refs.pimages.scrollWidth)
         this.imgMarginL -= 50
-      }
     },
   },
 }

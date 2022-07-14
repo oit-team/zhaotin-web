@@ -1,12 +1,14 @@
 <template>
   <div class="ct-tabs">
-    <div class="zt-tabs__label" v-if="labelText">{{ labelText }}:</div>
+    <div v-if="labelText" class="zt-tabs__label">
+      {{ labelText }}:
+    </div>
     <!-- 二级 tab -->
     <div v-if="!ishome" class="zt-tabs__center1">
       <div
         v-for="(item, index) in tabList"
         :key="index"
-        :class="selectItem===index?'zt-tabs-select':'zt-tabs__item'"
+        :class="selectItem === index ? 'zt-tabs-select' : 'zt-tabs__item'"
         @click="checkItem(index)"
       >
         {{ item.dicttimeDisplayName }}
@@ -17,10 +19,10 @@
       <div
         v-for="(item, index) in tabList"
         :key="index"
-        :class="selectItem===index?'zt-tabs__homeSelect':'zt-tabs__homeItem'"
+        :class="selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'"
         @click="checkItem(index)"
       >
-        {{ item.categoryName }}({{ item.countNum || item.total || 0}})
+        {{ item.categoryName }}({{ item.countNum || item.total || 0 }})
       </div>
     </div>
     <!-- </div> -->
@@ -46,9 +48,9 @@ export default {
   methods: {
     checkItem(index) {
       this.selectItem = index
-      if (this.ishome) {
+      if (this.ishome)
         this.$emit('checkTab1', index)
-      }
+
       this.$emit('checkTab', index)
     },
   },

@@ -1,21 +1,25 @@
 <template>
   <div class="zt-page__order">
-    <el-page-header @back="goBack" content="确认下单" />
+    <el-page-header content="确认下单" @back="goBack" />
     <div class="zt-site__line">
-      <div class="zt-site__title">确认收货地址</div>
-      <div class="zt-site__add" @click="addSite">新增收货地址</div>
+      <div class="zt-site__title">
+        确认收货地址
+      </div>
+      <div class="zt-site__add" @click="addSite">
+        新增收货地址
+      </div>
     </div>
-    <div class="zt-site" v-if="showEmp">
+    <div v-if="showEmp" class="zt-site">
       <el-empty :image-size="100" description="暂无地址信息" />
     </div>
-    <div class="zt-site" v-else>
+    <div v-else class="zt-site">
       <div
-        class="zt-site__item"
-        :class="radio === index?'site-item__select':''"
         v-for="(item, index) in siteList"
         :key="index"
+        class="zt-site__item"
+        :class="radio === index ? 'site-item__select' : ''"
       >
-        <div class="site-item__l" v-if="radio === index">
+        <div v-if="radio === index" class="site-item__l">
           <i class="el-icon-location"></i>寄送至
         </div>
         <div class="zt-site__check">
@@ -24,13 +28,19 @@
           </el-radio>
           <span v-if="item.defaultNum === 1" class="defoSite">默认地址</span>
         </div>
-        <div class="site-item__r" v-if="radio === index">
-          <div class="site-item__d" @click="deleteSite">删除</div>
-          <div class="site-item__c" @click="setSite">修改本地址</div>
+        <div v-if="radio === index" class="site-item__r">
+          <div class="site-item__d" @click="deleteSite">
+            删除
+          </div>
+          <div class="site-item__c" @click="setSite">
+            修改本地址
+          </div>
         </div>
       </div>
     </div>
-    <div class="zt-order__title">下单事由</div>
+    <div class="zt-order__title">
+      下单事由
+    </div>
     <div class="zt-text">
       <!-- <el-select v-model="value" placeholder="请选择">
         <el-option
@@ -71,18 +81,22 @@
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remarks">
-          <el-input type="textarea" v-model="textForm.remarks" />
+          <el-input v-model="textForm.remarks" type="textarea" />
         </el-form-item>
       </el-form>
     </div>
-    <div class="zt-order__title">确认订单信息</div>
+    <div class="zt-order__title">
+      确认订单信息
+    </div>
     <div class="zt-content">
-      <div class="zt-content__item" v-for="(item, index) in formData.styleList" :key="index">
+      <div v-for="(item, index) in formData.styleList" :key="index" class="zt-content__item">
         <!-- 一级选择框 -->
         <div class="zt-cart__title">
-          <div class="zt-title__title">{{ item.styleName }}</div>
+          <div class="zt-title__title">
+            {{ item.styleName }}
+          </div>
         </div>
-        <div class="zt-cart__line" v-for="(itemN, indexN) in item.style" :key="indexN">
+        <div v-for="(itemN, indexN) in item.style" :key="indexN" class="zt-cart__line">
           <el-row :gutter="20">
             <el-col :span="3">
               <el-image
@@ -99,10 +113,14 @@
                 <p>{{ item.styleNo }}</p>
               </div>
             </el-col>
-            <el-col :span="6"><div class="zt-cart__color">颜色分类：{{ itemN.styleColor }}</div></el-col>
+            <el-col :span="6">
+              <div class="zt-cart__color">
+                颜色分类：{{ itemN.styleColor }}
+              </div>
+            </el-col>
             <el-col :span="3">
               <el-button type="primary" @click="itemN.openList = !itemN.openList">
-                {{ itemN.openList?'收起':'展开' }}
+                {{ itemN.openList ? '收起' : '展开' }}
                 <i v-if="itemN.openList" class="el-icon-caret-bottom el-icon--right"></i>
                 <i v-else class="el-icon-caret-top el-icon--right"></i>
               </el-button>
@@ -110,12 +128,20 @@
             <!-- <el-col :span="2"><div class="zt-cart__set" @click="deleteOrder(index,indexN)">删除</div></el-col> -->
           </el-row>
           <!-- <div class="zt-cart__size"> -->
-          <div class="zt-cart__size" v-if="itemN.openList">
-            <div class="zt-size__item" v-for="(itemM, indexM) in itemN.styleSize" :key="indexM">
-              <div class="zt-size__size">所选尺码：{{ itemM.sizeName }}</div>
-              <div class="zt-size__size">单价：￥{{ itemN.stylePrice }}</div>
-              <div class="zt-size__size"><el-input-number disabled size="mini" :min="1" v-model="itemM.sizeNumber" /></div>
-              <div class="zt-size__size">小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}</div>
+          <div v-if="itemN.openList" class="zt-cart__size">
+            <div v-for="(itemM, indexM) in itemN.styleSize" :key="indexM" class="zt-size__item">
+              <div class="zt-size__size">
+                所选尺码：{{ itemM.sizeName }}
+              </div>
+              <div class="zt-size__size">
+                单价：￥{{ itemN.stylePrice }}
+              </div>
+              <div class="zt-size__size">
+                <el-input-number v-model="itemM.sizeNumber" disabled size="mini" :min="1" />
+              </div>
+              <div class="zt-size__size">
+                小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}
+              </div>
               <!-- <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div> -->
             </div>
           </div>
@@ -127,8 +153,8 @@
         <!-- <div class="zt-footer__price" v-if="siteList && siteList.length !== 0"> -->
         <div class="zt-footer__price">
           总金额: <span class="zt-red">￥{{ priceAll }}</span>
-          <p>寄送地址：<span>{{ siteList[radio]?siteList[radio].address:'无' }}</span></p>
-          <p>收货人：<span>{{ siteList[radio]?siteList[radio].consignee:'无' }}</span>{{ ' ' }}{{ siteList[radio]?siteList[radio].contactNum:'' }}</p>
+          <p>寄送地址：<span>{{ siteList[radio] ? siteList[radio].address : '无' }}</span></p>
+          <p>收货人：<span>{{ siteList[radio] ? siteList[radio].consignee : '无' }}</span>{{ ' ' }}{{ siteList[radio] ? siteList[radio].contactNum : '' }}</p>
           <!-- <p class="zt-hui">本次共选：商品样式(2) 商品尺寸(7)</p> -->
         </div>
       </div>
@@ -139,76 +165,84 @@
       </div>
     </div>
     <el-drawer
+      ref="drawer"
       title="新增收货地址"
       :before-close="handleClose"
       :visible.sync="dialog"
       direction="rtl"
       size="40%"
       custom-class="zt-demo__drawer"
-      ref="drawer"
     >
       <div class="demo-drawer__content">
         <el-form
+          ref="ruleForm"
           :model="ruleForm"
           :rules="rules"
           :label-position="labelPosition"
           :label-width="formLabelWidth"
           :hide-required-asterisk="false"
-          ref="ruleForm"
         >
           <el-form-item label="收货人" prop="name">
             <el-input v-model="ruleForm.name" placeholder="名字" autocomplete="off" />
           </el-form-item>
           <el-form-item label="手机号" prop="phone">
-            <el-input maxlength="11" v-model.number="ruleForm.phone" placeholder="手机号 " />
+            <el-input v-model.number="ruleForm.phone" maxlength="11" placeholder="手机号 " />
           </el-form-item>
           <el-form-item label="详细地址" prop="siteInfo">
-            <el-input type="textarea" v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
+            <el-input v-model="ruleForm.siteInfo" type="textarea" placeholder="详细乡村/街道地址" />
           </el-form-item>
           <el-form-item label="设为默认收货地址" prop="isdef">
             <el-switch v-model="ruleForm.isdef" />
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
-          <el-button @click="cancelForm">取 消</el-button>
-          <el-button type="primary" @click="subForm('ruleForm')" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+          <el-button @click="cancelForm">
+            取 消
+          </el-button>
+          <el-button type="primary" :loading="loading" @click="subForm('ruleForm')">
+            {{ loading ? '提交中 ...' : '确 定' }}
+          </el-button>
         </div>
       </div>
     </el-drawer>
     <el-drawer
+      ref="drawer2"
       title="修改收货地址"
       :before-close="handleClose2"
       :visible.sync="dialog2"
       direction="rtl"
       size="40%"
       custom-class="zt-demo__drawer"
-      ref="drawer2"
     >
       <div class="demo-drawer__content">
         <el-form
+          ref="ruleForm"
           :model="ruleForm"
           :rules="rules"
           :label-position="labelPosition"
           :label-width="formLabelWidth"
           :hide-required-asterisk="false"
-          ref="ruleForm"
         >
           <el-form-item label="收货人" prop="name">
             <el-input v-model="ruleForm.name" placeholder="名字" autocomplete="off" />
           </el-form-item>
           <el-form-item label="手机号" prop="phone">
-            <el-input maxlength="11" v-model.number="ruleForm.phone" placeholder="手机号 " />
+            <el-input v-model.number="ruleForm.phone" maxlength="11" placeholder="手机号 " />
           </el-form-item>
           <el-form-item label="详细地址" prop="siteInfo">
-            <el-input type="textarea" v-model="ruleForm.siteInfo" placeholder="详细乡村/街道地址" />
+            <el-input v-model="ruleForm.siteInfo" type="textarea" placeholder="详细乡村/街道地址" />
           </el-form-item>
           <el-form-item label="设为默认收货地址" prop="isdef">
             <el-switch v-model="ruleForm.isdef" />
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
-          <el-button @click="cancelForm2">取 消</el-button>
-          <el-button type="primary" @click="subForm2('ruleForm')" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+          <el-button @click="cancelForm2">
+            取 消
+          </el-button>
+          <el-button type="primary" :loading="loading" @click="subForm2('ruleForm')">
+            {{ loading ? '提交中 ...' : '确 定' }}
+          </el-button>
         </div>
       </div>
     </el-drawer>
@@ -217,12 +251,12 @@
 
 <script>
 import {
-  getOrderSite,
-  addOrderSite,
-  setOrderSite,
   CalculatePrice,
   addOrder,
+  addOrderSite,
   dltOrderSite,
+  getOrderSite,
+  setOrderSite,
 } from '@/api/orderCart'
 import { getDictionaryInfo } from '@/api/category'
 
@@ -289,7 +323,7 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
+    next((vm) => {
       vm.oldUrl = from.path
     })
   },
@@ -299,11 +333,10 @@ export default {
     this.formData = this.$store.state.order.orderStorage
   },
   beforeDestroy() {
-    if (this.$route.path === '/styleCenter/goodsDetails') {
+    if (this.$route.path === '/styleCenter/goodsDetails')
       this.$store.commit('order/cgStart', false)
-    } else {
+    else
       this.$store.commit('order/cgStart', true)
-    }
   },
   methods: {
     // 获取收货地址信息
@@ -313,11 +346,11 @@ export default {
         customerId: sessionStorage.getItem('userId'),
       })
       that.siteList = res.body.resultList
-      if (that.siteList && that.siteList.length === 0) {
+      if (that.siteList && that.siteList.length === 0)
         that.showEmp = true
-      } else {
+      else
         that.showEmp = false
-      }
+
       that.priceA()
     },
     // 下单事由  列表
@@ -326,24 +359,23 @@ export default {
         type: 'ORDER_REASON',
         userId: sessionStorage.userId,
       })
-      if (res.head.status === 0) {
+      if (res.head.status === 0)
         this.reasonList = res.body.result
-      }
     },
     // 总价
     async priceA() {
       const that = this
       const list = []
       let dataL = {}
-      that.formData.styleList.forEach(e => {
-        e.style.forEach(i => {
+      that.formData.styleList.forEach((e) => {
+        e.style.forEach((i) => {
           dataL = {
             styleId: i.styleId,
             styleNo: e.styleNo,
             styleColor: i.id,
             styleSize: [],
           }
-          i.styleSize.forEach(n => {
+          i.styleSize.forEach((n) => {
             dataL.styleSize.unshift(n)
           })
           list.unshift(dataL)
@@ -353,9 +385,8 @@ export default {
       const res = await CalculatePrice({
         styleList: list,
       })
-      if (res.head.status === 0) {
+      if (res.head.status === 0)
         that.priceAll = res.body.styleTotalPrice
-      }
     },
     // 返回功能
     goBack() {
@@ -398,11 +429,11 @@ export default {
         const res = await dltOrderSite({
           receivingId: this.siteList[this.radio].id,
         })
-        if (res.head.status === 0) {
+        if (res.head.status === 0)
           this.$message.success('删除成功')
-        } else {
+        else
           this.$message.warning('删除失败')
-        }
+
         this.getData()
       }).catch(() => {})
     },

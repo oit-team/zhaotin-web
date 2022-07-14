@@ -10,9 +10,11 @@ module.exports = {
     parser: '@babel/eslint-parser',
   },
   rules: {
-    'vuejs-accessibility/click-events-have-key-events': 'off',
-    'vuejs-accessibility/mouse-events-have-key-events': 'off',
-    'max-lines': ["error", 2000],
-    'vue/max-len': ["error", { "code": 200 }]
+    'vue/component-tags-order': [
+      'error', {
+        order: ['template', 'script', 'style'],
+      },
+    ],
+    'arrow-parens': 'off',
   },
 }

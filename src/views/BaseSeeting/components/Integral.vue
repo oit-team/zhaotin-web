@@ -42,7 +42,7 @@
 							:rules="rules"
 							:model="form"
 							label-width="150px"
-						>	
+						>
 							<!-- 区间 -->
 							<el-form-item label="区间" required>
 								<el-col :span="6">
@@ -306,7 +306,7 @@ export default {
 								})
 							}
 						})
-					} else {
+											} else {
 					}
 				}
 			})
@@ -341,7 +341,7 @@ export default {
 				this.$message({
 					type: 'info',
 					message: '已取消删除'
-				});          
+				});
 			});
 		},
 		// 新增规则
@@ -452,7 +452,7 @@ export default {
 				that.preRuleCode = ''
 				that.PreList = []
 				that.getCollocation()
-			} else {
+							} else {
 				that.tabsS = JSON.parse(JSON.stringify(that.tabs))
 				that.tabsS.forEach((e, index) => {
 					if (e.dictitemCode === that.leftTab.dictitemCode) {
@@ -510,7 +510,7 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped> 
+<style lang='scss' scoped>
 .zt-page{
 	min-height: 82vh;
 }

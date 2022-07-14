@@ -1,22 +1,28 @@
 <template>
   <div class="container h-12 flex">
     <div class="h-12 flex">
-      <div class="mr-2 zt-config"><i class="iconfont icon-tongzhi"></i>公告:</div>
+      <div class="mr-2 zt-config">
+        <i class="iconfont icon-tongzhi"></i>公告:
+      </div>
       <!-- <el-tooltip class="item" effect="light" :content="configT[0]" placement="top-start"> -->
-      <div class="h-12 flex flex-col justify-center text-yellow-600 leading-8 w-255 zt-config__fig" ref="pconfit">
-        <div class="zt-fig" ref="configw" :style="{'--mL':mL}">{{ configT[0] }}</div>
+      <div ref="pconfit" class="h-12 flex flex-col justify-center text-yellow-600 leading-8 w-255 zt-config__fig">
+        <div ref="configw" class="zt-fig" :style="{ '--mL': mL }">
+          {{ configT[0] }}
+        </div>
       </div>
       <!-- </el-tooltip> -->
     </div>
     <div class="flex-1 flex items-center px-32">
       <el-input
-        placeholder="商品名称/款号/面料"
         v-model="inputVal"
+        placeholder="商品名称/款号/面料"
         class="one"
         prefix-icon="el-icon-search"
         @change="cgVal"
       >
-        <el-button class="search" slot="append" @click="cgVal(inputVal)">搜索</el-button>
+        <el-button slot="append" class="search" @click="cgVal(inputVal)">
+          搜索
+        </el-button>
       </el-input>
     </div>
     <div class="mr-10">
@@ -76,9 +82,8 @@ export default {
     toCart() {
       this.$router.push('/styleCenter/shopCart')
       const list = this.$store.state.orderStorage
-      if (list) {
+      if (list)
         this.listLength = list.length
-      }
     },
     async getData() {
       const res = await getShoppingCart({})

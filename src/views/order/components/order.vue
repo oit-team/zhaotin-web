@@ -50,7 +50,7 @@ export default {
                 tip: '订单详情',
                 type: 'success',
                 icon: 'el-icon-view',
-                click: (scope) => this.$router.push({
+                click: scope => this.$router.push({
                   path: '/order/orderMsg',
                   query: { item: scope },
                 }),
@@ -73,9 +73,8 @@ export default {
         ...params,
       }
       await orderInfo(con).then((res) => {
-        if (res.head.status === 0) {
+        if (res.head.status === 0)
           this.data = res.body
-        }
       }).catch(() => {
 
       })

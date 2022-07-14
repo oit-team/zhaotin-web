@@ -7,24 +7,28 @@
         </div>
         <div class="contentRight">
           <div class="right">
-            <div class="right_title">昭廷一站式集采平台</div>
+            <div class="right_title">
+              昭廷一站式集采平台
+            </div>
             <el-form>
               <el-form-item>
                 <el-input v-model.trim="formData.userName" clearable placeholder="请输入用户名" />
               </el-form-item>
               <el-form-item>
                 <el-input
-                  type="password"
-                  @change="login"
                   ref="login"
                   v-model.trim="formData.password"
+                  type="password"
                   clearable
                   placeholder="请输入密码"
+                  @change="login"
                 />
               </el-form-item>
             </el-form>
             <div class="loginBtn">
-              <el-button type="primary" class="btn_submit" @click="login">登 录</el-button>
+              <el-button type="primary" class="btn_submit" @click="login">
+                登 录
+              </el-button>
             </div>
           </div>
         </div>
@@ -151,5 +155,4 @@ export default {
     margin-bottom: 0px;
   }
 }
-
 </style>

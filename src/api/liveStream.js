@@ -1,5 +1,5 @@
-import { post } from './index'
 import API_SERVICE from './API_SERVICE'
+import { post } from './index'
 
 /**
  * 查询直播间

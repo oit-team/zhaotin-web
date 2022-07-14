@@ -30,13 +30,12 @@ function addQuillTitle() {
   const aSelect = oToolBar.querySelectorAll('select')
 
   aButton.forEach((item) => {
-    if (item.className === 'ql-script') {
+    if (item.className === 'ql-script')
       item.value === 'sub' ? item.title = '下标' : item.title = '上标'
-    } else if (item.className === 'ql-indent') {
+    else if (item.className === 'ql-indent')
       item.value === '+1' ? item.title = '向右缩进' : item.title = '向左缩进'
-    } else {
+    else
       item.title = titleConfig[item.classList[0]]
-    }
   })
   aSelect.forEach((item) => {
     item.parentNode.title = titleConfig[item.classList[0]]

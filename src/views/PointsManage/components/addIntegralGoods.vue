@@ -3,8 +3,12 @@
     <div class="flex justify-between items-center">
       <el-page-header :content="`${title}商品`" @back="$router.back()" />
       <div class="">
-        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('formData' , 0)">保存</el-button>
-        <el-button v-if="operateFlag!=&quot;view&quot;&&isEdit" size="small" icon="el-icon-position" type="success" @click="saveGood('formData', 1)">发布</el-button>
+        <el-button v-if="operateFlag !== view && isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('formData', 0)">
+          保存
+        </el-button>
+        <el-button v-if="operateFlag !== view && isEdit" size="small" icon="el-icon-position" type="success" @click="saveGood('formData', 1)">
+          发布
+        </el-button>
       </div>
     </div>
 
@@ -37,17 +41,17 @@
           <el-input v-model.number="formData.userLife" placeholder="单位：天" />
         </el-form-item>
         <el-form-item label="物品说明" prop="integralDesc">
-          <el-input type="textarea" :rows="4" v-model="formData.integralDesc" />
+          <el-input v-model="formData.integralDesc" type="textarea" :rows="4" />
         </el-form-item>
       </div>
       <el-divider direction="vertical" />
       <div class="content-right w-2/5">
         <el-form-item label="物品视频">
           <!-- <vc-upload v-bind="uploadOptionVideo" class="el-upload-video" :on-remove="onRemoveVideo" ref="uploadVideo"> -->
-          <vc-upload v-show="!formData.styleVideo" v-bind="uploadOptionVideo" :class="formData.styleVideo ?'el-upload-video':''" :on-remove="onRemoveVideo" ref="uploadVideo">
+          <VcUpload v-show="!formData.styleVideo" v-bind="uploadOptionVideo" ref="uploadVideo" :class="formData.styleVideo ? 'el-upload-video' : ''" :on-remove="onRemoveVideo">
             <i class="el-icon-plus"></i>
             <!-- <el-progress type="circle" :percentage="percentage" /> -->
-          </vc-upload>
+          </VcUpload>
           <video
             v-if="formData.styleVideo"
             class="avatar video-avatar"
@@ -58,28 +62,38 @@
             <track kind="captions" label="English captions" src="" srclang="en" default />
             您的浏览器不支持视频播放
           </video>
-          <div v-if="formData.styleVideo" style="margin-top:10px"> <el-button @click="formData.styleVideo = ''">删除视频</el-button> </div>
+          <div v-if="formData.styleVideo" style="margin-top:10px">
+            <el-button @click="formData.styleVideo = ''">
+              删除视频
+            </el-button>
+          </div>
         </el-form-item>
-        <p class="tip">*最多可以上传1个视频，大小限制在50M以内，推荐格式mp4</p>
+        <p class="tip">
+          *最多可以上传1个视频，大小限制在50M以内，推荐格式mp4
+        </p>
         <el-form-item label="视频贴片">
-          <vc-upload v-bind="uploadOptionVideoImg" :on-remove="onRemoveVideoImg" ref="uploadVideoImg">
+          <VcUpload v-bind="uploadOptionVideoImg" ref="uploadVideoImg" :on-remove="onRemoveVideoImg">
             <i class="el-icon-plus"></i>
-          </vc-upload>
+          </VcUpload>
         </el-form-item>
-        <p class="tip">*最多可以上传1张图片，推荐格式jpg或png</p>
+        <p class="tip">
+          *最多可以上传1张图片，推荐格式jpg或png
+        </p>
         <el-form-item label="物品图片">
-          <vc-upload v-bind="uploadOptionimg" :on-remove="onRemoveGoodsImg" ref="goodsImg">
+          <VcUpload v-bind="uploadOptionimg" ref="goodsImg" :on-remove="onRemoveGoodsImg">
             <i class="el-icon-plus"></i>
-          </vc-upload>
+          </VcUpload>
         </el-form-item>
-        <p class="tip">*最多可以上传6张图片，推荐格式jpg或png</p>
+        <p class="tip">
+          *最多可以上传6张图片，推荐格式jpg或png
+        </p>
       </div>
     </el-form>
   </div>
 </template>
 
 <script>
-import { getIntegralGoodsDetailed, addIntegralGoods } from '@/api/integral'
+import { addIntegralGoods, getIntegralGoodsDetailed } from '@/api/integral'
 import VcUpload from '@/views/common/Upload'
 
 export default {
@@ -213,17 +227,17 @@ export default {
   },
   created() {
     this.isEdit = this.$route.query.flag
-    if (this.$route.query.flag === '1') {
+    if (this.$route.query.flag === '1')
       this.isEdit = false
-    } else {
+    else
       this.isEdit = true
-    }
+
     if (this.$route.query.item) {
-      if (this.isEdit === false) {
+      if (this.isEdit === false)
         this.title = '查看'
-      } else {
+      else
         this.title = '编辑'
-      }
+
       this.formData.goodsCode = this.$route.query.item.row.goodsCode
       this.getData()
     } else {
@@ -234,7 +248,7 @@ export default {
     getData() {
       getIntegralGoodsDetailed({
         goodsCode: this.formData.goodsCode,
-      }).then(res => {
+      }).then((res) => {
         this.formData = res.body
       }).catch(() => {})
     },
@@ -250,11 +264,11 @@ export default {
     },
     saveGood(formName, status) {
       let msg = ''
-      if (status === 0) {
+      if (status === 0)
         msg = '确认保存该商品信息吗?'
-      } else if (status === 1) {
+      else if (status === 1)
         msg = '您确定要发布商品至App与商品中心展示吗?'
-      }
+
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$confirm(msg, '提示', {
@@ -282,9 +296,9 @@ export default {
     editGoodFun(status) {
       const con = JSON.parse(JSON.stringify(this.formData))
       console.log(con)
-      if (this.title === '新增') {
+      if (this.title === '新增')
         con.state = '2'
-      }
+
       addIntegralGoods(con).then((res) => {
         console.log(res)
         if (res.head.status === 0) {

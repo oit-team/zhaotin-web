@@ -2,15 +2,19 @@
   <div class="h-full my-10">
     <div class="main container" style="height: 100%;">
       <div class="table-h">
-        <TablePage v-bind="tablePageOption" class="!min-h-screen-sm" auto ref="page">
+        <TablePage v-bind="tablePageOption" ref="page" class="!min-h-screen-sm" auto>
           <template #actions:upd>
             <el-dropdown class="ml-2">
               <el-button type="primary">
                 上/下架<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="updGoods(0)">商品上架</el-dropdown-item>
-                <el-dropdown-item @click.native="updGoods(1)">商品下架</el-dropdown-item>
+                <el-dropdown-item @click.native="updGoods(0)">
+                  商品上架
+                </el-dropdown-item>
+                <el-dropdown-item @click.native="updGoods(1)">
+                  商品下架
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -21,17 +25,17 @@
 
     <!-- 导入商品 -->
     <el-drawer
-      :title="importType===1?'导入商品':'导入商品库存'"
+      :title="importType === 1 ? '导入商品' : '导入商品库存'"
       :visible.sync="importFlag"
       direction="rtl"
       size="40%"
       :before-close="handleImportClose"
     >
-      <div class="text-center" v-show="!ErrerInfoShow">
+      <div v-show="!ErrerInfoShow" class="text-center">
         <el-upload
+          ref="upload"
           class="upload-demo"
           style="margin:30px 0px;"
-          ref="upload"
           :limit="1"
           action="#"
           accept=".xlsx,.xls"
@@ -42,7 +46,9 @@
           :auto-upload="false"
         >
           <template #trigger>
-            <el-button size="small" type="primary">选取文件</el-button>
+            <el-button size="small" type="primary">
+              选取文件
+            </el-button>
           </template>
           <template #tip>
             <div class="el-upload__tip mt-4">
@@ -51,12 +57,18 @@
           </template>
         </el-upload>
         <div style="margin-top: 20px">
-          <el-button v-if="importType===1" size="small" type="success" @click="confirmImportGoods">导入商品</el-button>
-          <el-button v-if="importType===2" size="small" type="success" @click="confirmImportStock">导入库存</el-button>
-          <el-button size="small" @click="importGoodsClose">取消导入</el-button>
+          <el-button v-if="importType === 1" size="small" type="success" @click="confirmImportGoods">
+            导入商品
+          </el-button>
+          <el-button v-if="importType === 2" size="small" type="success" @click="confirmImportStock">
+            导入库存
+          </el-button>
+          <el-button size="small" @click="importGoodsClose">
+            取消导入
+          </el-button>
         </div>
       </div>
-      <div class="ErrorInfo" v-show="ErrerInfoShow">
+      <div v-show="ErrerInfoShow" class="ErrorInfo">
         <h3>{{ addCount }}</h3>
         <h3>{{ upDateCount }}</h3>
         <h3>{{ failureCount }}</h3>
@@ -64,16 +76,18 @@
         <p>{{ errMessage }}</p>
         <ul class="errDataBox" style="text-align:left;">
           <li
+            v-for="(item, index) in importErrData"
+            :key="index"
             class="errDataItem"
             style="line-height:30px;"
-            v-for="(item,index) in importErrData"
-            :key="index"
           >
             {{ item }}
           </li>
         </ul>
         <div style="margin-top: 20px">
-          <el-button size="small" @click="importGoodsClose">取消</el-button>
+          <el-button size="small" @click="importGoodsClose">
+            取消
+          </el-button>
         </div>
       </div>
     </el-drawer>
@@ -90,9 +104,9 @@
       <div class="text-center">
         <el-checkbox-group v-model="checkList" @change="changeChecked">
           <div
-            style="text-align:left;margin:6px 0px;"
-            v-for="(item,index) in exportInfoList"
+            v-for="(item, index) in exportInfoList"
             :key="index"
+            style="text-align:left;margin:6px 0px;"
           >
             <el-checkbox
               :label="item.columnName"
@@ -103,8 +117,12 @@
           </div>
         </el-checkbox-group>
         <div style="margin-top: 20px">
-          <el-button size="small" @click="exportModelFlag =false">取 消</el-button>
-          <el-button size="small" type="primary" @click="confirmExportGoods">确 认</el-button>
+          <el-button size="small" @click="exportModelFlag = false">
+            取 消
+          </el-button>
+          <el-button size="small" type="primary" @click="confirmExportGoods">
+            确 认
+          </el-button>
         </div>
       </div>
     </el-drawer>
@@ -125,29 +143,31 @@
         <p>{{ errMessage }}</p>
         <ul class="errDataBox" style="text-align:left;">
           <li
+            v-for="(item, index) in importErrData"
+            :key="index"
             class="errDataItem"
             style="line-height:30px;"
-            v-for="(item,index) in importErrData"
-            :key="index"
           >
             {{ item }}
           </li>
         </ul>
         <div style="margin-top: 20px">
-          <el-button size="small" @click="importErrDataFlag = false">取消</el-button>
+          <el-button size="small" @click="importErrDataFlag = false">
+            取消
+          </el-button>
         </div>
       </div>
     </el-drawer>
 
     <!-- 上架失败 -->
     <el-drawer
+      ref="drawerUpd"
       title="上/下架日志信息"
       :visible.sync="drawerUpd"
       direction="rtl"
-      ref="drawerUpd"
       wrapper-closable
     >
-      <div v-for="item in errorList" class="mb-4" :key="item.recordId">
+      <div v-for="item in errorList" :key="item.recordId" class="mb-4">
         <div v-html="item"></div>
         <el-divider />
       </div>
@@ -156,9 +176,9 @@
 </template>
 
 <script>
+import axios from 'axios'
 import TablePage from '@/components/business/TablePage'
 import { getIntegralGoodsList } from '@/api/integral'
-import axios from 'axios'
 
 export default {
   name: 'GoodsManage',
@@ -233,7 +253,7 @@ export default {
                 tip: '查看商品详情',
                 type: 'primary',
                 icon: 'el-icon-view',
-                click: (scope) => this.$router.push({
+                click: scope => this.$router.push({
                   path: '/pointsManage/addIntegralGoods',
                   query: { item: scope, flag: 1 },
                 }),
@@ -246,9 +266,8 @@ export default {
                 disabled: ({ row }) => {
                   if (row.status === '1') { // 1 是已上架
                     return true
-                  } if (row.status === '0') {
+                  } if (row.status === '0')
                     return false
-                  }
                 },
               },
               {
@@ -258,11 +277,10 @@ export default {
                 disabled: ({ row }) => {
                   if (row.status === '1') { // 1 是已上架
                     return true
-                  } if (row.status === '0') {
+                  } if (row.status === '0')
                     return false
-                  }
                 },
-                click: (scope) => this.$router.push({
+                click: scope => this.$router.push({
                   path: '/pointsManage/addIntegralGoods',
                   query: { item: scope, flag: 0 },
                 }),
@@ -408,7 +426,7 @@ export default {
     },
     // 监控上传文件列表
     changeFile(file, fileList) {
-      const existFile = fileList.slice(0, fileList.length - 1).find((f) => f.name === file.name)
+      const existFile = fileList.slice(0, fileList.length - 1).find(f => f.name === file.name)
       if (existFile) {
         this.$message.error('当前文件已经存在!')
         fileList.pop()
@@ -452,7 +470,7 @@ export default {
           method: 'post',
           headers: {
             'Content-Type': 'multipart/form-data',
-            token: sessionStorage.accessToken,
+            'token': sessionStorage.accessToken,
           },
           data: formData,
         }).then((res) => {
@@ -470,7 +488,7 @@ export default {
             } else {
               this.$alert(`导入完成,${res.data.body.addCount},${res.data.body.upDateCount},${res.data.body.failureCount}`, '提示', {
                 confirmButtonText: '确定',
-                callback: action => {
+                callback: (action) => {
                   this.importGoodsClose()
                 },
               })
@@ -483,7 +501,7 @@ export default {
               message: '导入商品失败',
             })
           }
-        }).catch((err) => {
+        }).catch(() => {
           this.$message({
             type: 'error',
             message: '导入商品失败',
@@ -590,6 +608,7 @@ export default {
 
 }
 </script>
+
 <style lang="less" scoped>
   .table-h {
     min-height: 600px;

@@ -6,35 +6,53 @@
       <div>
         <div class="flex justify-between items-center mb-2">
           <el-page-header
-            @back="$router.back()"
             content="订单详情"
+            @back="$router.back()"
           />
           <div>
-            <el-button class="!text-amber-500" v-if="isUpdate && $route.query.item.row.orderState !== 2" type="text" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
+            <el-button v-if="isUpdate && $route.query.item.row.orderState !== 2" class="!text-amber-500" type="text" @click="sett">
+              {{ isSet ? '完成' : '修改' }}
+            </el-button>
             <el-divider v-if="isUpdate && $route.query.item.row.orderState !== 2" direction="vertical" />
-            <el-button class="!text-rose-500" v-if="isUpdate && $route.query.item.row.orderState !== 2" type="text" @click="deleteOrder">取消订单</el-button>
+            <el-button v-if="isUpdate && $route.query.item.row.orderState !== 2" class="!text-rose-500" type="text" @click="deleteOrder">
+              取消订单
+            </el-button>
             <el-divider v-if="isUpdate && $route.query.item.row.orderState !== 2" direction="vertical" />
-            <el-button type="text" @click="getNote">修改记录</el-button>
+            <el-button type="text" @click="getNote">
+              修改记录
+            </el-button>
           </div>
         </div>
         <div class="flex justify-between px-14 zt-head">
-          <div class="font-extrabold">单号：{{ orderNo }}</div>
-          <div class="font-extrabold">下单时间: {{ orderTime }}</div>
-          <div class="font-extrabold">订单类型: {{ orderTypeName }}</div>
-          <div class="font-extrabold">件数: {{ Numb }}件</div>
-          <div class="font-extrabold" v-show="!isSet">总金额: <span class="zt-red">￥{{ priceAll }}</span></div>
-          <div class="font-extrabold flex" v-show="isSet">
+          <div class="font-extrabold">
+            单号：{{ orderNo }}
+          </div>
+          <div class="font-extrabold">
+            下单时间: {{ orderTime }}
+          </div>
+          <div class="font-extrabold">
+            订单类型: {{ orderTypeName }}
+          </div>
+          <div class="font-extrabold">
+            件数: {{ Numb }}件
+          </div>
+          <div v-show="!isSet" class="font-extrabold">
+            总金额: <span class="zt-red">￥{{ priceAll }}</span>
+          </div>
+          <div v-show="isSet" class="font-extrabold flex">
             总金额:
             <el-input v-model="priceAll" class="ml-2" size="mini" placeholder="￥" />
           </div>
         </div>
         <!-- ----- -->
         <div class="zt-content">
-          <div class="zt-content__item" v-for="(item, index) in orderInfoList" :key="index">
+          <div v-for="(item, index) in orderInfoList" :key="index" class="zt-content__item">
             <div class="zt-cart__title">
-              <div class="zt-title__title">{{ item.styleName }}</div>
+              <div class="zt-title__title">
+                {{ item.styleName }}
+              </div>
             </div>
-            <div class="zt-cart__line" v-for="(itemN, indexN) in item.style" :key="indexN">
+            <div v-for="(itemN, indexN) in item.style" :key="indexN" class="zt-cart__line">
               <el-row :gutter="20">
                 <el-col :span="3">
                   <el-image
@@ -50,25 +68,39 @@
                     <p>{{ item.styleNo }}</p>
                   </div>
                 </el-col>
-                <el-col :span="6"><div class="zt-cart__color">颜色分类：{{ itemN.styleColor }}</div></el-col>
+                <el-col :span="6">
+                  <div class="zt-cart__color">
+                    颜色分类：{{ itemN.styleColor }}
+                  </div>
+                </el-col>
                 <el-col :span="3">
                   <el-button type="primary" @click="itemN.openList = !itemN.openList">
-                    {{ itemN.openList?'收起':'展开' }}
+                    {{ itemN.openList ? '收起' : '展开' }}
                     <i v-show="itemN.openList" class="el-icon-caret-bottom el-icon--right"></i>
                     <i v-show="!itemN.openList" class="el-icon-caret-top el-icon--right"></i>
                   </el-button>
                 </el-col>
               </el-row>
-              <div class="zt-cart__size" v-if="itemN.openList">
-                <div class="zt-size__item" v-for="(itemM, indexM) in itemN.styleSize" :key="indexM">
-                  <div class="zt-size__size">所选尺码：{{ itemM.sizeName }}</div>
-                  <div class="zt-size__size">单价：￥{{ itemN.stylePrice }}</div>
-                  <div class="zt-size__size" v-show="!isSet">x {{ itemM.sizeNumber }}</div>
-                  <div class="zt-size__size" v-show="isSet">
-                    <el-input-number size="small" v-model="itemM.sizeNumber" @change="handleChange(index)" :min="1" />
+              <div v-if="itemN.openList" class="zt-cart__size">
+                <div v-for="(itemM, indexM) in itemN.styleSize" :key="indexM" class="zt-size__item">
+                  <div class="zt-size__size">
+                    所选尺码：{{ itemM.sizeName }}
                   </div>
-                  <div class="zt-size__size">小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}</div>
-                  <div class="zt-size__size" v-show="isSet" @click="deleteSize(index,indexN,indexM)">删除</div>
+                  <div class="zt-size__size">
+                    单价：￥{{ itemN.stylePrice }}
+                  </div>
+                  <div v-show="!isSet" class="zt-size__size">
+                    x {{ itemM.sizeNumber }}
+                  </div>
+                  <div v-show="isSet" class="zt-size__size">
+                    <el-input-number v-model="itemM.sizeNumber" size="small" :min="1" @change="handleChange(index)" />
+                  </div>
+                  <div class="zt-size__size">
+                    小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}
+                  </div>
+                  <div v-show="isSet" class="zt-size__size" @click="deleteSize(index, indexN, indexM)">
+                    删除
+                  </div>
                 </div>
               </div>
             </div>
@@ -90,57 +122,67 @@
       <router-view />
     </div>
     <el-drawer
+      ref="drawerSet"
       title="提交修改"
       :visible.sync="drawer"
       :direction="direction"
       :before-close="handleClose"
       :wrapper-closable="false"
-      ref="drawerSet"
     >
       <div class="demo-drawer__content">
-        <el-form :model="bValidateForm" class="flex-1" ref="bValidateForm" label-width="60px">
+        <el-form ref="bValidateForm" :model="bValidateForm" class="flex-1" label-width="60px">
           <el-form-item
             label="原因"
             prop="cause"
             :rules="[{
-              required: true, message: '请输入修改原因'
+              required: true, message: '请输入修改原因',
             }]"
           >
             <el-input
+              v-model="bValidateForm.cause"
               type="textarea"
               :rows="3"
               placeholder="请输入修改原因"
-              v-model="bValidateForm.cause"
             />
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer flex">
-          <el-button @click="cancelForm" class="flex-1">取 消</el-button>
-          <el-button type="primary" @click="confirmSet" class="flex-1" :loading="loading">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+          <el-button class="flex-1" @click="cancelForm">
+            取 消
+          </el-button>
+          <el-button type="primary" class="flex-1" :loading="loading" @click="confirmSet">
+            {{ loading ? '提交中 ...' : '确 定' }}
+          </el-button>
         </div>
       </div>
     </el-drawer>
     <el-drawer
+      ref="drawerNote"
       title="订单修改日志"
       :visible.sync="drawerNote"
       :direction="direction"
-      ref="drawerNote"
       wrapper-closable
     >
       <div v-if="updateRecord.length === 0">
         <el-empty description="暂无修改" />
       </div>
       <div v-else>
-        <div v-for="item in updateRecord" class="mb-4 text-sm" :key="item.recordId">
+        <div v-for="item in updateRecord" :key="item.recordId" class="mb-4 text-sm">
           <div class="flex justify-between">
             <p>操作人：{{ item.operationName || '无' }}</p><p>{{ item.operationTime }}</p>
           </div>
           <div v-if="item.operationType !== 1">
-            <p class="my-2"><span class="text-red-600">修改前数据：</span>{{ item.beforeModificationData }}</p>
-            <p class="my-2"><span class="text-blue-500">修改后数据：</span>{{ item.afterModificationData }}</p>
+            <p class="my-2">
+              <span class="text-red-600">修改前数据：</span>{{ item.beforeModificationData }}
+            </p>
+            <p class="my-2">
+              <span class="text-blue-500">修改后数据：</span>{{ item.afterModificationData }}
+            </p>
           </div>
           <div v-else>
-            <p class="my-2 text-red-600">取消订单</p>
+            <p class="my-2 text-red-600">
+              取消订单
+            </p>
           </div>
           <p>修改原因：{{ item.orderDescribe }}</p>
           <el-divider class="!my-2" />
@@ -152,7 +194,7 @@
 
 <script>
 import HeaderNav from '@/views/Layout/components/HeaderNav'
-import { getOrderById, updateOrder, getOrderUpdateRecord } from '@/api/order'
+import { getOrderById, getOrderUpdateRecord, updateOrder } from '@/api/order'
 import {
   CalculatePrice,
 } from '@/api/orderCart'
@@ -186,9 +228,9 @@ export default {
     }
   },
   created() {
-    if (this.$route.query.stype && this.$route.query.stype === 'update' && this.$route.query.item.row.orderState !== '2') {
+    if (this.$route.query.stype && this.$route.query.stype === 'update' && this.$route.query.item.row.orderState !== '2')
       this.isUpdate = true
-    }
+
     if (this.$route.query.item) {
       this.orderId = this.$route.query.item.row.orderId
       this.orderInfo()
@@ -209,10 +251,10 @@ export default {
           that.orderTime = res.body.resultList.orderTime
           that.orderInfoList = res.body.resultList.orderStyleList
           that.priceAll = res.body.resultList.totalOrderAmount
-          that.orderInfoList.forEach(e => {
-            e.style.forEach(i => {
+          that.orderInfoList.forEach((e) => {
+            e.style.forEach((i) => {
               that.$set(i, 'openList', true)
-              i.styleSize.forEach(item => {
+              i.styleSize.forEach((item) => {
                 that.Numb += Number(item.sizeNumber + 0)
               })
             })
@@ -262,15 +304,15 @@ export default {
       const that = this
       const list = []
       let dataL = {}
-      that.orderInfoList.forEach(e => {
-        e.style.forEach(i => {
+      that.orderInfoList.forEach((e) => {
+        e.style.forEach((i) => {
           dataL = {
             styleId: i.styleId,
             styleNo: e.styleNo,
             styleColor: i.id,
             styleSize: [],
           }
-          i.styleSize.forEach(n => {
+          i.styleSize.forEach((n) => {
             dataL.styleSize.unshift(n)
           })
           list.unshift(dataL)
@@ -280,16 +322,15 @@ export default {
       const res = await CalculatePrice({
         styleList: list,
       })
-      if (res.head.status === 0) {
+      if (res.head.status === 0)
         that.priceAll = res.body.styleTotalPrice
-      }
     },
     // 数量改变
     async handleChange() {
       this.Numb = 0
-      this.orderInfoList.forEach(e => {
-        e.style.forEach(i => {
-          i.styleSize.forEach(item => {
+      this.orderInfoList.forEach((e) => {
+        e.style.forEach((i) => {
+          i.styleSize.forEach((item) => {
             this.Numb += Number(item.sizeNumber + 0)
           })
         })
@@ -298,11 +339,10 @@ export default {
     },
     // 点击修改
     sett() {
-      if (this.isSet) {
+      if (this.isSet)
         this.drawer = true
-      } else {
+      else
         this.isSet = true
-      }
     },
     // 抽屉 -- 取消
     cancelForm() {
@@ -367,15 +407,15 @@ export default {
         that.orderInfoList[id].style[idn].styleSize.splice(idm, 1)
         const list = []
         let dataL = {}
-        that.orderInfoList.forEach(e => {
-          e.style.forEach(i => {
+        that.orderInfoList.forEach((e) => {
+          e.style.forEach((i) => {
             dataL = {
               styleId: i.styleId,
               styleNo: e.styleNo,
               styleColor: i.id,
               styleSize: [],
             }
-            i.styleSize.forEach(n => {
+            i.styleSize.forEach((n) => {
               dataL.styleSize.unshift(n)
             })
             list.unshift(dataL)

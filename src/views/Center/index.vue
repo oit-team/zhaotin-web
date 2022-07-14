@@ -1,16 +1,16 @@
 <template>
   <div>
     <HeaderNav class="mb-4" />
-    <HeaderMsg @searchVal="searchVal" @getlength="getstyleLength" ref="msg" />
+    <HeaderMsg ref="msg" @searchVal="searchVal" @getlength="getstyleLength" />
     <div class="container main">
-      <router-view :input-val="VAL" :style-length="styleLength" ref="child" />
+      <router-view ref="child" :input-val="VAL" :style-length="styleLength" />
     </div>
   </div>
 </template>
 
 <script>
-import HeaderNav from '@/views/Layout/components/HeaderNav'
 import HeaderMsg from '../Layout/components/HeaderMsg'
+import HeaderNav from '@/views/Layout/components/HeaderNav'
 
 export default {
   components: {

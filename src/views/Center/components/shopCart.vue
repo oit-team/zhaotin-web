@@ -1,16 +1,18 @@
 <template>
   <div class="zt-page__cart">
-    <el-page-header @back="goBack" content="订货清单" />
+    <el-page-header content="订货清单" @back="goBack" />
     <el-empty v-if="showemp" description="暂无数据" />
     <div v-if="!showemp">
       <div class="zt-content">
-        <div class="zt-content__item" v-for="(item, index) in formData.styleList" :key="index">
+        <div v-for="(item, index) in formData.styleList" :key="index" class="zt-content__item">
           <!-- 一级选择框 -->
           <div class="zt-cart__title">
             <el-checkbox v-model="item.goodsCheck" @change="cggoodsCheck(index)" />
-            <div class="zt-title__title">{{ item.styleName }}</div>
+            <div class="zt-title__title">
+              {{ item.styleName }}
+            </div>
           </div>
-          <div class="zt-cart__line" v-for="(itemN, indexN) in item.style" :key="indexN">
+          <div v-for="(itemN, indexN) in item.style" :key="indexN" class="zt-cart__line">
             <el-row :gutter="20">
               <!-- 二级选择框 -->
               <el-col :span="2">
@@ -32,29 +34,41 @@
                 </div>
               </el-col>
               <el-col :span="6">
-                <div class="zt-cart__color">颜色分类：{{ itemN.styleColor }}</div>
+                <div class="zt-cart__color">
+                  颜色分类：{{ itemN.styleColor }}
+                </div>
               </el-col>
               <el-col :span="3">
                 <el-button type="primary" @click="itemN.openList = !itemN.openList">
-                  {{ itemN.openList?'收起':'展开' }}
+                  {{ itemN.openList ? '收起' : '展开' }}
                   <i v-if="itemN.openList" class="el-icon-caret-bottom el-icon--right"></i>
                   <i v-else class="el-icon-caret-top el-icon--right"></i>
                 </el-button>
               </el-col>
             </el-row>
-            <div class="zt-cart__size" v-if="itemN.openList">
-              <div class="zt-size__item" v-for="(itemM, indexM) in itemN.styleSize" :key="indexM">
-                <div class="zt-size__size">所选尺码：{{ itemM.sizeName }}</div>
-                <div class="zt-size__size">单价：￥{{ itemN.stylePrice }}</div>
-                <div class="zt-size__size"><el-input-number @change="handleChange(index,indexN,indexM)" size="mini" :min="1" v-model="itemM.sizeNumber" /></div>
-                <div class="zt-size__size">小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}</div>
-                <div class="zt-size__size" @click="deleteSize(index,indexN,indexM)">删除</div>
+            <div v-if="itemN.openList" class="zt-cart__size">
+              <div v-for="(itemM, indexM) in itemN.styleSize" :key="indexM" class="zt-size__item">
+                <div class="zt-size__size">
+                  所选尺码：{{ itemM.sizeName }}
+                </div>
+                <div class="zt-size__size">
+                  单价：￥{{ itemN.stylePrice }}
+                </div>
+                <div class="zt-size__size">
+                  <el-input-number v-model="itemM.sizeNumber" size="mini" :min="1" @change="handleChange(index, indexN, indexM)" />
+                </div>
+                <div class="zt-size__size">
+                  小计：￥{{ itemN.stylePrice * itemM.sizeNumber }}
+                </div>
+                <div class="zt-size__size" @click="deleteSize(index, indexN, indexM)">
+                  删除
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="zt-footer" ref="pronbit">
+      <div ref="pronbit" class="zt-footer">
         <div class="zt-footer__left">
           <el-checkbox
             v-model="checkedAll"
@@ -62,7 +76,9 @@
           >
             全选
           </el-checkbox>
-          <div class="zt-left__btn" @click="deleteAll"><i class="el-icon-delete"></i>批量删除</div>
+          <div class="zt-left__btn" @click="deleteAll">
+            <i class="el-icon-delete"></i>批量删除
+          </div>
         </div>
         <div class="zt-footer__right">
           <div class="zt-footer__price">
@@ -80,10 +96,10 @@
 
 <script>
 import {
-  getShoppingCart,
-  deleteShoppingCart,
-  changeShoppingCart,
   CalculatePrice,
+  changeShoppingCart,
+  deleteShoppingCart,
+  getShoppingCart,
 } from '@/api/orderCart'
 
 export default {
@@ -112,20 +128,19 @@ export default {
       const res = await getShoppingCart({})
       that.formData = res.body.resultList
       if (res.head.status === 0) {
-        if (that.formData.styleList && that.formData.styleList.length === 0) {
+        if (that.formData.styleList && that.formData.styleList.length === 0)
           that.showemp = true
-        } else {
+        else
           that.showemp = false
-        }
       }
-      that.formData.styleList.forEach(e => {
+      that.formData.styleList.forEach((e) => {
         e.styleNumber = Number(e.styleNumber)
         that.$set(e, 'goodsCheck', false)
-        e.style.forEach(i => {
+        e.style.forEach((i) => {
           that.$set(i, 'openList', true)
           that.$set(i, 'checked', false)
           i.styleNumber = Number(i.styleNumber)
-          i.styleSize.forEach(j => {
+          i.styleSize.forEach((j) => {
             j.sizeNumber = Number(j.sizeNumber)
           })
         })
@@ -137,18 +152,18 @@ export default {
     toggleSelection(val) {
       const that = this
       if (val) {
-        that.formData.styleList.forEach(e => {
+        that.formData.styleList.forEach((e) => {
           e.goodsCheck = true
-          e.style.forEach(i => {
+          e.style.forEach((i) => {
             i.checked = true
           })
         })
         // that.priceAll = that.formData.styleTotalPrice
         that.cgpriceAll()
       } else {
-        that.formData.styleList.forEach(e => {
+        that.formData.styleList.forEach((e) => {
           e.goodsCheck = false
-          e.style.forEach(i => {
+          e.style.forEach((i) => {
             i.checked = false
           })
         })
@@ -204,40 +219,39 @@ export default {
     // 数量
     async handleChange(index, indexN) {
       const that = this
-      if (that.formData.styleList && that.formData.styleList[index].style[indexN].checked) {
+      if (that.formData.styleList && that.formData.styleList[index].style[indexN].checked)
         that.cgpriceAll()
-      }
     },
     // 一级选择框 改变
     cggoodsCheck(id) {
       const that = this
       // 改变对应商品 的状态
       if (that.formData.styleList[id].goodsCheck) {
-        that.formData.styleList[id].style.forEach(e => {
+        that.formData.styleList[id].style.forEach((e) => {
           that.$set(e, 'checked', true)
         })
       } else {
-        that.formData.styleList[id].style.forEach(e => {
+        that.formData.styleList[id].style.forEach((e) => {
           that.$set(e, 'checked', false)
         })
       }
       // 改变父级状态
-      const data = that.formData.styleList.filter(e => {
+      const data = that.formData.styleList.filter((e) => {
         return e.goodsCheck === false
       })
-      if (data.length === 0) {
+      if (data.length === 0)
         that.checkedAll = true
-      } else {
+      else
         that.checkedAll = false
-      }
+
       that.cgpriceAll()
     },
     async cgpriceAll() {
       const that = this
       const list = []
       let dataL = {}
-      that.formData.styleList.forEach(e => {
-        e.style.forEach(i => {
+      that.formData.styleList.forEach((e) => {
+        e.style.forEach((i) => {
           dataL = {
             styleId: i.styleId,
             styleNo: e.styleNo,
@@ -245,7 +259,7 @@ export default {
             styleSize: [],
           }
           if (i.checked) {
-            i.styleSize.forEach(n => {
+            i.styleSize.forEach((n) => {
               dataL.styleSize.unshift(n)
             })
           }
@@ -256,9 +270,8 @@ export default {
       const res = await CalculatePrice({
         styleList: list,
       })
-      if (res.head.status === 0) {
+      if (res.head.status === 0)
         that.priceAll = res.body.styleTotalPrice
-      }
     },
     //  颜色 check   二级选择框
     itemChecked(id) {
@@ -272,27 +285,23 @@ export default {
       //   console.log(that.priceAll)
       // }
       // 获取 当前商品 下的 颜色是不是都选中了
-      that.formData.styleList[id].style.forEach(e => {
-        if (e.checked) {
-          return num++
-        }
+      that.formData.styleList[id].style.forEach((e) => {
+        if (e.checked) return num++
       })
-      if (that.formData.styleList[id].style && num === that.formData.styleList[id].style.length) {
+      if (that.formData.styleList[id].style && num === that.formData.styleList[id].style.length)
         that.$set(that.formData.styleList[id], 'goodsCheck', true)
-      } else {
+      else
         that.$set(that.formData.styleList[id], 'goodsCheck', false)
-      }
+
       let n = 0
-      that.formData.styleList.forEach(e => {
-        if (e.goodsCheck) {
-          return n++
-        }
+      that.formData.styleList.forEach((e) => {
+        if (e.goodsCheck) return n++
       })
-      if (that.formData.styleList && n === that.formData.styleList.length) {
+      if (that.formData.styleList && n === that.formData.styleList.length)
         that.checkedAll = true
-      } else {
+      else
         that.checkedAll = false
-      }
+
       that.cgpriceAll()
     },
     // 删除 尺码
@@ -316,8 +325,8 @@ export default {
         const list = []
         if (that.formData.styleList && that.formData.styleList.length !== 0) {
           let dataL = {}
-          that.formData.styleList.forEach(e => {
-            e.style.forEach(i => {
+          that.formData.styleList.forEach((e) => {
+            e.style.forEach((i) => {
               dataL = {
                 styleId: i.styleId,
                 styleNo: e.styleNo,
@@ -325,7 +334,7 @@ export default {
                 cartStyleType: i.cartStyleType,
                 styleSize: [],
               }
-              i.styleSize.forEach(n => {
+              i.styleSize.forEach((n) => {
                 dataL.styleSize.unshift(n)
                 // console.log(dataL)
               })
@@ -381,13 +390,13 @@ export default {
       const data1 = []
       that.formData2.styleList.forEach((item, index) => {
         data1[index] = item
-        data1[index].style = item.style.filter(i => {
+        data1[index].style = item.style.filter((i) => {
           return i.checked === true
         })
       })
       // 过滤  data1中的 颜色集合   只拿style中 不为空的  为空代表 该商品一个颜色都没选择
       let data3 = {}
-      data3 = data1.filter(item => {
+      data3 = data1.filter((item) => {
         return item.style.length !== 0
       })
       // console.log(data3)

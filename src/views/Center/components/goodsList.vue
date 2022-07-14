@@ -11,23 +11,31 @@
           @checkTab="checkTab"
         />
         <div class="zt-radio">
-          <div class="zt-radio__label">最近一年:</div>
-          <el-checkbox v-model="radio1" @change="radioText">未下款</el-checkbox>
-          <el-checkbox v-model="radio2" @change="radioText">已下款</el-checkbox>
+          <div class="zt-radio__label">
+            最近一年:
+          </div>
+          <el-checkbox v-model="radio1" @change="radioText">
+            未下款
+          </el-checkbox>
+          <el-checkbox v-model="radio2" @change="radioText">
+            已下款
+          </el-checkbox>
         </div>
       </div>
       <div class="zt-tabs__bottom">
-        <div class="zt-bottom__label">排序:</div>
+        <div class="zt-bottom__label">
+          排序:
+        </div>
         <div class="zt-bottom__tab">
           <div
-            :class="selectB===0?'selectB':'zt-bottom__item'"
+            :class="selectB === 0 ? 'selectB' : 'zt-bottom__item'"
             @click="selectItem(0)"
           >
             默认
           </div>
           <div
-            :class="selectB===1?'selectB':'zt-bottom__item'"
-            @click="shouDjiantou = !shouDjiantou,selectItem(1)"
+            :class="selectB === 1 ? 'selectB' : 'zt-bottom__item'"
+            @click="shouDjiantou = !shouDjiantou, selectItem(1)"
           >
             上架时间
             <i v-if="shouDjiantou" class="el-icon-bottom"></i>
@@ -41,8 +49,8 @@
             <i class="el-icon-top"></i>
           </div> -->
           <div
-            :class="selectB===3?'selectB':'zt-bottom__item'"
-            @click="priceTF = !priceTF,selectItem(3)"
+            :class="selectB === 3 ? 'selectB' : 'zt-bottom__item'"
+            @click="priceTF = !priceTF, selectItem(3)"
           >
             价格
             <i v-if="priceTF" class="el-icon-caret-bottom"></i>
@@ -72,7 +80,7 @@
       <el-divider />
     </div>
     <div class="relative">
-      <div class="nav-r" ref="nav-r">
+      <div ref="nav-r" class="nav-r">
         <div class="orderCart zt-flex" @click="toCart">
           <el-badge :value="styleLength" class="item">
             <div>
@@ -87,7 +95,7 @@
         </div>
       </div>
       <el-empty v-show="showEmp" description="暂无相关数据" />
-      <div v-show="!showEmp" v-loading="fullscreenLoading" ref="content" class="zt-content">
+      <div v-show="!showEmp" ref="content" v-loading="fullscreenLoading" class="zt-content">
         <div
           v-for="(item, index) in dataList"
           :key="index"
@@ -102,12 +110,18 @@
           <div v-if="item.styleIsVideo" class="zt-video__b">
             <i class="iconfont icon-shipin"></i>
           </div>
-          <div class="zt-item__line">{{ item.styleName }}</div>
+          <div class="zt-item__line">
+            {{ item.styleName }}
+          </div>
           <div class="zt-item__line flex">
-            <div class="zt-price__l">{{ item.styleNo }}</div>
+            <div class="zt-price__l">
+              {{ item.styleNo }}
+            </div>
             <div class="zt-price__r">
               ￥
-              <div class="zt-item__price">{{ item.tradePrice }}</div>
+              <div class="zt-item__price">
+                {{ item.tradePrice }}
+              </div>
             </div>
           </div>
           <!-- <el-divider /> -->
@@ -115,12 +129,20 @@
         </div>
       </div>
     </div>
-    <LoadMore @load="load" ref="loadMore" first-load v-show="!showEmp && !fullscreenLoading">
+    <LoadMore v-show="!showEmp && !fullscreenLoading" ref="loadMore" first-load @load="load">
       <template #default="scope">
-        <el-divider v-if="scope.next">加载更多</el-divider>
-        <el-divider v-if="scope.loading"><i class="el-icon-loading text-xl"></i></el-divider>
-        <el-divider v-if="scope.done">已经到底了</el-divider>
-        <el-divider v-if="scope.fail">加载失败，请重试</el-divider>
+        <el-divider v-if="scope.next">
+          加载更多
+        </el-divider>
+        <el-divider v-if="scope.loading">
+          <i class="el-icon-loading text-xl"></i>
+        </el-divider>
+        <el-divider v-if="scope.done">
+          已经到底了
+        </el-divider>
+        <el-divider v-if="scope.fail">
+          加载失败，请重试
+        </el-divider>
       </template>
     </LoadMore>
   </div>
@@ -128,7 +150,7 @@
 
 <script>
 import { getProductList } from '@/api/product'
-import { getGoodsSizeInfo, getGoodsSizeClass } from '@/api/goods'
+import { getGoodsSizeClass, getGoodsSizeInfo } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
 import LoadMore from '@/components/business/LoadMore'
 
@@ -195,13 +217,13 @@ export default {
   },
   methods: {
     load($state) {
-      if (this.formData.pageNum === 1) {
+      if (this.formData.pageNum === 1)
         this.fullscreenLoading = true
-      }
+
       this.formData.styleSearch = this.inputVal || ''
       getProductList({
         ...this.formData,
-      }).then(res => {
+      }).then((res) => {
         const result = res.body.resultList
         if (this.formData.pageNum === 1) {
           this.dataList = result
@@ -244,7 +266,7 @@ export default {
       })
       this.tabList1 = res.body.styleCategory
       let number1 = 0
-      this.tabList1.forEach(e => {
+      this.tabList1.forEach((e) => {
         number1 += e.countNum
       })
       const all = {
@@ -256,11 +278,11 @@ export default {
     // 点击二级tab
     checkTab(index) {
       let con = ''
-      if (index !== 0) {
+      if (index !== 0)
         con = this.tabList[index].dicttimeDisplayName
-      } else {
+      else
         con = ''
-      }
+
       this.$nextTick(() => {
         this.showEmp = false
         this.formData.styleLength = con
@@ -270,11 +292,11 @@ export default {
     // 点击顶部 tab
     checkTab1(index) {
       let con = ''
-      if (index !== 0) {
+      if (index !== 0)
         con = this.tabList1[index].categoryName
-      } else {
+      else
         con = ''
-      }
+
       this.$nextTick(() => {
         this.showEmp = false
         this.formData.styleCategory = con
@@ -343,9 +365,8 @@ export default {
     },
     backTop() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-      if (scrollTop !== 0) {
+      if (scrollTop !== 0)
         window.scrollTo('0', '0')
-      }
     },
     // 最近一年
     radioText() {

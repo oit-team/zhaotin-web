@@ -2,26 +2,34 @@
   <nav class="h-16 bg-black">
     <div class="container">
       <div class="flex">
-        <div class="h-16 w-44"><img class="h-full" src="../../../assets/icon/header/logo2.svg" alt="" /></div>
+        <div class="h-16 w-44">
+          <img class="h-full" src="../../../assets/icon/header/logo2.svg" alt="" />
+        </div>
         <ul
           class="flex-1 px-16 flex items-center text-gray-50 divide-x divide-white-500 justify-center point"
         >
           <el-popover
+            v-for="item in list"
+            :key="item.menuName"
             :disabled="!item.childrenMenu"
             placement="bottom"
             trigger="hover"
-            v-for="item in list"
-            :key="item.menuName"
             class="px-5"
             popper-class="userheader"
           >
             <div v-if="item.childrenMenu">
-              <ul v-for="(items,index) in item.childrenMenu" :key="index" class="leading-6 font-medium">
-                <li class="text-center"><div :class="$route.fullPath === items.menuUrl ? 'box-color': '' " @click="skipSecond(items)">{{ items.menuName }}</div></li>
+              <ul v-for="(items, index) in item.childrenMenu" :key="index" class="leading-6 font-medium">
+                <li class="text-center">
+                  <div :class="$route.fullPath === items.menuUrl ? 'box-color' : '' " @click="skipSecond(items)">
+                    {{ items.menuName }}
+                  </div>
+                </li>
               </ul>
             </div>
             <template #reference>
-              <div @click="skip(item)" :class="$route.fullPath === item.menuUrl || $route.redirectedFrom === item.menuUrl ? 'box-color': '' ">{{ item.menuName }}</div>
+              <div :class="$route.fullPath === item.menuUrl || $route.redirectedFrom === item.menuUrl ? 'box-color' : '' " @click="skip(item)">
+                {{ item.menuName }}
+              </div>
             </template>
           </el-popover>
         </ul>
@@ -36,8 +44,12 @@
           >
             <div v-if="userinfo">
               <ul class="diivide-y-4 divide-dotted leading-6 font-medium">
-                <li class="text-center" @click="quit">退出登录</li>
-                <li class="text-center" @click="updatePwd">修改密码</li>
+                <li class="text-center" @click="quit">
+                  退出登录
+                </li>
+                <li class="text-center" @click="updatePwd">
+                  修改密码
+                </li>
               </ul>
             </div>
             <template #reference>
@@ -52,8 +64,8 @@
                 />
               </div>
               <div
-                class="inline-block leading-10 ml-2"
                 v-else
+                class="inline-block leading-10 ml-2"
                 @click="$router.push('/login')"
               >
                 请点击登录
@@ -71,7 +83,7 @@
         :visible.sync="drawer"
       >
         <div class="demo-drawer__content">
-          <el-form :model="pwdForm" :rules="pwdFormRules" ref="pwdForm" class="px-8">
+          <el-form ref="pwdForm" :model="pwdForm" :rules="pwdFormRules" class="px-8">
             <el-form-item label="旧密码" :label-width="formLabelWidth" prop="oldPwd">
               <el-input v-model="pwdForm.oldPwd" autocomplete="off" type="password" placeholder="请输入旧密码" />
             </el-form-item>
@@ -84,9 +96,15 @@
           </el-form>
           <!-- <div class="roleTips"> <i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;"></i>选择单用户时，可查看该用户已授权的角色。</div> -->
           <div class="text-center">
-            <el-button size="small" type="primary" @click="confirmChangePwd('pwdForm')">确 认</el-button>
-            <el-button size="small" @click="resetPwd('pwdForm')">重置</el-button>
-            <el-button size="small" @click="cancelChangePwd('pwdForm')">取 消</el-button>
+            <el-button size="small" type="primary" @click="confirmChangePwd('pwdForm')">
+              确 认
+            </el-button>
+            <el-button size="small" @click="resetPwd('pwdForm')">
+              重置
+            </el-button>
+            <el-button size="small" @click="cancelChangePwd('pwdForm')">
+              取 消
+            </el-button>
           </div>
         </div>
       </el-drawer>
@@ -161,17 +179,15 @@ export default {
       sessionStorage.setItem('headTitString', item.fieldDes)
       this.$store.commit('menu/addMmenuOperation', item.menuOperation)
       if (sessionStorage.getItem('headTitString')) {
-        if (!item.childrenMenu) {
+        if (!item.childrenMenu)
           this.$router.push(item.menuUrl)
-        }
       }
     },
     skipSecond(items) {
       sessionStorage.setItem('headTitString', items.fieldDes)
       this.$store.commit('menu/addMmenuOperation', items.menuOperation)
-      if (sessionStorage.getItem('headTitString')) {
+      if (sessionStorage.getItem('headTitString'))
         this.$router.push(items.menuUrl)
-      }
     },
     quit() {
       localStorage.clear()
@@ -234,8 +250,8 @@ export default {
     },
   },
 }
-
 </script>
+
 <style lang='scss' scoped>
 .box-color {
   color: #eab308;

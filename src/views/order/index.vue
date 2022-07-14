@@ -40,7 +40,7 @@ export default {
               tip: '订单详情',
               type: 'success',
               icon: 'el-icon-view',
-              click: (scope) => this.$router.push({
+              click: scope => this.$router.push({
                 path: '/order/orderMsg',
                 query: { item: scope },
               }),
@@ -50,7 +50,7 @@ export default {
               tip: '编辑',
               type: 'warning',
               icon: 'el-icon-edit',
-              click: (scope) => this.$router.push({
+              click: scope => this.$router.push({
                 path: '/order/orderMsg',
                 query: {
                   item: scope,
@@ -98,10 +98,9 @@ export default {
     async loadData(params) {
       const operation = JSON.parse(this.$store.state.menu.menuOperation)
       let selectOperation = ''
-      operation.forEach(item => {
-        if (item.operationKey === 'selectAll' && item.statue === 1) {
+      operation.forEach((item) => {
+        if (item.operationKey === 'selectAll' && item.statue === 1)
           selectOperation = 'selectAll'
-        }
       })
       const con = {
         userId: sessionStorage.userId,
@@ -109,9 +108,8 @@ export default {
         selectOperation,
       }
       await orderInfo(con).then((res) => {
-        if (res.head.status === 0) {
+        if (res.head.status === 0)
           this.data = res.body
-        }
       }).catch(() => {
 
       })

@@ -2,21 +2,21 @@ import { Loading } from 'element-ui'
 
 let loading = null
 const showLoading = (params) => {
-  console.log("target====",params)
-  if(loading) {
+  console.log('target====', params)
+  if (loading)
     loading.close()
-  }
-  let options = {
+
+  const options = {
     fullscreen: false,
     target: document.querySelector(params),
     lock: true,
     text: '小易拼命加载中...',
     spinner: 'el-icon-loading',
-    background: 'rgba(0, 0, 0, 0.7)'
+    background: 'rgba(0, 0, 0, 0.7)',
   }
   Object.assign(
     options,
-    params
+    params,
   )
   loading = Loading.service(options)
 }
@@ -25,5 +25,5 @@ const hideLoading = () => {
 }
 export {
   showLoading,
-  hideLoading
+  hideLoading,
 }

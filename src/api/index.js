@@ -45,22 +45,22 @@ const axios = Axios.create(axiosConfig)
 /**
  * 请求拦截器
  */
-axios.interceptors.request.use(config => {
+axios.interceptors.request.use((config) => {
   // console.dir(config)
   // config.headers.userId = sessionStorage.getItem('userId')
   // 每次发送请求时统一携带token
   // console.log(localStorage.getItem('token'))
   config.headers.token = localStorage.getItem('token')
   return config
-}, error => {
+}, (error) => {
   return Promise.reject(error)
 })
 /**
  * 响应拦截器
  */
-axios.interceptors.response.use(response => {
+axios.interceptors.response.use((response) => {
   return response
-}, error => {
+}, (error) => {
   if (error.response.status === 403) {
     Message({
       message: '由于您长时间未操作，需要重新登录',
@@ -116,15 +116,15 @@ export function post(url, params = {}, config = {}) {
     con: params,
   }
 
-  return axios.post(url, formattedParams, __config).then(res => {
-    if (res.headers['content-type'] !== 'application/json') {
+  return axios.post(url, formattedParams, __config).then((res) => {
+    if (res.headers['content-type'] !== 'application/json')
       return res
-    } if (res.data && res.data.head && res.data.head.status === API_STATUS.OK) {
+    if (res.data && res.data.head && res.data.head.status === API_STATUS.OK)
       return res.data
-    }
+
     tips && Message.error(res.data.head.msg)
     return Promise.reject(res.data)
-  }).catch(err => {
+  }).catch((err) => {
     return Promise.reject(err)
   })
 }

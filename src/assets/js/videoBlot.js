@@ -19,9 +19,9 @@ class Video extends BlockEmbed {
 
   static formats(domNode) {
     return ATTRIBUTES.reduce((formats, attribute) => {
-      if (domNode.hasAttribute(attribute)) {
+      if (domNode.hasAttribute(attribute))
         formats[attribute] = domNode.getAttribute(attribute)
-      }
+
       return formats
     }, {})
   }
@@ -35,12 +35,11 @@ class Video extends BlockEmbed {
   }
 
   format(name, value) {
-    if (ATTRIBUTES.indexOf(name) > -1) {
-      if (value) {
+    if (ATTRIBUTES.includes(name)) {
+      if (value)
         this.domNode.setAttribute(name, value)
-      } else {
+      else
         this.domNode.removeAttribute(name)
-      }
     } else {
       super.format(name, value)
     }
