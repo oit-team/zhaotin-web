@@ -177,11 +177,11 @@
 
 <script>
 import {
-  getOrderSite,
   addOrderSite,
+  dltOrderSite,
+  getOrderSite,
   setOrderSite,
   // CalculatePrice,
-  dltOrderSite,
 } from '@/api/orderCart'
 import { addIntegralOrder } from '@/api/integral'
 

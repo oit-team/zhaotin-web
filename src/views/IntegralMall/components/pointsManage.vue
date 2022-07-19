@@ -474,7 +474,7 @@ export default {
               message: '导入商品失败',
             })
           }
-        }).catch((err) => {
+        }).catch(() => {
           this.$message({
             type: 'error',
             message: '导入商品失败',

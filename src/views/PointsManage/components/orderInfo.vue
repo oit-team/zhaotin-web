@@ -4,8 +4,8 @@
     <div>
       <div class="flex justify-between items-center mb-2">
         <el-page-header
-          @back="$router.back()"
           content="订单详情"
+          @back="$router.back()"
         />
         <!-- <div>
           <el-button class="!text-amber-500" v-if="isUpdate && $route.query.item.row.orderState !== 2" type="text" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
@@ -16,8 +16,12 @@
         </div> -->
       </div>
       <div class="flex justify-between px-14 zt-head">
-        <div class="font-extrabold">单号：{{ goodsInfo.orderNo }}</div>
-        <div class="font-extrabold">下单时间: {{ goodsInfo.orderTime }}</div>
+        <div class="font-extrabold">
+          单号：{{ goodsInfo.orderNo }}
+        </div>
+        <div class="font-extrabold">
+          下单时间: {{ goodsInfo.orderTime }}
+        </div>
         <!-- <div class="font-extrabold">订单类型: {{ orderTypeName }}</div> -->
         <!-- <div class="font-extrabold">件数: {{ goodsInfo.goodsNumber }}件</div>
         <div class="font-extrabold" v-show="!isSet">扣除积分: <span class="zt-red">{{ goodsInfo.goodsIntegral }}</span></div> -->
@@ -30,7 +34,9 @@
       <div class="zt-content">
         <div class="zt-content__item">
           <div class="zt-cart__title">
-            <div class="zt-title__title">{{ goodsInfo.goodsName }}</div>
+            <div class="zt-title__title">
+              {{ goodsInfo.goodsName }}
+            </div>
           </div>
           <div class="zt-cart__line">
             <el-row :gutter="20">
@@ -47,8 +53,16 @@
                   {{ goodsInfo.goodsName }}
                 </div>
               </el-col>
-              <el-col :span="8"><div class="zt-cart__color">物品编号{{ goodsInfo.goodsNo }}</div></el-col>
-              <el-col :span="6"><div class="zt-cart__color">{{ goodsInfo.orderRemarks }}</div></el-col>
+              <el-col :span="8">
+                <div class="zt-cart__color">
+                  物品编号{{ goodsInfo.goodsNo }}
+                </div>
+              </el-col>
+              <el-col :span="6">
+                <div class="zt-cart__color">
+                  {{ goodsInfo.orderRemarks }}
+                </div>
+              </el-col>
             </el-row>
           </div>
         </div>
@@ -57,8 +71,12 @@
         <div class="">
           <!-- <p>下单原因：<span>{{ goodsInfo.orderReason || '无' }}</span></p> -->
           <!-- <p>订单备注：<span>{{ goodsInfo.orderNote || '无' }}</span></p> -->
-          <div class="font-extrabold">数量: {{ goodsInfo.goodsNumber }}件</div>
-          <div class="font-extrabold" v-show="!isSet">消费积分: <span class="zt-red">{{ goodsInfo.goodsIntegral }}</span></div>
+          <div class="font-extrabold">
+            数量: {{ goodsInfo.goodsNumber }}件
+          </div>
+          <div v-show="!isSet" class="font-extrabold">
+            消费积分: <span class="zt-red">{{ goodsInfo.goodsIntegral }}</span>
+          </div>
         </div>
         <div class="zt-footer__right">
           <p>收货人：<span>{{ goodsInfo.consignee || '无' }}</span>{{ ' ' }}{{ goodsInfo.consigneePhone || '' }}</p>
@@ -67,7 +85,9 @@
       </div>
     </div>
     <div class="flex my-5">
-      <div class="label w-24">订单备注：</div>
+      <div class="label w-24">
+        订单备注：
+      </div>
       <!-- <el-input type="textarea" :rows="4" v-model="orderNote" /> -->
       <div>{{ goodsInfo.orderRemarks }}</div>
     </div>
@@ -116,7 +136,7 @@ export default {
     getData() {
       getOrderDetail({
         id: this.orderId,
-      }).then(res => {
+      }).then((res) => {
         this.goodsInfo = res.body.resultMap
       }).catch(() => {})
     },

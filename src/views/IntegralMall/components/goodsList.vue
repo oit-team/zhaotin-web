@@ -2,23 +2,29 @@
   <div class="w-full py-10 overflow-x-hidden">
     <div class="header flex mb-5">
       <div class="flex items-center mx-5">
-        <div class="text-sm">可用积分</div>
+        <div class="text-sm">
+          可用积分
+        </div>
         <!-- <div class="text-sm">可用<br />积分</div> -->
         <el-divider direction="vertical" />
-        <div class="text-xl text-red-700">{{ userIntegral || 0 }}</div>
+        <div class="text-xl text-red-700">
+          {{ userIntegral || 0 }}
+        </div>
       </div>
     </div>
     <div class="tabs flex">
       <Tabs :tab-list="goodsCategory" :ishome="ishome" @checkTab="checkTab1" />
       <div class="flex items-center mr-10">
         <el-input
-          placeholder="商品名称"
           v-model="searchInput"
+          placeholder="商品名称"
           class="one w-40"
           prefix-icon="el-icon-search"
           @change="cgVal"
         >
-          <el-button class="search" slot="append" @click="cgVal(inputVal)">搜索</el-button>
+          <el-button slot="append" class="search" @click="cgVal(inputVal)">
+            搜索
+          </el-button>
         </el-input>
       </div>
     </div>
@@ -26,8 +32,8 @@
     <el-divider />
 
     <!-- 商品  展示  区 -->
-    <div class="relative" v-loading="fullscreenLoading">
-      <div class="nav-r" ref="nav-r">
+    <div v-loading="fullscreenLoading" class="relative">
+      <div ref="nav-r" class="nav-r">
         <!-- <div class="orderCart zt-flex" @click="toCart">
           <el-badge :value="styleLength" class="item">
             <div>
@@ -58,24 +64,38 @@
             <i class="iconfont icon-shipin"></i>
           </div>
           <div class="zt-item__line">
-            <p class="truncate">{{ item.goodsName }}</p>
+            <p class="truncate">
+              {{ item.goodsName }}
+            </p>
             <p>{{ item.goodsCode }}</p>
           </div>
           <div class="zt-item__line flex">
-            <div class="zt-price__l">￥{{ item.goodsPrice }}</div>
+            <div class="zt-price__l">
+              ￥{{ item.goodsPrice }}
+            </div>
             <div class="zt-price__r">
-              积分：<div class="zt-item__price">{{ item.goodsIntegral }}</div>
+              积分：<div class="zt-item__price">
+                {{ item.goodsIntegral }}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <LoadMore @load="load" ref="loadMore" first-load v-show="!showEmp && !fullscreenLoading">
-      <template v-slot="scope">
-        <el-divider v-if="scope.next">加载更多</el-divider>
-        <el-divider v-if="scope.loading"><i class="el-icon-loading text-xl"></i></el-divider>
-        <el-divider v-if="scope.done">已经到底了</el-divider>
-        <el-divider v-if="scope.fail">加载失败，请重试</el-divider>
+    <LoadMore v-show="!showEmp && !fullscreenLoading" ref="loadMore" first-load @load="load">
+      <template #default="scope">
+        <el-divider v-if="scope.next">
+          加载更多
+        </el-divider>
+        <el-divider v-if="scope.loading">
+          <i class="el-icon-loading text-xl"></i>
+        </el-divider>
+        <el-divider v-if="scope.done">
+          已经到底了
+        </el-divider>
+        <el-divider v-if="scope.fail">
+          加载失败，请重试
+        </el-divider>
       </template>
     </LoadMore>
   </div>
@@ -120,10 +140,10 @@ export default {
 
   methods: {
     load($state) {
-      if (this.formData.pageNum === 1) {
+      if (this.formData.pageNum === 1)
         this.fullscreenLoading = true
-      }
-      getGoodsList(this.formData).then(res => {
+
+      getGoodsList(this.formData).then((res) => {
         const result = res.body.goodsList
         if (this.formData.pageNum === 1) {
           this.dataList = result
@@ -134,7 +154,7 @@ export default {
             total: 0,
             orderKey: 0,
           }
-          this.goodsCategory.forEach(e => {
+          this.goodsCategory.forEach((e) => {
             all.total += e.total - 0
           })
           this.goodsCategory.unshift(all)
@@ -143,7 +163,7 @@ export default {
         }
         this.dataList.length >= res.body.totalCount ? $state.done() : $state.next()
         this.formData.pageNum++
-      }).catch(ref => {
+      }).catch((ref) => {
         console.log(ref)
         $state.fail()
       }).finally(() => {
@@ -161,11 +181,11 @@ export default {
     },
     checkTab1(index) {
       let con = ''
-      if (index !== 0) {
+      if (index !== 0)
         con = this.goodsCategory[index].orderKey
-      } else {
+      else
         con = ''
-      }
+
       this.$nextTick(() => {
         this.showEmp = false
         this.formData.goodsType = con
@@ -174,9 +194,8 @@ export default {
     },
     backTop() {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-      if (scrollTop !== 0) {
+      if (scrollTop !== 0)
         window.scrollTo('0', '0')
-      }
     },
     todetails(id) {
       this.$router.push(`/integralMall/goodsDetails?id=${id}`)
@@ -292,5 +311,4 @@ export default {
   float: right;
   transform: translateX(140%);
 }
-
 </style>

@@ -2,7 +2,7 @@
   <div class="h-full my-10">
     <div class="main container">
       <div class="table_height">
-        <TablePage v-bind="tablePageOption" auto ref="page" />
+        <TablePage v-bind="tablePageOption" ref="page" auto />
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@ export default {
                 tip: '订单详情',
                 type: 'success',
                 icon: 'el-icon-view',
-                click: (scope) => this.$router.push({
+                click: scope => this.$router.push({
                   path: '/pointsManage/orderInfo',
                   query: { item: scope },
                 }),
@@ -58,9 +58,8 @@ export default {
                 disabled: ({ row }) => {
                   if (row.status === '1') { // 1 是已上架
                     return true
-                  } if (row.status === '0') {
+                  } if (row.status === '0')
                     return false
-                  }
                 },
               },
               {
@@ -87,9 +86,8 @@ export default {
         ...params,
       }
       await getOrderList(con).then((res) => {
-        if (res.head.status === 0) {
+        if (res.head.status === 0)
           this.data = res.body
-        }
       }).catch(() => {
 
       })
