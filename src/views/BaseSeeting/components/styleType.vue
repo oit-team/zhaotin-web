@@ -76,6 +76,7 @@ export default {
                 tip: '尺码配置',
                 type: 'warning',
                 icon: 'el-icon-s-data',
+                disabled:({row})=>!!row.fatherTypeName,
                 click: (scope) => this.$router.push({
                   path: '/basls/styleType/sizeInfo',
                   query: { item: scope },

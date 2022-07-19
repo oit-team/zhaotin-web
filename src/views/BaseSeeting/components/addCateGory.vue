@@ -3,6 +3,16 @@
     <el-page-header @back="goBack" :content="editFlag ? '新增类别' : '修改类别'"></el-page-header>
     <el-divider></el-divider>
     <el-form style="margin-top:20px;" :model="cateGoryForm" :rules="rules" ref="cateGoryForm" label-width="90px" class="demo-cateGoryForm">
+      <el-form-item label="父类别" prop="fatherTypeId" >
+        <el-select v-model.trim="cateGoryForm.fatherTypeId" style="width:60%;" placeholder="请选择父类别名称">
+            <el-option
+              v-for="item in parentList"
+              :key="item.id"
+              :label="item.dictitemDisplayName"
+              :value="item.id">
+            </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="类别名称" prop="dictitemDisplayName" >
         <el-input v-model.trim="cateGoryForm.dictitemDisplayName" style="width:60%;"  placeholder="请输入类别名称"></el-input >
       </el-form-item>
@@ -38,7 +48,7 @@
 
 <script>
 import VcUpload from '@/views/common/Upload'
-import {addCateGory,sortList,updateCateGory,sort,getSizeSortList} from '@/api/category'
+import {addStyleTypeInfo,sortList,updateCateGory,sort,getSizeSortList,getParentCategoryList} from '@/api/category'
 export default {
   name:'addCategory',
   components:{VcUpload},
@@ -58,6 +68,7 @@ export default {
       editFlag:false,
       dictitemCode:null,
       cateGoryForm: {
+        fatherTypeId:"",
         dictitemDisplayName: "",
         remark: "",
         dictitemOrderkey: null,
@@ -73,6 +84,7 @@ export default {
         ],
       },
       sortList:[],
+      parentList:[]
     }
   },
   created(){
@@ -90,6 +102,7 @@ export default {
   },
   mounted(){
     this.querySortList();
+    this.queryParentList();
     
   },
   computed:{
@@ -124,6 +137,18 @@ export default {
     goBack(){
       this.$router.go(-1);   // 查看直接返回
     },
+    // 查询所有的父类别目录
+    queryParentList(){
+      const con = {
+        "fatherTypeId":''
+      }
+      getParentCategoryList(con).then((res) => {
+          if(res.head.status === 0) {
+           this.parentList = res.body.resultList
+           
+          }
+      })
+    },
     // 查询所有的类别排序字段
     querySortList(){
       const con = {
@@ -143,7 +168,7 @@ export default {
     },
 
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate((valid) => {  
         if (valid) {
           // 先查询所输入排序是否已经存在
           let con = {
@@ -186,9 +211,11 @@ export default {
           imgUrlArr.push(item.url)
         }
       })
+      const path = [0, this.cateGoryForm.fatherTypeId].filter(item => item !== '').toString()
       const con = {
            dictCode: "ACTEGORY",
            ...this.cateGoryForm,
+           path,
            createId: sessionStorage.userId,
            imgUrl:imgUrlArr.toString()
           }
@@ -204,7 +231,7 @@ export default {
            }
        })
       }else{  // 新增
-        addCateGory(con).then((res) => {
+        addStyleTypeInfo(con).then((res) => {
             if(res.head.status === 0) {
                   this.$message({
                     message: "新增商品类别成功",

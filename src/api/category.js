@@ -1,7 +1,7 @@
 import { post } from './index'
 // 获取菜单列表
 export function cateGoryList(params) {
-  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+  return post('/goods/styleType/getStyleTypeAll', params, {
     mod: 'home',
     cmd: 100001,
   })
@@ -125,6 +125,18 @@ export function addCollocation(params) {
 // 修改积分规则
 export function updateCollocation(params) {
   return post('/goods/integralRole/updateIntegralRule', params, {
+    mod: 'vue',
+  })
+}
+// 查询父类
+export function getParentCategoryList(params) {
+  return post('/goods/styleType/getStyleTypeList', params, {
+    mod: 'vue',
+  })
+}
+// 新增商品品类
+export function addStyleTypeInfo(params) {
+  return post('/goods/styleType/addStyleTypeInfo', params, {
     mod: 'vue',
   })
 }
