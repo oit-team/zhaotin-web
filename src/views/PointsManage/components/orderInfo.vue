@@ -7,60 +7,55 @@
           content="订单详情"
           @back="$router.back()"
         />
-        <!-- <div>
-          <el-button class="!text-amber-500" v-if="isUpdate && $route.query.item.row.orderState !== 2" type="text" @click="sett">{{ isSet?'完成':'修改' }}</el-button>
-          <el-divider v-if="isUpdate && $route.query.item.row.orderState !== 2" direction="vertical" />
-          <el-button class="!text-rose-500" v-if="isUpdate && $route.query.item.row.orderState !== 2" type="text" @click="deleteOrder">取消订单</el-button>
-          <el-divider v-if="isUpdate && $route.query.item.row.orderState !== 2" direction="vertical" />
-          <el-button type="text" @click="getNote">修改记录</el-button>
-        </div> -->
+        <div>
+          <el-button type="text" @click="dialogSee = true">
+            查看兑换记录
+          </el-button>
+          <el-divider v-if="flag === '1'" direction="vertical" />
+          <el-button v-if="flag === '1'" class="!text-rose-500" type="text" @click="dialogAdd = true">
+            添加兑换记录
+          </el-button>
+        </div>
       </div>
       <div class="flex justify-between px-14 zt-head">
         <div class="font-extrabold">
-          单号：{{ goodsInfo.orderNo }}
+          单号：{{ orderInfo.orderNo }}
         </div>
         <div class="font-extrabold">
-          下单时间: {{ goodsInfo.orderTime }}
+          下单时间: {{ orderInfo.orderTime }}
         </div>
-        <!-- <div class="font-extrabold">订单类型: {{ orderTypeName }}</div> -->
-        <!-- <div class="font-extrabold">件数: {{ goodsInfo.goodsNumber }}件</div>
-        <div class="font-extrabold" v-show="!isSet">扣除积分: <span class="zt-red">{{ goodsInfo.goodsIntegral }}</span></div> -->
-        <!-- <div class="font-extrabold flex" v-show="isSet">
-          总金额:
-          <el-input v-model="priceAll" class="ml-2" size="mini" placeholder="￥" />
-        </div> -->
       </div>
       <!-- ----- -->
       <div class="zt-content">
         <div class="zt-content__item">
-          <div class="zt-cart__title">
+          <!-- <div class="zt-cart__title">
             <div class="zt-title__title">
-              {{ goodsInfo.goodsName }}
+              订单编号：{{ orderInfo.orderNo }}
             </div>
-          </div>
+          </div> -->
           <div class="zt-cart__line">
             <el-row :gutter="20">
               <el-col :span="3">
                 <el-image
                   style="width: 100px; height: 100px"
-                  :src="goodsInfo.goodsImg"
+                  :src="orderInfo.goodsImg"
                   fit="contain"
-                  @click="todetails(goodsInfo.goodsId)"
+                  @click="todetails(orderInfo.goodsId)"
                 />
               </el-col>
               <el-col :span="6">
                 <div class="zt-cart__name">
-                  {{ goodsInfo.goodsName }}
+                  {{ orderInfo.goodsName }}
                 </div>
               </el-col>
               <el-col :span="8">
                 <div class="zt-cart__color">
-                  物品编号{{ goodsInfo.goodsNo }}
+                  物品编号：{{ orderInfo.goodsNo }}
                 </div>
               </el-col>
               <el-col :span="6">
                 <div class="zt-cart__color">
-                  {{ goodsInfo.orderRemarks }}
+                  <!-- {{ orderInfo.orderRemarks }} -->
                 </div>
               </el-col>
             </el-row>
@@ -69,39 +64,98 @@
       </div>
       <div class="zt-footer">
         <div class="">
-          <!-- <p>下单原因：<span>{{ goodsInfo.orderReason || '无' }}</span></p> -->
-          <!-- <p>订单备注：<span>{{ goodsInfo.orderNote || '无' }}</span></p> -->
           <div class="font-extrabold">
-            数量: {{ goodsInfo.goodsNumber }}件
+            数量: {{ orderInfo.goodsNumber }}件
           </div>
           <div v-show="!isSet" class="font-extrabold">
-            消费积分: <span class="zt-red">{{ goodsInfo.goodsIntegral }}</span>
+            消费积分: <span class="zt-red">{{ orderInfo.goodsIntegral }}</span>
           </div>
         </div>
         <div class="zt-footer__right">
-          <p>收货人：<span>{{ goodsInfo.consignee || '无' }}</span>{{ ' ' }}{{ goodsInfo.consigneePhone || '' }}</p>
-          <p>寄送地址：<span>{{ goodsInfo.consigneeAddress || '无' }}</span></p>
+          <p>收货人：<span>{{ orderInfo.consignee || '无' }}</span>{{ ' ' }}{{ orderInfo.consigneePhone || '' }}</p>
+          <p>寄送地址：<span>{{ orderInfo.consigneeAddress || '无' }}</span></p>
         </div>
       </div>
     </div>
     <div class="flex my-5">
-      <div class="label w-24">
+      <div class="label w-32">
         订单备注：
       </div>
       <!-- <el-input type="textarea" :rows="4" v-model="orderNote" /> -->
-      <div>{{ goodsInfo.orderRemarks }}</div>
+      <div>{{ orderInfo.orderRemarks }}</div>
     </div>
+    <!-- <div v-if="flag === '1'" class="flex my-5">
+      <div class="label w-32">
+        客服兑换记录：
+      </div>
+      <el-input v-model="exchange" type="textarea" :rows="4" />
+    </div> -->
+    <el-drawer
+      ref="addEx"
+      title="添加兑换记录"
+      :visible.sync="dialogAdd"
+      :direction="direction"
+      size="40%"
+      custom-class="zt-demo__drawer"
+    >
+      <div class="demo-drawer__content">
+        <el-form
+          ref="ruleForm"
+          :model="ruleForm"
+          :rules="rules"
+          label-position="left"
+          label-width="80px"
+          :hide-required-asterisk="false"
+        >
+          <el-form-item label="兑换凭证" prop="voucherImg">
+            <VcUpload v-bind="uploadImg" ref="goodsImg" :on-remove="onRemoveImg">
+              <i class="el-icon-plus"></i>
+            </VcUpload>
+            <p class="tip">
+              *最多可以上传1张图片，推荐格式jpg或png
+            </p>
+          </el-form-item>
+          <el-form-item label="备注" prop="remarks">
+            <el-input v-model="ruleForm.remarks" type="textarea" rows="4" autocomplete="off" />
+          </el-form-item>
+        </el-form>
+        <div class="demo-drawer__footer">
+          <el-button @click="dialogAdd = false">
+            取 消
+          </el-button>
+          <el-button type="primary" :loading="loading" @click="add('ruleForm')">
+            {{ loading ? "提交中 ..." : "确 定" }}
+          </el-button>
+        </div>
+      </div>
+    </el-drawer>
+    <el-drawer
+      ref="seeEx"
+      title="查看兑换记录"
+      :visible.sync="dialogSee"
+      :direction="direction"
+      size="40%"
+      custom-class="zt-demo__drawer"
+    >
+      <div class="demo-drawer__content">
+      </div>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import { getOrderDetail } from '@/api/order'
+import { addExchangeRecord } from '@/api/integral'
+import VcUpload from '@/views/common/Upload'
 
 export default {
   name: 'OrderInfo',
+  components: {
+    VcUpload,
+  },
   data() {
     return {
-      goodsInfo: {},
+      orderInfo: {},
       orderId: '',
       orderTime: '',
       orderTypeName: '',
@@ -118,15 +172,58 @@ export default {
       bValidateForm: {
         cause: '',
       },
+      dialogAdd: false,
+      dialogSee: false,
       loading: false,
       updateRecord: [], // 修改记录
       isUpdate: false,
+      flag: '',
+      exchange: '',
+      ruleForm: {
+        orderNo: '',
+        customer: '',
+        voucherImg: '',
+        remarks: '',
+      },
+      rules: {
+        remarks: [{
+          required: true, message: '请输入活动名称', trigger: 'blur',
+        }],
+      },
+      fileList: [],
     }
   },
+  computed: {
+    uploadImg() {
+      return {
+        showFileList: true,
+        multiple: true,
+        typeOption: {
+          'image/*': {
+            data: {
+              fileType: 0,
+            },
+          },
+        },
+        fileList: this.fileList,
+        listType: 'picture-card',
+        maxSize: 1024 * 20,
+        limit: 1,
+        chunkSize: 1024 * 5,
+        check: true,
+        accept: 'image/*',
+        onSuccess: (file, fileList) => {
+          const data = {
+            url: file.data.fileUrl,
+          }
+          this.fileList.push(data)
+          this.ruleForm.voucherImg = file.data.fileUrl
+        },
+      }
+    },
+  },
   created() {
-    // if (this.$route.query.stype && this.$route.query.stype === 'update' && this.$route.query.item.row.orderState !== '2') {
-    //   this.isUpdate = true
-    // }
+    this.flag = this.$route.query.flag
     if (this.$route.query.item) {
       this.orderId = this.$route.query.item.row.id
       this.getData()
@@ -137,8 +234,18 @@ export default {
       getOrderDetail({
         id: this.orderId,
       }).then((res) => {
-        this.goodsInfo = res.body.resultMap
+        this.orderInfo = res.body.resultMap
       }).catch(() => {})
+    },
+    onRemoveImg() {
+      this.ruleForm.voucherImg = ''
+    },
+    add() {
+      this.ruleForm.orderNo = this.orderInfo.orderNo
+      this.ruleForm.customer = sessionStorage.getItem('userId')
+      addExchangeRecord(this.ruleForm).then(res => {
+        console.log(res)
+      })
     },
   },
 }
@@ -184,6 +291,7 @@ export default {
   width: 100%;
   background: #fff;
   margin: 10px 0;
+  box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
   box-sizing: border-box;
   .el-row{
     display: flex;
@@ -253,6 +361,7 @@ export default {
   .zt-footer__right{
     // display: flex;
     align-items: center;
+    max-width: 30%;
     padding: 10px 0;
     line-height: 30px;
     box-sizing: border-box;
@@ -270,12 +379,33 @@ export default {
     }
   }
 }
-.demo-drawer__content{
+.demo-drawer__content {
   display: flex;
   flex-direction: column;
+  padding: 40px;
   height: 100%;
+  justify-content: space-between;
+  .demo-drawer__footer {
+    display: flex;
+    justify-content: space-around;
+  }
+  .el-button--default {
+    width: 40%;
+  }
+  .el-button--primary {
+    width: 40%;
+  }
 }
+// .demo-drawer__content{
+//   display: flex;
+//   flex-direction: column;
+//   height: 100%;
+// }
 .zt-red{
   color: #FF0000;
+}
+.tip{
+  color:#e60012;
+  margin:12px 0px;
 }
 </style>

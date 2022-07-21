@@ -34,17 +34,11 @@
       </div>
     </div>
     <div class="zt-content">
-      <!-- <div class="zt-content__item" v-for="(item, index) in formData.styleList" :key="index"> -->
       <div class="zt-content__item">
-        <!-- 一级选择框 -->
-        <!-- <div class="zt-cart__title">
-          <div class="zt-title__title">{{ item.styleName }}</div>
-        </div> -->
-        <!-- <div class="zt-cart__line" v-for="(itemN, indexN) in item.style" :key="indexN"> -->
         <div class="zt-cart__line">
           <el-row :gutter="20">
             <el-col :span="3">
-              <el-image style="width: 100px; height: 100px" :src="formData.image" fit="contain" @click="todetails(item, item.styleId)" />
+              <el-image style="width: 100px; height: 100px" :src="formData.imgUrlList[0]" fit="contain" @click="todetails(item, item.styleId)" />
               <!-- </div> -->
             </el-col>
             <el-col :span="6">
@@ -400,7 +394,6 @@ export default {
           this.dialog2 = false
           clearTimeout(this.timer)
         } else {
-          // console.log('error submit!!')
           return false
         }
       })
@@ -411,23 +404,14 @@ export default {
         receivingId: this.siteList[this.radio].id,
         goodsId: this.formData.goodsId,
         goodsNumber: this.formData.goodsNumber,
-        goodsNo: this.formData.styleNo,
+        goodsNo: this.formData.goodsCode,
         goodsIntegral: this.formData.goodsIntegral,
         orderRemarks: this.orderNote,
       }
       addIntegralOrder(con).then((res) => {
         if (res.head.status === 0) {
-          this.$message.success('兑换成功')
           this.$store.commit('integral/cgStart', true)
-          payIntegralOrder({
-            orderNo: res.body.orderNo,
-            userId: this.$store.state.userinfo.id,
-          }).then((data) => {
-            console.log(data)
-            // setTimeout(() => {
-            //   this.$router.back()
-            // }, 800)
-          })
+          this.$message.success('兑换成功')
         } else {
           this.$message.error(res.head.msg)
         }

@@ -47,7 +47,7 @@ export default {
                 icon: 'el-icon-view',
                 click: scope => this.$router.push({
                   path: '/pointsManage/orderInfo',
-                  query: { item: scope },
+                  query: { item: scope, flag: 0 },
                 }),
               },
               {
@@ -66,7 +66,10 @@ export default {
                 tip: '编辑',
                 type: 'warning',
                 icon: 'el-icon-edit',
-                click: () => {},
+                click: scope => this.$router.push({
+                  path: '/pointsManage/orderInfo',
+                  query: { item: scope, flag: 1 },
+                }),
               },
             ],
           },
@@ -100,5 +103,9 @@ export default {
 <style lang="less" scoped>
 .table_height {
   height: 600px;
+}
+
+::v-deep .el-loading-spinner {
+  left: 50%;
 }
 </style>

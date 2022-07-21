@@ -7,6 +7,7 @@
       </el-breadcrumb-item>
       <el-breadcrumb-item>商品详情</el-breadcrumb-item>
     </el-breadcrumb>
+
     <!-- 主题内容 -->
     <!-- 返回内容为空 -->
     <div v-if="showResult">
@@ -16,6 +17,7 @@
         </el-button>
       </el-empty>
     </div>
+
     <div v-else class="zt-content">
       <!-- top  商品图片 信息区 -->
       <div class="zt-content__head">
@@ -56,6 +58,7 @@
               />
             </el-carousel-item>
           </el-carousel>
+
           <div ref="pimages" class="zt-head__images">
             <div v-if="imgMarginL < 0" class="zt-images__left" @click="transformImgL">
               <i class="el-icon-arrow-left"></i>
@@ -186,11 +189,6 @@
                 :min="0"
                 @change="handleChange"
               />
-              <!-- <div v-if="infoData.styleColorList">
-                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
-                  <el-input-number size="small" v-model="item.num" @change="handleChange" :min="1" :max="99" />
-                </div>
-              </div> -->
             </div>
           </div>
           <!-- 购买 -->
@@ -204,6 +202,7 @@
           </div>
         </div>
       </div>
+
       <!-- center 产品详情 -->
       <div class="zt-content__data">
         <div class="zt-content__title">
@@ -224,9 +223,6 @@
               基础信息
             </div>
             <div class="zt-content__info">
-              <!-- <div class="zt-info__flex" style="white-space:pre-wrap">
-                {{ infoData.styleAttribute }}
-              </div> -->
               <div class="zt-info__flex">
                 <div class="zt-info__label">
                   材质
@@ -255,6 +251,7 @@
           </div>
         </div>
         <el-divider />
+
         <!-- 产品卖点 -->
         <div class="zt-content__data2">
           <div class="zt-content__label">
@@ -288,6 +285,7 @@
           </div>
         </div>
         <el-divider />
+
         <!-- 服装尺寸 -->
         <div class="zt-content__data3">
           <div class="zt-content__label">
@@ -327,6 +325,7 @@
           </div>
         </div>
         <el-divider />
+
         <!-- 服装材料信息 -->
         <div class="zt-content__data4">
           <div class="zt-content__label">
@@ -346,6 +345,8 @@
           </div>
         </div>
         <el-divider />
+
+        <!-- 洗涤说明 -->
         <div class="zt-content__data5">
           <div class="zt-content__label">
             洗涤说明
@@ -364,6 +365,7 @@
           </div>
         </div>
       </div>
+
       <!-- 底部 推荐区 -->
       <div class="zt-content__footer">
         <div class="zt-content__title">
@@ -554,6 +556,7 @@ export default {
     },
     // 轮播图 切换出控制
     setCarouselItem(index) {
+      console.log(this.infoData.imgUrlList)
       this.$refs.carousel.setActiveItem(index)
     },
     videoPlay() {

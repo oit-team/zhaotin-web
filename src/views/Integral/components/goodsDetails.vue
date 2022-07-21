@@ -27,7 +27,7 @@
             :autoplay="false"
             indicator-position="none"
           >
-            <el-carousel-item v-if="infoData.goodsVideo || infoData.styleVedio">
+            <el-carousel-item v-if="infoData.goodsVideo !== null || infoData.styleVedio !== null">
               <div class="zt-swiper__item">
                 <video
                   id="player"
@@ -35,16 +35,16 @@
                   width="500px"
                   height="500px"
                   :src="infoData.styleVideo"
-                  playsinline
                   controls
-                  :poster="infoData.styleVideoPatch || goodsData.videoImage"
+                  :poster="infoData.styleVideoPatch || infoData.videoImage"
                 >
+                  <source :src="infoData.styleVideo" type="video/mp4" />
                   <track kind="captions" label="English captions" src="" srclang="en" default />
                 </video>
               </div>
             </el-carousel-item>
             <el-carousel-item
-              v-for="(item, index) in infoData.imgUrlList"
+              v-for="(item, index) in infoData.thumbnailList"
               :key="index"
             >
               <el-image
@@ -411,10 +411,13 @@ export default {
   },
   created() {
     this.goodsId = this.$route.query.id
+    console.log(this.$store.state.integral.isStart)
+    console.log(this.$store.state.integral.detailData)
     if (this.$store.state.integral.isStart) this.getData()
     else this.infoData = this.$store.state.integral.detailData
   },
   beforeDestroy() {
+    this.$store.commit('integral/cgDetail', this.infoData)
   },
   methods: {
     getData() {
@@ -422,7 +425,6 @@ export default {
         const state = res.body.resultList?.state || res.body.goodsDetails?.state
         if (state === 1) {
           if (res.body.resultList !== undefined && res.body.resultList !== null) {
-            console.log('23213231')
             this.infoData = res.body.resultList
             this.infoData.styleData = JSON.parse(this.infoData.styleData)
             this.infoData.styleWashing = JSON.parse(this.infoData.styleWashing)
@@ -474,22 +476,17 @@ export default {
               this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
           } else {
             this.infoData = res.body.goodsDetails
-            console.log(123)
             this.$set(this.infoData, 'goodsNumber', 0)
-            // this.thumbnailList = [...this.infoData.imgUrlList, ...this.infoData.imgDetailUrlList]
-            // this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
             // 将 视频封面 加到切换轮播的images中
-            console.log(this.infoData.styleVideoPatch !== null)
-            console.log(this.infoData.styleVideoPatch)
+            this.thumbnailList = [...this.infoData.imgUrlList]
+            this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
             if (this.infoData.styleVideoPatch !== null) this.infoData.imgUrlList.unshift(this.infoData.styleVideoPatch)
-            // if (this.infoData.imgDetailUrlList.length !== 0) this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
           }
         } else {
           this.$message.warning('该商品暂未上架')
         }
       }).catch(() => {
       }).finally(() => {
-        console.log(this.infoData)
       })
     },
     // 轮播图 切换出控制
