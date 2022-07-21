@@ -9,10 +9,10 @@
                 上/下架<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="updGoods(0)">
+                <el-dropdown-item @click.native="handleCommand(0)">
                   商品上架
                 </el-dropdown-item>
-                <el-dropdown-item @click.native="updGoods(1)">
+                <el-dropdown-item @click.native="handleCommand(1)">
                   商品下架
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -178,7 +178,7 @@
 <script>
 import axios from 'axios'
 import TablePage from '@/components/business/TablePage'
-import { getIntegralGoodsList } from '@/api/integral'
+import { delIntegralGoods, getIntegralGoodsList, updateIntegralGoodsState } from '@/api/integral'
 
 export default {
   name: 'GoodsManage',
@@ -264,9 +264,9 @@ export default {
                 icon: 'el-icon-delete',
                 click: this.deleteGoods,
                 disabled: ({ row }) => {
-                  if (row.status === '1') { // 1 是已上架
+                  if (row.state === 1) { // 1 是已上架
                     return true
-                  } if (row.status === '0')
+                  } if (row.state === 2)
                     return false
                 },
               },
@@ -275,9 +275,9 @@ export default {
                 type: 'success',
                 icon: 'el-icon-edit',
                 disabled: ({ row }) => {
-                  if (row.status === '1') { // 1 是已上架
+                  if (row.state === 1) { // 1 是已上架
                     return true
-                  } if (row.status === '0')
+                  } if (row.state === 2)
                     return false
                 },
                 click: scope => this.$router.push({
@@ -298,9 +298,6 @@ export default {
   },
   created() {
   },
-  // activated() {
-  //   this.$refs.page.loadData()
-  // },
   methods: {
     async loadData(params) {
       const res = await getIntegralGoodsList({
@@ -324,8 +321,19 @@ export default {
         type: 'warning',
       }).then(() => {
         const con = {
-          styleId: item.row.styleId.toString(),
+          id: item.row.id,
         }
+        delIntegralGoods(con).then(res => {
+          if (res.head.status !== 0) {
+            this.$message(res.head.msg)
+          } else {
+            this.$message({
+              type: 'success',
+              message: '删除成功!',
+            })
+            this.loadData()
+          }
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -590,14 +598,28 @@ export default {
       return returnRes
     },
 
-    handleCommand(command) {
-      // const status = command
-      const msg = command === 1 ? '下架' : '上架'
+    handleCommand(id) {
+      const msg = id === 1 ? '下架' : '上架'
+      const con = {
+        id: [],
+        state: id === 1 ? 2 : 1,
+      }
       this.$confirm(`确认${msg}已选择的商品吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning',
       }).then(() => {
+        this.$refs.page.selected.forEach(e => {
+          con.id.push(e.id)
+        })
+        updateIntegralGoodsState(con).then((res) => {
+          if (res.head.status !== 0) this.$message(res.head.msg)
+          else this.$message.success('操作成功')
+          this.errorList = [...res.body.errorList]
+          // 如果有失败的数据  则弹出--抽屉
+          if (res.body.errorList.length !== 0) this.drawerUpd = true
+        })
+        this.$refs.page.loadData()
       }).catch(() => {
         this.$message({
           message: '已取消',
@@ -637,7 +659,9 @@ export default {
     height: 50px;
     width: auto;
   }
-
+  ::v-deep .el-loading-spinner{
+    left: 50%;
+  }
   ::v-deep .el-drawer__body{
     padding: 20px;
   }

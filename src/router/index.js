@@ -40,10 +40,8 @@ VueRouter.prototype.push = function push(to) {
 const routes = [
   {
     path: '/',
-    name: 'Layout',
-    component: Layout,
-    children: [
-    ],
+    name: 'Login',
+    component: () => import('@/views/Login/index'),
   },
   {
     // 积分商城

@@ -1,5 +1,5 @@
 <template>
-  <div class="my-10">
+  <div class="my-10 block">
     <!-- 头部 -->
     <div>
       <div class="flex justify-between items-center mb-2">
@@ -147,9 +147,9 @@ export default {
 <style lang='scss' scoped>
 .zt-content{
   background-color: #f5f5f5;
-  // border-radius: 20px;
   padding: 20px 10px;
   margin-top: 15px;
+  border-radius: 5px 5px 0 0;
   box-sizing: border-box;
 }
 .zt-content__item{
@@ -218,6 +218,7 @@ export default {
   width: 100%;
   font-size: 16px;
   padding: 0 20px;
+  border-radius: 0 0 5px 5px;
   background-color: #f6f5f3;
   .zt-footer__left{
     // display: flex;

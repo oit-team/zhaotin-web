@@ -49,7 +49,7 @@ export function addIntegralGoods(params) {
   })
 }
 
-// 积分商品 查看/修改
+// 积分商品 查看
 export function getIntegralGoodsDetailed(params) {
   return post('/goods/integralGoods/getIntegralGoodsDetailed', params, {
     mod: 'home',
@@ -64,5 +64,32 @@ export function getTypeAndDate(params) {
     mod: 'home',
     cmd: 100001,
     uuid: '0',
+  })
+}
+
+// 积分商城 上下架
+export function updateIntegralGoodsState(params) {
+  return post('/goods/integralGoods/updateIntegralGoodsState', params, {
+    mod: 'home',
+    cmd: 100001,
+    uuid: '1',
+  })
+}
+
+// 积分商城 修改商品
+export function updateIntegralGoods(params) {
+  return post('/goods/integralGoods/updateIntegralGoods', params, {
+    mod: 'home',
+    cmd: 100001,
+    uuid: '1',
+  })
+}
+
+// 积分商城 删除商品
+export function delIntegralGoods(params) {
+  return post('/goods/integralGoods/delIntegralGoods', params, {
+    mod: 'home',
+    cmd: 100001,
+    uuid: '1',
   })
 }

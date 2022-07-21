@@ -27,29 +27,29 @@
             :autoplay="false"
             indicator-position="none"
           >
-            <el-carousel-item v-if="infoData.goodsVideo">
+            <el-carousel-item v-if="infoData.goodsVideo || infoData.styleVedio">
               <div class="zt-swiper__item">
                 <video
                   id="player"
                   ref="styleVideo"
                   width="500px"
                   height="500px"
+                  :src="infoData.styleVideo"
                   playsinline
                   controls
                   :poster="infoData.styleVideoPatch || goodsData.videoImage"
                 >
-                  <source :src="infoData.styleVideo || goodsData.video" type="video/mp4" />
                   <track kind="captions" label="English captions" src="" srclang="en" default />
                 </video>
               </div>
             </el-carousel-item>
             <el-carousel-item
-              v-for="(item, index) in infoData.thumbnailList"
+              v-for="(item, index) in infoData.imgUrlList"
               :key="index"
             >
               <el-image
                 class="zt-swiper__item"
-                :src="item.resUrl"
+                :src="item || item.resUrl"
                 fit="contain"
               />
             </el-carousel-item>
@@ -68,7 +68,7 @@
                 <el-image
                   fit="contain"
                   :class="imageIndex === index ? 'zt-images__select' : 'zt-images__image'"
-                  :src="item.resUrl"
+                  :src="item || item.resUrl"
                 />
                 <i v-if="index === 0 && infoData.styleVideo" class="iconfont icon-qiehuanchanpin"></i>
                 <!-- <i v-if="index===0&&infoData.styleVideo" class="el-icon-caret-right"></i> -->
@@ -189,7 +189,7 @@
                 {{ infoData.goodsName }}
               </div>
               <div class="zt-data__code">
-                <div>编号：{{ infoData.styleNo }}</div>
+                <div>编号：{{ infoData.goodsCode }}</div>
               </div>
             </div>
             <div class="note">
@@ -411,26 +411,18 @@ export default {
   },
   created() {
     this.goodsId = this.$route.query.id
-    // this.getData()
-    // // this.orderType = this.$route.query.orderType
-    // this.getData()
-    if (this.$store.state.integral.isStart)
-      this.getData()
-    else
-      this.infoData = this.$store.state.integral.detailData
+    if (this.$store.state.integral.isStart) this.getData()
+    else this.infoData = this.$store.state.integral.detailData
   },
   beforeDestroy() {
   },
   methods: {
     getData() {
-      getDetails({
-        goodsId: this.goodsId,
-      }).then((res) => {
-        console.log(res.body)
+      getDetails({ goodsId: this.goodsId }).then((res) => {
         const state = res.body.resultList?.state || res.body.goodsDetails?.state
         if (state === 1) {
           if (res.body.resultList !== undefined && res.body.resultList !== null) {
-            console.log(546)
+            console.log('23213231')
             this.infoData = res.body.resultList
             this.infoData.styleData = JSON.parse(this.infoData.styleData)
             this.infoData.styleWashing = JSON.parse(this.infoData.styleWashing)
@@ -480,28 +472,24 @@ export default {
             }
             if (this.infoData.imgDetailUrlList.length !== 0)
               this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
-
-            this.loadData()
           } else {
             this.infoData = res.body.goodsDetails
+            console.log(123)
             this.$set(this.infoData, 'goodsNumber', 0)
-            this.thumbnailList = [...this.infoData.imgUrlList, ...this.infoData.imgDetailUrlList]
-            this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
+            // this.thumbnailList = [...this.infoData.imgUrlList, ...this.infoData.imgDetailUrlList]
+            // this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
             // 将 视频封面 加到切换轮播的images中
-            if (this.infoData.styleVideoPatch !== null) {
-              const url = {
-                resUrl: this.infoData.styleVideoPatch,
-              }
-              this.infoData.imgUrlList.unshift(url)
-            }
-            if (this.infoData.imgDetailUrlList.length !== 0)
-              this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
+            console.log(this.infoData.styleVideoPatch !== null)
+            console.log(this.infoData.styleVideoPatch)
+            if (this.infoData.styleVideoPatch !== null) this.infoData.imgUrlList.unshift(this.infoData.styleVideoPatch)
+            // if (this.infoData.imgDetailUrlList.length !== 0) this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
           }
-          console.log(this.infoData)
         } else {
           this.$message.warning('该商品暂未上架')
         }
       }).catch(() => {
+      }).finally(() => {
+        console.log(this.infoData)
       })
     },
     // 轮播图 切换出控制

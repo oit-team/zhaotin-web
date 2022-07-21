@@ -1492,7 +1492,6 @@ export default {
       this.setImgInfo() 
     },
     setImgInfo() {
-      console.log(456456)
       this.colorList = [];
       this.activeGoodsSize = []
       this.selectedColorName = [];

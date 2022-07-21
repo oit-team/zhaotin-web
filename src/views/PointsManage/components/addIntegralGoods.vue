@@ -2,11 +2,11 @@
   <div class="h-full py-5">
     <div class="flex justify-between items-center">
       <el-page-header :content="`${title}商品`" @back="$router.back()" />
-      <div class="">
-        <el-button v-if="operateFlag !== view && isEdit" size="small" icon="el-icon-check" type="primary" @click="saveGood('formData', 0)">
+      <div v-if="isEdit">
+        <el-button size="small" icon="el-icon-check" type="primary" @click="saveGood('formData', 0)">
           保存
         </el-button>
-        <el-button v-if="operateFlag !== view && isEdit" size="small" icon="el-icon-position" type="success" @click="saveGood('formData', 1)">
+        <el-button size="small" icon="el-icon-position" type="success" @click="saveGood('formData', 1)">
           发布
         </el-button>
       </div>
@@ -29,9 +29,14 @@
           <el-input v-model="formData.goodsIntegral" placeholder="请输入数字" />
         </el-form-item>
         <el-form-item label="物品类别" prop="goodsSort">
-          <el-select v-model="formData.goodsType" placeholder="请选择物品类别">
+          <el-select v-model="formData.goodsSort" placeholder="请选择物品类别">
             <el-option label="积分商品" value="1" />
             <el-option label="引用商品" value="2" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="物品类型" prop="goodsType">
+          <el-select v-model="formData.goodsType" placeholder="请选择物品类别">
+            <el-option v-for="(item, index) in IntegralType" :key="index" :label="item.categoryName" :value="item.orderKey" />
           </el-select>
         </el-form-item>
         <el-form-item label="物品原价" prop="goodsPrice">
@@ -48,22 +53,28 @@
       <div class="content-right w-2/5">
         <el-form-item label="物品视频">
           <!-- <vc-upload v-bind="uploadOptionVideo" class="el-upload-video" :on-remove="onRemoveVideo" ref="uploadVideo"> -->
-          <VcUpload v-show="!formData.styleVideo" v-bind="uploadOptionVideo" ref="uploadVideo" :class="formData.styleVideo ? 'el-upload-video' : ''" :on-remove="onRemoveVideo">
+          <VcUpload
+            v-show="!formData.video"
+            v-bind="uploadOptionVideo"
+            ref="uploadVideo"
+            :class="formData.video ? 'el-upload-video' : ''"
+            :on-remove="onRemoveVideo"
+          >
             <i class="el-icon-plus"></i>
             <!-- <el-progress type="circle" :percentage="percentage" /> -->
           </VcUpload>
           <video
-            v-if="formData.styleVideo"
+            v-if="formData.video"
             class="avatar video-avatar"
-            :src="formData.styleVideo"
+            :src="formData.video"
             controls="controls"
           >
-            <source :src="formData.styleVideo" type="video/mp4" />
+            <source :src="formData.video" type="video/mp4" />
             <track kind="captions" label="English captions" src="" srclang="en" default />
             您的浏览器不支持视频播放
           </video>
-          <div v-if="formData.styleVideo" style="margin-top:10px">
-            <el-button @click="formData.styleVideo = ''">
+          <div v-if="formData.video" style="margin-top:10px">
+            <el-button @click="formData.video = ''">
               删除视频
             </el-button>
           </div>
@@ -93,7 +104,13 @@
 </template>
 
 <script>
-import { addIntegralGoods, getIntegralGoodsDetailed } from '@/api/integral'
+import {
+  addIntegralGoods,
+  getIntegralGoodsDetailed,
+  getTypeAndDate,
+  updateIntegralGoods,
+  updateIntegralGoodsState,
+} from '@/api/integral'
 import VcUpload from '@/views/common/Upload'
 
 export default {
@@ -105,24 +122,29 @@ export default {
     return {
       isEdit: false,
       videoList: [],
-      VideoImgList: [], // 视频贴片
+      VideoImgList: {}, // 视频贴片
       videoUrl: '',
       uploadList: [],
+      fileList: [],
       activeGoodsShow: false,
       uploadVideoFlag: false,
       activeGoodsSize: [],
       uploadImgFlag: false, // 上传图片的显示隐藏
       operateFlag: null, // 操作标志  'view'  查看  'edit'  编辑
+      IntegralType: [],
+      selectedColorName: [],
+      colorNum: undefined,
       // -----------
       formData: {
         goodsName: '',
         goodsSort: '',
+        goodsType: '',
         goodsCode: '',
         goodsIntegral: '',
         goodsPrice: '',
         styleVideo: '',
         videoImage: '',
-        image: [],
+        images: [],
         integralDesc: '',
         userLife: null,
         state: null,
@@ -132,7 +154,10 @@ export default {
           { required: true, message: '请输入物品名称', trigger: 'blur' },
         ],
         goodsSort: [
-          { required: true, message: '请选择物品类别', trigger: 'blur' },
+          { required: true, message: '请选择物品类别' },
+        ],
+        goodsType: [
+          { required: true, message: '请选择物品类型' },
         ],
         goodsIntegral: [
           { required: true, message: '请输入物品兑换说明', trigger: 'blur' },
@@ -167,7 +192,7 @@ export default {
         check: true,
         accept: '.mp4,.mov',
         onSuccess: (file, fileList) => {
-          this.formData.styleVideo = file.data.fileUrl
+          this.formData.video = file.data.fileUrl
         },
         // onChange: (file, fileList) => {
         //   this.percentage = file.percentage
@@ -186,7 +211,7 @@ export default {
             },
           },
         },
-        fileList: this.VideoImgList,
+        fileList: this.fileList,
         listType: 'picture-card',
         maxSize: 1024 * 20,
         limit: 1,
@@ -194,8 +219,11 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
+          const data = {
+            url: file.data.fileUrl,
+          }
           this.uploadList = fileList
-          this.formData.videoImage = this.uploadList.response.data.fileUrl
+          this.formData.videoImage = data
         },
       }
     },
@@ -211,7 +239,7 @@ export default {
             },
           },
         },
-        fileList: this.selectedColorName,
+        fileList: this.formData.images,
         listType: 'picture-card',
         maxSize: 1024 * 20,
         limit: 6,
@@ -219,8 +247,11 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
-          this.uploadList = fileList
-          this.formData.image.push(this.uploadList.response.data.fileUrl)
+          const data = {
+            url: file.data.fileUrl,
+          }
+          this.uploadList.push(data)
+          this.formData.images.push(data)
         },
       }
     },
@@ -242,6 +273,7 @@ export default {
       this.getData()
     } else {
       this.title = '新增'
+      this.getType()
     }
   },
   methods: {
@@ -250,25 +282,41 @@ export default {
         goodsCode: this.formData.goodsCode,
       }).then((res) => {
         this.formData = res.body
+        // 因为组件的原因 upData 组件渲染需要key url  所以需要转换
+        const imagesUrl = []
+        this.formData.images.forEach(e => {
+          const data = {
+            url: e,
+          }
+          imagesUrl.push(data)
+        })
+        this.formData.images = JSON.parse(JSON.stringify(imagesUrl))
+        // 因为 视频贴片是字符串  所以也要转换
+        const dat = {
+          url: this.formData.videoImage,
+        }
+        this.fileList.push(dat)
       }).catch(() => {})
     },
+    getType() {
+      getTypeAndDate({}).then(res => {
+        if (res.head.status !== 0) this.$message(res.head.msg)
+        this.IntegralType = res.body.goodsCategory
+      })
+    },
     onRemoveVideo() {
-      this.formData.styleVedio = ''
+      this.formData.video = ''
     },
     onRemoveVideoImg() {
       this.formData.vedioImage = ''
     },
     onRemoveGoodsImg(file) {
-      this.formData.image = this.formData.image.filter(item => item.url !== file.url)
-      console.log(this.formData.image)
+      this.formData.images = this.formData.images.filter(item => item.url !== file.url)
     },
     saveGood(formName, status) {
       let msg = ''
-      if (status === 0)
-        msg = '确认保存该商品信息吗?'
-      else if (status === 1)
-        msg = '您确定要发布商品至App与商品中心展示吗?'
-
+      if (status === 0) msg = '确认保存该商品信息吗?'
+      else if (status === 1) msg = '您确定要发布商品至App与商品中心展示吗?'
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$confirm(msg, '提示', {
@@ -277,12 +325,6 @@ export default {
             type: 'warning',
           }).then(() => {
             this.editGoodFun(status)
-            // if (this.title === '编辑') {
-            //   // 保存
-            // } else {
-            //   // 发布 / 上架
-            //   this.saveGoodFun()
-            // }
           }).catch(() => {
             this.$message({
               type: 'info',
@@ -294,34 +336,69 @@ export default {
     },
     // 点击保存 / 发布
     editGoodFun(status) {
+      const imagesUrl = []
+      this.formData.images.forEach(e => {
+        imagesUrl.push(e.url)
+      })
+      this.formData.images = [...imagesUrl]
+      this.formData.videoImage = this.formData.videoImage?.url
       const con = JSON.parse(JSON.stringify(this.formData))
-      console.log(con)
-      if (this.title === '新增')
+      if (this.title === '新增') {
         con.state = '2'
-
-      addIntegralGoods(con).then((res) => {
-        console.log(res)
-        if (res.head.status === 0) {
-          this.$message({
-            type: 'success',
-            message: res.head.msg,
-          })
-          // 如果status === 1 则需要继续掉上架的接口
-          // if () {
-
-          // }
-          this.$router.back()
+        addIntegralGoods(con).then((res) => {
+          if (res.head.status === 0) {
+            this.$message({
+              type: 'success',
+              message: res.head.msg,
+            })
+            if (status === 0) this.$router.back()
+            else this.upgoods()
+          } else {
+            this.$message({
+              type: 'error',
+              message: res.head.msg,
+            })
+          }
+        }).catch(() => {
+        })
+      } else {
+        updateIntegralGoods(con).then(res => {
+          if (res.head.status !== 0) {
+            this.$message(res.head.msg)
+          } else {
+            if (status === 0) {
+              this.$message.success('操作成功')
+              this.$router.back()
+            } else {
+              this.upgoods()
+            }
+          }
+        })
+      }
+      // if (status === 0) {
+      //   this.$router.back()
+      // } else {
+      //   const con = {
+      //     id: [this.formData.goodsCode],
+      //     state: 1,
+      //   }
+      // }
+    },
+    upgoods() {
+      const con = {
+        id: [this.formData.goodsCode],
+        state: 1,
+      }
+      updateIntegralGoodsState(con).then((res) => {
+        if (res.head.status !== 0) {
+          this.$message(res.head.msg)
         } else {
-          this.$message({
-            type: 'error',
-            message: res.head.msg,
-          })
+          this.$message.success('发布成功')
+          this.$router.back()
         }
-      }).catch(() => {
       })
     },
     saveGoodFun() {
-      console.log(123)
     },
   },
 }

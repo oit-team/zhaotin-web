@@ -57,7 +57,7 @@
         >
           <el-image
             class="zt-good__image"
-            src=""
+            :src="item.image"
             fit="contain"
           />
           <div v-if="item.styleIsVideo" class="zt-video__b">
@@ -69,7 +69,7 @@
             </p>
             <p>{{ item.goodsCode }}</p>
           </div>
-          <div class="zt-item__line flex">
+          <div class="zt-item__line flex items-end">
             <div class="zt-price__l">
               ￥{{ item.goodsPrice }}
             </div>
@@ -283,7 +283,7 @@ export default {
     .zt-item__line {
       // display: flex;
       overflow: hidden;
-      align-items: center;
+      // align-items: center;
       justify-content: space-between;
       box-sizing: border-box;
       padding: 8px 14px;
