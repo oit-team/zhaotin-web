@@ -109,6 +109,7 @@ export default {
       })
     },
     deleteCateGory(item) {
+      console.log(item)
       this.$confirm('确订删除该商品类别吗？','提示',{
         confirmButtonText:'确定',
         cancelButtonText:'取消',
@@ -116,9 +117,11 @@ export default {
       }).then(() => {
         const con = {
           dictCode:'ACTEGORY',
-          dictitemCode:item.row.dictitemCode
+          dictitemCode:item.row.dictitemCode,
+          typeId:item.row.id
         }
         delCateGory(con).then((res) => {
+          console.log(res)
           this.$refs.cateTable.loadData()
         })
       })

@@ -15,28 +15,28 @@ export function addCateGory(params) {
 }
 // 删除类别
 export function delCateGory(params) {
-  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+  return post('/goods/styleType/deleteStyleType', params, {
     mod: 'home',
     cmd: 100004,
   })
 }
 // 修改类别
 export function updateCateGory(params) {
-  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+  return post('/goods/styleType/updateStyleType', params, {
     mod: 'home',
     cmd: 100003,
   })
 }
 // 判断排序
 export function sort(params) {
-  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+  return post('/goods/styleType/getStyleTypeBySortNum', params, {
     mod: 'home',
     cmd: 100005,
   })
 }
 // 查询尺码已存在的排序
 export function getSizeSortList(params) {
-  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+  return post('goods/styleType/getStyleTypeBySort', params, {
     mod: 'home',
     cmd: 100006,
   })

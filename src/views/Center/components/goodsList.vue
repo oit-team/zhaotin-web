@@ -1,7 +1,7 @@
 <template>
   <div id="Mpage" class="zt-page overflow-x-hidden">
     <div class="zt-tabs__top">
-      <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" />
+      <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" @checkSecondTab1 = checkSecondTab />
     </div>
     <div class="zt-tabs">
       <div class="zt-tabs__center">
@@ -183,6 +183,7 @@ export default {
         styleId: '', // 商品id
         styleLength: '', // 商品衣长
         styleCategory: '', // 商品类别dicttimeDisplayName
+        styleChildCategory: '', // 商品类别二级分类
         endTradePrice: '', // 结束批发价
         startTradePrice: '', // 开始批发价
         startcreatTime: '', // 开始时间
@@ -264,14 +265,14 @@ export default {
       const res = await getGoodsSizeClass({
         dictCode: 'SYSTEM_CONFIG',
       })
-      this.tabList1 = res.body.styleCategory
+      this.tabList1 = res.body.resultList
       let number1 = 0
       this.tabList1.forEach((e) => {
-        number1 += e.countNum
+        number1 += e.typeNumber
       })
       const all = {
         categoryName: '综合推荐',
-        countNum: number1,
+        typeNumber: number1,
       }
       this.tabList1.unshift(all)
     },
@@ -279,7 +280,7 @@ export default {
     checkTab(index) {
       let con = ''
       if (index !== 0)
-        con = this.tabList[index].dicttimeDisplayName
+        con = this.tabList[index].dictitemDisplayName
       else
         con = ''
 
@@ -292,16 +293,24 @@ export default {
     // 点击顶部 tab
     checkTab1(index) {
       let con = ''
-      if (index !== 0)
+      if (index === 0)
         con = this.tabList1[index].categoryName
       else
-        con = ''
+        con = this.tabList1[index].dictitemDisplayName
 
       this.$nextTick(() => {
         this.showEmp = false
         this.formData.styleCategory = con
+        this.formData.styleChildCategory = ''
         this.reLoad()
       })
+    },
+    // 点击顶部tab子菜单
+    checkSecondTab(e) {
+      if (e) {
+        this.formData.styleChildCategory = e[0].dictitemDisplayName
+        this.reLoad()
+      }
     },
     selectItem(id) {
       this.selectB = id

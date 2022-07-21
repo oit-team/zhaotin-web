@@ -1,8 +1,6 @@
 <template>
   <div class="ct-tabs">
-    <div v-if="labelText" class="zt-tabs__label">
-      {{ labelText }}:
-    </div>
+    <div v-if="labelText" class="zt-tabs__label">{{ labelText }}:</div>
     <!-- 二级 tab -->
     <div v-if="!ishome" class="zt-tabs__center1">
       <div
@@ -16,14 +14,30 @@
     </div>
     <!-- 顶部 tab -->
     <div v-else class="zt-tabs__center2">
-      <div
+      <el-dropdown
         v-for="(item, index) in tabList"
+        trigger="click"
         :key="index"
-        :class="selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'"
-        @click="checkItem(index)"
+        :class="
+          selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'
+        "
+        @command="checkSecondTab"
       >
-        {{ item.categoryName }}({{ item.countNum || item.total || 0 }})
-      </div>
+        <span class="el-dropdown-link" @click="checkItem(index)">
+          {{ item.categoryName || item.dictitemDisplayName }}({{
+            item.typeNumber || item.total || 0
+          }})
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            v-for="(secondItem, idx) in item.childerType"
+            :key="idx"
+            :command="secondItem"
+          >
+            {{ secondItem.dictitemDisplayName }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
     <!-- </div> -->
   </div>
@@ -46,72 +60,76 @@ export default {
   mounted() {
   },
   methods: {
+    checkSecondTab(...e) {
+      this.$emit('checkSecond-tab1', e)
+    },
     checkItem(index) {
       this.selectItem = index
       if (this.ishome)
-        this.$emit('checkTab1', index)
+        this.$emit('check-tab1', index)
 
-      this.$emit('checkTab', index)
+      this.$emit('check-tab', index)
     },
+
   },
 }
 </script>
 
 <style lang='scss' scoped>
-.ct-tabs{
+.ct-tabs {
   display: flex;
   align-items: center;
   width: 100%;
   // margin: 10px 0;
   box-sizing: border-box;
 }
-.zt-tabs__center1{
+.zt-tabs__center1 {
   display: flex;
   align-items: center;
 }
-.zt-tabs__center2{
+.zt-tabs__center2 {
   display: flex;
   width: 100%;
   align-items: center;
   flex-wrap: wrap;
   // justify-content: space-around;
 }
-.zt-tabs__item{
+.zt-tabs__item {
   padding: 15px;
   box-sizing: border-box;
 }
-.zt-tabs__item:hover{
-  cursor:pointer;
+.zt-tabs__item:hover {
+  cursor: pointer;
 }
-.zt-tabs__homeItem:hover{
-  cursor:pointer;
+.zt-tabs__homeItem:hover {
+  cursor: pointer;
 }
-.zt-tabs__homeItem{
+.zt-tabs__homeItem {
   color: #666666;
   padding: 15px;
   white-space: nowrap;
   box-sizing: border-box;
 }
-.zt-tabs__label{
+.zt-tabs__label {
   margin-right: 20px;
 }
-.zt-tabs-select{
+.zt-tabs-select {
   padding: 15px;
-  color: #CDA46C;
+  color: #cda46c;
   white-space: nowrap;
   box-sizing: border-box;
 }
-.zt-tabs__homeSelect{
+.zt-tabs__homeSelect {
   text-align: center;
   background-color: #333;
-  color: #CDA46C;
+  color: #cda46c;
   font-weight: 800;
   border-radius: 30px;
   padding: 15px 25px;
   white-space: nowrap;
   box-sizing: border-box;
 }
-.zt-tabs__homeSelect:hover{
+.zt-tabs__homeSelect:hover {
   cursor: pointer;
 }
 </style>

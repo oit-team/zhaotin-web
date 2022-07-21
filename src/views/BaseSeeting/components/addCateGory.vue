@@ -35,7 +35,7 @@
        </el-form-item>
       <div class="tip">
         <p>*排序请勿重复,已存在排序号如下:</p>
-        <span v-for="(item,index) in sortList" :key='index'>{{item.dictitemOrderkey}},</span>
+        <span v-for="(item,index) in sortList" :key='index'>{{item}},</span>
       </div>
       <el-form-item>
         <el-button size="small" icon="el-icon-check" type="primary" @click="submitForm('cateGoryForm')">保存</el-button>
@@ -72,6 +72,7 @@ export default {
         dictitemDisplayName: "",
         remark: "",
         dictitemOrderkey: null,
+        typeId:''
       },
       rules: {
         dictitemDisplayName: [
@@ -159,7 +160,8 @@ export default {
       }
       getSizeSortList(con).then((res) => {
           if(res.head.status === 0) {
-           this.sortList = res.body.result
+            console.log(res)
+           this.sortList = res.body.resultList
           }
       })
     },
@@ -180,14 +182,7 @@ export default {
           }
           sort(con).then((res) => {
             if(res.head.status === 0){
-              if(res.body.result === 0){
                 this.saveFunction();
-              }else{
-                this.$message({
-                  type:'warning',
-                  message:'该排序已存在,请更换'
-                })
-              }
             }else{
               this.$message({
                 message: res.head.msg,
@@ -217,7 +212,8 @@ export default {
            ...this.cateGoryForm,
            path,
            createId: sessionStorage.userId,
-           imgUrl:imgUrlArr.toString()
+           imgUrl:imgUrlArr.toString(),
+           typeId:this.cateGoryForm.id
           }
       if(!this.editFlag){  // 编辑
       // console.log(this.$route.query.item.row.imgUrl);
