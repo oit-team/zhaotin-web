@@ -227,6 +227,17 @@ export default {
             type: 'success',
             click: () => this.$router.push('/pointsManage/addIntegralGoods'),
           },
+          {
+            name: '商品转换',
+            icon: 'el-icon-plus',
+            type: 'success',
+            click: () => this.$router.push({
+              path: '/pointsManage/addIntegralGoods',
+              query: {
+                cite: true,
+              },
+            }),
+          },
           // {
           //   name: '导入商品',
           //   icon: 'el-icon-download',

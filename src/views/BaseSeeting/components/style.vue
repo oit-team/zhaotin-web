@@ -513,13 +513,12 @@ export default {
       // console.log("this.fileList===",this.fileList)
     },
     upDrop() {
-      // this.
     },
     // 限制每次只能上传一个文件
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
-    // // 上传文件
+    // 上传文件
     uploadFile(file) {
       this.fileData.append('file', file.file)
       // console.log("this.fileData====",this.fileData)

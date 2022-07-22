@@ -16,9 +16,9 @@
     <!-- 表单 -->
     <el-form
       ref="formData"
-      class="flex justify-between"
+      class="flex justify-around"
       :model="formData"
-      label-width="120px"
+      label-width="100px"
       :rules="rules"
     >
       <div class="content-left w-2/5">
@@ -50,7 +50,7 @@
         </el-form-item>
       </div>
       <el-divider direction="vertical" />
-      <div class="content-right w-2/5">
+      <div v-if="!$route.query.cite" class="content-right w-2/5">
         <el-form-item label="物品视频">
           <!-- <vc-upload v-bind="uploadOptionVideo" class="el-upload-video" :on-remove="onRemoveVideo" ref="uploadVideo"> -->
           <VcUpload
@@ -99,6 +99,82 @@
           *最多可以上传6张图片，推荐格式jpg或png
         </p>
       </div>
+      <div v-else class="content-right w-2/5">
+        <div class="flex flex-wrap justify-between">
+          <div class="flex w-2/5 items-center mb-5">
+            <p class="flex-shrink-0 mr-2 text-sm">
+              款式名称
+            </p>
+            <el-input v-model="searchData.styleName" placeholder="" size="medium" />
+          </div>
+          <div class="flex w-2/5 items-center mb-5">
+            <p class="flex-shrink-0 mr-2 text-sm">
+              款式编号
+            </p>
+            <el-input v-model="searchData.styleNo" placeholder="" size="medium" />
+          </div>
+          <div class="flex items-center mb-5">
+            <p class="flex-shrink-0 mr-2 text-sm">
+              创建时间
+            </p>
+            <el-date-picker
+              v-model="searchData.creatTime"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy/MM/dd"
+              :default-time="['00:00:00', '23:59:59']"
+            >
+            </el-date-picker>
+          </div>
+        </div>
+        <div class="sub flex justify-around">
+          <el-button type="primary" @click="searchSub">
+            查询
+          </el-button>
+          <el-button type="info">
+            清空
+          </el-button>
+        </div>
+        <el-divider />
+        <div class="goodsList">
+          <div ref="content" class="zt-content">
+            <div
+              v-for="(item, index) in goodsList"
+              :key="index"
+              class="zt-content__item"
+              :class="selectGoods === index ? '!border-yellow-500' : ''"
+              @click="selectGoods = index"
+            >
+              <el-image
+                class="zt-good__image"
+                :src="item.resUrl"
+                fit="contain"
+              />
+              <div v-if="item.styleIsVideo" class="zt-video__b">
+                <i class="iconfont icon-shipin"></i>
+              </div>
+              <div class="zt-item__line">
+                <p class="truncate">
+                  {{ item.styleName }}@
+                </p>
+                <p>{{ item.styleNo }}</p>
+              </div>
+              <div class="zt-item__line flex items-end">
+                <div class="zt-price__l">
+                  ￥{{ item.tradePrice }}
+                </div>
+                <div class="zt-price__r">
+                  积分：<div class="zt-item__price">
+                    {{ item.goodsIntegral }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </el-form>
   </div>
 </template>
@@ -111,6 +187,7 @@ import {
   updateIntegralGoods,
   updateIntegralGoodsState,
 } from '@/api/integral'
+import { getProductList } from '@/api/product'
 import VcUpload from '@/views/common/Upload'
 
 export default {
@@ -172,6 +249,18 @@ export default {
           { required: true, message: '请输入物品使用有效期', trigger: 'blur' },
         ],
       },
+      searchData: {
+        styleName: '',
+        styleNo: '',
+        creatTime: '',
+        startDate: '',
+        endDate: '',
+        pageSize: 20,
+        pageNum: 1,
+        status: 1,
+      },
+      goodsList: [],
+      selectGoods: 0,
     }
   },
   computed: {
@@ -398,6 +487,15 @@ export default {
         }
       })
     },
+    searchSub() {
+      console.log(this.searchData)
+      this.searchData.startDate = this.searchData.creatTime[0]
+      this.searchData.endDate = this.searchData.creatTime[1]
+      getProductList({ ...this.searchData }).then((res) => {
+        if (res.head.status !== 0) this.$message('查询失败')
+        else this.goodsList = res.body.resultList
+      })
+    },
     saveGoodFun() {
     },
   },
@@ -442,6 +540,9 @@ export default {
     display: block;
   }
 }
+::v-deep .el-range-separator{
+  width: 8% !important;
+}
 .el-upload-video{
   text-align: left!important;
   outline-width: 500px;
@@ -470,5 +571,74 @@ export default {
   padding-left:90px;
   color:#e60012;
   margin:12px 0px;
+}
+.zt-content {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  min-height: 50vh;
+  .zt-content__item:hover {
+    cursor: pointer;
+  }
+
+  .zt-content__item {
+    font-size: 14px;
+    position: relative;
+    width: 232px;
+    height: 100%;
+    margin: 0 0 10px 15px;
+    color: #333333;
+    border-radius: 5px;
+    border: 1px solid #ECE8E5;
+
+    .zt-good__image {
+      width: 230px;
+      height: 300px;
+      border-radius: 5px;
+      border-bottom: 1px solid #F2F2F2;
+    }
+
+    .zt-video__b {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      box-sizing: border-box;
+      border-radius: 5px;
+
+      .icon-shipin {
+        font-size: 28px;
+        color: #FF9606;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+    }
+
+    .zt-item__line {
+      // display: flex;
+      overflow: hidden;
+      // align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      padding: 8px 14px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .zt-price__l {
+      color: #FF0000;
+    }
+
+    .zt-price__r {
+      display: flex;
+      align-items: baseline;
+      color: #FF0000;
+    }
+
+    .zt-item__price {
+      font-size: 24px;
+      color: #FF0000;
+    }
+  }
 }
 </style>
