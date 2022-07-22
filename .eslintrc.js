@@ -16,5 +16,6 @@ module.exports = {
       },
     ],
     'arrow-parens': 'off',
+    'vue/custom-event-name-casing': 'off',
   },
 }

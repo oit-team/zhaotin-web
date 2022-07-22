@@ -8,9 +8,9 @@ export function getGoodsSizeInfo(params) {
     cmd: 100009,
   })
 }
-// 商品二级分类
+// 商品二级分类树
 export function getGoodsSizeClass(params) {
-  return post('/goods/dictitemInfo/getStyleCategory', params, {
+  return post('/goods/styleType/getStyleTypeInfoAll', params, {
     mod: 'home',
     cmd: 100001,
   })
@@ -66,7 +66,7 @@ export function getExportStyleInfo(params, config) {
 
 // 新增商品
 export function addGoodsInfo(params) {
-  return post('goods/style/addStyleInfo', params, {
+  return post('/goods/style/addStyleInfo', params, {
     mod: 'home',
     cmd: 10008,
   })
@@ -126,4 +126,8 @@ export function delSeason(params) {
     mod: 'home',
     cmd: 10008,
   })
+}
+// 商品类别
+export function getGoodsCategoryInfo(params) {
+  return post('/goods/styleType/getStyleTypeList', params)
 }

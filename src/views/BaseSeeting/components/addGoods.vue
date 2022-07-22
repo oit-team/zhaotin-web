@@ -30,17 +30,27 @@
                     <el-select v-model="ruleForm.styleCategory" @change="getClothingSizeInfo" style="width:76%;" placeholder="请选择商品类别">
                       <el-option
                         v-for="item in styleCategory"
-                        :key="item.dictitemCode"
-                        :label="item.dicttimeDisplayName"
-                        :value="item.dicttimeDisplayName"
+                        :key="item.id"
+                        :label="item.dictitemDisplayName"
+                        :value="item.dictitemDisplayName"
                       />
                     </el-select>
+                  </el-form-item>
                   <!-- <el-input
                     v-model="ruleForm.styleCategory"
                     style="width:76%;"
                     maxlength="32"
                     placeholder="请输入商品类别"
                   /> -->
+                  <el-form-item label="二级类别" prop="styleSecondCategory">
+                    <el-select v-model="ruleForm.styleSecondCategory" style="width:76%;" placeholder="请选择二级类别">
+                      <el-option
+                        v-for="item in styleSecondCategory"
+                        :key="item.id"
+                        :label="item.dictitemDisplayName"
+                        :value="item.dictitemDisplayName"
+                      />
+                    </el-select>
                   </el-form-item>
                   <el-form-item label="商品廓形" prop="styleFlowerPattern">
                     <el-input v-model.trim="ruleForm.styleFlowerPattern" style="width:76%;" maxlength="32" placeholder="请输入商品廓形" />
@@ -435,7 +445,7 @@
 <script>
 import quill from '@/views/common/quillEditor'
 import { addQuillTitle } from '@/assets/js/js/quill-title'
-import { getGoodsSizeInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo, getStyleData, getStyleById} from '@/api/goods'
+import { getGoodsSizeInfo, getGoodsCategoryInfo, getSeasonId, getClothingSizeInfo, addGoodsInfo, updateStyleInfo, getStyleData, getStyleById} from '@/api/goods'
 import VcUpload from '@/views/common/Upload'
 import MD5 from 'crypto-js/md5'
 // import FILE_TYPE from '@/views/common/enums/FILE_TYPE'
@@ -456,6 +466,7 @@ export default {
       callback()
     }
     return {
+      goodsItem:{},
       styleLengthList: [], //款式列表
       styleMajorList: [], //款类型列表
       innerVisible: false, //删除颜色提示框
@@ -492,6 +503,7 @@ export default {
       selectedColorName: [], //
       selectedColorNameXiJie: [],
       styleCategory: [], // 商品类别渲染列表
+      styleSecondCategory: [], // 二级商品类别渲染列表
       activeStyleCategory:'', //选中的商品类别
       seasoNameList: [], // 所属季节渲染列表
       seriesList: [], // 所属系列渲染列表
@@ -534,6 +546,7 @@ export default {
         status: '0', // NOTGROUNDING  未上架  GROUNDING 已上架
         styleId: '', // 款式id
         styleCategory: '', // 商品类别
+        styleSecondCategory: '', // 二级商品类别
         styleColor: '', // 商品颜色
         styleFabric: '', // 款式材质
         styleFlowerPattern: '', // 款式廓形
@@ -602,6 +615,9 @@ export default {
         ],
         styleCategory: [
           { required: true, message: '请选择商品类别', trigger: 'blur' },
+        ],
+        styleSecondCategory: [
+          { message: '请选择二级商品类别', trigger: 'blur' },
         ],
         stylePrice: [
           { required: true, message: '请输入商品价格', trigger: 'blur' },
@@ -1058,15 +1074,34 @@ export default {
         brandId: sessionStorage.brandId,
         type: 'styleCategory',
         userId: sessionStorage.userId,
+        fatherTypeId: ''
       }
-      // 获取商品类别
-      getGoodsSizeInfo(con).then((res) => {
-        // console.log(res)
+      getGoodsCategoryInfo(con).then((res) => {
         if (res.head.status === 0) {
-          this.styleCategory = res.body.result
+          this.styleCategory = res.body.resultList
           if (this.ruleForm.seriesId || this.ruleForm.seriesId === 0) {
             this.getClothingSizeInfo()
           }
+        } else {
+          this.$message({
+            message: res.head.msg,
+            type: 'warning',
+          })
+        }
+      }).catch(err => {
+        // console.log(err)
+      })
+    },
+    // 获得二级商品类别
+    async getSecondsGoodsCategory() {
+      const con = {
+        fatherTypeId: this.goodsItem.id
+      }
+      // 获取商品类别
+      await getGoodsCategoryInfo(con).then((res) => {
+        if (res.head.status === 0) {
+          this.styleSecondCategory = res.body.resultList
+          console.log(this.styleSecondCategory)
         } else {
           this.$message({
             message: res.head.msg,
@@ -1117,7 +1152,10 @@ export default {
     // 尺码==========================
     // 获取商品尺码信息
     getClothingSizeInfo(val) {
+      this.ruleForm.styleSecondCategory = ''
+      this.goodsItem = this.styleCategory.find(item => item.dictitemDisplayName == val)
       const label = this.styleCategory.find(item => item.dicttimeDisplayName == this.ruleForm.styleCategory)
+      this.getSecondsGoodsCategory()
       if (!label) {
         return
       }
@@ -1135,6 +1173,7 @@ export default {
       getClothingSizeInfo(con).then((res) => {
         if (res.head.status == 0) {
           if (res.body) {
+            console.log(res.body)
             this.sizeInfo = res.body
             this.sizeTableList = res.body.resultMap
             this.sizeTableList.forEach(el => {
@@ -1387,6 +1426,7 @@ export default {
       }
       return returnRes 
     },
+    // 保存新增商品信息
     saveGoodFun(status) {
       
       const _this = this;
@@ -1408,6 +1448,7 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
+      con.styleChildCategory = this.ruleForm.styleSecondCategory
       if (!this.checkVideoAndImg(con)) {
         return
       }
@@ -1453,6 +1494,7 @@ export default {
       con.styleWashing = JSON.stringify(con.styleWashing)
       con.styleSizeList = [];
       con.status = status
+      con.styleChildCategory = this.ruleForm.styleSecondCategory // 二级商品类别
       if (!this.checkVideoAndImg(con)) {
         return
       }
@@ -1768,7 +1810,7 @@ export default {
       this.newColor = ''
       this.centerDialogVisible = false;
     }
-  },
+  }
 }
 </script>
 
