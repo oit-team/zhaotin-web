@@ -1,7 +1,7 @@
 <template>
   <div class="h-full my-10">
     <div class="main container" style="height: 100%;">
-      <div class="table-h">
+      <div class="table-h" style="height: 100%;">
         <TablePage v-bind="tablePageOption" ref="page" class="!min-h-screen-sm" auto>
           <template #actions:upd>
             <el-dropdown class="ml-2">
@@ -18,6 +18,15 @@
               </el-dropdown-menu>
             </el-dropdown>
           </template>
+          <!-- 商品图片 -->
+          <!-- <template slot="content:resUrl" slot-scope="{ row }">
+            <template v-if="row.resUrl">
+              <el-image class="file-res" style="max-height:50px;" :src="row.resUrl" fit="cover" />
+            </template>
+            <template v-else>
+              <span>无</span>
+            </template>
+          </template> -->
         </TablePage>
       </div>
     </div>
@@ -228,7 +237,7 @@ export default {
             click: () => this.$router.push('/pointsManage/addIntegralGoods'),
           },
           {
-            name: '商品转换',
+            name: '商品引用',
             icon: 'el-icon-plus',
             type: 'success',
             click: () => this.$router.push({
@@ -644,7 +653,7 @@ export default {
 
 <style lang="less" scoped>
   .table-h {
-    min-height: 600px;
+    height: 680px;
   }
   .table-page{
     min-height: 600px;

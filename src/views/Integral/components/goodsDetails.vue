@@ -27,7 +27,7 @@
             :autoplay="false"
             indicator-position="none"
           >
-            <el-carousel-item v-if="infoData.goodsVideo !== null || infoData.styleVedio !== null">
+            <el-carousel-item v-if="infoData.styleVideo !== null">
               <div class="zt-swiper__item">
                 <video
                   id="player"
@@ -49,7 +49,7 @@
             >
               <el-image
                 class="zt-swiper__item"
-                :src="item || item.resUrl"
+                :src="item.resUrl || item"
                 fit="contain"
               />
             </el-carousel-item>
@@ -68,7 +68,7 @@
                 <el-image
                   fit="contain"
                   :class="imageIndex === index ? 'zt-images__select' : 'zt-images__image'"
-                  :src="item || item.resUrl"
+                  :src="item.resUrl || item"
                 />
                 <i v-if="index === 0 && infoData.styleVideo" class="iconfont icon-qiehuanchanpin"></i>
                 <!-- <i v-if="index===0&&infoData.styleVideo" class="el-icon-caret-right"></i> -->
@@ -104,10 +104,9 @@
           <!-- 价格展示 -->
           <div class="zt-data__price">
             <div class="zt-price">
-              价格
+              积分
               <div class="zt-price__data zt-red">
-                <span class="zt-wt">{{ infoData.goodsPrice }}</span>
-                <!-- <div class="zt-hui">3件起订</div> -->
+                <span class="zt-wt">{{ infoData.goodsIntegral }}</span>
               </div>
             </div>
             <div class="zt-price">
@@ -173,6 +172,18 @@
                 </div>
               </div>
             </div>
+            <div class="zt-data__size">
+              <div class="zt-data__label">
+                数量
+              </div>
+              <el-input-number
+                v-if="infoData.styleColorList && infoData.styleColorList.length !== 0"
+                v-model="num"
+                size="small"
+                :min="0"
+                @change="handleChange"
+              />
+            </div>
           </div>
           <!-- 购买 -->
           <div class="zt-data__btn">
@@ -197,7 +208,7 @@
                 兑换说明：{{ infoData.integralDesc }}
               </div>
             </div>
-            <div class="zt-data__size flex">
+            <!-- <div class="zt-data__size flex">
               <div class="zt-data__label w-20">
                 数量:
               </div>
@@ -205,9 +216,8 @@
                 v-model="infoData.goodsNumber"
                 size="small"
                 :min="0"
-                @change="handleChange"
               />
-            </div>
+            </div> -->
             <!-- 购买 -->
             <div class="zt-data__btn">
               <div></div>
@@ -411,8 +421,6 @@ export default {
   },
   created() {
     this.goodsId = this.$route.query.id
-    console.log(this.$store.state.integral.isStart)
-    console.log(this.$store.state.integral.detailData)
     if (this.$store.state.integral.isStart) this.getData()
     else this.infoData = this.$store.state.integral.detailData
   },
@@ -436,7 +444,6 @@ export default {
               })
               this.infoData.styleWashing = JSON.parse(JSON.stringify(list))
             }
-            this.thumbnailList = [...this.infoData.imgUrlList, ...this.infoData.imgDetailUrlList]
             this.titleMap = Object
               .keys(this.infoData.titleMap)
               .sort((prev, next) => (+prev.substring(3)) - (+next.substring(3)))
@@ -444,6 +451,7 @@ export default {
             this.infoData.styleSizeList.forEach((e) => {
               this.sizeConfig.push(e.sizeConfig)
             })
+            this.thumbnailList = [...this.infoData.imgUrlList, ...this.infoData.imgDetailUrlList]
             this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
             // recommendationLevel : 推荐指数
             this.infoData.recommendationLevel = Number(this.infoData.recommendationLevel)
@@ -472,8 +480,8 @@ export default {
               }
               this.infoData.imgUrlList.unshift(url)
             }
-            if (this.infoData.imgDetailUrlList.length !== 0)
-              this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
+            if (this.infoData.imgDetailUrlList.length !== 0) this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
+            console.log(this.infoData.imgUrlList)
           } else {
             this.infoData = res.body.goodsDetails
             this.$set(this.infoData, 'goodsNumber', 0)
@@ -503,6 +511,7 @@ export default {
     },
     // 商品数量
     handleChange(value) {
+      console.log(this.infoData)
       if (value >= 0 && this.styleType === 2) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
         this.infoData.styleColorList.forEach((e) => {
@@ -526,23 +535,21 @@ export default {
     },
     // 点击 兑换
     async toRedeem() {
-      console.log(this.infoData)
-      if (this.infoData.goodsNumber > 0 && this.infoData.goodsSort === 1) {
+      if (this.infoData.goodsSort === 2) {
         this.$store.commit('integral/addOrderStorage', this.infoData)
         this.$router.push('/integral/redeem')
-      } else if (this.goodsData.goodsSort === 2) {
-        this.$store.commit('integral/addOrderStorage', this.goodsData)
+      } else if (this.infoData.goodsSort === 1) {
+        this.$store.commit('integral/addOrderStorage', this.infoData)
         this.$router.push('/integral/redeem')
       } else {
         this.$message.error('请填写购买商品的数量')
       }
     },
     transformImgL() {
-      this.imgMarginL += 50
+      this.imgMarginL += 100
     },
     transformImgR() {
-      if (this.$refs.pimages.clientWidth < this.$refs.pimages.scrollWidth)
-        this.imgMarginL -= 50
+      if (this.$refs.pimages.clientWidth < this.$refs.pimages.scrollWidth) this.$set(this, 'imgMarginL', this.imgMarginL - 100)
     },
   },
 }
@@ -591,7 +598,7 @@ video::-webkit-media-controls-timeline {
           border-radius: 10px;
           background-color: #ccc;
           font-size: 20px;
-          z-index: 1;
+          z-index: 99;
         }
         .zt-images__center{
           width: 95%;
@@ -638,7 +645,7 @@ video::-webkit-media-controls-timeline {
           border-radius: 10px;
           background-color: #ccc;
           font-size: 20px;
-          z-index: 1;
+          z-index: 99;
         }
       }
     }
@@ -706,8 +713,8 @@ video::-webkit-media-controls-timeline {
             box-sizing: border-box;
             border: 1px solid #ECE8E5;
             .el-image{
-              width: 80px;
-              height: 80px;
+              width: 78px;
+              height: 78px;
               border-radius: 10px;
               border: 1px solid #ECE8E5;
             }
@@ -761,7 +768,7 @@ video::-webkit-media-controls-timeline {
           padding: 8px 0;
           width: 200px;
           text-align: center;
-          background-color: #333;
+          background-color: #CDA46C;
           border-radius: 25px;
           color: #fff;
           box-sizing: border-box;

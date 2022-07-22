@@ -58,7 +58,6 @@
               />
             </el-carousel-item>
           </el-carousel>
-
           <div ref="pimages" class="zt-head__images">
             <div v-if="imgMarginL < 0" class="zt-images__left" @click="transformImgL">
               <i class="el-icon-arrow-left"></i>
@@ -556,7 +555,7 @@ export default {
     },
     // 轮播图 切换出控制
     setCarouselItem(index) {
-      console.log(this.infoData.imgUrlList)
+      console.log(this.infoData)
       this.$refs.carousel.setActiveItem(index)
     },
     videoPlay() {

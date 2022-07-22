@@ -1,7 +1,7 @@
 <template>
   <div class="h-full py-5">
     <div class="flex justify-between items-center">
-      <el-page-header :content="`${title}商品`" @back="$router.back()" />
+      <el-page-header :content="title" @back="$router.back()" />
       <div v-if="isEdit">
         <el-button size="small" icon="el-icon-check" type="primary" @click="saveGood('formData', 0)">
           保存
@@ -28,12 +28,12 @@
         <el-form-item label="兑换积分" prop="goodsIntegral">
           <el-input v-model="formData.goodsIntegral" placeholder="请输入数字" />
         </el-form-item>
-        <el-form-item label="物品类别" prop="goodsSort">
+        <!-- <el-form-item label="物品类别" prop="goodsSort">
           <el-select v-model="formData.goodsSort" placeholder="请选择物品类别">
             <el-option label="积分商品" value="1" />
             <el-option label="引用商品" value="2" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="物品类型" prop="goodsType">
           <el-select v-model="formData.goodsType" placeholder="请选择物品类别">
             <el-option v-for="(item, index) in IntegralType" :key="index" :label="item.categoryName" :value="item.orderKey" />
@@ -54,10 +54,9 @@
         <el-form-item label="物品视频">
           <!-- <vc-upload v-bind="uploadOptionVideo" class="el-upload-video" :on-remove="onRemoveVideo" ref="uploadVideo"> -->
           <VcUpload
-            v-show="!formData.video"
+            v-if="!formData.video"
             v-bind="uploadOptionVideo"
             ref="uploadVideo"
-            :class="formData.video ? 'el-upload-video' : ''"
             :on-remove="onRemoveVideo"
           >
             <i class="el-icon-plus"></i>
@@ -68,6 +67,7 @@
             class="avatar video-avatar"
             :src="formData.video"
             controls="controls"
+            :poster="formData.videoImage"
           >
             <source :src="formData.video" type="video/mp4" />
             <track kind="captions" label="English captions" src="" srclang="en" default />
@@ -82,14 +82,14 @@
         <p class="tip">
           *最多可以上传1个视频，大小限制在50M以内，推荐格式mp4
         </p>
-        <el-form-item label="视频贴片">
+        <!-- <el-form-item label="视频贴片">
           <VcUpload v-bind="uploadOptionVideoImg" ref="uploadVideoImg" :on-remove="onRemoveVideoImg">
             <i class="el-icon-plus"></i>
           </VcUpload>
-        </el-form-item>
-        <p class="tip">
+        </el-form-item> -->
+        <!-- <p class="tip">
           *最多可以上传1张图片，推荐格式jpg或png
-        </p>
+        </p> -->
         <el-form-item label="物品图片">
           <VcUpload v-bind="uploadOptionimg" ref="goodsImg" :on-remove="onRemoveGoodsImg">
             <i class="el-icon-plus"></i>
@@ -133,35 +133,35 @@
           <el-button type="primary" @click="searchSub">
             查询
           </el-button>
-          <el-button type="info">
+          <el-button type="info" @click="resetSearch">
             清空
           </el-button>
         </div>
         <el-divider />
         <div class="goodsList">
-          <div ref="content" class="zt-content">
+          <template v-if="emp">
+            <el-empty description="描述文字"></el-empty>
+          </template>
+          <div v-else ref="content" class="zt-content">
             <div
               v-for="(item, index) in goodsList"
               :key="index"
               class="zt-content__item"
               :class="selectGoods === index ? '!border-yellow-500' : ''"
-              @click="selectGoods = index"
+              @click="selecteD(item, index)"
             >
               <el-image
                 class="zt-good__image"
                 :src="item.resUrl"
                 fit="contain"
               />
-              <div v-if="item.styleIsVideo" class="zt-video__b">
-                <i class="iconfont icon-shipin"></i>
-              </div>
               <div class="zt-item__line">
                 <p class="truncate">
                   {{ item.styleName }}@
                 </p>
                 <p>{{ item.styleNo }}</p>
               </div>
-              <div class="zt-item__line flex items-end">
+              <!-- <div class="zt-item__line flex items-end">
                 <div class="zt-price__l">
                   ￥{{ item.tradePrice }}
                 </div>
@@ -170,9 +170,15 @@
                     {{ item.goodsIntegral }}
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
+
+          <el-pagination
+            layout="prev, pager, next"
+            :total="totalNum"
+          >
+          </el-pagination>
         </div>
       </div>
     </el-form>
@@ -210,6 +216,7 @@ export default {
       operateFlag: null, // 操作标志  'view'  查看  'edit'  编辑
       IntegralType: [],
       selectedColorName: [],
+      title: '',
       colorNum: undefined,
       // -----------
       formData: {
@@ -230,9 +237,9 @@ export default {
         goodsName: [
           { required: true, message: '请输入物品名称', trigger: 'blur' },
         ],
-        goodsSort: [
-          { required: true, message: '请选择物品类别' },
-        ],
+        // goodsSort: [
+        //   { required: true, message: '请选择物品类别' },
+        // ],
         goodsType: [
           { required: true, message: '请选择物品类型' },
         ],
@@ -252,15 +259,17 @@ export default {
       searchData: {
         styleName: '',
         styleNo: '',
-        creatTime: '',
+        creatTime: [],
         startDate: '',
         endDate: '',
-        pageSize: 20,
+        pageSize: 9,
         pageNum: 1,
         status: 1,
       },
       goodsList: [],
       selectGoods: 0,
+      videoListTest: [],
+      emp: false,
     }
   },
   computed: {
@@ -275,6 +284,7 @@ export default {
             },
           },
         },
+        fileList: this.videoListTest,
         listType: 'picture-card',
         maxSize: 1024 * 20,
         chunkSize: 1024 * 2,
@@ -282,45 +292,44 @@ export default {
         accept: '.mp4,.mov',
         onSuccess: (file, fileList) => {
           this.formData.video = file.data.fileUrl
+          this.formData.videoImage = file.data.thumbUrl
+          this.videoListTest.push({ url: file.data.thumbUrl })
+          console.log(this.formData)
         },
-        // onChange: (file, fileList) => {
-        //   this.percentage = file.percentage
-        // },
       }
     },
     // 上传视频贴片
-    uploadOptionVideoImg() {
-      return {
-        showFileList: true,
-        multiple: true,
-        typeOption: {
-          'image/*': {
-            data: {
-              fileType: 0,
-            },
-          },
-        },
-        fileList: this.fileList,
-        listType: 'picture-card',
-        maxSize: 1024 * 20,
-        limit: 1,
-        chunkSize: 1024 * 5,
-        check: true,
-        accept: 'image/*',
-        onSuccess: (file, fileList) => {
-          const data = {
-            url: file.data.fileUrl,
-          }
-          this.uploadList = fileList
-          this.formData.videoImage = data
-        },
-      }
-    },
+    // uploadOptionVideoImg() {
+    //   return {
+    //     showFileList: true,
+    //     multiple: true,
+    //     typeOption: {
+    //       'image/*': {
+    //         data: {
+    //           fileType: 0,
+    //         },
+    //       },
+    //     },
+    //     fileList: this.fileList,
+    //     listType: 'picture-card',
+    //     maxSize: 1024 * 20,
+    //     limit: 1,
+    //     chunkSize: 1024 * 5,
+    //     check: true,
+    //     accept: 'image/*',
+    //     onSuccess: (file, fileList) => {
+    //       const data = {
+    //         url: file.data.fileUrl,
+    //       }
+    //       this.uploadList = fileList
+    //       this.formData.videoImage = data
+    //     },
+    //   }
+    // },
     // 上传图片
     uploadOptionimg() {
       return {
         showFileList: true,
-        multiple: true,
         typeOption: {
           'image/*': {
             data: {
@@ -336,6 +345,7 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
+          // console.log(file)
           const data = {
             url: file.data.fileUrl,
           }
@@ -354,14 +364,15 @@ export default {
 
     if (this.$route.query.item) {
       if (this.isEdit === false)
-        this.title = '查看'
+        this.title = '查看商品'
       else
-        this.title = '编辑'
+        this.title = '编辑商品'
 
       this.formData.goodsCode = this.$route.query.item.row.goodsCode
       this.getData()
     } else {
-      this.title = '新增'
+      this.title = '新增商品'
+      this.getGoodsList()
       this.getType()
     }
   },
@@ -425,14 +436,16 @@ export default {
     },
     // 点击保存 / 发布
     editGoodFun(status) {
+      console.log(this.formData)
       const imagesUrl = []
       this.formData.images.forEach(e => {
         imagesUrl.push(e.url)
       })
       this.formData.images = [...imagesUrl]
-      this.formData.videoImage = this.formData.videoImage?.url
+      // this.formData.videoImage = this.formData.videoImage?.url
+      this.formData.goodsSort = this.$route.query.cite ? '2' : '1'
       const con = JSON.parse(JSON.stringify(this.formData))
-      if (this.title === '新增') {
+      if (this.title === '新增商品') {
         con.state = '2'
         addIntegralGoods(con).then((res) => {
           if (res.head.status === 0) {
@@ -473,9 +486,20 @@ export default {
       //   }
       // }
     },
+    getGoodsList() {
+      getProductList({ ...this.searchData }).then((res) => {
+        if (res.head.status !== 0) {
+          this.$message('查询失败')
+          this.emp = true
+        } else {
+          this.goodsList = res.body.resultList
+          this.totalNum = res.body.totalCount
+        }
+      })
+    },
     upgoods() {
       const con = {
-        id: [this.formData.goodsCode],
+        id: [this.formData.id],
         state: 1,
       }
       updateIntegralGoodsState(con).then((res) => {
@@ -488,7 +512,6 @@ export default {
       })
     },
     searchSub() {
-      console.log(this.searchData)
       this.searchData.startDate = this.searchData.creatTime[0]
       this.searchData.endDate = this.searchData.creatTime[1]
       getProductList({ ...this.searchData }).then((res) => {
@@ -496,7 +519,18 @@ export default {
         else this.goodsList = res.body.resultList
       })
     },
+    resetSearch() {
+      this.searchData.styleName = ''
+      this.searchData.styleNo = ''
+      this.searchData.startDate = ''
+      this.searchData.endDate = ''
+      this.searchData.creatTime = []
+    },
     saveGoodFun() {
+    },
+    selecteD(item, index) {
+      this.selectGoods = index
+      this.formData.goodsCode = item.styleNo
     },
   },
 }
@@ -585,16 +619,16 @@ export default {
   .zt-content__item {
     font-size: 14px;
     position: relative;
-    width: 232px;
+    width: 31%;
     height: 100%;
-    margin: 0 0 10px 15px;
+    margin: 0 0 10px 8px;
     color: #333333;
     border-radius: 5px;
     border: 1px solid #ECE8E5;
 
     .zt-good__image {
-      width: 230px;
-      height: 300px;
+      width: 100%;
+      height: 110px;
       border-radius: 5px;
       border-bottom: 1px solid #F2F2F2;
     }

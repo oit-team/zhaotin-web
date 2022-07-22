@@ -603,13 +603,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   .zt-site__title{
-    padding: 20px;
+    padding: 20px 0;
     color: #c9a76e;
     font-weight: 800;
     box-sizing: border-box;
   }
   .zt-site__add{
-    padding: 20px;
+    padding: 20px 0;
     color: #0078d7;
     box-sizing: border-box;
   }
@@ -636,7 +636,7 @@ export default {
   font-size: 16px;
 }
 .zt-order__title{
-  padding: 20px;
+  padding: 20px 0;
   color: #c9a76e;
   font-weight: 800;
   box-sizing: border-box;

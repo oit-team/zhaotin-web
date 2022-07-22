@@ -38,7 +38,7 @@
         <div class="zt-cart__line">
           <el-row :gutter="20">
             <el-col :span="3">
-              <el-image style="width: 100px; height: 100px" :src="formData.imgUrlList[0]" fit="contain" @click="todetails(item, item.styleId)" />
+              <el-image style="width: 100px; height: 100px" class="rounded-lg" :src="formData.imgUrlList[0].resUrl" fit="contain" @click="todetails(item, item.styleId)" />
               <!-- </div> -->
             </el-col>
             <el-col :span="6">
@@ -74,7 +74,7 @@
     </div>
     <div class="flex my-5">
       <div class="label w-24">
-        订单备注：
+        兑换说明：
       </div>
       <el-input v-model="orderNote" type="textarea" :rows="4" />
     </div>
@@ -431,13 +431,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   .zt-site__title {
-    padding: 20px;
+    padding: 20px 0;
     color: #c9a76e;
     font-weight: 800;
     box-sizing: border-box;
   }
   .zt-site__add {
-    padding: 20px;
+    padding: 20px 0;
     color: #0078d7;
     box-sizing: border-box;
   }

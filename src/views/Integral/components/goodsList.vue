@@ -1,7 +1,7 @@
 <template>
   <div class="w-full py-10 overflow-x-hidden">
-    <div class="header flex mb-5">
-      <div class="flex items-center mx-5">
+    <div class="header flex justify-center mb-5">
+      <div class="flex items-center mr-10">
         <div class="text-sm">
           可用积分
         </div>
@@ -11,10 +11,7 @@
           {{ userIntegral || 0 }}
         </div>
       </div>
-    </div>
-    <div class="tabs flex">
-      <Tabs :tab-list="goodsCategory" :ishome="ishome" @checkTab="checkTab1" />
-      <div class="flex items-center mr-10">
+      <div class="flex items-center">
         <el-input
           v-model="searchInput"
           placeholder="商品名称"
@@ -27,6 +24,9 @@
           </el-button>
         </el-input>
       </div>
+    </div>
+    <div class="tabs flex">
+      <Tabs :tab-list="goodsCategory" :ishome="ishome" @checkTab="checkTab1" />
     </div>
 
     <el-divider />
