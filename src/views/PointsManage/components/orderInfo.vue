@@ -240,11 +240,17 @@ export default {
     onRemoveImg() {
       this.ruleForm.voucherImg = ''
     },
+    // 获取 订单兑换记录
+    getEx() {
+    },
     add() {
       this.ruleForm.orderNo = this.orderInfo.orderNo
       this.ruleForm.customer = sessionStorage.getItem('userId')
       addExchangeRecord(this.ruleForm).then(res => {
-        console.log(res)
+        if (res.head.status === 0) {
+          this.$message.success('添加成功')
+          this.dialogAdd = false
+        }
       })
     },
   },
