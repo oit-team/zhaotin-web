@@ -485,7 +485,6 @@ export default {
             this.infoData = res.body.style
           }
           this.$set(this.infoData, 'goodsNumber', 0)
-          console.log(this.infoData)
         } else {
           this.$message.warning('该商品暂未上架')
         }

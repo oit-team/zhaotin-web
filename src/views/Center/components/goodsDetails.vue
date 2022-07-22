@@ -555,7 +555,6 @@ export default {
     },
     // 轮播图 切换出控制
     setCarouselItem(index) {
-      console.log(this.infoData)
       this.$refs.carousel.setActiveItem(index)
     },
     videoPlay() {

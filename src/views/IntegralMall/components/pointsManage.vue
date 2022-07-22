@@ -227,7 +227,6 @@ export default {
       const res = await getIntegralGoodsList({
         ...params,
       })
-      console.log(res)
       this.data = res.body
     },
     // loadData() {

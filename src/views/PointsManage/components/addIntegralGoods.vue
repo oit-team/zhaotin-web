@@ -294,7 +294,6 @@ export default {
           this.formData.video = file.data.fileUrl
           this.formData.videoImage = file.data.thumbUrl
           this.videoListTest.push({ url: file.data.thumbUrl })
-          console.log(this.formData)
         },
       }
     },
@@ -345,7 +344,6 @@ export default {
         check: true,
         accept: 'image/*',
         onSuccess: (file, fileList) => {
-          // console.log(file)
           const data = {
             url: file.data.fileUrl,
           }
@@ -436,7 +434,6 @@ export default {
     },
     // 点击保存 / 发布
     editGoodFun(status) {
-      console.log(this.formData)
       const imagesUrl = []
       this.formData.images.forEach(e => {
         imagesUrl.push(e.url)

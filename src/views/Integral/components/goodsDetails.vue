@@ -481,7 +481,6 @@ export default {
               this.infoData.imgUrlList.unshift(url)
             }
             if (this.infoData.imgDetailUrlList.length !== 0) this.infoData.imgUrlList.push(...this.infoData.imgDetailUrlList)
-            console.log(this.infoData.imgUrlList)
           } else {
             this.infoData = res.body.goodsDetails
             this.$set(this.infoData, 'goodsNumber', 0)
@@ -511,7 +510,6 @@ export default {
     },
     // 商品数量
     handleChange(value) {
-      console.log(this.infoData)
       if (value >= 0 && this.styleType === 2) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
         this.infoData.styleColorList.forEach((e) => {

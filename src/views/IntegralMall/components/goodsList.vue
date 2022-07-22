@@ -164,7 +164,6 @@ export default {
         this.dataList.length >= res.body.totalCount ? $state.done() : $state.next()
         this.formData.pageNum++
       }).catch((ref) => {
-        console.log(ref)
         $state.fail()
       }).finally(() => {
         this.fullscreenLoading = false
