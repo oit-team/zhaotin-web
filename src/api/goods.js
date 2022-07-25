@@ -131,3 +131,7 @@ export function delSeason(params) {
 export function getGoodsCategoryInfo(params) {
   return post('/goods/styleType/getStyleTypeList', params)
 }
+// 查询商品类别树状图
+export function getGoodsCategoryTreeInfo(params) {
+  return post('/goods/styleType/getStyleTypeInfoAll', params)
+}
