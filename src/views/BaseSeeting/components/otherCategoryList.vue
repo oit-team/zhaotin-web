@@ -19,7 +19,7 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { cateGoryList,delCateGory } from '@/api/category'
+import { catediRGoryList,delCateGory } from '@/api/category'
 
 export default {
   name: 'Style',
@@ -81,7 +81,7 @@ export default {
        userId:sessionStorage.userId,
        type:''
       }
-      await cateGoryList(con).then((res) => {
+      await catediRGoryList(con).then((res) => {
         if(res.head.status === 0) {
           this.data = res.body
           res.body.resultList.forEach(item => {

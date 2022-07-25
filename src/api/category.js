@@ -1,12 +1,18 @@
 import { post } from './index'
 // 获取菜单列表
+export function catediRGoryList(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+    mod: 'home',
+    cmd: 100001,
+  })
+}
 export function cateGoryList(params) {
   return post('/goods/styleType/getStyleTypeAll', params, {
     mod: 'home',
     cmd: 100001,
   })
 }
-// 新增类别
+// 新增词典类别
 export function addCateGory(params) {
   return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
     mod: 'home',
@@ -37,6 +43,13 @@ export function sort(params) {
 // 查询尺码已存在的排序
 export function getSizeSortList(params) {
   return post('goods/styleType/getStyleTypeBySort', params, {
+    mod: 'home',
+    cmd: 100006,
+  })
+}
+// 查询词典尺码已存在的排序
+export function getDirSizeSortList(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
     mod: 'home',
     cmd: 100006,
   })

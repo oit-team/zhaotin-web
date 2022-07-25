@@ -48,7 +48,7 @@
 
 <script>
 import VcUpload from '@/views/common/Upload'
-import {addCateGory,getDictionaryList,updateCateGory,sort,getSizeSortList} from '@/api/category'
+import {addCateGory,getDictionaryList,updateCateGory,sort,getDirSizeSortList} from '@/api/category'
 export default {
   name:'addDictionaryType',
   components:{VcUpload},
@@ -153,7 +153,7 @@ export default {
         dictitemCode: this.cateGoryForm.dictCode || 'ACTEGORY',
         brandId: sessionStorage.brandId
       }
-      getSizeSortList(con).then((res) => {
+      getDirSizeSortList(con).then((res) => {
           if(res.head.status === 0) {
            this.sortList = res.body.result
           }

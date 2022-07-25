@@ -150,7 +150,7 @@
 
 <script>
 import { getProductList } from '@/api/product'
-import { getGoodsSizeClass, getGoodsSizeInfo } from '@/api/goods'
+import { getGoodsSize1Class, getGoodsSizeInfo } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
 import LoadMore from '@/components/business/LoadMore'
 
@@ -262,7 +262,7 @@ export default {
     },
     // 获取顶部分类列表
     async classData2() {
-      const res = await getGoodsSizeClass({
+      const res = await getGoodsSize1Class({
         dictCode: 'SYSTEM_CONFIG',
       })
       this.tabList1 = res.body.resultList
