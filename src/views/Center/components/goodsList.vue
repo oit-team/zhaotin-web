@@ -1,14 +1,14 @@
 <template>
   <div id="Mpage" class="zt-page overflow-x-hidden">
     <div class="zt-tabs__top">
-      <Tabs :tab-list="tabList1" :ishome="ishome" @checkTab="checkTab1" @checkSecondTab1 = checkSecondTab />
+      <Tabs :tab-list="tabList1" :ishome="ishome" @check-tab="checkTab1" @checkSecond-tab1="checkSecondTab" />
     </div>
     <div class="zt-tabs">
       <div class="zt-tabs__center">
         <Tabs
           :tab-list="tabList"
           :label-text="labelText1"
-          @checkTab="checkTab"
+          @check-tab="checkTab"
         />
         <div class="zt-radio">
           <div class="zt-radio__label">

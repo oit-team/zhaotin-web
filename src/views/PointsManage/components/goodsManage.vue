@@ -188,6 +188,7 @@
 import axios from 'axios'
 import TablePage from '@/components/business/TablePage'
 import { delIntegralGoods, getIntegralGoodsList, updateIntegralGoodsState } from '@/api/integral'
+import { getExportInfo } from '@/api/goods'
 
 export default {
   name: 'GoodsManage',
@@ -247,18 +248,18 @@ export default {
               },
             }),
           },
-          // {
-          //   name: '导入商品',
-          //   icon: 'el-icon-download',
-          //   type: 'primary',
-          //   click: () => this.importGoods(),
-          // },
-          // {
-          //   name: '导出商品',
-          //   icon: 'el-icon-upload2',
-          //   type: 'primary',
-          //   click: () => this.export(),
-          // },
+          {
+            name: '导入商品',
+            icon: 'el-icon-download',
+            type: 'primary',
+            click: () => this.importGoods(),
+          },
+          {
+            name: '导出商品',
+            icon: 'el-icon-upload2',
+            type: 'primary',
+            click: () => this.export(),
+          },
           {
             slot: 'upd',
           },
@@ -329,9 +330,26 @@ export default {
     getExportInfo() {
       this.tempCheckList = []
       const con = {
-        type: 'styleList',
-        code: 'style',
+        type: 'integralList',
+        code: 'integral',
       }
+      // getExportInfo(con).then((res) => {
+      //   if (res.head.status === 0) {
+      //     this.exportInfoList = res.body.exportTitle
+      //     for (let i = 0; i < this.exportInfoList.length; i++) {
+      //       this.tempCheckList.push(this.exportInfoList[i].columnName)
+      //     }
+      //     this.checkList = this.tempCheckList
+      //     // console.log("默认全选===",this.checkList)
+      //   } else {
+      //     this.$message({
+      //       message: res.head.msg,
+      //       type: 'warning',
+      //     })
+      //   }
+      // }).catch(() => {
+      //   // console.log(err)
+      // })
     },
     // 删除商品
     deleteGoods(item) {

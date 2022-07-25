@@ -16,8 +16,8 @@
     <div v-else class="zt-tabs__center2">
       <el-dropdown
         v-for="(item, index) in tabList"
-        trigger="click"
         :key="index"
+        trigger="hover"
         :class="
           selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'
         "
@@ -65,9 +65,7 @@ export default {
     },
     checkItem(index) {
       this.selectItem = index
-      if (this.ishome)
-        this.$emit('check-tab1', index)
-
+      if (this.ishome) this.$emit('check-tab1', index)
       this.$emit('check-tab', index)
     },
 

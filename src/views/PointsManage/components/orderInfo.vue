@@ -8,7 +8,7 @@
           @back="$router.back()"
         />
         <div>
-          <el-button type="text" @click="dialogSee = true">
+          <el-button type="text" @click="dialogSee = true, getEx()">
             查看兑换记录
           </el-button>
           <el-divider v-if="flag === '1'" direction="vertical" />
@@ -138,14 +138,37 @@
       custom-class="zt-demo__drawer"
     >
       <div class="demo-drawer__content">
+        <div class="drawer-content">
+          <el-card v-for="(item, index) in exchangeList" :key="index" shadow="hover" class="drawer-item mb-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                兑换凭证：
+                <el-image :src="item.voucherImg" style="width: 70px; height: 70px" :preview-src-list="[item.voucherImg]"></el-image>
+              </div>
+              <p>
+                兑换人员：{{ item.customer }}
+              </p>
+            </div>
+            <div>
+              备注：<span>{{ item.exchangeRemarks || '暂无备注' }}</span>
+            </div>
+            <div class="flex justify-between">
+              <p>
+              </p>
+              <p>
+                {{ item.createTime }}
+              </p>
+            </div>
+          </el-card>
+        </div>
+        <div></div>
       </div>
     </el-drawer>
   </div>
 </template>
 
 <script>
-import { getOrderDetail } from '@/api/order'
-import { addExchangeRecord } from '@/api/integral'
+import { addExchangeRecord, getOrderDetail, getOrderExchange } from '@/api/order'
 import VcUpload from '@/views/common/Upload'
 
 export default {
@@ -191,6 +214,7 @@ export default {
         }],
       },
       fileList: [],
+      exchangeList: [],
     }
   },
   computed: {
@@ -242,6 +266,15 @@ export default {
     },
     // 获取 订单兑换记录
     getEx() {
+      getOrderExchange({
+        orderNo: this.orderInfo.orderNo,
+      }).then(res => {
+        if (res.head.status !== 0) {
+          this.$message(res.head.msg)
+        } else {
+          this.exchangeList = res.body.exchangeList
+        }
+      })
     },
     add() {
       this.ruleForm.orderNo = this.orderInfo.orderNo
