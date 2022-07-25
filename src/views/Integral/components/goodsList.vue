@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="tabs flex">
-      <Tabs :tab-list="goodsCategory" :ishome="ishome" @checkTab="checkTab1" />
+      <Tabs :tab-list="goodsCategory" :ishome="ishome" @check-tab="checkTab1" />
     </div>
 
     <el-divider />

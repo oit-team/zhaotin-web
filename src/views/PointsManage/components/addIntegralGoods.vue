@@ -16,6 +16,7 @@
     <!-- 表单 -->
     <el-form
       ref="formData"
+      v-loading="loading"
       class="flex justify-around"
       :model="formData"
       label-width="100px"
@@ -270,6 +271,7 @@ export default {
       selectGoods: 0,
       videoListTest: [],
       emp: false,
+      loading: false,
     }
   },
   computed: {
@@ -434,6 +436,7 @@ export default {
     },
     // 点击保存 / 发布
     editGoodFun(status) {
+      this.loading = true
       const imagesUrl = []
       this.formData.images.forEach(e => {
         imagesUrl.push(e.url)
@@ -459,6 +462,8 @@ export default {
             })
           }
         }).catch(() => {
+        }).finally(() => {
+          this.loading = false
         })
       } else {
         updateIntegralGoods(con).then(res => {
@@ -472,6 +477,8 @@ export default {
               this.upgoods()
             }
           }
+        }).finally(() => {
+          this.loading = false
         })
       }
       // if (status === 0) {
@@ -671,5 +678,8 @@ export default {
       color: #FF0000;
     }
   }
+}
+::v-deep .el-loading-spinner{
+  left: 50%;
 }
 </style>

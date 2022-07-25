@@ -45,3 +45,20 @@ export function getOrderList(params) {
     uuid: '0',
   })
 }
+
+// 积分商城 添加兑换记录
+export function addExchangeRecord(params) {
+  return post('/order/integralShop/addExchangeRecord', params, {
+    mod: 'home',
+    cmd: 100001,
+    uuid: '1',
+  })
+}
+
+// 积分商城 查看兑换记录
+export function getOrderExchange(params) {
+  return post('/order/integralShop/getOrderExchange', params, {
+    mod: 'vue',
+    uuid: null,
+  })
+}

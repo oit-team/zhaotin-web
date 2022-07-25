@@ -8,7 +8,7 @@
         <Tabs
           :tab-list="tabList"
           :label-text="labelText1"
-          @checkTab="checkTab"
+          @check-tab="checkTab"
         />
         <div class="zt-radio">
           <div class="zt-radio__label">
