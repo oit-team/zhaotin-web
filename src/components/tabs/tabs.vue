@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     checkSecondTab(...e) {
-      this.$emit('checkSecond-tab1', e)
+      this.$emit('check-second-tab1', e)
     },
     checkItem(index) {
       this.selectItem = index
