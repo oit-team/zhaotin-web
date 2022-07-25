@@ -172,7 +172,6 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {  
         if (valid) {
-          console.log(this.cateGoryForm)
           // 先查询所输入排序是否已经存在
           let con = {
             userId: sessionStorage.userId,
@@ -209,8 +208,6 @@ export default {
         }
       })
       const path = [0, this.cateGoryForm.fatherTypeId].filter(item => item !== '').toString()
-      console.log(this.cateGoryForm)
-      debugger
       const con = {
            dictCode: "ACTEGORY",
            ...this.cateGoryForm,
