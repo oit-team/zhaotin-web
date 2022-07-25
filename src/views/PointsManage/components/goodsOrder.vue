@@ -1,6 +1,6 @@
 <template>
   <div class="h-full my-10">
-    <div class="main container">
+    <div class="h-full">
       <div class="table_height">
         <TablePage v-bind="tablePageOption" ref="page" auto />
       </div>
@@ -102,7 +102,7 @@ export default {
 
 <style lang="less" scoped>
 .table_height {
-  height: 600px;
+  height: 100%;
 }
 
 ::v-deep .el-loading-spinner {

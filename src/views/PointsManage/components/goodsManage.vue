@@ -1,6 +1,6 @@
 <template>
   <div class="h-full my-10">
-    <div class="main container" style="height: 100%;">
+    <div style="height: 100%;">
       <div class="table-h" style="height: 100%;">
         <TablePage v-bind="tablePageOption" ref="page" class="!min-h-screen-sm" auto>
           <template #actions:upd>
@@ -248,18 +248,18 @@ export default {
               },
             }),
           },
-          {
-            name: '导入商品',
-            icon: 'el-icon-download',
-            type: 'primary',
-            click: () => this.importGoods(),
-          },
-          {
-            name: '导出商品',
-            icon: 'el-icon-upload2',
-            type: 'primary',
-            click: () => this.export(),
-          },
+          // {
+          //   name: '导入商品',
+          //   icon: 'el-icon-download',
+          //   type: 'primary',
+          //   click: () => this.importGoods(),
+          // },
+          // {
+          //   name: '导出商品',
+          //   icon: 'el-icon-upload2',
+          //   type: 'primary',
+          //   click: () => this.export(),
+          // },
           {
             slot: 'upd',
           },

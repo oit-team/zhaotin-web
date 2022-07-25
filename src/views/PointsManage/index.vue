@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="height:100%;position:absolute;width:100%">
     <HeaderNav />
-    <div class="main container" style="height:100%;">
+    <div class="main container" style="height:100%;height:calc(100% - 110px)">
       <router-view />
     </div>
   </div>

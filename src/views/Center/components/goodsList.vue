@@ -1,7 +1,7 @@
 <template>
   <div id="Mpage" class="zt-page overflow-x-hidden">
     <div class="zt-tabs__top">
-      <Tabs :tab-list="tabList1" :ishome="ishome" @check-tab="checkTab1" @check-second-tab1 = checkSecondTab />
+      <Tabs :tab-list="tabList1" :ishome="ishome" @check-tab="checkTab1" @check-second-tab1="checkSecondTab" />
     </div>
     <div class="zt-tabs">
       <div class="zt-tabs__center">
@@ -279,22 +279,17 @@ export default {
     // 点击二级tab
     checkTab(index) {
       let con = ''
-      if (index !== 0)
-        con = this.tabList[index].dictitemDisplayName
-      else
-        con = ''
-
-      this.$nextTick(() => {
-        this.showEmp = false
-        this.formData.styleLength = con
-        this.reLoad()
-      })
+      if (index !== 0) con = this.tabList[index].dicttimeDisplayName
+      else con = ''
+      this.showEmp = false
+      this.formData.styleLength = con
+      this.reLoad()
     },
     // 点击顶部 tab
     checkTab1(index) {
       let con = ''
       if (index === 0)
-        con = this.tabList1[index].categoryName
+        con = ''
       else
         con = this.tabList1[index].dictitemDisplayName
 

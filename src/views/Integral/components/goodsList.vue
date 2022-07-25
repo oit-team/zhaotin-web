@@ -260,8 +260,8 @@ export default {
 
     .zt-good__image {
       width: 230px;
-      height: 300px;
-      border-radius: 5px;
+      height: 230px;
+      border-radius: 5px 5px 0 0;
       border-bottom: 1px solid #F2F2F2;
     }
 
