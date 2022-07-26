@@ -1,7 +1,7 @@
 <template>
   <div id="Mpage" class="zt-page overflow-x-hidden">
     <div class="zt-tabs__top">
-      <Tabs :tab-list="tabList1" :ishome="ishome" @check-tab="checkTab1" @check-second-tab1="checkSecondTab" />
+      <Tabs :tab-list="tabList1" :show-drop="true" :ishome="ishome" @check-tab="checkTab1" @check-second-tab1="checkSecondTab" />
     </div>
     <div class="zt-tabs">
       <div class="zt-tabs__center">
@@ -171,10 +171,8 @@ export default {
       tabList1: [],
       dataList: [],
       labelText1: '筛选',
-      labelText2: '排序',
       ishome: true,
       selectB: 0,
-      styleCategory: '',
       formData: {
         styleNo: '', // 商品编号
         pageNum: 1,
@@ -204,9 +202,6 @@ export default {
       // -----
       fullscreenLoading: false,
       tabList: [],
-      // styleLength: '',
-      // isUpdate: true,
-      // isTop: false,
     }
   },
   computed: {},

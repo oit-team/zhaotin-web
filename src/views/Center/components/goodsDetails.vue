@@ -10,15 +10,15 @@
 
     <!-- 主题内容 -->
     <!-- 返回内容为空 -->
-    <div v-if="showResult">
+    <!-- <div v-if="showResult">
       <el-empty :description="resultText">
         <el-button type="primary" @click="$router.go(-1)">
           返回
         </el-button>
       </el-empty>
-    </div>
+    </div> -->
 
-    <div v-else class="zt-content">
+    <div class="zt-content">
       <!-- top  商品图片 信息区 -->
       <div class="zt-content__head">
         <div class="zt-head__swiper">
@@ -186,6 +186,7 @@
                 v-model="num"
                 size="small"
                 :min="0"
+                class="zt-number"
                 @change="handleChange"
               />
             </div>
@@ -438,14 +439,12 @@ export default {
         shelfTimeSort: 0, // 批发价排序（0：从小到大 1是从大到小）
         tradePriceSort: 0, // 上架时间排序（0：从小到大 1是从大到小）
       },
-      goodsLength: 0,
       imageIndex: 0, // 选择图片
       colorIndex: 0, // 选择颜色
       sizeIndex: 0, // 选择大小
       allList: [],
       styleData: {},
       sizeData: {},
-      priceAll: 0,
       showResult: false,
       resultText: '',
       showEmp: false,
@@ -550,8 +549,6 @@ export default {
         this.showEmp = true
       else
         this.showEmp = false
-
-      that.goodsLength = res.body.resultList.length
     },
     // 轮播图 切换出控制
     setCarouselItem(index) {
@@ -936,6 +933,9 @@ video::-webkit-media-controls-timeline {
         }
       }
     }
+  }
+  .zt-number{
+    margin-left: 20px;
   }
   .zt-content__data{
     margin-top: 50px;

@@ -15,6 +15,10 @@
           <el-button v-if="flag === '1'" class="!text-rose-500" type="text" @click="dialogAdd = true">
             添加兑换记录
           </el-button>
+          <!-- <el-divider v-if="flag === '1'" direction="vertical" />
+          <el-button v-if="flag === '1'" class="!text-rose-500" type="text" @click="deleteOrder">
+            取消订单
+          </el-button> -->
         </div>
       </div>
       <div class="flex justify-between px-14 zt-head">
@@ -67,7 +71,7 @@
           <div class="font-extrabold">
             数量: {{ orderInfo.goodsNumber }}件
           </div>
-          <div v-show="!isSet" class="font-extrabold">
+          <div class="font-extrabold">
             消费积分: <span class="zt-red">{{ orderInfo.goodsIntegral }}</span>
           </div>
         </div>
@@ -138,7 +142,8 @@
       custom-class="zt-demo__drawer"
     >
       <div class="demo-drawer__content">
-        <div class="drawer-content">
+        <el-empty v-if="showEmp" description="暂无记录"></el-empty>
+        <div v-else class="drawer-content">
           <el-card v-for="(item, index) in exchangeList" :key="index" shadow="hover" class="drawer-item mb-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
@@ -180,26 +185,13 @@ export default {
     return {
       orderInfo: {},
       orderId: '',
-      orderTime: '',
       orderTypeName: '',
-      orderInfoList: [],
-      Numb: 0,
-      priceAll: 0,
-      dataInfo: {},
-      isSet: false,
-      priceList: [],
       drawer: false,
       direction: 'rtl',
-      drawerNote: false,
       textarea: '', // 修改订单原因
-      bValidateForm: {
-        cause: '',
-      },
       dialogAdd: false,
       dialogSee: false,
       loading: false,
-      updateRecord: [], // 修改记录
-      isUpdate: false,
       flag: '',
       exchange: '',
       ruleForm: {
@@ -215,6 +207,7 @@ export default {
       },
       fileList: [],
       exchangeList: [],
+      showEmp: false,
     }
   },
   computed: {
@@ -266,12 +259,17 @@ export default {
     },
     // 获取 订单兑换记录
     getEx() {
+      this.showEmp = false
       getOrderExchange({
         orderNo: this.orderInfo.orderNo,
       }).then(res => {
         if (res.head.status !== 0) {
           this.$message(res.head.msg)
+          this.showEmp = true
         } else {
+          if (res.body.exchangeList.length === 0) {
+            this.showEmp = true
+          }
           this.exchangeList = res.body.exchangeList
         }
       })

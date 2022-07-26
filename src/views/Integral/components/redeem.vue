@@ -48,7 +48,7 @@
             </el-col>
             <el-col :span="8">
               <div class="zt-cart__color">
-                商品编号：{{ formData.styleNo }}
+                商品编号：{{ formData.goodsCode }}
               </div>
             </el-col>
             <el-col :span="6">
@@ -59,8 +59,7 @@
       </div>
       <div class="flex items-end justify-between px-5 pb-5">
         <div>
-          <!-- <div>数量：{{ formData.goodsNumber }}</div> -->
-          <div>消费积分：{{ formData.goodsIntegral }}</div>
+          <div>消费积分：{{ integral }}</div>
         </div>
         <div>
           <p>
@@ -76,7 +75,7 @@
       <div class="label w-24">
         兑换说明：
       </div>
-      <el-input v-model="orderNote" type="textarea" :rows="4" />
+      <el-input v-model="orderNote" :disabled="formData.goodsSort === 2" type="textarea" :rows="4" />
     </div>
     <div class="flex justify-between">
       <div></div>
@@ -177,7 +176,7 @@ import {
   setOrderSite,
   // CalculatePrice,
 } from '@/api/orderCart'
-import { addIntegralOrder, payIntegralOrder } from '@/api/integral'
+import { addIntegralOrder } from '@/api/integral'
 
 export default {
   name: 'Redeem',
@@ -216,6 +215,9 @@ export default {
         siteInfo: { required: true, message: '地址不能为空', trigger: 'blur' },
       },
       oldUrl: '',
+      remarksList: [],
+      remarks: '',
+      integral: 0,
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -226,6 +228,27 @@ export default {
   created() {
     this.getData()
     this.formData = this.$store.state.integral.orderStorage
+    if (this.formData.styleColorList) {
+      let goodsn = 0
+      this.formData.styleColorList.forEach(e => {
+        goodsn += e.num
+        this.remarksList = `${e.styleColor}`
+        e.styleSize.forEach(i => {
+          if (i.num !== 0) {
+            this.remarksList = `${this.remarksList} ${i.sizeName}×${i.num}`
+          }
+        })
+        if (this.remarks === '') {
+          this.remarks = this.remarksList
+        } else {
+          this.remarks = `${this.remarks} \n${this.remarksList}`
+        }
+      })
+      this.formData.goodsNumber = goodsn
+    } else {
+      this.formData.goodsNumber = 1
+    }
+    this.integral = this.formData.goodsNumber * this.formData.goodsIntegral
   },
   beforeDestroy() {
     if (this.$route.path === '/styleCenter/goodsDetails')
@@ -406,12 +429,13 @@ export default {
         goodsNumber: this.formData.goodsNumber,
         goodsNo: this.formData.goodsCode,
         goodsIntegral: this.formData.goodsIntegral,
-        orderRemarks: this.orderNote,
+        orderRemarks: this.formData.goodsSort === 2 ? this.remarks : this.orderNote,
       }
       addIntegralOrder(con).then((res) => {
         if (res.head.status === 0) {
           this.$store.commit('integral/cgStart', true)
           this.$message.success('兑换成功')
+          this.$router.back()
         } else {
           this.$message.error(res.head.msg)
         }

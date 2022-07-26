@@ -25,53 +25,63 @@ export default {
 
   computed: {
     tablePageOption() {
+      const operation = JSON.parse(this.$store.state.menu.menuOperation)
+      const buttons = []
+      const actions = []
+      operation.forEach((item) => {
+        if (item.statue === 1) {
+          if (item.operationKey === 'selectById') {
+            buttons.push({
+              tip: '订单详情',
+              type: 'success',
+              icon: 'el-icon-view',
+              click: scope => this.$router.push({
+                path: '/pointsManage/orderInfo',
+                query: { item: scope },
+              }),
+            })
+          } else if (item.operationKey === 'update') {
+            buttons.push({
+              tip: '编辑',
+              type: 'warning',
+              icon: 'el-icon-edit',
+              click: scope => this.$router.push({
+                path: '/pointsManage/orderInfo',
+                query: { item: scope, flag: 1 },
+              }),
+            })
+          } else if (item.operationKey === 'delete') {
+            buttons.push({
+              tip: '删除',
+              type: 'danger',
+              icon: 'el-icon-delete',
+              click: () => {},
+              disabled: ({ row }) => {
+                if (row.status === '1') { // 1 是已上架
+                  return true
+                } if (row.status === '0')
+                  return false
+              },
+            })
+          } else if (item.operationKey === 'insert') {
+            actions.push({
+              name: '新增订单',
+              type: 'success',
+              icon: 'el-icon-plus',
+              // click: () => this.$router.push('/basls/customerAccount/addCustomer'),
+            })
+          }
+        }
+      })
       return {
         promise: this.loadData,
         // 搜索表单内的按钮
-        actions: [
-          // {
-          //   name: '新增角色',
-          //   type: 'success',
-          //   icon: 'el-icon-plus',
-          //   click: this.addRole,
-          // },
-        ],
+        actions: [],
         table: {
           data: this.data.resultList,
           actions: {
             width: 180,
-            buttons: [
-              {
-                tip: '订单详情',
-                type: 'success',
-                icon: 'el-icon-view',
-                click: scope => this.$router.push({
-                  path: '/pointsManage/orderInfo',
-                  query: { item: scope, flag: 0 },
-                }),
-              },
-              {
-                tip: '删除',
-                type: 'danger',
-                icon: 'el-icon-delete',
-                click: () => {},
-                disabled: ({ row }) => {
-                  if (row.status === '1') { // 1 是已上架
-                    return true
-                  } if (row.status === '0')
-                    return false
-                },
-              },
-              {
-                tip: '编辑',
-                type: 'warning',
-                icon: 'el-icon-edit',
-                click: scope => this.$router.push({
-                  path: '/pointsManage/orderInfo',
-                  query: { item: scope, flag: 1 },
-                }),
-              },
-            ],
+            buttons,
           },
         },
         pager: {

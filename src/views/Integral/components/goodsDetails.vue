@@ -487,7 +487,10 @@ export default {
             // 将 视频封面 加到切换轮播的images中
             this.thumbnailList = [...this.infoData.imgUrlList]
             this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
-            if (this.infoData.styleVideoPatch !== null) this.infoData.imgUrlList.unshift(this.infoData.styleVideoPatch)
+            const url = {
+              resUrl: this.infoData.styleVideoPatch,
+            }
+            if (this.infoData.styleVideoPatch !== null) this.infoData.imgUrlList.unshift(url)
           }
         } else {
           this.$message.warning('该商品暂未上架')
@@ -510,7 +513,8 @@ export default {
     },
     // 商品数量
     handleChange(value) {
-      if (value >= 0 && this.styleType === 2) {
+      // if (value >= 0 && this.styleType === 2) {
+      if (value >= 0) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
         this.infoData.styleColorList.forEach((e) => {
           let n = 0
