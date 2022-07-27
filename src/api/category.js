@@ -26,6 +26,13 @@ export function delCateGory(params) {
     cmd: 100004,
   })
 }
+// 删除词典类别
+export function delDirCateGory(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+    mod: 'home',
+    cmd: 100004,
+  })
+}
 // 修改类别
 export function updateCateGory(params) {
   return post('/goods/styleType/updateStyleType', params, {
@@ -33,9 +40,23 @@ export function updateCateGory(params) {
     cmd: 100003,
   })
 }
+// 修改词典类别
+export function updateDirCateGory(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
+    mod: 'home',
+    cmd: 100003,
+  })
+}
 // 判断排序
 export function sort(params) {
   return post('/goods/styleType/getStyleTypeBySortNum', params, {
+    mod: 'home',
+    cmd: 100005,
+  })
+}
+// 判断词典排序
+export function dirSort(params) {
+  return post('/goods/dictitemInfo/dictitemInfoAllMethod', params, {
     mod: 'home',
     cmd: 100005,
   })

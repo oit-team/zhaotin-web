@@ -19,7 +19,7 @@
 
 <script>
 import TablePage from '@/components/business/TablePage'
-import { catediRGoryList,delCateGory } from '@/api/category'
+import { catediRGoryList,delDirCateGory } from '@/api/category'
 
 export default {
   name: 'Style',
@@ -101,7 +101,7 @@ export default {
           dictCode: item.row.dictCode,
           dictitemCode:item.row.dictitemCode
         }
-        delCateGory(con).then((res) => {
+        delDirCateGory(con).then((res) => {
           this.$refs.cateTable.loadData()
         })
       })

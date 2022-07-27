@@ -48,7 +48,8 @@
 
 <script>
 import VcUpload from '@/views/common/Upload'
-import {addCateGory,getDictionaryList,updateCateGory,sort,getDirSizeSortList} from '@/api/category'
+import {addCateGory,getDictionaryList,updateDirCateGory,dirSort,getDirSizeSortList} from '@/api/category'
+
 export default {
   name:'addDictionaryType',
   components:{VcUpload},
@@ -175,7 +176,7 @@ export default {
             // brandId: sessionStorage.brandId
             imgUrl: this.upImg,
           }
-          sort(con).then((res) => {
+          dirSort(con).then((res) => {
             if(res.head.status === 0){
               if(res.body.result === 0){
                 this.saveFunction();
@@ -192,6 +193,7 @@ export default {
               })
             }
           }).catch(err=>{
+            console.log(err)
           });
         } else {
           return false;
@@ -215,7 +217,8 @@ export default {
           }
       if(!this.editFlag){  // 编辑
       
-       updateCateGory(con).then((res) => {
+       updateDirCateGory(con).then((res) => {
+         console.log(res)
            if(res.head.status === 0) {
                 this.$message({
                     message: "修改词典类型成功",
@@ -233,7 +236,7 @@ export default {
             }
         })
       }
-       this.$router.back();
+      this.$router.back();
     },
   }
 }
