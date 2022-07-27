@@ -238,10 +238,10 @@ export default {
             this.remarksList = `${this.remarksList} ${i.sizeName}×${i.num}`
           }
         })
-        if (this.remarks === '') {
-          this.remarks = this.remarksList
+        if (this.orderNote === '') {
+          this.orderNote = this.remarksList
         } else {
-          this.remarks = `${this.remarks} \n${this.remarksList}`
+          this.orderNote = `${this.orderNote} \n${this.remarksList}`
         }
       })
       this.formData.goodsNumber = goodsn
@@ -429,7 +429,7 @@ export default {
         goodsNumber: this.formData.goodsNumber,
         goodsNo: this.formData.goodsCode,
         goodsIntegral: this.formData.goodsIntegral,
-        orderRemarks: this.formData.goodsSort === 2 ? this.remarks : this.orderNote,
+        orderRemarks: this.orderNote,
       }
       addIntegralOrder(con).then((res) => {
         if (res.head.status === 0) {

@@ -233,6 +233,7 @@ export default {
 
     if (this.$route.query.item) {
       this.orderId = this.$route.query.item.row.orderId
+      this.orderNo = this.$route.query.item.row.orderNo
       this.orderInfo()
     }
   },
@@ -241,7 +242,7 @@ export default {
     async orderInfo() {
       const that = this
       const con = {
-        orderId: that.orderId,
+        orderNo: that.orderNo,
       }
       await getOrderById(con).then((res) => {
         if (res.head.status === 0) {

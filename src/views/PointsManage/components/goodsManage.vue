@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import TablePage from '@/components/business/TablePage'
 import { delIntegralGoods, getIntegralGoodsList, updateIntegralGoodsState } from '@/api/integral'
 
@@ -166,8 +165,6 @@ export default {
         selection: true,
       }
     },
-  },
-  created() {
   },
   methods: {
     async loadData(params) {
