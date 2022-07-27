@@ -657,6 +657,9 @@ video::-webkit-media-controls-timeline {
       width: 60%;
       color: #666;
       padding-left: 80px;
+      border: 1px solid #ededed;
+      border-radius: 10px;
+      margin-left: 10px;
       box-sizing: border-box;
       .zt-data__head{
         .zt-data__title{
@@ -1007,6 +1010,9 @@ video::-webkit-media-controls-timeline {
       }
     }
   }
+}
+::v-deep .el-carousel__item{
+  border-radius: 10px 10px 0 0;
 }
 ::v-deep .zt-swiper__item{
   position: relative;
