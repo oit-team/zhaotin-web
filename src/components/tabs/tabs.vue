@@ -14,30 +14,47 @@
     </div>
     <!-- 顶部 tab -->
     <div v-else class="zt-tabs__center2">
-      <el-dropdown
-        v-for="(item, index) in tabList"
-        trigger="click"
-        :key="index"
-        :class="
-          selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'
-        "
-        @command="checkSecondTab"
-      >
-        <span class="el-dropdown-link" @click="checkItem(index)">
-          {{ item.categoryName || item.dictitemDisplayName }}({{
-            item.typeNumber || item.total || 0
-          }})
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="(secondItem, idx) in item.childerType"
-            :key="idx"
-            :command="secondItem"
-          >
-            {{ secondItem.dictitemDisplayName }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <template v-if="!showDrop">
+        <div
+          v-for="(item, index) in tabList"
+          :key="index"
+          :class="
+            selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'
+          "
+        >
+          <span class="el-dropdown-link" @click="checkItem(index)">
+            {{ item.categoryName || item.dictitemDisplayName }}({{
+              item.typeNumber || item.total || 0
+            }})
+          </span>
+        </div>
+      </template>
+      <template v-else>
+        <el-dropdown
+          v-for="(item, index) in tabList"
+          :key="index"
+          trigger="hover"
+          :class="
+            selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'
+          "
+          @command="checkSecondTab"
+        >
+          <span class="el-dropdown-link" @click="checkItem(index)">
+            {{ item.categoryName || item.dictitemDisplayName }}({{
+              item.typeNumber || item.total || 0
+            }})
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(secondItem, idx) in item.childerType"
+              :key="idx"
+              :command="secondItem"
+            >
+              {{ secondItem.dictitemDisplayName }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </template>
     </div>
     <!-- </div> -->
   </div>
@@ -50,6 +67,7 @@ export default {
     tabList: Array,
     labelText: String,
     ishome: Boolean,
+    showDrop: Boolean,
   },
   data() {
     return {
@@ -83,6 +101,9 @@ export default {
   // margin: 10px 0;
   box-sizing: border-box;
 }
+.el-dropdown{
+  font-size: 16px;
+}
 .zt-tabs__center1 {
   display: flex;
   align-items: center;
@@ -106,7 +127,7 @@ export default {
 }
 .zt-tabs__homeItem {
   color: #666666;
-  padding: 15px;
+  padding: 16px;
   white-space: nowrap;
   box-sizing: border-box;
 }
@@ -114,7 +135,7 @@ export default {
   margin-right: 20px;
 }
 .zt-tabs-select {
-  padding: 15px;
+  padding: 16px;
   color: #cda46c;
   white-space: nowrap;
   box-sizing: border-box;

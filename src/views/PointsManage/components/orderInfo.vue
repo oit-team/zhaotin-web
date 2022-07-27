@@ -15,6 +15,10 @@
           <el-button v-if="flag === '1'" class="!text-rose-500" type="text" @click="dialogAdd = true">
             添加兑换记录
           </el-button>
+          <!-- <el-divider v-if="flag === '1'" direction="vertical" />
+          <el-button v-if="flag === '1'" class="!text-rose-500" type="text" @click="deleteOrder">
+            取消订单
+          </el-button> -->
         </div>
       </div>
       <div class="flex justify-between px-14 zt-head">
@@ -55,7 +59,7 @@
               </el-col>
               <el-col :span="6">
                 <div class="zt-cart__color">
-                  <!-- {{ orderInfo.orderRemarks }} -->
+                  积分：{{ orderInfo.goodsIntegral }}
                 </div>
               </el-col>
             </el-row>
@@ -67,8 +71,8 @@
           <div class="font-extrabold">
             数量: {{ orderInfo.goodsNumber }}件
           </div>
-          <div v-show="!isSet" class="font-extrabold">
-            消费积分: <span class="zt-red">{{ orderInfo.goodsIntegral }}</span>
+          <div class="font-extrabold">
+            消费积分: <span class="zt-red">{{ orderInfo.orderIntegral }}</span>
           </div>
         </div>
         <div class="zt-footer__right">
@@ -138,19 +142,26 @@
       custom-class="zt-demo__drawer"
     >
       <div class="demo-drawer__content">
-        <div class="drawer-content">
-          <el-card v-for="(item, index) in exchangeList" :key="index" shadow="hover" class="drawer-item mb-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                兑换凭证：
-                <el-image :src="item.voucherImg" style="width: 70px; height: 70px" :preview-src-list="[item.voucherImg]"></el-image>
-              </div>
-              <p>
-                兑换人员：{{ item.customer }}
-              </p>
+        <el-empty v-if="showEmp" description="暂无记录"></el-empty>
+        <div v-else class="drawer-content">
+          <el-card v-for="(item, index) in exchangeList" :key="index" shadow="never" class="drawer-item mb-4">
+            <div class="flex content-center">
+              <span class="text-sm w-14 flex-shrink-0">备注：</span>
+              <el-input v-model="item.exchangeRemarks" type="textarea" readonly :rows="3"></el-input>
+              <!-- <span class="text-out">{{ item.exchangeRemarks || '暂无备注' }}</span> -->
             </div>
-            <div>
-              备注：<span>{{ item.exchangeRemarks || '暂无备注' }}</span>
+            <div class="flex mt-2 items-center justify-between">
+              <div class="flex">
+                <span class="text-sm w-14">图片：</span>
+                <el-image :src="item.voucherImg" class="border rounded-md" style="width: 70px; height: 70px" :preview-src-list="[item.voucherImg]"></el-image>
+              </div>
+            </div>
+            <div class="flex justify-between">
+              <p>
+              </p>
+              <p>
+                {{ item.customer }}
+              </p>
             </div>
             <div class="flex justify-between">
               <p>
@@ -179,27 +190,14 @@ export default {
   data() {
     return {
       orderInfo: {},
-      orderId: '',
-      orderTime: '',
+      orderNo: '',
       orderTypeName: '',
-      orderInfoList: [],
-      Numb: 0,
-      priceAll: 0,
-      dataInfo: {},
-      isSet: false,
-      priceList: [],
       drawer: false,
       direction: 'rtl',
-      drawerNote: false,
       textarea: '', // 修改订单原因
-      bValidateForm: {
-        cause: '',
-      },
       dialogAdd: false,
       dialogSee: false,
       loading: false,
-      updateRecord: [], // 修改记录
-      isUpdate: false,
       flag: '',
       exchange: '',
       ruleForm: {
@@ -215,6 +213,7 @@ export default {
       },
       fileList: [],
       exchangeList: [],
+      showEmp: false,
     }
   },
   computed: {
@@ -249,14 +248,14 @@ export default {
   created() {
     this.flag = this.$route.query.flag
     if (this.$route.query.item) {
-      this.orderId = this.$route.query.item.row.id
+      this.orderNo = this.$route.query.item.row.orderNo
       this.getData()
     }
   },
   methods: {
     getData() {
       getOrderDetail({
-        id: this.orderId,
+        orderNo: this.orderNo,
       }).then((res) => {
         this.orderInfo = res.body.resultMap
       }).catch(() => {})
@@ -266,12 +265,17 @@ export default {
     },
     // 获取 订单兑换记录
     getEx() {
+      this.showEmp = false
       getOrderExchange({
         orderNo: this.orderInfo.orderNo,
       }).then(res => {
         if (res.head.status !== 0) {
           this.$message(res.head.msg)
+          this.showEmp = true
         } else {
+          if (res.body.exchangeList.length === 0) {
+            this.showEmp = true
+          }
           this.exchangeList = res.body.exchangeList
         }
       })
@@ -446,5 +450,12 @@ export default {
 .tip{
   color:#e60012;
   margin:12px 0px;
+}
+.text-out{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 </style>

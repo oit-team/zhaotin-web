@@ -5,7 +5,6 @@
         <div class="text-sm">
           可用积分
         </div>
-        <!-- <div class="text-sm">可用<br />积分</div> -->
         <el-divider direction="vertical" />
         <div class="text-xl text-red-700">
           {{ userIntegral || 0 }}
@@ -34,14 +33,6 @@
     <!-- 商品  展示  区 -->
     <div v-loading="fullscreenLoading" class="relative">
       <div ref="nav-r" class="nav-r">
-        <!-- <div class="orderCart zt-flex" @click="toCart">
-          <el-badge :value="styleLength" class="item">
-            <div>
-              <i class="el-icon-s-order"></i>
-              <div>订货清单</div>
-            </div>
-          </el-badge>
-        </div> -->
         <div class="totop zt-flex" @click="backTop">
           <i class="el-icon-arrow-up"></i>
           <div>返回顶部</div>
@@ -117,8 +108,6 @@ export default {
   data() {
     return {
       searchInput: '',
-      tabList1: [
-      ],
       ishome: true,
       showEmp: false,
       fullscreenLoading: false,
@@ -260,8 +249,8 @@ export default {
 
     .zt-good__image {
       width: 230px;
-      height: 300px;
-      border-radius: 5px;
+      height: 230px;
+      border-radius: 5px 5px 0 0;
       border-bottom: 1px solid #F2F2F2;
     }
 

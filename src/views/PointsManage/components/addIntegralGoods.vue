@@ -29,12 +29,6 @@
         <el-form-item label="兑换积分" prop="goodsIntegral">
           <el-input v-model="formData.goodsIntegral" placeholder="请输入数字" />
         </el-form-item>
-        <!-- <el-form-item label="物品类别" prop="goodsSort">
-          <el-select v-model="formData.goodsSort" placeholder="请选择物品类别">
-            <el-option label="积分商品" value="1" />
-            <el-option label="引用商品" value="2" />
-          </el-select>
-        </el-form-item> -->
         <el-form-item label="物品类型" prop="goodsType">
           <el-select v-model="formData.goodsType" placeholder="请选择物品类别">
             <el-option v-for="(item, index) in IntegralType" :key="index" :label="item.categoryName" :value="item.orderKey" />
@@ -83,14 +77,6 @@
         <p class="tip">
           *最多可以上传1个视频，大小限制在50M以内，推荐格式mp4
         </p>
-        <!-- <el-form-item label="视频贴片">
-          <VcUpload v-bind="uploadOptionVideoImg" ref="uploadVideoImg" :on-remove="onRemoveVideoImg">
-            <i class="el-icon-plus"></i>
-          </VcUpload>
-        </el-form-item> -->
-        <!-- <p class="tip">
-          *最多可以上传1张图片，推荐格式jpg或png
-        </p> -->
         <el-form-item label="物品图片">
           <VcUpload v-bind="uploadOptionimg" ref="goodsImg" :on-remove="onRemoveGoodsImg">
             <i class="el-icon-plus"></i>
@@ -162,16 +148,6 @@
                 </p>
                 <p>{{ item.styleNo }}</p>
               </div>
-              <!-- <div class="zt-item__line flex items-end">
-                <div class="zt-price__l">
-                  ￥{{ item.tradePrice }}
-                </div>
-                <div class="zt-price__r">
-                  积分：<div class="zt-item__price">
-                    {{ item.goodsIntegral }}
-                  </div>
-                </div>
-              </div> -->
             </div>
           </div>
 
@@ -272,6 +248,7 @@ export default {
       videoListTest: [],
       emp: false,
       loading: false,
+      goodsId: '',
     }
   },
   computed: {
@@ -377,6 +354,7 @@ export default {
     }
   },
   methods: {
+    // 如果是修改商品   则要获取商品详情
     getData() {
       getIntegralGoodsDetailed({
         goodsCode: this.formData.goodsCode,
@@ -398,21 +376,22 @@ export default {
         this.fileList.push(dat)
       }).catch(() => {})
     },
+    // 获取  商品类型列表
     getType() {
       getTypeAndDate({}).then(res => {
         if (res.head.status !== 0) this.$message(res.head.msg)
         this.IntegralType = res.body.goodsCategory
       })
     },
+    // 删除视频事件
     onRemoveVideo() {
       this.formData.video = ''
     },
-    onRemoveVideoImg() {
-      this.formData.vedioImage = ''
-    },
+    // 删除视频图片
     onRemoveGoodsImg(file) {
       this.formData.images = this.formData.images.filter(item => item.url !== file.url)
     },
+    // 保存/发布按钮
     saveGood(formName, status) {
       let msg = ''
       if (status === 0) msg = '确认保存该商品信息吗?'
@@ -442,19 +421,23 @@ export default {
         imagesUrl.push(e.url)
       })
       this.formData.images = [...imagesUrl]
-      // this.formData.videoImage = this.formData.videoImage?.url
       this.formData.goodsSort = this.$route.query.cite ? '2' : '1'
       const con = JSON.parse(JSON.stringify(this.formData))
+      // 新增商品
       if (this.title === '新增商品') {
         con.state = '2'
         addIntegralGoods(con).then((res) => {
           if (res.head.status === 0) {
+            this.goodsId = res.body.id
             this.$message({
               type: 'success',
               message: res.head.msg,
             })
-            if (status === 0) this.$router.back()
-            else this.upgoods()
+            if (status === 0) {
+              this.$router.back()
+            } else {
+              this.upgoods()
+            }
           } else {
             this.$message({
               type: 'error',
@@ -466,6 +449,7 @@ export default {
           this.loading = false
         })
       } else {
+        this.goodsId = this.formData.id
         updateIntegralGoods(con).then(res => {
           if (res.head.status !== 0) {
             this.$message(res.head.msg)
@@ -481,15 +465,8 @@ export default {
           this.loading = false
         })
       }
-      // if (status === 0) {
-      //   this.$router.back()
-      // } else {
-      //   const con = {
-      //     id: [this.formData.goodsCode],
-      //     state: 1,
-      //   }
-      // }
     },
+    // 获取引用商品列表
     getGoodsList() {
       getProductList({ ...this.searchData }).then((res) => {
         if (res.head.status !== 0) {
@@ -501,9 +478,10 @@ export default {
         }
       })
     },
+    // 上架商品
     upgoods() {
       const con = {
-        id: [this.formData.id],
+        id: [this.goodsId],
         state: 1,
       }
       updateIntegralGoodsState(con).then((res) => {
@@ -515,6 +493,7 @@ export default {
         }
       })
     },
+    // 查询 引用商品
     searchSub() {
       this.searchData.startDate = this.searchData.creatTime[0]
       this.searchData.endDate = this.searchData.creatTime[1]
@@ -523,6 +502,7 @@ export default {
         else this.goodsList = res.body.resultList
       })
     },
+    // 清空 商品input
     resetSearch() {
       this.searchData.styleName = ''
       this.searchData.styleNo = ''
@@ -530,8 +510,7 @@ export default {
       this.searchData.endDate = ''
       this.searchData.creatTime = []
     },
-    saveGoodFun() {
-    },
+    // 选择 引用商品
     selecteD(item, index) {
       this.selectGoods = index
       this.formData.goodsCode = item.styleNo

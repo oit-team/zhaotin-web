@@ -457,6 +457,7 @@ export default {
             this.infoData.recommendationLevel = Number(this.infoData.recommendationLevel)
             // eslint-disable-next-line operator-assignment
             this.infoData.recommendationLevel += 0
+            this.$set(this.infoData, 'goodsNumber', 0)
             // 给数据中  加入数量
             this.infoData.styleColorList.forEach((e) => {
               let n = 0
@@ -487,7 +488,10 @@ export default {
             // 将 视频封面 加到切换轮播的images中
             this.thumbnailList = [...this.infoData.imgUrlList]
             this.$set(this.infoData, 'thumbnailList', this.thumbnailList)
-            if (this.infoData.styleVideoPatch !== null) this.infoData.imgUrlList.unshift(this.infoData.styleVideoPatch)
+            const url = {
+              resUrl: this.infoData.styleVideoPatch,
+            }
+            if (this.infoData.styleVideoPatch !== null) this.infoData.imgUrlList.unshift(url)
           }
         } else {
           this.$message.warning('该商品暂未上架')
@@ -510,7 +514,8 @@ export default {
     },
     // 商品数量
     handleChange(value) {
-      if (value >= 0 && this.styleType === 2) {
+      // if (value >= 0 && this.styleType === 2) {
+      if (value >= 0) {
         this.infoData.styleColorList[this.colorIndex].styleSize[this.sizeIndex].num = value
         this.infoData.styleColorList.forEach((e) => {
           let n = 0
@@ -519,6 +524,7 @@ export default {
             return n
           })
           e.num = n
+          this.infoData.goodsNumber += e.num
         })
       }
     },
@@ -533,7 +539,7 @@ export default {
     },
     // 点击 兑换
     async toRedeem() {
-      if (this.infoData.goodsSort === 2) {
+      if (this.infoData.goodsSort === 2 && this.infoData.goodsNumber !== 0) {
         this.$store.commit('integral/addOrderStorage', this.infoData)
         this.$router.push('/integral/redeem')
       } else if (this.infoData.goodsSort === 1) {

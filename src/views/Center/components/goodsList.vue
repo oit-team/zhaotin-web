@@ -1,7 +1,7 @@
 <template>
   <div id="Mpage" class="zt-page overflow-x-hidden">
     <div class="zt-tabs__top">
-      <Tabs :tab-list="tabList1" :ishome="ishome" @check-tab="checkTab1" @check-second-tab1 = checkSecondTab />
+      <Tabs :tab-list="tabList1" :show-drop="true" :ishome="ishome" @check-tab="checkTab1" @check-second-tab1="checkSecondTab" />
     </div>
     <div class="zt-tabs">
       <div class="zt-tabs__center">
@@ -150,7 +150,7 @@
 
 <script>
 import { getProductList } from '@/api/product'
-import { getGoodsSize1Class, getGoodsSizeInfo } from '@/api/goods'
+import { getGoodsSizeClass, getGoodsSizeInfo } from '@/api/goods'
 import Tabs from '@/components/tabs/tabs'
 import LoadMore from '@/components/business/LoadMore'
 
@@ -171,10 +171,8 @@ export default {
       tabList1: [],
       dataList: [],
       labelText1: '筛选',
-      labelText2: '排序',
       ishome: true,
       selectB: 0,
-      styleCategory: '',
       formData: {
         styleNo: '', // 商品编号
         pageNum: 1,
@@ -204,9 +202,6 @@ export default {
       // -----
       fullscreenLoading: false,
       tabList: [],
-      // styleLength: '',
-      // isUpdate: true,
-      // isTop: false,
     }
   },
   computed: {},
@@ -262,7 +257,7 @@ export default {
     },
     // 获取顶部分类列表
     async classData2() {
-      const res = await getGoodsSize1Class({
+      const res = await getGoodsSizeClass({
         dictCode: 'SYSTEM_CONFIG',
       })
       this.tabList1 = res.body.resultList
@@ -279,22 +274,17 @@ export default {
     // 点击二级tab
     checkTab(index) {
       let con = ''
-      if (index !== 0)
-        con = this.tabList[index].dictitemDisplayName
-      else
-        con = ''
-
-      this.$nextTick(() => {
-        this.showEmp = false
-        this.formData.styleLength = con
-        this.reLoad()
-      })
+      if (index !== 0) con = this.tabList[index].dicttimeDisplayName
+      else con = ''
+      this.showEmp = false
+      this.formData.styleLength = con
+      this.reLoad()
     },
     // 点击顶部 tab
     checkTab1(index) {
       let con = ''
       if (index === 0)
-        con = this.tabList1[index].categoryName
+        con = ''
       else
         con = this.tabList1[index].dictitemDisplayName
 

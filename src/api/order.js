@@ -62,3 +62,11 @@ export function getOrderExchange(params) {
     uuid: null,
   })
 }
+
+// 积分商城 查看兑换记录
+export function updateIntegralOrderState(params) {
+  return post('/order/integralShop/updateIntegralOrderState', params, {
+    mod: 'vue',
+    uuid: 0,
+  })
+}

@@ -265,25 +265,18 @@ export default {
   data() {
     return {
       formData: {},
-      formData2: {},
-      checkedAll: false,
       priceAll: 0,
-      checked: false,
-      checkOrders: [],
       siteList: {},
       showEmp: false,
       radio: 0,
       styleList: [],
       // --  添加地址表单  --
       showDr: false,
-      showDr2: false,
       labelPosition: 'left',
       dialog: false,
       dialog2: false,
       timer: null,
-      timer2: null,
       loading: false,
-      loading2: false,
       formLabelWidth: '150px',
       textForm: {
         class: '',
@@ -416,7 +409,6 @@ export default {
         siteInfo: this.siteList[that.radio].address,
         isdef: this.siteList[that.radio].defaultNum === 1, // s是否设为默认地址
       }
-      that.showDr2 = true
       that.dialog2 = true
     },
     // 删除地址
@@ -475,7 +467,7 @@ export default {
     },
     // 关闭  set  抽屉
     cancelForm2() {
-      this.loading2 = false
+      // this.loading2 = false
       this.dialog2 = false
       clearTimeout(this.timer)
     },
@@ -535,11 +527,10 @@ export default {
           } else {
             this.$message.error(res.head.msg)
           }
-          that.loading2 = false
+          // that.loading2 = false
           that.dialog2 = false
           clearTimeout(that.timer)
         } else {
-          // console.log('error submit!!')
           return false
         }
       })
