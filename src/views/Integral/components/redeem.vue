@@ -71,7 +71,7 @@
         </div>
       </div>
     </div>
-    <div class="flex my-5">
+    <div class="flex my-5 px-5">
       <div class="label w-24">
         兑换说明：
       </div>

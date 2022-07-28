@@ -118,40 +118,42 @@
           <!-- 商品尺码信息 -->
           <div class="zt-data__data">
             <div class="zt-data__color">
-              <div class="zt-data__label">
+              <div class="zt-data__label flex-shrink-0">
                 颜色
               </div>
-              <div
-                v-for="(item, index) in infoData.styleColorList"
-                :key="index"
-                class="zt-color__item"
-                :class="colorIndex === index ? 'zt-color__select' : ''"
-                @click="colorIndex = index, colorcgId(index)"
-              >
-                <template v-if="item.styleImg">
-                  <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
+              <div class="flex flex-wrap items-center">
+                <div
+                  v-for="(item, index) in infoData.styleColorList"
+                  :key="index"
+                  class="zt-color__item mb-2"
+                  :class="colorIndex === index ? 'zt-color__select' : ''"
+                  @click="colorIndex = index, colorcgId(index)"
+                >
+                  <template v-if="item.styleImg">
+                    <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
+                      <el-image
+                        :src="item.colorImg"
+                        fit="contain"
+                      />
+                    </el-badge>
                     <el-image
+                      v-show="item.num === 0"
                       :src="item.colorImg"
                       fit="contain"
                     />
-                  </el-badge>
-                  <el-image
-                    v-show="item.num === 0"
-                    :src="item.colorImg"
-                    fit="contain"
-                  />
-                  <div class="zt-color__name">
-                    {{ item.styleColor }}
-                  </div>
-                </template>
+                    <div class="zt-color__name">
+                      {{ item.styleColor }}
+                    </div>
+                  </template>
+                </div>
               </div>
             </div>
             <div class="zt-data__size">
-              <div class="zt-data__label">
+              <div class="zt-data__label flex-shrink-0">
                 尺码
               </div>
               <div v-if="infoData.styleColorList && infoData.styleColorList.length !== 0" class="zt-data__info">
-                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index">
+                <div v-for="(item, index) in infoData.styleColorList[colorIndex].styleSize" :key="index" class="mb-2">
                   <el-badge v-show="item.num !== 0" :value="item.num" class="item" type="warning">
                     <div
                       class="zt-size__item"
@@ -656,7 +658,7 @@ video::-webkit-media-controls-timeline {
     .zt-head__data{
       width: 60%;
       color: #666;
-      padding-left: 80px;
+      padding: 20px 40px;
       border: 1px solid #ededed;
       border-radius: 10px;
       margin-left: 10px;
@@ -747,6 +749,8 @@ video::-webkit-media-controls-timeline {
           margin-top: 20px;
           .zt-data__info{
             display: flex;
+            align-items: center;
+            flex-wrap: wrap;
           }
           .zt-size__item{
             padding: 5px 20px;
@@ -798,6 +802,9 @@ video::-webkit-media-controls-timeline {
         }
       }
     }
+  }
+  ::v-deep .el-input-number{
+    margin-left: 20px;
   }
   .zt-content__data{
     margin: 50px 0;

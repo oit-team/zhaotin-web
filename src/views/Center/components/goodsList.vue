@@ -541,7 +541,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   height: 100%;
-  min-height: 50vh;
+  // min-height: 50vh;
   .zt-content__item:hover {
     cursor: pointer;
   }

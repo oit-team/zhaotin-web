@@ -11,8 +11,8 @@
           <el-button type="text" @click="dialogSee = true, getEx()">
             查看兑换记录
           </el-button>
-          <el-divider v-if="flag === '1'" direction="vertical" />
-          <el-button v-if="flag === '1'" class="!text-rose-500" type="text" @click="dialogAdd = true">
+          <el-divider v-if="flag === '1' && orderInfo.orderState === 1" direction="vertical" />
+          <el-button v-if="flag === '1' && orderInfo.orderState === 1" class="!text-rose-500" type="text" @click="dialogAdd = true">
             添加兑换记录
           </el-button>
           <!-- <el-divider v-if="flag === '1'" direction="vertical" />
@@ -21,7 +21,7 @@
           </el-button> -->
         </div>
       </div>
-      <div class="flex justify-between px-14 zt-head">
+      <div class="flex justify-between px-5 zt-head">
         <div class="font-extrabold">
           单号：{{ orderInfo.orderNo }}
         </div>
@@ -81,7 +81,7 @@
         </div>
       </div>
     </div>
-    <div class="flex my-5">
+    <div class="flex my-5 px-5">
       <div class="label w-32">
         订单备注：
       </div>

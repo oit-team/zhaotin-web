@@ -33,7 +33,7 @@
         <el-dropdown
           v-for="(item, index) in tabList"
           :key="index"
-          trigger="hover"
+          trigger="click"
           :class="
             selectItem === index ? 'zt-tabs__homeSelect' : 'zt-tabs__homeItem'
           "
