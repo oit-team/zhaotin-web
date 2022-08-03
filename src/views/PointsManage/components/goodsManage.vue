@@ -48,8 +48,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { delIntegralGoods, getIntegralGoodsList, updateIntegralGoodsState } from '@/api/integral'
+import { delIntegralGoods, getIntegralGoodsList, getTypeAndDate, updateIntegralGoodsState } from '@/api/integral'
 
 export default {
   name: 'GoodsManage',
@@ -81,6 +80,7 @@ export default {
         pageNum: 1,
         pageSize: 20,
       },
+      IntegralType: [],
     }
   },
 
@@ -92,10 +92,7 @@ export default {
           fieldProps: {
             goodsType: {
               // TODO 接口请求
-              options: [
-                { optionKey: '1', optionValue: '优惠券' },
-                { optionKey: '2', optionValue: '服装' },
-              ],
+              options: this.IntegralType,
             },
           },
         },
@@ -182,12 +179,27 @@ export default {
       }
     },
   },
+  created() {
+    this.getType()
+  },
   methods: {
     async loadData(params) {
       const res = await getIntegralGoodsList({
         ...params,
       })
       this.data = res.body
+    },
+    // 获取  商品类型列表
+    getType() {
+      getTypeAndDate({}).then(res => {
+        if (res.head.status !== 0) this.$message(res.head.msg)
+        res.body.goodsCategory.forEach((e) => {
+          const data = {}
+          data.optionValue = e.categoryName
+          data.optionKey = e.orderKey
+          this.IntegralType.push(data)
+        })
+      })
     },
     // 删除商品
     deleteGoods(item) {
@@ -221,52 +233,6 @@ export default {
     changeChecked(val) {
       // console.log("复选框变化后的值===",val);
       this.checkList = val
-    },
-    // 确认导出商品按钮
-    confirmExportGoods() {
-      this.rowList = {}
-      // if (this.checkList.length > 0) {
-      //   for (let i=0;i<this.checkList.length;i++) {
-      //     for (let j=0;j<this.exportInfoList.length;j++) {
-      //       if(this.checkList[i]==this.exportInfoList[j].columnName){
-      //         this.rowList[this.exportInfoList[j].columnName] = this.exportInfoList[j].columnDesc;
-      //       }
-      //     }
-      //   }
-      // }
-      if (Object.keys(this.rowList).length > 0) {
-        this.exportModelFlag = false
-        const SearchData = this.$refs.page.$refs.search._data.form
-        const con = {
-          pageNum: 1,
-          pageSize: 999,
-          rowList: this.rowList,
-          ...SearchData,
-        }
-        // getExportStyleInfo(con, { responseType: 'arraybuffer' }).then((res) => {
-        // application/vnd.openxmlformats-officedocument.wordprocessingml.document这里表示doc类型
-        //   var blob = new Blob([res.data], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8'})
-        //   var contentDisposition = res.headers['content-disposition'];  //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
-        //   var patt = new RegExp("Filename=([^;]+\\.[^\\.;]+);*");
-        //   var result = patt.exec(contentDisposition);
-        //   var filename = result[1];
-        //   var downloadElement = document.createElement('a');
-        //   var href = window.URL.createObjectURL(blob); //创建下载的链接
-        //   downloadElement.style.display = 'none';
-        //   downloadElement.href = href;
-        //   downloadElement.download = `商品列表-${filename}` ; //下载后文件名
-        //   document.body.appendChild(downloadElement);
-        //   downloadElement.click(); //点击下载
-        //   document.body.removeChild(downloadElement); //下载完成移除元素
-        //   window.URL.revokeObjectURL(href); //释放掉blob对象
-        // }).catch(() => {
-        // })
-      } else {
-        this.$message({
-          type: 'warning',
-          message: '请先选择导出数据相关字段',
-        })
-      }
     },
     // 上架前判断该商品各个颜色是否都有图片和尺码
     checkstyleColor(row) {
