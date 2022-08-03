@@ -287,6 +287,7 @@ export default {
         if (res.head.status === 0) {
           this.$message.success('添加成功')
           this.dialogAdd = false
+          this.getData()
         }
       })
     },

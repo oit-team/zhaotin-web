@@ -133,7 +133,11 @@ export default {
                 icon: 'el-icon-view',
                 click: scope => this.$router.push({
                   path: '/pointsManage/addIntegralGoods',
-                  query: { item: scope, flag: 1 },
+                  query: {
+                    item: scope,
+                    flag: 1,
+                    goodsSort: scope.row.goodsSort,
+                  },
                 }),
               },
               {
@@ -160,7 +164,11 @@ export default {
                 },
                 click: scope => this.$router.push({
                   path: '/pointsManage/addIntegralGoods',
-                  query: { item: scope, flag: 0 },
+                  query: {
+                    item: scope,
+                    flag: 0,
+                    goodsSort: scope.row.goodsSort,
+                  },
                 }),
               },
             ],

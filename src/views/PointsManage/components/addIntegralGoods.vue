@@ -45,7 +45,7 @@
         </el-form-item>
       </div>
       <el-divider direction="vertical" />
-      <div v-if="!$route.query.cite" class="content-right w-2/5">
+      <div v-if="!$route.query.cite && $route.query.goodsSort === 1" class="content-right w-2/5">
         <el-form-item label="物品视频">
           <!-- <vc-upload v-bind="uploadOptionVideo" class="el-upload-video" :on-remove="onRemoveVideo" ref="uploadVideo"> -->
           <VcUpload
@@ -87,47 +87,49 @@
         </p>
       </div>
       <div v-else class="content-right w-2/5">
-        <div class="flex flex-wrap justify-between">
-          <div class="flex w-2/5 items-center mb-5">
-            <p class="flex-shrink-0 mr-2 text-sm">
-              款式名称
-            </p>
-            <el-input v-model="searchData.styleName" placeholder="" size="medium" />
+        <div v-if="!$route.query.item">
+          <div class="flex flex-wrap justify-between">
+            <div class="flex w-2/5 items-center mb-5">
+              <p class="flex-shrink-0 mr-2 text-sm">
+                款式名称
+              </p>
+              <el-input v-model="searchData.styleName" placeholder="" size="medium" />
+            </div>
+            <div class="flex w-2/5 items-center mb-5">
+              <p class="flex-shrink-0 mr-2 text-sm">
+                款式编号
+              </p>
+              <el-input v-model="searchData.styleNo" placeholder="" size="medium" />
+            </div>
+            <div class="flex items-center mb-5">
+              <p class="flex-shrink-0 mr-2 text-sm">
+                创建时间
+              </p>
+              <el-date-picker
+                v-model="searchData.creatTime"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy/MM/dd"
+                :default-time="['00:00:00', '23:59:59']"
+              >
+              </el-date-picker>
+            </div>
           </div>
-          <div class="flex w-2/5 items-center mb-5">
-            <p class="flex-shrink-0 mr-2 text-sm">
-              款式编号
-            </p>
-            <el-input v-model="searchData.styleNo" placeholder="" size="medium" />
+          <div class="sub flex justify-around">
+            <el-button type="primary" @click="searchSub">
+              查询
+            </el-button>
+            <el-button type="info" @click="resetSearch">
+              清空
+            </el-button>
           </div>
-          <div class="flex items-center mb-5">
-            <p class="flex-shrink-0 mr-2 text-sm">
-              创建时间
-            </p>
-            <el-date-picker
-              v-model="searchData.creatTime"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="yyyy/MM/dd"
-              :default-time="['00:00:00', '23:59:59']"
-            >
-            </el-date-picker>
-          </div>
+          <el-divider />
         </div>
-        <div class="sub flex justify-around">
-          <el-button type="primary" @click="searchSub">
-            查询
-          </el-button>
-          <el-button type="info" @click="resetSearch">
-            清空
-          </el-button>
-        </div>
-        <el-divider />
         <div class="goodsList">
           <template v-if="emp">
-            <el-empty description="描述文字"></el-empty>
+            <el-empty description="暂无商品"></el-empty>
           </template>
           <div v-else ref="content" class="zt-content">
             <div
@@ -152,6 +154,7 @@
           </div>
 
           <el-pagination
+            v-if="!$route.query.item"
             layout="prev, pager, next"
             :total="totalNum"
           >
@@ -249,6 +252,7 @@ export default {
       emp: false,
       loading: false,
       goodsId: '',
+      totalNum: 0,
     }
   },
   computed: {
@@ -347,6 +351,8 @@ export default {
 
       this.formData.goodsCode = this.$route.query.item.row.goodsCode
       this.getData()
+      this.getGoodsList()
+      this.getType()
     } else {
       this.title = '新增商品'
       this.getGoodsList()
@@ -468,6 +474,9 @@ export default {
     },
     // 获取引用商品列表
     getGoodsList() {
+      if (this.formData.goodsCode) {
+        this.searchData.styleNo = this.formData.goodsCode
+      }
       getProductList({ ...this.searchData }).then((res) => {
         if (res.head.status !== 0) {
           this.$message('查询失败')
@@ -476,6 +485,7 @@ export default {
           this.goodsList = res.body.resultList
           this.totalNum = res.body.totalCount
         }
+        this.selecteD(this.goodsList[0], 0)
       })
     },
     // 上架商品
