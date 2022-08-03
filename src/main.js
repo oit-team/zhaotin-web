@@ -6,6 +6,7 @@ import store from './store'
 import i18n from '@/locale'
 import Plyr from 'plyr'
 import ElementUI from 'element-ui'
+import { TablePage } from '@oit/element-ui-extend'
 import 'tailwindcss/tailwind.css'
 import './plugins'
 import VueQuillEditor from 'vue-quill-editor'
@@ -13,6 +14,14 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+
+Vue.use(TablePage, {
+  setFields() {
+    if (sessionStorage.headTitString) {
+      return JSON.parse(sessionStorage.headTitString)
+    }
+  },
+})
 
 const player = new Plyr('#player')
 // router.beforeEach((to, from, next) => {

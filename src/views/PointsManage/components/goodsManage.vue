@@ -48,14 +48,11 @@
 </template>
 
 <script>
-import TablePage from '@/components/business/TablePage'
+import axios from 'axios'
 import { delIntegralGoods, getIntegralGoodsList, updateIntegralGoodsState } from '@/api/integral'
 
 export default {
   name: 'GoodsManage',
-  components: {
-    TablePage,
-  },
   data() {
     return {
       data: {},
@@ -91,6 +88,17 @@ export default {
     tablePageOption() {
       return {
         promise: this.loadData,
+        search: {
+          fieldProps: {
+            goodsType: {
+              // TODO 接口请求
+              options: [
+                { optionKey: '1', optionValue: '优惠券' },
+                { optionKey: '2', optionValue: '服装' },
+              ],
+            },
+          },
+        },
         actions: [
           {
             name: '新增商品',
