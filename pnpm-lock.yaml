@@ -5,7 +5,7 @@ specifiers:
   '@babel/eslint-parser': ^7.12.16
   '@babel/plugin-transform-runtime': ^7.17.0
   '@babel/runtime': ^7.17.8
-  '@oit/element-ui-extend': ^0.1.0
+  '@oit/element-ui-extend': ^0.2.1
   '@oit/eslint-config': ^0.3.2
   '@vue/cli-plugin-babel': ~5.0.0
   '@vue/cli-plugin-eslint': ~5.0.0
@@ -42,7 +42,7 @@ specifiers:
   xlsx: ^0.16.9
 
 dependencies:
-  '@oit/element-ui-extend': 0.1.0_prsgliinw6yeabqexiprbawp4y
+  '@oit/element-ui-extend': 0.2.1_prsgliinw6yeabqexiprbawp4y
   axios: 0.26.1
   core-js: 3.21.1
   crypto-js: 4.1.1
@@ -1381,8 +1381,8 @@ packages:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.13.0
 
-  /@oit/element-ui-extend/0.1.0_prsgliinw6yeabqexiprbawp4y:
-    resolution: {integrity: sha512-OG7khS7e9mSfn/ybmECkDFiJyU9KpWXr/kXs2ye5qZUbJM8ReF5pc8OkCIynFOw4gumlT2MfVzIfXxmHLhnMMw==}
+  /@oit/element-ui-extend/0.2.1_prsgliinw6yeabqexiprbawp4y:
+    resolution: {integrity: sha512-/0ynzfZ8oi1DfnZ7dZzR0hWRHe58BveisE10cIIXHKCVd1b5frkIh9PVyr7lRMTe9xoZVGHaYFtacafw8NTeng==}
     peerDependencies:
       element-ui: ^2.15.9
       sass: ^1.53.0
@@ -3063,7 +3063,7 @@ packages:
       lodash: ^4.17.20
       marko: ^3.14.4
       mote: ^0.2.0
-      mustache: ^3.0.0
+      mustache: ^4.0.1
       nunjucks: ^3.2.2
       plates: ~0.4.11
       pug: ^3.0.0
