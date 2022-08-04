@@ -101,7 +101,12 @@ export default {
             name: '新增商品',
             icon: 'el-icon-plus',
             type: 'success',
-            click: () => this.$router.push('/pointsManage/addIntegralGoods'),
+            click: () => this.$router.push({
+              path: '/pointsManage/addIntegralGoods',
+              query: {
+                cite: false,
+              },
+            }),
           },
           {
             name: '商品引用',
@@ -133,6 +138,7 @@ export default {
                   query: {
                     item: scope,
                     flag: 1,
+                    cite: scope.row.goodsSort === 2,
                     goodsSort: scope.row.goodsSort,
                   },
                 }),
@@ -164,7 +170,8 @@ export default {
                   query: {
                     item: scope,
                     flag: 0,
-                    goodsSort: scope.row.goodsSort,
+                    cite: scope.row.goodsSort === 2,
+                    goodsSort: scope.row.goodsSort, // 1积分商品 2引用商品
                   },
                 }),
               },

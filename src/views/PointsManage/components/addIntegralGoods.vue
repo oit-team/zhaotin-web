@@ -45,7 +45,8 @@
         </el-form-item>
       </div>
       <el-divider direction="vertical" />
-      <div v-if="!$route.query.cite && $route.query.goodsSort === 1" class="content-right w-2/5">
+      <!-- $route.query.cite   true = 引用商品 -->
+      <div v-if="$route.query.cite === 'false'" class="content-right w-2/5">
         <el-form-item label="物品视频">
           <!-- <vc-upload v-bind="uploadOptionVideo" class="el-upload-video" :on-remove="onRemoveVideo" ref="uploadVideo"> -->
           <VcUpload
@@ -86,7 +87,7 @@
           *最多可以上传6张图片，推荐格式jpg或png
         </p>
       </div>
-      <div v-else class="content-right w-2/5">
+      <div v-if="$route.query.cite === 'true'" class="content-right w-2/5">
         <div v-if="!$route.query.item">
           <div class="flex flex-wrap justify-between">
             <div class="flex w-2/5 items-center mb-5">
@@ -337,25 +338,36 @@ export default {
     },
   },
   created() {
-    this.isEdit = this.$route.query.flag
+    // 一   新增积分商品 新增  cite -> false
+    // 二   新增引用商品 新增  cite -> true
+
+    // 三   查看积分商品      查看   flag ->1
+    // 四   查看引用商品      编辑   flag ->0
+
+    // 五   编辑积分商品 goodsSort -> 1
+    // 六   编辑引用商品 goodsSort -> 2
+    this.formData.goodsCode = ''
+    this.isEdit = this.$route.query.flag // flag 1 查看  0 编辑
     if (this.$route.query.flag === '1')
       this.isEdit = false
     else
       this.isEdit = true
 
-    if (this.$route.query.item) {
-      if (this.isEdit === false)
-        this.title = '查看商品'
-      else
-        this.title = '编辑商品'
+    if (this.$route.query.item !== undefined) {
+      if (this.isEdit === false) this.title = '查看商品'
+      else this.title = '编辑商品'
 
       this.formData.goodsCode = this.$route.query.item.row.goodsCode
+      if (this.$route.query.goodsSort === '2') {
+        this.getGoodsList()
+      }
       this.getData()
-      this.getGoodsList()
       this.getType()
     } else {
       this.title = '新增商品'
-      this.getGoodsList()
+      if (this.$route.query.cite === 'true') {
+        this.getGoodsList()
+      }
       this.getType()
     }
   },
@@ -427,7 +439,7 @@ export default {
         imagesUrl.push(e.url)
       })
       this.formData.images = [...imagesUrl]
-      this.formData.goodsSort = this.$route.query.cite ? '2' : '1'
+      this.formData.goodsSort = this.$route.query.cite === 'true' ? '2' : '1'
       const con = JSON.parse(JSON.stringify(this.formData))
       // 新增商品
       if (this.title === '新增商品') {
