@@ -1002,6 +1002,9 @@ export default {
   text-align: center;
   line-height: 20px;
 }
+/deep/ .el-form{
+  grid-template-columns: repeat(2, 1fr);
+}
 /deep/ .el-tree-node__content{
   padding: 6px 0;
   height: auto;
