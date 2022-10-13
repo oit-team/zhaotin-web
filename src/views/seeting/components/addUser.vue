@@ -42,7 +42,7 @@
         <el-cascader
           style="width:60%;"
           ref="chooseOption"
-          :value="osName"  
+          :value="osName"
           :options="orgList"
           filterable
           :show-all-levels="false"
@@ -95,6 +95,7 @@
 </template>
 
 <script>
+import CryptoJS from '@/assets/js/js/CryptoJS'
 import { addCustomer, changeCustomer } from '@/api/customer'
 import { getTreeOrgList } from '@/api/brand'
 
@@ -238,11 +239,13 @@ export default ({
         if(valid) {
           // 新增
           if(!this.editFlag) {
+            const encryPwd = CryptoJS.encrypt(this.ruleForm.passWord)
             const con = {
               brandId: sessionStorage.brandId,
               userId: sessionStorage.userId,
               ...this.ruleForm,
-              orgStId:this.ruleForm.orgStId,
+              passWord: encryPwd,
+              orgStId: this.ruleForm.orgStId,
               code: '2',
             }
             addCustomer(con).then((res) => {
@@ -260,15 +263,19 @@ export default ({
               }
             })
           } else { // 编辑
+            const encryPwd = CryptoJS.encrypt(this.ruleForm.passWord)
           const con = {
              brandId: sessionStorage.brandId,
               userId: sessionStorage.userId,
               ...this.ruleForm,
+              passWord: encryPwd,
               code: '2',
               orgStId:this.areaId,
               id:this.orgId
           }
            changeCustomer(con).then((res) => {
+            console.log(this.ruleForm)
+
               if (res.head.status === 0) {
                 this.$message({
                   message: '编辑用户成功',
