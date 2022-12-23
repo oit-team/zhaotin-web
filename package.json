@@ -7,7 +7,8 @@
     "build": "vue-cli-service build",
     "build:test": "vue-cli-service build --mode=test --report",
     "lint": "vue-cli-service lint",
-    "lint:style": "stylelint --fix \"**/*.{vue,scss}\" --cache --cache-location node_modules/.cache/stylelint/"
+    "lint:style": "stylelint --fix \"**/*.{vue,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
+    "build:lib": "vue-cli-service build --target lib --name myLib ./src/lib.js"
   },
   "dependencies": {
     "@oit/element-ui-extend": "^0.2.1",

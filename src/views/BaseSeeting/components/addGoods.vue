@@ -46,8 +46,8 @@
                   <el-form-item label="商品类别" prop="styleCategory" v-if="options">
                     <el-cascader
                       :value="category"
-                      style="width:76%;" 
-                      maxlength="32" 
+                      style="width:76%;"
+                      maxlength="32"
                       placeholder="请选择商品类别"
                       :options="options"
                       @change= "editGoodsCategoryTree"
@@ -60,15 +60,15 @@
                       clearable></el-cascader>
                   </el-form-item>
                   <!-- <el-cascader
-                    style="width:76%;" 
-                    maxlength="32" 
+                    style="width:76%;"
+                    maxlength="32"
                     placeholder="请选择商品类别"
                     :options="options"
                     :props="{ checkStrictly: true }"
                     clearable></el-cascader> -->
                   <!-- <el-cascader
-                      style="width:76%;" 
-                      maxlength="32" 
+                      style="width:76%;"
+                      maxlength="32"
                       placeholder="请选择商品类别"
                       v-model="value"
                       :options="options"
@@ -109,7 +109,7 @@
                         </el-select>
                       </el-form-item>
                       <!-- recommendationLevel  '0' 非重点  ‘1’ 重点款 -->
-                      
+
                       <el-form-item label="款类型" prop="styleMajor">
                         <el-select v-model="ruleForm.styleMajor" style="width:76%;" placeholder="请选择款类型">
                           <el-option
@@ -192,7 +192,7 @@
                     </el-upload>
                     <div v-if="ruleForm.styleVideo" style="margin-top:10px"> <el-button @click="delVideo">删除视频</el-button> </div>
                   </el-form-item> -->
-                 
+
                   <el-form-item label="商品视频">
                     <vc-upload v-bind="uploadOptionVide" :class="ruleForm.styleVideo?'el-upload-video':''"  :on-remove='onRemoveVideoImg' ref="uploadVideoImg">
                       <video
@@ -340,7 +340,7 @@
                           :class="{'active':colorNum == index,'wordBorder':true}"
                           v-for="(item,index) in colorList"
                           :key="item.colorName"
-                        >  
+                        >
                           <p class="text-4xl">{{ item.colorName }}</p>
                         </li>
                       </ul>
@@ -536,7 +536,7 @@ export default {
         //   chima: '',
         // },
       ], // 新增颜色的集合数组
-      
+
       newColor: '', // 新增的商品颜色个体
       uploadList: [],
       selectedItem: null,
@@ -845,7 +845,7 @@ export default {
       this.getGoodsInfo(this.$route.query.item.row)
       // 获取商品详情
       let res = this.$route.query.item.row;
-      
+
     //   this.menuIds = '1'
     } else {
       this.title = '新增'
@@ -928,7 +928,7 @@ export default {
           })
         }
       }).catch(err=>{
-        
+
       })
     },
     onRemove(file) {
@@ -1061,7 +1061,7 @@ export default {
           })
           return;
         }
-         
+
       }
       this.newColor = ''
       this.drawer = false
@@ -1180,14 +1180,14 @@ export default {
     // 尺码==========================
     // 获取商品尺码信息
     getClothingSizeInfo(val) {
-      const label = this.styleCategory.find(item => item.dicttimeDisplayName == this.ruleForm.styleCategory)
+      const label = this.options.find(item => item.dictitemDisplayName == this.ruleForm.styleCategory)
       if (!label) {
         return
       }
       this.activeStyleCategory = label
       const con = {
         brandId: sessionStorage.brandId,
-        catergre: label.dicttimeDisplayName,
+        catergre: label.dictitemDisplayName,
         styleId: null,
       }
       this.sizeInfo = null
@@ -1218,7 +1218,7 @@ export default {
             this.sizeInfo = null
             this.sizeTableList = []
           }
-        } 
+        }
       }).catch(err => {
         // console.log(err)
       })
@@ -1414,7 +1414,7 @@ export default {
       } else if (!con.styleVideoPatch && !con.styleVideo){
         returnRes = true
       } else {
-        returnRes = false 
+        returnRes = false
         this.$message({
           type: 'warning',
           message: '请同时上传视频和视频贴图',
@@ -1448,10 +1448,10 @@ export default {
           message: '发布前请添加各颜色的商品图片、商品尺码',
         })
       }
-      return returnRes 
+      return returnRes
     },
     saveGoodFun(status) {
-      
+
       const _this = this;
       const con = JSON.parse(JSON.stringify(this.ruleForm));
       con.stylePicture = ''  //款式图片 url地址
@@ -1538,7 +1538,7 @@ export default {
           })
         }
       }).catch((err) => {
-        
+
       })
     },
     // 重置
@@ -1552,7 +1552,7 @@ export default {
           item[Item.key] = _this.ruleForm.styleSizeList.find(Goods => Goods.sizeName == item.sizeName).sizeConfig[Index]
         })
       })
-      this.setImgInfo() 
+      this.setImgInfo()
     },
     setImgInfo() {
       console.log(456456)
@@ -1577,7 +1577,7 @@ export default {
           item.styleSize.forEach((Item,Index) => {
             goodsSize = _this.sizeInfo.resultMap.find(GoodsItem => GoodsItem.sizeName == Item.sizeName)
             goodsSizeList.push(goodsSize)
-          }) 
+          })
         }
         if (item.styleImg) {
           item.styleImg.forEach((Item,Index) => {
@@ -1598,8 +1598,8 @@ export default {
         _this.activeGoodsSize[index] = JSON.stringify(goodsSizeList)
         _this.selectedColorName[index] = imgList
         _this.selectedColorNameXiJie[index] = imgDetalList
-        
-        
+
+
       })
       if (_this.colorList.length > 0) {
         this.activeGoodsShow = true
@@ -1608,7 +1608,7 @@ export default {
         })
       }
     },
-    
+
     uploadVideoProcess(event, file, fileList) {
       this.uploadVideoFlag = true;
       this.perValue = file.percentage.toFixed(0) * 1;
@@ -2056,7 +2056,7 @@ li.active{
   /deep/.is-active .el-radio-button__inner:hover{
     color:#fff;
   }
-} 
+}
 .checkBox {
   .el-checkbox{
     border:1px solid #e8eaee;
@@ -2115,7 +2115,7 @@ li.active{
 
 </style>
 <style>
-  
+
   .el-upload-list__item {
     transition: none !important;
   }
