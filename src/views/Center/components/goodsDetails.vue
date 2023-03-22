@@ -110,7 +110,7 @@
             <div class="zt-price">
               价格
               <div class="zt-price__data zt-red">
-                ￥<span class="zt-wt">{{ infoData.tradePrice }}</span>
+                ￥<span class="zt-wt">{{ infoData.tagPrice }}</span>
                 <!-- <div class="zt-hui">3件起订</div> -->
               </div>
             </div>
@@ -398,7 +398,7 @@
               </div>
               <div class="zt-price__r">
                 ￥<div class="zt-item__price">
-                  {{ item.tradePrice }}
+                  {{ item.tagPrice }}
                 </div>
               </div>
             </div>

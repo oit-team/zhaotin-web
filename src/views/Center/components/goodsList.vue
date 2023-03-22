@@ -120,7 +120,7 @@
             <div class="zt-price__r">
               ￥
               <div class="zt-item__price">
-                {{ item.tradePrice }}
+                {{ item.tagPrice }}
               </div>
             </div>
           </div>

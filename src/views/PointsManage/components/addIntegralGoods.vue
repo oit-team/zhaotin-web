@@ -353,6 +353,7 @@ export default {
     else
       this.isEdit = true
 
+    // 如果有参数   是查看或者编辑
     if (this.$route.query.item !== undefined) {
       if (this.isEdit === false) this.title = '查看商品'
       else this.title = '编辑商品'
@@ -411,9 +412,7 @@ export default {
     },
     // 保存/发布按钮
     saveGood(formName, status) {
-      let msg = ''
-      if (status === 0) msg = '确认保存该商品信息吗?'
-      else if (status === 1) msg = '您确定要发布商品至App与商品中心展示吗?'
+      const msg = status === 0 ? '确认保存该商品信息吗?' : '您确定要发布商品至App与商品中心展示吗?'
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$confirm(msg, '提示', {
@@ -524,7 +523,7 @@ export default {
         else this.goodsList = res.body.resultList
       })
     },
-    // 清空 商品input
+    // 清空 商品搜索input
     resetSearch() {
       this.searchData.styleName = ''
       this.searchData.styleNo = ''
@@ -532,7 +531,7 @@ export default {
       this.searchData.endDate = ''
       this.searchData.creatTime = []
     },
-    // 选择 引用商品
+    // 选择 引用商品   如果是新增引用商品  在created 就要调用一次
     selecteD(item, index) {
       this.selectGoods = index
       this.formData.goodsCode = item.styleNo
