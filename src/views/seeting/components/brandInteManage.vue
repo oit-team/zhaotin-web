@@ -53,7 +53,7 @@
           :data="orgList"
           icon-class="el-icon-s-shop"
           :highlight-current="true"
-          :props="{ children: 'childrenList', label: 'osName' }"
+          :props="{ children: 'childrenList', label: '_newOsName' }"
           node-key="id"
           :current-node-key="curCheckedKey"
           :default-expanded-keys="defaultOpenArr"
@@ -457,6 +457,8 @@ export default {
     openDailog() {
       this.areadrawer = true;
       this.editFlag = false;
+      console.log(this.nodeInfo)
+      console.log(this.areaForm)
       if (this.nodeInfo) {
         this.areaForm.deptName = this.nodeInfo.osName;
         this.areaForm.deptCode = this.nodeInfo.nodeCode;
@@ -570,15 +572,15 @@ export default {
         brandId: sessionStorage.brandId,
       });
       res.body.orgList.forEach(item => {
-        item.osName = `${item.osName}(${item.member})`
+        item._newOsName = `${item.osName}(${item.member})`
         if (item.childrenList) {
           item.childrenList.forEach(e => {
-            e.osName = `${e.osName}(${e.member})`
+            e._newOsName = `${e.osName}(${e.member})`
           })
         }
       })
       this.orgList = [{
-        osName:`全部(${this.data.allUsersNumber})`,
+        _newOsName:`全部(${this.data.allUsersNumber})`,
         menuId:'allMenu',
         brandId:'allMenu',
         id:'',
@@ -587,7 +589,7 @@ export default {
         childrenList:res.body.orgList,
       }]
       this.$nextTick(() => {
-        this.$refs.tree.setCurrentKey('allMenu'); 
+        this.$refs.tree.setCurrentKey('allMenu');
       });
       // this.orgList = res.body.orgList;
     },
@@ -686,6 +688,7 @@ export default {
     },
     // 当某一节点被鼠标右键点击时会触发该事件
     nodeRightClick(MouseEvent, object, Node, VueComponent) {
+      if (Node.data.menuId === "allMenu") return
       this.msg = object
       this.orgId = Node.data.id;
       this.handleClickFlag = true;
@@ -879,7 +882,7 @@ export default {
       // } else {
       //   // this.roleId.splice(fitemIndex, 1);
       // }
-      
+
     },
     // 表格全选内容
     selectAllRole(val) {
