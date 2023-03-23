@@ -7,7 +7,7 @@
         :right="70"
         :bottom="100"
       />
-      
+
       <el-page-header
         @back="$router.back()"
         :content="title"
@@ -29,8 +29,8 @@
           >重置</el-button
         >
       </div>
-    </div> 
-    
+    </div>
+
     <el-divider />
 
     <el-form
@@ -51,7 +51,9 @@
               v-model="customerForm.loginName"
               style="width: 100%"
               placeholder="请输入登录账号"
-            />
+            >
+              <template slot="prepend" v-if="!editFlag">C</template>
+            </el-input>
           </el-form-item>
 
            <el-form-item label="用户密码" label-width="100%" prop="passWord">
@@ -322,13 +324,14 @@
         </div>
       </div>
     </el-form>
-      
+
   </div>
 </template>
 
 <script>
 import { getCustomer, addCustomer, changeCustomer } from "@/api/customer";
 import {getTreeOrgListAll} from '@/api/org'
+import CryptoJS from '@/assets/js/js/CryptoJS'
 import quill from "@/views/common/quillEditor";
 import VcUpload from "@/views/common/Upload";
 import axios from "axios";
@@ -538,7 +541,7 @@ export default {
         if(res.head.status === 0) {
           this.refereesList = res.body.resultList
         }
-        // 
+        //
       })
     },
     // 选中推荐人
@@ -587,6 +590,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          const encryPwd = this.customerForm.passWord.length > 0 ? CryptoJS.encrypt(this.customerForm.passWord) : ''
           if (this.editFlag) {
             // 编辑客户
             changeCustomer({
@@ -596,6 +600,7 @@ export default {
               refereesName: "daoru",
               refereesType: null,
               ...this.customerForm,
+              passWord: encryPwd,
               loginId: this.customerForm.logId,
               trademark:this.customerForm.trademark
             })
@@ -616,12 +621,14 @@ export default {
               .catch(() => {});
           } else {
             // 新增
+            this.customerForm.loginName = `C${this.customerForm.loginName}`
             addCustomer({
               code: "1",
               customerState: 0,
               customerIntegral: 0,
               refereesType: null,
               ...this.customerForm,
+              passWord: encryPwd,
               trademark:this.customerForm.trademark
             })
               .then((res) => {
