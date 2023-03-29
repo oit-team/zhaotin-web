@@ -33,7 +33,7 @@
       </el-form-item>
 
         <el-form-item label="用户密码" prop="passWord">
-        <el-input v-model="ruleForm.passWord" style="width:60%;" type="password" placeholder="用户密码" />
+        <el-input v-model.trim="ruleForm.passWord" style="width:60%;" type="password" placeholder="用户密码" />
         <div v-if="editFlag" class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>若要修改请直接输入新密码保存即可</div>
         <div v-else class="pwdTip"><i class="el-icon-magic-stick" style="font-size:16px;margin-right:6px;color:#e60012;"></i>不填则为默认密码</div>
       </el-form-item>
@@ -193,7 +193,7 @@ export default ({
       this.editFlag = true
       this.ruleForm = this.$route.query.item.row
       if(this.$route.query.item.row.hireDate) {
-        this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substr(0,10)
+        this.ruleForm.hireDate = this.$route.query.item.row.hireDate.substring(0,10)
       }
       this.osName = this.$route.query.item.row.nodeName
       this.orgId = this.$route.query.item.row.id
@@ -237,9 +237,10 @@ export default ({
      submitForm() {
       this.$refs.ruleForm.validate((valid) => {
         if(valid) {
+          console.log(this.ruleForm.passWord)
           // 新增
           if(!this.editFlag) {
-            const encryPwd = CryptoJS.encrypt(this.ruleForm.passWord)
+            const encryPwd = this.ruleForm.passWord ? CryptoJS.encrypt(this.ruleForm.passWord) : ''
             const con = {
               brandId: sessionStorage.brandId,
               userId: sessionStorage.userId,
@@ -263,8 +264,8 @@ export default ({
               }
             })
           } else { // 编辑
-            const encryPwd = CryptoJS.encrypt(this.ruleForm.passWord)
-          const con = {
+            const encryPwd = this.ruleForm.passWord ? CryptoJS.encrypt(this.ruleForm.passWord) : ''
+            const con = {
              brandId: sessionStorage.brandId,
               userId: sessionStorage.userId,
               ...this.ruleForm,
@@ -273,9 +274,7 @@ export default ({
               orgStId:this.areaId,
               id:this.orgId
           }
-           changeCustomer(con).then((res) => {
-            console.log(this.ruleForm)
-
+            changeCustomer(con).then((res) => {
               if (res.head.status === 0) {
                 this.$message({
                   message: '编辑用户成功',
