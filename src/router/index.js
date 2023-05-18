@@ -245,4 +245,11 @@ const router = new VueRouter({
   linkActiveClass: 'active',
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.path !== '/' && !sessionStorage.accessToken) {
+    next('/')
+  }
+  next()
+})
+
 export default router
