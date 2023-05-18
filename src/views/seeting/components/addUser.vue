@@ -245,7 +245,7 @@ export default ({
               brandId: sessionStorage.brandId,
               userId: sessionStorage.userId,
               ...this.ruleForm,
-              passWord: encryPwd,
+              passWord: this.ruleForm.passWord === '' ? '' : encryPwd,
               orgStId: this.ruleForm.orgStId,
               code: '2',
             }

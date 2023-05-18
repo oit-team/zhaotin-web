@@ -158,6 +158,7 @@
             v-if="!$route.query.item"
             layout="prev, pager, next"
             :total="totalNum"
+            @current-change="searchData.pageNum = $event, searchSub()"
           >
           </el-pagination>
         </div>
